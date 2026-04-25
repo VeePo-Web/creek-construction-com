@@ -1,184 +1,107 @@
+# Batch 02 — Riverbend Studio Shed, Interior Threshold
 
-# Photography System + Batch 01: Riverbend Studio Shed
+One photo this round (the others were too large by your message — that's fine, I batched what you sent). It's the **same project** as Batch 01: same OSB-sheathed walls, same curved cantilever roofline visible at the top, same cedar privacy fence in the background. This is a portrait-orientation shot taken straight-on through the framed doorway, with the table saw, drill, and screw bins on the threshold.
 
-You've told me there will be ~200 photos coming in batches of 10. So the first job isn't to embed 2 photos — it's to lay down the **architecture** that all 200 will flow through. Then drop these two in cleanly as the first proof.
+## Why this single photo matters more than its count suggests
 
-Both uploaded frames are the **same project**: a backyard studio-shed with a distinctive curved cantilever roofline, OSB-sheathed walls mid-build, behind a cedar privacy fence. One frame is the front elevation (door framed in, ladder leaning); the other is a low-angle hero showing the curved roof against the sky. Single project, two angles.
+Batch 01 was two **exterior** angles. This is the **first interior frame** in the entire project — it changes the gallery story from *"two angles of a building"* into *"a build you can step into."* That's the difference between a brochure and a documentary. A future client doesn't just see the shed; they see the workshop *making* the shed.
 
----
+It also activates the **3-photo gallery layout** I built in Batch 01 (`<ProjectGallery>` count===3 branch): one dominant frame + two supporting on a 2/3 + 1/3 + 1/3 grid. We've never rendered that layout on the live site — Batch 02 lights it up.
 
-## Part 1 — The architecture (built once, reused for all 200 photos)
+## Photo audit
 
-### 1.1 A single source of truth: `src/data/projects.ts`
+- **Source:** `user-uploads://IMG_6339.PNG`, ~1170×2530 portrait, iPhone screenshot with thick black letterbox bars top and bottom (visible in preview)
+- **Subject:** Edmonton backyard studio shed, framed doorway centered, interior visible (table saw on stand, drill, screw bins, sunlight raking across OSB studs), curved roof eave at the top, cedar fence right
+- **Shot type:** `interior` (the existing convention covers it)
+- **Sequence number:** `03` (continues 01-hero, 02-elevation)
 
-A typed registry of every project. One entry per build. Each entry holds metadata + an ordered list of photos. This is the only file that changes when new batches arrive — no component edits, ever.
+## File operations
 
-```ts
-export interface ProjectPhoto {
-  src: string;              // import('@/assets/projects/...')
-  alt: string;              // SEO + a11y, no front-facing caption
-  width: number;
-  height: number;
-  orientation: 'portrait' | 'landscape';
-}
+1. `code--copy user-uploads://IMG_6339.PNG /tmp/p2-interior.png`
+2. ImageMagick conversion — same recipe as Batch 01, no exceptions:
+   ```
+   convert /tmp/p2-interior.png \
+     -fuzz 5% -trim +repage \                     # strip iPhone letterbox
+     -resize '2000x2000>' \                       # cap long edge
+     -strip \                                     # remove EXIF (privacy — addresses leak via GPS)
+     -interlace Plane -sampling-factor 4:2:0 \    # progressive JPEG, standard chroma
+     -quality 82 \                                # quality budget
+     src/assets/projects/riverbend-studio-shed/riverbend-studio-shed-03-interior.jpg
+   ```
+3. `identify` to log final dimensions (needed for the registry's `width`/`height` to prevent CLS)
+4. `rm /tmp/p2-interior.png` cleanup
+5. **Target file size:** ≤350 KB. Likely lands ~150–200 KB given Batch 01 came in at 168–174 KB at similar source resolution.
 
-export interface Project {
-  slug: string;             // 'riverbend-studio-shed'
-  title: string;            // 'Riverbend Studio Shed'
-  service: 'sheds' | 'decks' | 'fencing' | 'painting' | 'siding' | 'pergolas';
-  location: string;         // 'Edmonton'
-  year: number;
-  status: 'in-progress' | 'complete';
-  summary: string;          // one editorial sentence, used for OG/meta only
-  hero: ProjectPhoto;       // the lead frame
-  photos: ProjectPhoto[];   // includes hero + all others, in display order
-  featured: boolean;        // surfaces on the homepage Portfolio strip
-}
+## Registry update — the only file edited
 
-export const PROJECTS: Project[] = [ /* ... */ ];
-```
+`src/data/projects.ts` gets exactly two changes:
 
-**Why this matters:** When Batch 02 arrives — say, 10 photos across 3 different projects — I add three entries (or extend an existing one), drop the imports in, and the Work page, homepage Portfolio, and any future project-detail route automatically pick them up. Zero component churn across 200 photos.
+1. New import alongside the existing two:
+   ```ts
+   import riverbendInterior from "@/assets/projects/riverbend-studio-shed/riverbend-studio-shed-03-interior.jpg";
+   ```
+2. Append a third entry to the `photos` array of the existing Riverbend project:
+   ```ts
+   {
+     src: riverbendInterior,
+     alt: "Interior view through the framed doorway of an Edmonton backyard studio shed mid-construction, showing OSB stud walls, a table saw on its stand, and tools on the plywood threshold.",
+     width: <from identify>,
+     height: <from identify>,
+     shotType: "interior",
+   }
+   ```
 
-### 1.2 File naming convention (locked in now)
+That's it. **Zero component edits.** `Portfolio.tsx`, `Work.tsx`, `ProjectGallery.tsx`, `JsonLd.tsx` all consume the registry and update automatically. This is the entire point of the architecture I shipped in Batch 01 — Batch 02 proves it works.
 
-All project photos live in `src/assets/projects/{slug}/` and are named:
+## What the user will see after this ships
 
-```
-{slug}-{NN}-{shot-type}.{ext}
-```
+- **Homepage Portfolio:** unchanged — that card uses `project.hero` (still the 01-hero shot), so the "sheds" tile stays the curved-roofline exterior. Correct behaviour: the homepage is a teaser, not a gallery.
+- **`/work` page Featured Project section:** the 60/40 two-photo layout switches to the **three-photo dominant + two layout**. The hero (curved roof) becomes the dominant 2/3-width frame on the left, with the elevation and the new interior shot stacked in the right column. On mobile, all three stack vertically at native aspect.
+- **JSON-LD:** the `CreativeWork` node for Riverbend automatically picks up a third entry in its `image` array — three URLs Google can index instead of two.
+- **Performance:** dominant frame keeps `priority` for LCP; both supporting frames lazy-load. CSS containment + `content-visibility: auto` on the section already handle render budget.
 
-- `slug`: kebab-case project ID
-- `NN`: two-digit sequence within the project (01, 02, ... 12)
-- `shot-type`: one of `hero`, `elevation`, `detail`, `interior`, `process`, `wide`, `aerial`
+## Mixed orientation handling — a worth-noting design moment
 
-Example for this batch:
-- `src/assets/projects/riverbend-studio-shed/riverbend-studio-shed-01-hero.jpg`
-- `src/assets/projects/riverbend-studio-shed/riverbend-studio-shed-02-elevation.jpg`
+Batch 01 was two landscape 4:3 shots. This new frame is portrait (~1:2-ish after trim). The `<ProjectGallery>` component uses native `aspectRatio` from the registry's `width`/`height` for every figure — so when it lands in the 1/3-width supporting slot, it'll render tall and narrow, while the 2/3-width landscape hero anchors the composition. **That asymmetry is editorial, not a bug** — it's what magazine spreads do. No code change needed; the layout already respects native proportions, which is exactly why I built it that way in Batch 01.
 
-This gives you sortable filenames, predictable URLs, and human-scannable diffs forever.
+If after seeing it live you'd rather force-uniform aspect (e.g., crop everything to 4:5), say the word and I'll add an `aspect` override to the `ProjectPhoto` interface. But my recommendation is to let mixed orientations breathe — Fantasy.co and Pentagram both lean into this on case-study pages.
 
-### 1.3 Format conversion at import time
+## Alt text rationale (SEO + a11y, no front-facing caption)
 
-Both uploads are PNG (~2–4 MB each). For 200 photos, PNG is unacceptable — that's nearly a gigabyte of payload. Each incoming photo gets converted to **JPEG q82** (or WebP where it wins decisively) using `nix run nixpkgs#imagemagick` during the embed step. Target: every photo ≤ 350 KB, hero shots ≤ 500 KB. The original PNGs are discarded after conversion (you have them in chat history if ever needed).
+> *"Interior view through the framed doorway of an Edmonton backyard studio shed mid-construction, showing OSB stud walls, a table saw on its stand, and tools on the plywood threshold."*
 
-### 1.4 Reusable component: `<ProjectGallery />`
+- **Geographic anchor:** "Edmonton" — feeds Local SEO image-pack
+- **Structural detail:** "framed doorway… OSB stud walls… plywood threshold" — searchable construction terminology
+- **Tool inventory:** "table saw… tools" — implicit signal of active craftsmanship without marketing fluff
+- **No marketing language:** no "stunning," "beautiful," "premium" — those words belong in copy, never in alt text
 
-A new component, `src/components/ProjectGallery.tsx`, that takes a `Project` and renders an editorial photo grid. Reuses the existing `<ProgressiveImage />` (so we get the cedar-shimmer blur-up, vignettes, lazy loading already battle-tested in your codebase). Layout rules:
+This brings Riverbend to **3 indexed image URLs** in the JSON-LD `ItemList` after this batch.
 
-- **1 photo:** full-bleed editorial frame, 16:9 or native aspect, capped at `max-h-[80vh]`
-- **2 photos:** asymmetric — hero takes 60% width / portrait companion 40%, or stacked on mobile
-- **3 photos:** rule-of-thirds grid with one dominant + two supporting
-- **4–6 photos:** masonry-lite (CSS columns) preserving native aspect ratios
-- **7+ photos:** masonry + a "more" fade — but at that point we route to a dedicated project page (deferred until needed)
+## QA after ship
 
-**No front-facing captions on photos.** Per your instruction. The image speaks. Project metadata (title, location, year) sits *outside* the gallery in a thin editorial header, never overlaid on the image.
+1. Verify file size is ≤350 KB (visual confirmation in `ls -la`)
+2. `bunx tsc --noEmit` — clean build
+3. Spot-check the rendered `/work` page in screen-replay terms: dominant landscape frame on the left, two supporting frames (one landscape, one portrait) stacked right; on mobile all three stack
+4. Confirm the JSON-LD `image` array now has 3 entries for Riverbend (visible in page source)
 
-### 1.5 Per-image SEO that actually works
+## Files touched
 
-Every `<img>` gets:
-- A descriptive `alt` (geographic + structural, never marketing fluff): *"Cedar-roofed backyard studio shed mid-construction in Edmonton, showing curved cantilever roofline and OSB sheathing."*
-- Explicit `width` / `height` attributes (no CLS)
-- `loading="lazy"` except the hero of the first project (`fetchPriority="high"`)
-- A `sizes` hint matching the layout slot
-- The hero image is referenced in the page-level JSON-LD as the project's `image`
+**Edited (1):**
+- `src/data/projects.ts` — new import + one new entry in `photos` array
 
-Plus, on the Work page, we extend `JsonLd` with an `ItemList` of `CreativeWork` nodes — one per project — each with `image`, `name`, `locationCreated`, `dateCreated`. Google reads this for image-pack indexing. This is how 200 photos become 200 indexed search results instead of 200 silent megabytes.
+**Created (1):**
+- `src/assets/projects/riverbend-studio-shed/riverbend-studio-shed-03-interior.jpg` — converted, EXIF-stripped, q82, ≤350 KB
 
-### 1.6 Performance budget enforced from photo #1
+**Untouched (the proof of architecture):**
+- `src/components/ProjectGallery.tsx`
+- `src/components/Portfolio.tsx`
+- `src/pages/Work.tsx`
+- `src/components/JsonLd.tsx`
 
-- `content-visibility: auto` on every gallery section (already standard in your codebase)
-- Native `loading="lazy"` everywhere below the fold
-- No carousels, no lightboxes, no JS-heavy galleries — just images that load when scrolled to
-- `<ProgressiveImage>` already handles blur-up + reduced-motion fallback
+## Forward look — what to watch for in Batch 03+
 
-If 200 photos still feels heavy at scale, the next escalation is a `responsive-images` Vite plugin that emits `srcset` variants — but we don't need that for batch 01–05. Decide at batch 06.
+When you reach **6+ photos on Riverbend**, I'll proactively spin up a dedicated `/work/riverbend-studio-shed` route with a long-form editorial layout (full case-study treatment — hero takeover, sequenced narrative, before/after pairings, materials callout). That's the Batch 04-or-05 trigger; not yet.
 
----
+When you reach **a second photographed project** (decks, fencing, painting, etc.), the homepage Portfolio's icon-placeholder cards swap to real heroes automatically — same `getProjectsByService()` selector that lit up the sheds card in Batch 01.
 
-## Part 2 — Batch 01: Riverbend Studio Shed
-
-### 2.1 Project entry
-
-```ts
-{
-  slug: 'riverbend-studio-shed',
-  title: 'Riverbend Studio Shed',
-  service: 'sheds',
-  location: 'Edmonton',
-  year: 2025,
-  status: 'in-progress',
-  summary: 'A backyard studio shed with a curved cantilever roofline, framed and sheathed on a tight urban lot.',
-  hero: { /* 02-elevation, the dramatic upward angle */ },
-  photos: [hero, elevation],
-  featured: true,
-}
-```
-
-I'm naming it **"Riverbend Studio Shed"** as a working title — it reads editorial, it's regionally evocative for Edmonton, and it doesn't lock you to a specific neighbourhood you may not want to disclose. Tell me if you want it renamed (e.g. to a real neighbourhood like *Westmount*, *Bonnie Doon*, *Ritchie*) and I'll swap it in.
-
-### 2.2 File operations
-
-1. `code--copy user-uploads://IMG_6341.PNG /tmp/p1-hero.png` (the dramatic low-angle — becomes the hero)
-2. `code--copy user-uploads://IMG_6340.PNG /tmp/p1-elevation.png` (the front elevation)
-3. Convert both via ImageMagick:
-   - `q82` JPEG, max 2000px on the long edge, strip EXIF (privacy)
-   - Output: `src/assets/projects/riverbend-studio-shed/riverbend-studio-shed-01-hero.jpg` and `...02-elevation.jpg`
-4. Delete `/tmp/*.png` scratch files
-
-### 2.3 Where they appear
-
-- **Homepage `Portfolio.tsx`:** the icon-only placeholder card for "sheds" gets replaced by the real hero frame. The other two cards (decks, fencing) stay icon-placeholders until those batches arrive — but the *visual contract* is now established: one real photo proves the system works, the rest fall in as you upload.
-- **`/work` page:** the "Backyard Workshop" entry is replaced by Riverbend Studio Shed. It uses the new `<ProjectGallery>` rendering both photos in the asymmetric 2-photo layout. The other 5 entries keep their icon placeholders awaiting future batches.
-
-### 2.4 The bleed (subtle, editorial)
-
-You mentioned cross-project bleeds like `@project:bae409ab-...:"B & P Saunas"` — those work in Lovable's chat-link syntax inside markdown content, but on a published marketing site they don't auto-resolve to anything visitors can click. So a literal bleed isn't useful here.
-
-What I'll do instead, in the spirit of "clean, editorial, minimal" cross-pollination: a single line of small-caps text under the Work page intro that reads:
-
-> *Sister studios: B & P Saunas · Hickory & Rose*
-
-…rendered as a thin centered footnote in `text-[11px] tracking-[0.2em] uppercase text-foreground/30`. No links, no logos, no flash — just a quiet acknowledgement that Creek operates in a family of brands. If you'd rather have actual outbound links to public-facing URLs for those projects, give me the URLs and I'll wire them as low-key text links with a hairline cedar underline on hover.
-
-### 2.5 Cleanup
-
-The legacy `project-1.jpg`, `project-2.jpg`, `project-3.jpg`, `portfolio-acreage.jpg`, `portfolio-backyard.jpg`, `portfolio-mountain.jpg` in `src/assets/` aren't referenced (I checked — `rg` returned nothing). I'll delete them in this batch since the new `src/assets/projects/` structure supersedes them. ~6 stale assets removed = cleaner repo, smaller LFS footprint as the photo library grows.
-
----
-
-## Part 3 — The plan for batches 02 through ~20
-
-For every future batch of 10 photos, the workflow is:
-1. **You** upload 10 images + tell me which project(s) they belong to (or I'll group by visual inspection if it's obvious — same building, same lot, same season)
-2. **I** create or extend the project entries in `src/data/projects.ts`, convert + name the files per the convention above, and the gallery component automatically renders them
-3. No component code is touched after Part 1 ships. Period.
-
-When a project crosses 6+ photos, I'll proactively spin up a dedicated route at `/work/{slug}` so it doesn't drown the index. That's a Batch 04-ish concern, not now.
-
----
-
-## What I won't do this round
-
-- No lightbox / modal photo viewer (you said "no flash, just integrity")
-- No image filters, no duotones, no overlays beyond the existing subtle vignette — your photos carry their own weight
-- No front-facing captions on individual images
-- No carousel — they're banned by the no-flash brief
-- No literal `@project:` bleed syntax on the published site — it doesn't render outside Lovable chat. The "Sister studios" footnote replaces it cleanly.
-
-## Files that will be created or edited
-
-**Created:**
-- `src/data/projects.ts` — the registry
-- `src/components/ProjectGallery.tsx` — the editorial gallery
-- `src/assets/projects/riverbend-studio-shed/riverbend-studio-shed-01-hero.jpg`
-- `src/assets/projects/riverbend-studio-shed/riverbend-studio-shed-02-elevation.jpg`
-
-**Edited:**
-- `src/components/Portfolio.tsx` — sheds card uses real hero
-- `src/pages/Work.tsx` — Riverbend entry renders via `<ProjectGallery>`, "Sister studios" footnote added
-- `src/components/JsonLd.tsx` — `ItemList` of project `CreativeWork` nodes for image SEO
-- `mem://design/logo-asset-map.md` → renamed/expanded to `mem://design/asset-map.md` to also cover the projects/ directory convention
-
-**Deleted:**
-- 6 unreferenced stale photo placeholders in `src/assets/`
+When a single batch contains photos from **multiple projects**, just tell me which photo belongs to which project and I'll group accordingly. If it's obvious from visual inspection (same building, lot, season), I'll group on my own and confirm before converting.
