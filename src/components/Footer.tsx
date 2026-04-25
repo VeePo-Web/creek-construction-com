@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { Phone, Mail } from "lucide-react";
 import { CONTACT } from "@/config/contact";
-import logo from "@/assets/creek-construction-logo.png";
+import logo from "@/assets/creek-logo-md.png";
 
 const Footer = () => {
   return (
