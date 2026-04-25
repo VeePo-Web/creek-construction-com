@@ -16,45 +16,75 @@ export type Database = {
     Tables: {
       media_metadata: {
         Row: {
+          ai_notes: string | null
+          ai_quality: string | null
+          ai_review_status: string | null
+          ai_season: string | null
+          ai_subject: string | null
           alt: string | null
           caption: string | null
           created_at: string
           duration_seconds: number | null
           height: number | null
           id: string
+          lqip: string | null
+          poster_path: string | null
+          project_guess: string | null
           project_slug: string | null
+          service: string | null
           shot_type: string | null
           storage_path: string
           taken_at: string | null
           updated_at: string
+          variants: Json | null
           width: number | null
         }
         Insert: {
+          ai_notes?: string | null
+          ai_quality?: string | null
+          ai_review_status?: string | null
+          ai_season?: string | null
+          ai_subject?: string | null
           alt?: string | null
           caption?: string | null
           created_at?: string
           duration_seconds?: number | null
           height?: number | null
           id?: string
+          lqip?: string | null
+          poster_path?: string | null
+          project_guess?: string | null
           project_slug?: string | null
+          service?: string | null
           shot_type?: string | null
           storage_path: string
           taken_at?: string | null
           updated_at?: string
+          variants?: Json | null
           width?: number | null
         }
         Update: {
+          ai_notes?: string | null
+          ai_quality?: string | null
+          ai_review_status?: string | null
+          ai_season?: string | null
+          ai_subject?: string | null
           alt?: string | null
           caption?: string | null
           created_at?: string
           duration_seconds?: number | null
           height?: number | null
           id?: string
+          lqip?: string | null
+          poster_path?: string | null
+          project_guess?: string | null
           project_slug?: string | null
+          service?: string | null
           shot_type?: string | null
           storage_path?: string
           taken_at?: string | null
           updated_at?: string
+          variants?: Json | null
           width?: number | null
         }
         Relationships: []
@@ -80,6 +110,57 @@ export type Database = {
           full_name?: string | null
           id?: string
           updated_at?: string
+        }
+        Relationships: []
+      }
+      projects: {
+        Row: {
+          created_at: string
+          display_order: number
+          featured: boolean
+          hero_path: string | null
+          id: string
+          location: string | null
+          service: string
+          slug: string
+          status: string
+          summary: string | null
+          title: string
+          updated_at: string
+          video_path: string | null
+          year: number | null
+        }
+        Insert: {
+          created_at?: string
+          display_order?: number
+          featured?: boolean
+          hero_path?: string | null
+          id?: string
+          location?: string | null
+          service: string
+          slug: string
+          status?: string
+          summary?: string | null
+          title: string
+          updated_at?: string
+          video_path?: string | null
+          year?: number | null
+        }
+        Update: {
+          created_at?: string
+          display_order?: number
+          featured?: boolean
+          hero_path?: string | null
+          id?: string
+          location?: string | null
+          service?: string
+          slug?: string
+          status?: string
+          summary?: string | null
+          title?: string
+          updated_at?: string
+          video_path?: string | null
+          year?: number | null
         }
         Relationships: []
       }
