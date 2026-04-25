@@ -260,7 +260,10 @@ const Classify = () => {
       finalPath = moved.newPath ?? selected.storage_path;
     }
 
-    // Save metadata + mark approved
+    // Save metadata + mark approved.
+    // We write `project_guess` into BOTH project_guess (the AI suggestion field)
+    // AND project_slug (the canonical column the public site queries).
+    const slug = updates.project_guess?.trim() || null;
     const { error } = await supabase
       .from("media_metadata")
       .upsert(
@@ -269,7 +272,8 @@ const Classify = () => {
           alt: updates.alt,
           service: updates.service,
           shot_type: updates.shot_type,
-          project_guess: updates.project_guess,
+          project_guess: slug,
+          project_slug: slug,
           ai_review_status: "approved",
         },
         { onConflict: "storage_path" },
@@ -283,6 +287,44 @@ const Classify = () => {
       });
       return;
     }
+
+    // Bridge: if this image has a project_slug AND is hero quality OR shot_type='hero',
+    // ensure a row exists in `projects` so /work picks it up automatically.
+    if (slug && updates.service) {
+      const isHero =
+        selected.ai_quality === "hero" || updates.shot_type === "hero";
+      const projectTitle = slug
+        .split(/[-_]/)
+        .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+        .join(" ");
+
+      // Insert if missing; never overwrite a manually-edited title/summary.
+      const { data: existing } = await supabase
+        .from("projects")
+        .select("slug, hero_path")
+        .eq("slug", slug)
+        .maybeSingle();
+
+      if (!existing) {
+        await supabase.from("projects").insert({
+          slug,
+          title: projectTitle,
+          service: updates.service,
+          status: "complete",
+          year: new Date().getFullYear(),
+          featured: true,
+          display_order: 50,
+          hero_path: isHero ? finalPath : null,
+        });
+      } else if (isHero && !existing.hero_path) {
+        // Backfill hero_path the first time we see a hero shot for an existing project
+        await supabase
+          .from("projects")
+          .update({ hero_path: finalPath })
+          .eq("slug", slug);
+      }
+    }
+
     toast({ title: "Approved" });
     // Move to next pending in the visible list
     const idx = visible.findIndex((a) => a.storage_path === selected.storage_path);

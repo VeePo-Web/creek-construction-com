@@ -4,6 +4,8 @@ import { Hammer, Fence, Paintbrush, type LucideIcon } from "lucide-react";
 import { useQuoteModal } from "@/components/quote/QuoteModalProvider";
 import CedarCTA from "@/components/CedarCTA";
 import { getProjectsByService, type Project } from "@/data/projects";
+import MediaSlot from "@/components/media/MediaSlot";
+import type { ServiceCategory } from "@/lib/api/public-media";
 
 interface PortfolioCard {
   title: string;
@@ -110,15 +112,29 @@ const Portfolio = () => {
                             className="absolute inset-0 w-full h-full object-cover transition-transform duration-[1.2s] group-hover:scale-105"
                           />
                         ) : (
-                          <>
-                            <div className="absolute inset-0 grain-overlay opacity-50 pointer-events-none" />
-                            <div className="absolute inset-0 flex items-center justify-center">
-                              <Icon
-                                className="h-20 w-20 text-cedar/30 group-hover:text-cedar/50 transition-all duration-700 group-hover:scale-110"
-                                aria-hidden
-                              />
-                            </div>
-                          </>
+                          // Try the cloud media library first; fall back to the icon plate.
+                          <MediaSlot
+                            query={{
+                              service: project.service as ServiceCategory,
+                              shot_type: ["hero", "elevation", "wide"],
+                              kind: "image",
+                              min_quality: "portfolio",
+                            }}
+                            sizes="(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw"
+                            wrapperClassName="absolute inset-0 w-full h-full"
+                            className="transition-transform duration-[1.2s] group-hover:scale-105"
+                            fallback={
+                              <>
+                                <div className="absolute inset-0 grain-overlay opacity-50 pointer-events-none" />
+                                <div className="absolute inset-0 flex items-center justify-center">
+                                  <Icon
+                                    className="h-20 w-20 text-cedar/30 group-hover:text-cedar/50 transition-all duration-700 group-hover:scale-110"
+                                    aria-hidden
+                                  />
+                                </div>
+                              </>
+                            }
+                          />
                         )}
 
                         {/* Bronze accent line */}
