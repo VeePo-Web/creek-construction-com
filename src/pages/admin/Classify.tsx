@@ -391,13 +391,47 @@ const Classify = () => {
       }
     }
 
+    // Kick off LQIP + dimension backfill for the freshly approved photos
+    // (fire-and-forget — site renders fine without it, gets prettier when it lands)
+    let backfilled = 0;
+    if (approveQueue.length > 0) {
+      try {
+        const auth = (await supabase.auth.getSession()).data.session
+          ?.access_token;
+        if (auth) {
+          const url = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/backfill-lqip`;
+          // Process in chunks of 30 to stay well under the 60-cap and keep
+          // each call under the edge function timeout.
+          for (let i = 0; i < approveQueue.length; i += 30) {
+            const slice = approveQueue.slice(i, i + 30).map((q) => q.path);
+            const res = await fetch(url, {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${auth}`,
+                apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
+              },
+              body: JSON.stringify({ paths: slice }),
+            });
+            if (res.ok) {
+              const data = await res.json();
+              backfilled += data.ok ?? 0;
+            }
+          }
+        }
+      } catch (e) {
+        console.warn("LQIP backfill failed (non-fatal)", e);
+      }
+    }
+
     setClassifying(false);
     toast({
       title: `Classified ${done}, auto-approved ${approved}`,
       description:
-        projectsCreated > 0
-          ? `Seeded ${projectsCreated} new projects on /work.`
-          : "Photos are now live on the public site.",
+        (projectsCreated > 0
+          ? `Seeded ${projectsCreated} new projects on /work. `
+          : "Photos are now live on the public site. ") +
+        (backfilled > 0 ? `LQIP generated for ${backfilled}.` : ""),
     });
     await loadAssets();
   };
