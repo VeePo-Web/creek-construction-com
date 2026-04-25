@@ -1,16 +1,27 @@
 import ScrollRevealMotion from "@/components/ScrollRevealMotion";
 import SectionHeader from "@/components/SectionHeader";
-import { Hammer, Fence, Paintbrush } from "lucide-react";
+import { Hammer, Fence, Paintbrush, type LucideIcon } from "lucide-react";
 import { useQuoteModal } from "@/components/quote/QuoteModalProvider";
 import CedarCTA from "@/components/CedarCTA";
+import { getProjectsByService, type Project } from "@/data/projects";
 
-// PLACEHOLDER PROJECTS — neutral evergreen panels until real photos are uploaded.
-// To swap in real images: replace each card body with an <img src={...} /> using
-// the same wrapper, and remove the Icon block.
+interface PortfolioCard {
+  title: string;
+  location: string;
+  description: string;
+  service: string;
+  icon: LucideIcon;
+  /** When set, this card renders as a real project photo instead of the icon placeholder. */
+  realProject?: Project;
+}
+
 const Portfolio = () => {
   const { openModal } = useQuoteModal();
 
-  const projects = [
+  // Pull the most recent featured shed project. Falls back to icon placeholder when none exists.
+  const realShed = getProjectsByService("sheds").find((p) => p.featured);
+
+  const projects: PortfolioCard[] = [
     {
       title: "Custom Cedar Deck",
       location: "Calgary NW",
@@ -19,11 +30,12 @@ const Portfolio = () => {
       icon: Hammer,
     },
     {
-      title: "Privacy Fence",
-      location: "Sherwood Park",
-      description: "Six-foot vertical wood fence on a sloped lot — straight posts, level top, gates that latch perfectly.",
-      service: "fencing",
-      icon: Fence,
+      title: realShed?.title ?? "Backyard Studio Shed",
+      location: realShed?.location ?? "Edmonton",
+      description: realShed?.summary ?? "Custom backyard structures, framed and finished to last.",
+      service: "sheds",
+      icon: Fence, // unused when realProject is set
+      realProject: realShed,
     },
     {
       title: "Full Exterior Repaint",
@@ -65,6 +77,7 @@ const Portfolio = () => {
           <div className="grid md:grid-cols-3 gap-6" role="list">
             {projects.map((project, i) => {
               const Icon = project.icon;
+              const photo = project.realProject?.hero;
               return (
                 <ScrollRevealMotion key={i} delay={i * 0.1} y={32}>
                   <article role="listitem" className="group">
@@ -76,38 +89,55 @@ const Portfolio = () => {
                     >
                       <div
                         className="relative aspect-[4/5] rounded-sm overflow-hidden grain-texture transition-all duration-700 group-hover:shadow-elevated"
-                        style={{
-                          background:
-                            "linear-gradient(135deg, hsl(150 25% 14%) 0%, hsl(150 25% 8%) 100%)",
-                        }}
+                        style={
+                          photo
+                            ? undefined
+                            : {
+                                background:
+                                  "linear-gradient(135deg, hsl(150 25% 14%) 0%, hsl(150 25% 8%) 100%)",
+                              }
+                        }
                       >
-                        <div className="absolute inset-0 grain-overlay opacity-50 pointer-events-none" />
+                        {photo ? (
+                          <img
+                            src={photo.src}
+                            alt={photo.alt}
+                            width={photo.width}
+                            height={photo.height}
+                            loading="lazy"
+                            decoding="async"
+                            sizes="(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw"
+                            className="absolute inset-0 w-full h-full object-cover transition-transform duration-[1.2s] group-hover:scale-105"
+                          />
+                        ) : (
+                          <>
+                            <div className="absolute inset-0 grain-overlay opacity-50 pointer-events-none" />
+                            <div className="absolute inset-0 flex items-center justify-center">
+                              <Icon
+                                className="h-20 w-20 text-cedar/30 group-hover:text-cedar/50 transition-all duration-700 group-hover:scale-110"
+                                aria-hidden
+                              />
+                            </div>
+                          </>
+                        )}
 
                         {/* Bronze accent line */}
                         <div
-                          className="absolute top-0 left-0 h-px transition-all duration-700 group-hover:w-full"
+                          className="absolute top-0 left-0 h-px transition-all duration-700 group-hover:w-full z-10"
                           style={{
                             width: "30%",
                             background: "linear-gradient(90deg, hsl(var(--cedar)), transparent)",
                           }}
                         />
 
-                        {/* Centered icon — placeholder for real photo */}
-                        <div className="absolute inset-0 flex items-center justify-center">
-                          <Icon
-                            className="h-20 w-20 text-cedar/30 group-hover:text-cedar/50 transition-all duration-700 group-hover:scale-110"
-                            aria-hidden
-                          />
-                        </div>
-
-                        <div className="absolute top-6 right-6 pointer-events-none">
-                          <span className="text-white/15 text-5xl md:text-6xl font-serif leading-none select-none group-hover:text-white/30 transition-all duration-700">
+                        <div className="absolute top-6 right-6 pointer-events-none z-10">
+                          <span className="text-white/30 text-5xl md:text-6xl font-serif leading-none select-none group-hover:text-white/60 transition-all duration-700 [text-shadow:0_2px_8px_rgba(0,0,0,0.4)]">
                             {String(i + 1).padStart(2, "0")}
                           </span>
                         </div>
 
-                        <div className="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-black/60 to-transparent">
-                          <p className="text-[10px] tracking-[0.2em] uppercase text-cedar/80 mb-2">
+                        <div className="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-black/70 via-black/30 to-transparent z-10">
+                          <p className="text-[10px] tracking-[0.2em] uppercase text-cedar/90 mb-2">
                             {project.location}
                           </p>
                           <h3 className="font-serif text-xl text-white">{project.title}</h3>
