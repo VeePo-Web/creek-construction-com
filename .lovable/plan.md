@@ -1,104 +1,169 @@
-# QuoteModal — General Inquiry path + UX upgrades
+# Creek Construction — World-Class Style Guide & Performance Repair
 
-## Why this matters
-Right now the modal forces every visitor down a service-selection funnel — they cannot continue Step 1 unless they pick at least one of the six services. That blocks legitimate leads: warranty questions, pricing-only enquiries, "I just want to talk", custom work that doesn't map to a tile, B2B / press / partnership requests. The fix is small surgically, but high-leverage.
+## Audit findings (why the site feels slow & clunky right now)
 
-## What stays the same
-- Database schema (`quote_requests.services` is already `text[] not null default '{}'`)
-- RLS policy (`Anyone can submit a quote request` — no change)
-- The 3-step layout, brand panel, progress bar, and overall visual system
-- Cedar / evergreen design tokens
+1. **`src/index.css` is 2,061 lines.** It still contains the deprecated dark-mode block (`.dark { ... }`), shimmer/particle/grain keyframes, and seasonal nav animations from a previous brand. Tailwind has to parse every line on every build, and the browser ships unused CSS to every visitor.
+2. **`STYLE_GUIDE.md` is the old "B&P Sauna" doc.** It references cedar-sauna ritual language, not Creek Construction. Anyone using it as a reference produces off-brand work.
+3. **No typed token modules.** Colors, type, spacing, motion, and brand voice live as raw CSS variables and Tailwind classes — no `colors.ts / typography.ts / spacing.ts / brand-identity.ts`. RoyalMechanical (the reference) has all five and a `/style-guide` page that renders them live.
+4. **`NavProgressBar.tsx` is 441 lines and runs on every route.** It tracks ~15 derived values (hearthstone, patina, sisu glow, vapour, rekka, kondenssi…) most of which are dead "ritual" features from the sauna brand.
+5. **The legacy `--cedar` token is silently re-mapped to bronze** in `index.css` (line 9-11). New developers reading `text-cedar` see "cedar" but get bronze — that's a footgun.
+6. **No motion-reduction discipline at the source.** Animations are sprinkled into class names individually instead of being declared once and referenced by name.
 
-## Steps
+## Strategy — three deliverables, one outcome
 
-### 1. Add the seventh tile: "General inquiry / Something else"
-In Step 1, render a 7th tile after the six SERVICES, visually distinct (full width on mobile, spanning the empty slot on desktop with `sm:col-span-2`). Icon: `MessageCircleQuestion`. Copy: *"Something else / General inquiry — pricing, warranty, custom work, or just questions."* Selecting it auto-deselects all service tiles (mutually exclusive); selecting any service tile auto-deselects "General inquiry". Internally tracked as the sentinel id `general` in `form.services`. Same `aria-pressed` pattern as the other tiles.
+A premium construction brand earns trust by being **quiet, precise, and fast.** We're going to:
 
-### 2. Make the modal mode-aware (Quote vs Inquiry)
-Derive `mode = form.services.includes('general') ? 'inquiry' : 'quote'`. Header copy adapts:
-- Step indicator: "Request a Quote" → "Send us a Message"
-- Step 1 heading: "What are we building?" → "How can we help?"
-- Step 2 heading: "Tell us about the project" → "Tell us a bit more (optional)"
-- Step 3 heading unchanged
-- Submit button: "Send Request" → "Send Message"
-- Success headline: "Request received." → "Message received."
+- **(A)** Codify the visual language into a single, documented source of truth (typed TS modules).
+- **(B)** Render that source of truth as a live `/style-guide` page (developer + stakeholder reference).
+- **(C)** Surgically remove dead CSS and dead JS so the site loads and feels fast.
 
-No new state — all derived from `mode`.
+No new homepage features — this step makes everything *that already exists* read as world-class.
 
-### 3. Skip the property-type field on the inquiry path
-In Step 2, when `mode === 'inquiry'`:
-- Replace "Project details" label with "How can we help?" + friendlier placeholder (*"e.g. Wondering about pricing for a 200 ft fence in Cochrane, or whether you do small repair jobs."*)
-- Hide the Property Type select (irrelevant for inquiries)
-- Keep Timeline but rename to "When do you need a reply?" with options: `["Today if possible", "Within a few days", "No rush"]`
-- Add `(optional)` next to the body label
+---
 
-When `mode === 'quote'`, behavior is unchanged.
+## A. The Token Architecture (new `src/lib/` modules)
 
-### 4. Inline validation + smart Continue/Send button states
-Today the Continue/Submit buttons disable silently. Add:
-- Subtle red-cedar `aria-invalid` ring on phone/email/address inputs once the user has interacted (per-field `touched` flag) and the value is invalid
-- One-line helper text under invalid fields ("Looks like the phone is missing 3 digits", "Hmm — that email doesn't look right")
-- Sr-only explanation on the disabled Send button ("Add your name, phone, and city to send")
-- Step 1 Continue gate: any service OR `general` selected unlocks
-- Step 3 validation surfaces in a small `role="status"` region above the footer for screen readers
+Mirror the proven RoyalMechanical pattern, adapted for Creek's evergreen + bronze palette.
 
-### 5. Sticky footer + better mobile scroll behavior
-On mobile the footer (Back / Continue) currently scrolls with content, so on a long Step 2 the action buttons sit below the fold. Change the right-pane layout so:
-- Header is sticky to the top (`sticky top-0 z-10 bg-background/95 backdrop-blur` with the existing border-b)
-- Footer is sticky to the bottom (`sticky bottom-0 z-10 bg-muted/80 backdrop-blur`, plus `pb-[env(safe-area-inset-bottom)]` for iOS)
-- Middle scrolls between them
+### `src/lib/colors.ts` — semantic color contracts
+```ts
+export const BRAND = {
+  evergreen: { hsl: '150 25% 16%', hex: '#1F3329', usage: 'Primary text, dark sections, footer' },
+  bronze:    { hsl: '28 55% 45%',  hex: '#B27340', usage: 'CTAs, accents, dividers — sparingly' },
+  cream:     { hsl: '38 30% 97%',  hex: '#FAF7F2', usage: 'Page canvas — never pure white' },
+  stone:     { hsl: '38 20% 93%',  hex: '#EDE8DF', usage: 'Alternating section bg, muted surfaces' },
+  ink:       { hsl: '150 15% 10%', hex: '#15201B', usage: 'Body text — warm near-black' },
+} as const;
 
-Desktop brand panel is untouched.
+export const SURFACE = { page, section, card, elevated, scrim } // semantic shortcuts
+export const TEXT    = { onLight: { primary, secondary, tertiary, accent }, onDark: {...} }
+export const BORDER  = { hairline, default, strong, accent } // 4 weights, no more
+export const BUTTON  = { primary, secondary, ghost, link } // each w/ default+hover+focus+disabled
+export const SHADOW  = { hairline, soft, float, dramatic } // 4 elevations
+export const DIVIDER = { hairline, accent, ornamental } // for the editorial dividers we already use
+```
+Why: every component imports from one place. Renaming a color is a one-line change.
 
-### 6. Keyboard + accessibility polish
-- Auto-focus the first interactive element on each step (Step 1 → first tile; Step 2 → details textarea; Step 3 → name input) via a `useEffect` keyed on `step`
-- `Enter` on Step 3 last input triggers Send when valid
-- `Cmd/Ctrl + Enter` from anywhere advances: Continue if not on Step 3, Send if Step 3 and valid
-- Update the `<fieldset> <legend>` per mode
-- `aria-live="polite"` on the step heading so screen readers announce step changes
-- Confirm tab order on each step
+### `src/lib/typography.ts` — fluid type scale
+Defines `HEADLINE.hero | display | section | sub`, `EYEBROW`, `BODY.lead | default | small`, `QUOTE`, `STAT`, `UI` — each as a Tailwind class string. Encodes the rules already in MEDIA_PLAYBOOK: DM Serif Display for headlines, DM Sans body, curly quotes only, balanced wrap on hero.
 
-### 7. Submit handler + edge-function tolerance
-**Client (`handleSubmit`):**
-- If `mode === 'inquiry'`, send `services: ['General inquiry']` and prefix `projectDetails` with `[General Inquiry] ` so the inbox row is easy to scan
-- Omit `propertyType` for inquiry mode
+### `src/lib/spacing.ts` — 8px grid + section rhythm
+`SECTION_PADDING` (py-32 desktop / py-20 mobile), `STRIP_PADDING`, `CONTAINER_PADDING`, `MAX_WIDTH.{prose, content, wide, full}`, `CONTENT_GAP.{tight, default, generous, sectionBreak}`. Replaces the ad-hoc `mb-12 mb-16 mb-20` scattered through components.
 
-**Server (`supabase/functions/submit-quote-request/index.ts`):**
-- Relax the validation gate from "services empty always fails" to "services empty AND projectDetails empty fails"
-- Add a `console.log` line tagging inquiries vs quotes for the existing log stream
+### `src/lib/motion.ts` — easing, duration, hover, focus, scroll-reveal
+`EASING.smooth = 'cubic-bezier(0.16, 1, 0.3, 1)'`, `DURATION.fast/normal/slow/cinematic`, plus `HOVER.cardLift | linkUnderline | imageZoom`, `FOCUS.ring`, `REDUCED_MOTION.disableTransform`. Every animation in the codebase will pull from here — and `prefers-reduced-motion` is honored at the source.
 
-No schema migration needed.
+### `src/lib/brand-identity.ts` — the editorial brain
+Documents (in TypeScript constants the code can import + the `/style-guide` page renders):
+- **Brand spine** — purpose, promise, personality (3 adjectives), audience
+- **Voice & tone** — do/don't with example phrases ("Quoted in writing." not "We send quotes!")
+- **Value proposition stack** — primary, supporting (3), proof points
+- **Verbal identity** — naming conventions, capitalization rules, curly-quote enforcement
+- **Visual identity direction** — when to use evergreen vs bronze, photography rules (link to MEDIA_PLAYBOOK)
+- **Non-negotiables** — never pure black/white; never sans-serif headlines; never cedar+evergreen on the same surface at >40% opacity each
+- **Dealbreakers** — what would invalidate the brand (e.g. emojis in body copy, gradient buttons, drop shadows on text)
+- **Guardrails** — accessibility minimums (WCAG AA, 44px touch, focus-visible:ring), performance budgets (LCP < 2.0s, CLS < 0.05, JS < 180KB gz)
 
-### 8. Success panel: secondary action + inquiry-mode copy
-Current SuccessPanel only offers "Close". Add:
-- A primary "Done" button (replaces the close link, styled as a muted button) and a secondary "Send another" link that resets `step=1`, clears `form` to `INITIAL`, and `setSuccess(false)`
-- Inquiry-mode copy: *"Message received. We'll reply within 24 hours — or call us now at {phone}."*
-- Quote-mode copy unchanged
-- Cedar check-circle illustration retained
+This file is the "Pentagram partner" reviewing every PR.
 
-### 9. Surface the General Inquiry path from outside the modal
-- `src/components/Contact.tsx` (homepage section): add a quiet secondary link below the existing "Request a Quote" CTA: *"or send a general message →"* that calls `openModal(['general'])`
-- `src/pages/Contact.tsx` (Contact route quote card): same secondary link beneath the main CTA
+---
 
-Nothing changes in the global navigation.
+## B. Live `/style-guide` route
 
-### 10. QA pass
-After the refactor, manually walk through:
-1. Quote path with 1 service → reaches Step 3 → submits → DB row has `services=['Decks']`
-2. Quote path with 3 services → submit → DB row has all 3 titles
-3. Inquiry path: select General inquiry, Continue → Step 2 has no Property Type, Timeline relabeled, body says "How can we help" → Continue → Step 3 → submit → DB row has `services=['General inquiry']` and `project_details` starts with `[General Inquiry]`
-4. Mutual exclusion: pick Decks, then click General inquiry → Decks deselects. Pick General inquiry, then click Fencing → General deselects.
-5. Inline validation: type a 3-digit phone → blur → red helper text appears. Fix to 10 digits → helper clears.
-6. Mobile (375px): footer stays visible while scrolling Step 2.
-7. Reduced motion: no progress-bar animation jank.
-8. Tab through Step 3 from name to Send — all reachable, no traps.
-9. `Cmd+Enter` on Step 3 with valid form → submits.
-10. Success panel "Send another" resets cleanly.
+A single new page at `src/pages/StyleGuide.tsx` (lazy-loaded, blocked from indexing in `robots.txt` and excluded from sitemap), with a left-rail nav and copy-to-clipboard buttons on every token. Sections, in order:
 
-## Files touched
-- `src/components/quote/QuoteModal.tsx` — primary refactor (steps 1-8)
-- `supabase/functions/submit-quote-request/index.ts` — relax validation, log tagging (step 7)
-- `src/components/Contact.tsx` — secondary CTA (step 9)
-- `src/pages/Contact.tsx` — secondary CTA (step 9)
+1. **Brand identity** — spine, voice, dealbreakers (rendered from `brand-identity.ts`)
+2. **Color** — swatches with HSL/hex, contrast ratios labeled (AA/AAA), opacity scale demo
+3. **Typography** — every scale step rendered live, with the class string copyable
+4. **Spacing** — 8px grid visual, section rhythm demo
+5. **Motion** — every easing curve animated on hover, duration sliders, reduced-motion preview
+6. **Components** — buttons (all states), cards, dividers, form inputs, CTA, eyebrow+title+signature pattern
+7. **Editorial media** — MediaSlot examples, aspect-ratio tokens, sizes presets (links to MEDIA_PLAYBOOK)
+8. **Photography rules** — what's approved, what's banned (no stock people, no harsh blue skies, etc.)
+9. **Accessibility** — focus-ring demo, touch-target sizing, color-contrast checker
+10. **Performance budgets** — current LCP/CLS/JS-size targets, with a note linking to the audit
 
-No new dependencies, no migrations, no design-token changes.
+Pattern proven on `RoyalMechanical.com` and used by Pentagram, Frog, and Wolff Olins.
+
+---
+
+## C. Performance repair (the "feels slow & clunky" fix)
+
+### C1. Surgically slim `src/index.css` (2,061 → ~700 lines target)
+- **Delete** the entire `.dark { ... }` block (light-mode-only is locked in memory)
+- **Delete** dead keyframes: `text-shimmer`, `particle-float`, seasonal nav animations, sauna "ritual" effects
+- **Delete** the `--cedar` legacy alias comment block — rename CSS var `--cedar` → `--bronze`, keep a single one-line `--cedar: var(--bronze);` for backwards compat (one-line, not 6 lines of explanation)
+- **Move** all reusable component styles (`.text-display`, `.card-glass`, `.divider-line`, `.text-minimal`, `.text-architectural`) into `@layer components` so Tailwind purges what isn't used
+- **Split** `index.css` into focused files (`base.css`, `components.css`, `editorial.css`, `motion.css`) imported in order — same pattern as FlexServices, easier to audit
+- Expected payoff: ~30 KB reduction in critical CSS, faster First Paint
+
+### C2. Slim `NavProgressBar.tsx` (441 → ~120 lines)
+The current component computes 15+ derived values that are no longer used (hearthstone, patina, sisu, vapour, rekka, kondenssi, loyly count). Strip to:
+- Scroll progress fill (the actual visible bar)
+- 5 section dots (Home/Services/Work/About/Contact)
+- Reduced-motion respect
+
+Removes ~3 effects, ~6 timers, and a `localStorage` write on scroll. Result: smoother scroll on mobile, lower JS heap, no jank.
+
+### C3. Replace the deprecated `STYLE_GUIDE.md`
+Rewrite it as a thin pointer doc:
+> "The Creek style guide is **code-first**. See `src/lib/{colors,typography,spacing,motion,brand-identity}.ts` for the contracts, and visit `/style-guide` for the rendered reference. This markdown file documents only governance and how to extend the system."
+
+Then add the governance sections that *don't* belong in code: contribution rules, deprecation policy, "before you add a token, ask…" checklist.
+
+### C4. Performance budgets enforced
+Add a comment header to each module declaring its budget (e.g. "This file ships in critical CSS — keep under 8KB"), and document the targets on the `/style-guide` performance page:
+
+| Metric | Budget | Current (estimate) |
+|---|---|---|
+| LCP (mobile, 4G) | < 2.0s | unmeasured |
+| CLS | < 0.05 | likely OK (we use aspect-ratio everywhere) |
+| Total JS (gz) | < 180 KB | likely over (NavProgressBar bloat) |
+| Critical CSS (gz) | < 14 KB | likely over (2,061-line index.css) |
+| Lighthouse perf | > 95 | unmeasured |
+
+After implementation, I'll run `browser--performance_profile` to capture real numbers and add them to the style guide.
+
+---
+
+## File-level change list
+
+**Create**
+- `src/lib/colors.ts` (~250 lines, fully typed `as const`)
+- `src/lib/typography.ts` (~150 lines)
+- `src/lib/spacing.ts` (~100 lines)
+- `src/lib/motion.ts` (~120 lines)
+- `src/lib/brand-identity.ts` (~600 lines — the editorial brain)
+- `src/pages/StyleGuide.tsx` (~900 lines — lazy loaded, not in sitemap)
+- `src/styles/base.css`, `src/styles/components.css`, `src/styles/editorial.css`, `src/styles/motion.css` (split from index.css)
+
+**Edit**
+- `src/index.css` — slim to imports + `@tailwind` + `:root` tokens only (~150 lines)
+- `src/App.tsx` — add lazy `/style-guide` route
+- `src/components/NavProgressBar.tsx` — strip dead computations (441 → ~120 lines)
+- `tailwind.config.ts` — register the new bronze/evergreen named colors cleanly, retire the `cedar = bronze` alias confusion
+- `public/robots.txt` — `Disallow: /style-guide`
+- `STYLE_GUIDE.md` — replace with pointer + governance only
+
+**Memory updates**
+- New `mem://design/token-architecture` — points to the 5 lib modules as canonical
+- Update `mem://design/aesthetic-direction` — note that color tokens now live in `src/lib/colors.ts`
+- Retire (delete) `mem://design/thermal-crescendo-pattern` — that was a sauna-brand pattern; document its successor (progressive bronze opacity for ordered lists) inside `colors.ts` under `OPACITY_SCALE`
+
+---
+
+## Risks & calls I'm making
+
+- **Renaming `--cedar` to `--bronze` in CSS** breaks nothing in the Tailwind class layer (we keep the `cedar` Tailwind color name pointing to the bronze HSL via the alias). I'm doing this because the inconsistency is actively harmful to new contributors. If you'd rather I keep the misnomer, say so and I'll leave the var name alone and only document the truth.
+- **Dropping the dark-mode CSS block** is supported by `mem://design/aesthetic-direction` ("Light mode ONLY"). I'm acting on the memory.
+- **Slimming NavProgressBar** removes the "ritual" features (warmReturn, sisuGlow, hearthstone). They're invisible on the current site already. If any of them is a feature you want to keep visible, name it and I'll preserve it.
+- **The `/style-guide` page won't be linked from public nav** — it's a developer/stakeholder reference, accessed via direct URL only, and excluded from indexing. Same approach as RoyalMechanical and FlexServices.
+
+## What this *doesn't* do (next steps after this lands)
+
+- Doesn't redesign any homepage section — that's a separate plan once the system is in place
+- Doesn't classify the 113 pending media assets — that's still a manual click in `/admin/classify`
+- Doesn't add new pages, routes, or features — pure system + cleanup work
+- Doesn't migrate every existing component to import from the new token modules in one pass — I'll convert the homepage components (Hero, Services, About, Contact, Footer, Navigation) in this step, and the rest will be migrated as we touch them
+
+When you approve, I'll start with the token modules (so every later change has a place to live), then the `/style-guide` page, then the CSS surgery and NavProgressBar slim-down — measuring perf before/after with the browser profiler.
