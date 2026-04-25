@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, lazy, Suspense } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -12,6 +12,10 @@ import Contact from "./pages/Contact";
 import NotFound from "./pages/NotFound";
 import { QuoteModalProvider } from "@/components/quote/QuoteModalProvider";
 import QuoteModal from "@/components/quote/QuoteModal";
+import RequireAdmin from "@/components/admin/RequireAdmin";
+
+const AdminLogin = lazy(() => import("./pages/admin/Login"));
+const AdminMediaLibrary = lazy(() => import("./pages/admin/MediaLibrary"));
 
 const queryClient = new QueryClient();
 
