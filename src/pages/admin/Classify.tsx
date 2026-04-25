@@ -557,19 +557,31 @@ const Classify = () => {
           <div className="flex items-center gap-2">
             <Button
               size="sm"
-              onClick={handleClassifyUnclassified}
+              variant="default"
+              onClick={handleClassifyAndAutoApprove}
               disabled={classifying || counts.pending === 0}
+              className="bg-cedar text-cedar-foreground hover:bg-cedar/90"
             >
               {classifying ? (
                 <Loader2 className="h-4 w-4 animate-spin" />
               ) : (
-                <Sparkles className="h-4 w-4" />
+                <Zap className="h-4 w-4" />
               )}
               {classifying
-                ? `Classifying ${classifyProgress.done}/${classifyProgress.total}`
-                : `Classify ${counts.pending} unclassified`}
+                ? `${classifyProgress.done}/${classifyProgress.total}`
+                : `Classify & auto-approve (${counts.pending})`}
             </Button>
-            <Button variant="outline" size="sm" onClick={() => loadAssets()}>
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={handleClassifyUnclassified}
+              disabled={classifying || counts.pending === 0}
+              title="Classify only — no auto-approve"
+            >
+              <Sparkles className="h-4 w-4" />
+              Classify only
+            </Button>
+            <Button variant="ghost" size="sm" onClick={() => loadAssets()}>
               <RefreshCw className="h-4 w-4" /> Refresh
             </Button>
           </div>
