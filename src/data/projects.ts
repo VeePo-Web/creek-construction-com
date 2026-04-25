@@ -14,6 +14,7 @@
 
 import riverbendHero from "@/assets/projects/riverbend-studio-shed/riverbend-studio-shed-01-hero.jpg";
 import riverbendElevation from "@/assets/projects/riverbend-studio-shed/riverbend-studio-shed-02-elevation.jpg";
+import riverbendInterior from "@/assets/projects/riverbend-studio-shed/riverbend-studio-shed-03-interior.jpg";
 
 export type ServiceCategory =
   | "decks"
@@ -88,6 +89,13 @@ export const PROJECTS: Project[] = [
         width: 887,
         height: 666,
         shotType: "elevation",
+      },
+      {
+        src: riverbendInterior,
+        alt: "Interior view through the framed doorway of an Edmonton backyard studio shed mid-construction, showing OSB stud walls, a table saw on its stand, and tools on the plywood threshold.",
+        width: 887,
+        height: 1578,
+        shotType: "interior",
       },
     ],
     featured: true,
