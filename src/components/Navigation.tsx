@@ -3,7 +3,7 @@ import { Link, useLocation } from "react-router-dom";
 import { Menu, X, Phone } from "lucide-react";
 import { useQuoteModal } from "@/components/quote/QuoteModalProvider";
 import { CONTACT } from "@/config/contact";
-import logo from "@/assets/creek-logo-sm.png";
+import logo from "@/assets/creek-logo-nav-sm.png";
 
 interface NavigationProps {
   /** Currently unused — kept for API compatibility with legacy pages. */

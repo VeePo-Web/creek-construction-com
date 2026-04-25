@@ -11,7 +11,7 @@ import { toast } from "sonner";
 import { CONTACT } from "@/config/contact";
 import { SERVICES } from "@/config/services";
 import { useQuoteModal } from "./QuoteModalProvider";
-import logo from "@/assets/creek-logo-sm.png";
+import logo from "@/assets/creek-logo-nav-sm.png";
 
 type Step = 1 | 2 | 3;
 
