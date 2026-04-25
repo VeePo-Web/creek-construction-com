@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useLocation, Link } from "react-router-dom";
-import { Helmet } from "react-helmet-async";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useIsAdmin } from "@/hooks/useIsAdmin";
@@ -20,6 +19,26 @@ const AdminLogin = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [submitting, setSubmitting] = useState(false);
+
+  // Set document title + noindex
+  useEffect(() => {
+    const prevTitle = document.title;
+    document.title = "Admin · Creek Construction";
+    let meta = document.querySelector('meta[name="robots"]');
+    const created = !meta;
+    if (!meta) {
+      meta = document.createElement("meta");
+      meta.setAttribute("name", "robots");
+      document.head.appendChild(meta);
+    }
+    const prevContent = meta.getAttribute("content");
+    meta.setAttribute("content", "noindex,nofollow");
+    return () => {
+      document.title = prevTitle;
+      if (created) meta?.remove();
+      else if (prevContent) meta?.setAttribute("content", prevContent);
+    };
+  }, []);
 
   // If already an admin, kick straight to the library.
   useEffect(() => {
@@ -68,12 +87,7 @@ const AdminLogin = () => {
   };
 
   return (
-    <>
-      <Helmet>
-        <title>Admin · Creek Construction</title>
-        <meta name="robots" content="noindex,nofollow" />
-      </Helmet>
-      <div className="min-h-screen bg-background flex items-center justify-center px-6">
+    <div className="min-h-screen bg-background flex items-center justify-center px-6">
         <Card className="w-full max-w-md p-8 space-y-6 border-border/60">
           <div className="space-y-2 text-center">
             <Link
