@@ -2,10 +2,13 @@ import { Star } from "lucide-react";
 import ScrollRevealMotion from "@/components/ScrollRevealMotion";
 import SectionHeader from "@/components/SectionHeader";
 import CedarCTA from "@/components/CedarCTA";
+import MediaSlot from "@/components/media/MediaSlot";
+import { MEDIA_SIZES } from "@/lib/media-sizes";
+import type { ServiceCategory } from "@/lib/api/public-media";
 
 // PLACEHOLDER TESTIMONIALS — replace with real customer quotes when available.
-// Keep the structure: { quote, name, location, type, rating } and the cards
-// will rerender automatically.
+// Keep the structure: { quote, name, location, type, service, rating } and the cards
+// will rerender automatically. `service` ties the photo thumbnail to the right work.
 const Testimonials = () => {
   const testimonials = [
     {
@@ -14,6 +17,7 @@ const Testimonials = () => {
       name: "Mark T.",
       location: "Calgary NW",
       type: "DECK",
+      service: "decks" as ServiceCategory,
       rating: 5,
     },
     {
@@ -22,6 +26,7 @@ const Testimonials = () => {
       name: "Sarah & James R.",
       location: "Sherwood Park",
       type: "FENCE",
+      service: "fencing" as ServiceCategory,
       rating: 5,
     },
     {
@@ -30,6 +35,7 @@ const Testimonials = () => {
       name: "Dave K.",
       location: "Cochrane",
       type: "PAINTING",
+      service: "painting" as ServiceCategory,
       rating: 5,
     },
   ];
