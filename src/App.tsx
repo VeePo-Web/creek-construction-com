@@ -5,15 +5,13 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import Index from "./pages/Index";
-import Work from "./pages/Work";
 import Services from "./pages/Services";
+import Work from "./pages/Work";
 import About from "./pages/About";
 import Contact from "./pages/Contact";
-import Blog from "./pages/Blog";
-import BlogPost from "./pages/BlogPost";
 import NotFound from "./pages/NotFound";
-import PageTransition from "./components/PageTransition";
-import QuickNav from "./components/QuickNav";
+import { QuoteModalProvider } from "@/components/quote/QuoteModalProvider";
+import QuoteModal from "@/components/quote/QuoteModal";
 
 const queryClient = new QueryClient();
 
@@ -31,21 +29,19 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
-        <ScrollToTop />
-        <QuickNav />
-        <PageTransition>
+        <QuoteModalProvider>
+          <ScrollToTop />
           <Routes>
             <Route path="/" element={<Index />} />
-            <Route path="/signature" element={<Work />} />
-            <Route path="/custom" element={<Services />} />
-            <Route path="/standard" element={<About />} />
-            <Route path="/resources" element={<Blog />} />
-            <Route path="/resources/:id" element={<BlogPost />} />
-            <Route path="/plan" element={<Contact />} />
+            <Route path="/services" element={<Services />} />
+            <Route path="/work" element={<Work />} />
+            <Route path="/about" element={<About />} />
+            <Route path="/contact" element={<Contact />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
-        </PageTransition>
+          <QuoteModal />
+        </QuoteModalProvider>
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>
