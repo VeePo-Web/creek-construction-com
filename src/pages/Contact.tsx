@@ -7,6 +7,7 @@ import { useDocumentTitle } from "@/hooks/useDocumentTitle";
 import { Phone, Mail, Clock, MapPin } from "lucide-react";
 import { Link } from "react-router-dom";
 import { CONTACT } from "@/config/contact";
+import { useQuoteModal } from "@/components/quote/QuoteModalProvider";
 
 const Contact = () => {
   useDocumentTitle(
