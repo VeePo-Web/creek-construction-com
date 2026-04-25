@@ -25,6 +25,7 @@ import {
   Loader2,
   RefreshCw,
   Filter,
+  Zap,
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
@@ -195,7 +196,6 @@ const Classify = () => {
       onItem: (item: ClassifyResultItem) => {
         done += 1;
         setClassifyProgress({ done, total: paths.length });
-        // Update the row in-place
         if (item.success && item.classification) {
           setAssets((prev) =>
             prev.map((a) =>
@@ -227,6 +227,179 @@ const Classify = () => {
     });
     setClassifying(false);
     toast({ title: `Classified ${done} of ${paths.length}` });
+  };
+
+  /**
+   * Power flow — classify everything pending AND auto-approve any photo
+   * the AI scored hero/portfolio quality with a real service + alt text.
+   * Anything weaker stays in `suggested` for manual review.
+   *
+   * Also auto-clusters: if the classifier returned the same project_guess
+   * for ≥3 photos, a `projects` row is upserted with featured=true and the
+   * highest-quality `hero` shot becomes hero_path.
+   */
+  const handleClassifyAndAutoApprove = async () => {
+    const paths = assets
+      .filter((a) => (a.ai_review_status ?? "pending") === "pending")
+      .map((a) => a.storage_path);
+    if (paths.length === 0) {
+      toast({ title: "Nothing to classify" });
+      return;
+    }
+    setClassifying(true);
+    setClassifyProgress({ done: 0, total: paths.length });
+
+    // Track auto-approvable items as they come in
+    const approveQueue: Array<{
+      path: string;
+      service: string;
+      shot_type: string;
+      alt: string;
+      project_slug: string | null;
+      quality: string;
+    }> = [];
+
+    let done = 0;
+    await classifyMany(paths, {
+      onItem: (item: ClassifyResultItem) => {
+        done += 1;
+        setClassifyProgress({ done, total: paths.length });
+        if (item.success && item.classification) {
+          const c = item.classification;
+          const altOk = (c.alt ?? "").trim().length >= 12;
+          const serviceOk = !!c.service && c.service !== "other";
+          const qualityOk = c.quality === "hero" || c.quality === "portfolio";
+          if (altOk && serviceOk && qualityOk) {
+            approveQueue.push({
+              path: item.path,
+              service: c.service,
+              shot_type: c.shot_type,
+              alt: c.alt,
+              project_slug: c.project_guess?.trim() || null,
+              quality: c.quality,
+            });
+          }
+          setAssets((prev) =>
+            prev.map((a) =>
+              a.storage_path === item.path
+                ? {
+                    ...a,
+                    alt: c.alt,
+                    service: c.service,
+                    shot_type: c.shot_type,
+                    project_guess: c.project_guess,
+                    ai_subject: c.subject,
+                    ai_quality: c.quality,
+                    ai_season: c.season,
+                    ai_notes: c.notes ?? "",
+                    ai_review_status: "suggested",
+                  }
+                : a,
+            ),
+          );
+        }
+      },
+      onError: (err) => {
+        toast({
+          title: "Classifier paused",
+          description: err,
+          variant: "destructive",
+        });
+      },
+    });
+
+    // Now batch-approve everything that passed the bar
+    let approved = 0;
+    let projectsCreated = 0;
+
+    if (approveQueue.length > 0) {
+      // Group by intended folder (project_slug or service)
+      const byFolder = new Map<string, typeof approveQueue>();
+      for (const item of approveQueue) {
+        const folder = item.project_slug || item.service;
+        const arr = byFolder.get(folder) ?? [];
+        arr.push(item);
+        byFolder.set(folder, arr);
+      }
+
+      for (const [folder, items] of byFolder) {
+        for (const item of items) {
+          const currentFolder = item.path.split("/")[0];
+          let finalPath = item.path;
+          if (folder !== currentFolder) {
+            const moved = await mediaLibrary.move(item.path, folder);
+            if (moved.success) finalPath = moved.newPath ?? item.path;
+          }
+          const { error } = await supabase
+            .from("media_metadata")
+            .upsert(
+              {
+                storage_path: finalPath,
+                alt: item.alt,
+                service: item.service,
+                shot_type: item.shot_type,
+                project_guess: item.project_slug,
+                project_slug: item.project_slug,
+                ai_review_status: "approved",
+              },
+              { onConflict: "storage_path" },
+            );
+          if (!error) approved++;
+          // Mutate the in-memory path so subsequent project upsert points right
+          item.path = finalPath;
+        }
+      }
+
+      // Auto-cluster projects: each slug with ≥3 approved photos becomes a project
+      const bySlug = new Map<string, typeof approveQueue>();
+      for (const item of approveQueue) {
+        if (!item.project_slug) continue;
+        const arr = bySlug.get(item.project_slug) ?? [];
+        arr.push(item);
+        bySlug.set(item.project_slug, arr);
+      }
+      for (const [slug, items] of bySlug) {
+        if (items.length < 3) continue;
+        // Pick best hero shot: prefer quality:hero AND shot_type:hero
+        const heroPick =
+          items.find((i) => i.quality === "hero" && i.shot_type === "hero") ??
+          items.find((i) => i.shot_type === "hero") ??
+          items.find((i) => i.quality === "hero") ??
+          items[0];
+        const title = slug
+          .split(/[-_]/)
+          .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+          .join(" ");
+        const { data: existing } = await supabase
+          .from("projects")
+          .select("slug")
+          .eq("slug", slug)
+          .maybeSingle();
+        if (!existing) {
+          const { error: pErr } = await supabase.from("projects").insert({
+            slug,
+            title,
+            service: items[0].service,
+            status: "complete",
+            year: new Date().getFullYear(),
+            featured: true,
+            display_order: 50,
+            hero_path: heroPick.path,
+          });
+          if (!pErr) projectsCreated++;
+        }
+      }
+    }
+
+    setClassifying(false);
+    toast({
+      title: `Classified ${done}, auto-approved ${approved}`,
+      description:
+        projectsCreated > 0
+          ? `Seeded ${projectsCreated} new projects on /work.`
+          : "Photos are now live on the public site.",
+    });
+    await loadAssets();
   };
 
   const handleApprove = async () => {
