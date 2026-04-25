@@ -14,6 +14,7 @@
 
 import riverbendHero from "@/assets/projects/riverbend-studio-shed/riverbend-studio-shed-01-hero.jpg";
 import riverbendElevation from "@/assets/projects/riverbend-studio-shed/riverbend-studio-shed-02-elevation.jpg";
+import riverbendInterior from "@/assets/projects/riverbend-studio-shed/riverbend-studio-shed-03-interior.jpg";
 
 export type ServiceCategory =
   | "decks"
