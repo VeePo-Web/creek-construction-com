@@ -117,11 +117,11 @@ Deno.serve(async (req) => {
       );
     }
 
-    console.log("[submit-quote-request] new quote request", {
-      id: data?.id,
-      services,
-      name,
-    });
+    const isInquiry = services.includes("General inquiry") || services.length === 0;
+    console.log(
+      `[submit-quote-request] ${isInquiry ? "INQUIRY" : "QUOTE"} received`,
+      { id: data?.id, services, name },
+    );
 
     return new Response(JSON.stringify({ ok: true, id: data?.id }), {
       status: 200,
