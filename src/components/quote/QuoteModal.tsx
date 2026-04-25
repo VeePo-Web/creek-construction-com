@@ -785,11 +785,8 @@ interface InputProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, "
   invalid?: boolean;
 }
 
-const Input = (() => {
-  const Comp = (
-    { id, value, onChange, invalid, className, ...rest }: InputProps,
-    ref: React.Ref<HTMLInputElement>,
-  ) => (
+const Input = forwardRef<HTMLInputElement, InputProps>(
+  ({ id, value, onChange, invalid, className, ...rest }, ref) => (
     <input
       id={id}
       ref={ref}
@@ -803,42 +800,9 @@ const Input = (() => {
           : "border-border focus:border-cedar focus:ring-cedar/30"
       } ${className ?? ""}`}
     />
-  );
-  return Object.assign(
-    (require: never) => null, // placeholder so TS sees a forwardRef below
-    {},
-  ) as never;
-})();
-
-// Replace the broken IIFE above with a real forwardRef.
-// (Keeping this comment block purely for clarity; the real component is below.)
-const InputForwardRef = ((): React.ForwardRefExoticComponent<
-  InputProps & React.RefAttributes<HTMLInputElement>
-> => {
-  const Render = (
-    { id, value, onChange, invalid, className, ...rest }: InputProps,
-    ref: React.Ref<HTMLInputElement>,
-  ) => (
-    <input
-      id={id}
-      ref={ref}
-      value={value}
-      onChange={(e) => onChange(e.target.value)}
-      aria-invalid={invalid || undefined}
-      {...rest}
-      className={`w-full rounded-sm border bg-background px-3 py-2.5 text-sm focus:outline-none focus:ring-1 transition-colors ${
-        invalid
-          ? "border-destructive/60 focus:border-destructive focus:ring-destructive/30"
-          : "border-border focus:border-cedar focus:ring-cedar/30"
-      } ${className ?? ""}`}
-    />
-  );
-  Render.displayName = "QuoteModalInput";
-  return (((props: InputProps & { ref?: React.Ref<HTMLInputElement> }) => null) as never);
-})();
-
-// ↑ The above two attempts left vestigial code; the actual implementation
-// used by Step3 is the forwardRef below. (Bundler tree-shakes the unused.)
+  ),
+);
+Input.displayName = "QuoteModalInput";
 
 const Select = ({
   id,
