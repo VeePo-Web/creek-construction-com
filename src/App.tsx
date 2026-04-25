@@ -16,6 +16,7 @@ import RequireAdmin from "@/components/admin/RequireAdmin";
 
 const AdminLogin = lazy(() => import("./pages/admin/Login"));
 const AdminMediaLibrary = lazy(() => import("./pages/admin/MediaLibrary"));
+const AdminClassify = lazy(() => import("./pages/admin/Classify"));
 
 const queryClient = new QueryClient();
 
@@ -55,6 +56,16 @@ const App = () => (
                 <Suspense fallback={<div className="min-h-screen bg-background" />}>
                   <RequireAdmin>
                     <AdminMediaLibrary />
+                  </RequireAdmin>
+                </Suspense>
+              }
+            />
+            <Route
+              path="/admin/classify"
+              element={
+                <Suspense fallback={<div className="min-h-screen bg-background" />}>
+                  <RequireAdmin>
+                    <AdminClassify />
                   </RequireAdmin>
                 </Suspense>
               }
