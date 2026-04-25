@@ -60,11 +60,14 @@ Deno.serve(async (req) => {
           .slice(0, 20)
       : [];
 
-    if (!name || !phone || !addressOrArea || services.length === 0) {
+    // Either a service must be selected OR a message body is required.
+    // (The client sends ['General inquiry'] for the inquiry path so this also
+    // passes — this gate is defensive against future client variations.)
+    if (!name || !phone || !addressOrArea || (services.length === 0 && !projectDetails)) {
       return new Response(
         JSON.stringify({
           error:
-            "Missing required fields: name, phone, addressOrArea, and at least one service.",
+            "Missing required fields: name, phone, addressOrArea, and either a service or a message.",
         }),
         {
           status: 400,
