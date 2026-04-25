@@ -58,7 +58,7 @@ async function uniqueName(
   const { data: existing } = await admin.storage
     .from(BUCKET)
     .list(folder, { limit: 1000 });
-  const names = new Set((existing ?? []).map((f) => f.name));
+  const names = new Set((existing ?? []).map((f: { name: string }) => f.name));
   while (names.has(candidate)) {
     candidate = `${base}-${n}${ext}`;
     n += 1;
