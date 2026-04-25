@@ -75,6 +75,11 @@
     --shadow-architectural: 0 25px 50px -12px hsl(150 15% 10% / 0.18);
     --shadow-elegant: 0 10px 30px -10px hsl(150 15% 10% / 0.12);
 
+    /* Floating card surface — used for stat cards over photos, project chips, etc. */
+    --surface-card: 38 30% 99%;
+    --surface-card-border: 35 15% 88%;
+    --shadow-float: 0 16px 40px -12px hsl(150 20% 10% / 0.18), 0 4px 12px -4px hsl(150 20% 10% / 0.08);
+
     /* Smooth Transitions */
     --transition-smooth: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
     --transition-fast: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);

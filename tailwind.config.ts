@@ -115,6 +115,7 @@ export default {
         elevated: "0 4px 12px -2px hsl(20 10% 12% / 0.08), 0 2px 6px -1px hsl(20 10% 12% / 0.04), 0 8px 24px -4px hsl(28 50% 52% / 0.06)",
         floating: "0 12px 40px -8px hsl(20 10% 12% / 0.12), 0 6px 20px -4px hsl(20 10% 12% / 0.08), 0 24px 64px -16px hsl(28 50% 52% / 0.08)",
         thermal: "0 0 12px hsl(28 50% 52% / 0.25), 0 0 24px hsl(28 50% 52% / 0.12), 0 4px 16px hsl(28 50% 52% / 0.08)",
+        float: "var(--shadow-float)",
       },
       transitionTimingFunction: {
         smooth: "cubic-bezier(0.16, 1, 0.3, 1)",
