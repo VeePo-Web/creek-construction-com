@@ -14,6 +14,75 @@ export type Database = {
   }
   public: {
     Tables: {
+      media_metadata: {
+        Row: {
+          alt: string | null
+          caption: string | null
+          created_at: string
+          duration_seconds: number | null
+          height: number | null
+          id: string
+          project_slug: string | null
+          shot_type: string | null
+          storage_path: string
+          taken_at: string | null
+          updated_at: string
+          width: number | null
+        }
+        Insert: {
+          alt?: string | null
+          caption?: string | null
+          created_at?: string
+          duration_seconds?: number | null
+          height?: number | null
+          id?: string
+          project_slug?: string | null
+          shot_type?: string | null
+          storage_path: string
+          taken_at?: string | null
+          updated_at?: string
+          width?: number | null
+        }
+        Update: {
+          alt?: string | null
+          caption?: string | null
+          created_at?: string
+          duration_seconds?: number | null
+          height?: number | null
+          id?: string
+          project_slug?: string | null
+          shot_type?: string | null
+          storage_path?: string
+          taken_at?: string | null
+          updated_at?: string
+          width?: number | null
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          created_at: string
+          email: string | null
+          full_name: string | null
+          id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          email?: string | null
+          full_name?: string | null
+          id: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          email?: string | null
+          full_name?: string | null
+          id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       quote_requests: {
         Row: {
           address_or_area: string
@@ -59,15 +128,42 @@ export type Database = {
         }
         Relationships: []
       }
+      user_roles: {
+        Row: {
+          created_at: string
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin" | "user"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -194,6 +290,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin", "user"],
+    },
   },
 } as const
