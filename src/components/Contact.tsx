@@ -1,6 +1,7 @@
 import ScrollRevealMotion from "@/components/ScrollRevealMotion";
 import SectionHeader from "@/components/SectionHeader";
 import CedarCTA from "@/components/CedarCTA";
+import { useQuoteModal } from "@/components/quote/QuoteModalProvider";
 import { Phone, Mail } from "lucide-react";
 import { CONTACT } from "@/config/contact";
 import MediaSlot from "@/components/media/MediaSlot";
