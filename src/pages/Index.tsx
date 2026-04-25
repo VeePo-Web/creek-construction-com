@@ -8,6 +8,8 @@ import Portfolio from "@/components/Portfolio";
 import Contact from "@/components/Contact";
 import Footer from "@/components/Footer";
 import { LocalBusinessJsonLd } from "@/components/JsonLd";
+import EditorialBleedSection from "@/components/media/EditorialBleedSection";
+import HomeProjectRecapStrip from "@/components/media/HomeProjectRecapStrip";
 
 const Index = () => {
   useDocumentTitle(
@@ -26,10 +28,29 @@ const Index = () => {
       <LocalBusinessJsonLd />
       <Navigation />
       <Hero />
+
+      {/* Editorial bleed between hero & services — only renders if a hero/wide
+          shot exists. Sets up the "show, don't tell" cadence. */}
+      <EditorialBleedSection
+        query={{
+          shot_type: ["hero", "wide"],
+          min_quality: "hero",
+          kind: "image",
+        }}
+        location="Calgary · Edmonton · Alberta"
+        year={new Date().getFullYear()}
+        subject="Recent work"
+      />
+
       <Services />
       <About />
       <Testimonials />
       <Portfolio />
+
+      {/* 4-up project recap strip — pulls four hero-quality shots from any
+          service. Renders nothing if we don't have at least 4 approved heroes. */}
+      <HomeProjectRecapStrip />
+
       <Contact />
       <Footer />
     </main>
