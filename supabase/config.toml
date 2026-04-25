@@ -8,3 +8,6 @@ verify_jwt = true
 
 [functions.classify-media]
 verify_jwt = true
+
+[functions.backfill-lqip]
+verify_jwt = true
