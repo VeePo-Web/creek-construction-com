@@ -56,7 +56,7 @@ const EditorialPicture = ({
     }
   }, []);
 
-  if (process.env.NODE_ENV !== "production" && !alt) {
+  if (import.meta.env.DEV && !alt) {
     console.warn("[EditorialPicture] missing alt for", src);
   }
 
