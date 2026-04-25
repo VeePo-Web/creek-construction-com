@@ -10,6 +10,7 @@ import { CONTACT } from "@/config/contact";
 import { useQuoteModal } from "@/components/quote/QuoteModalProvider";
 
 const Contact = () => {
+  const { openModal } = useQuoteModal();
   useDocumentTitle(
     "Contact",
     `Get in touch with Creek Construction — call ${CONTACT.phone} or email ${CONTACT.email}. Free quotes across Calgary, Edmonton, and surrounding Alberta.`,
