@@ -5,68 +5,76 @@
 @tailwind components;
 @tailwind utilities;
 
-/* B&P Sauna Design System — Warm Minimalism */
+/* Creek Construction Design System — Evergreen + Bronze */
+/* Note: the legacy `--cedar` token is intentionally re-mapped to bronze
+   so existing class usage (text-cedar, bg-cedar, etc.) seamlessly adopts
+   the new accent without a sweeping rename. */
 
 @layer base {
   :root {
     color-scheme: light;
-    /* Warm Off-White Foundation */
-    --background: 30 20% 97%;
-    --foreground: 20 10% 12%;
-    
-    --card: 30 15% 96%;
-    --card-foreground: 20 10% 12%;
-    
-    --popover: 30 20% 97%;
-    --popover-foreground: 20 10% 12%;
-    
-    /* Primary: Deep Charcoal */
-    --primary: 20 10% 12%;
-    --primary-foreground: 30 20% 97%;
-    
-    /* Secondary: Warm Light */
-    --secondary: 30 15% 93%;
-    --secondary-foreground: 20 10% 12%;
-    
-    /* Muted: Warm Gray */
-    --muted: 25 10% 93%;
-    --muted-foreground: 25 8% 45%;
-    
-    /* Accent: Cedar Amber */
-    --accent: 28 50% 52%;
-    --accent-foreground: 30 20% 97%;
-    
-    /* Cedar token for CTAs and highlights */
-    --cedar: 28 50% 52%;
-    --cedar-foreground: 30 20% 97%;
-    --cedar-hover: 28 50% 45%;
+    /* Warm Cream Foundation */
+    --background: 38 30% 97%;
+    --foreground: 150 15% 10%;
+
+    --card: 38 25% 96%;
+    --card-foreground: 150 15% 10%;
+
+    --popover: 38 30% 97%;
+    --popover-foreground: 150 15% 10%;
+
+    /* Primary: Deep Evergreen */
+    --primary: 150 25% 16%;
+    --primary-foreground: 38 30% 97%;
+
+    /* Secondary: Warm Stone */
+    --secondary: 38 20% 93%;
+    --secondary-foreground: 150 25% 16%;
+
+    /* Muted: Warm Gray with green undertone */
+    --muted: 35 12% 92%;
+    --muted-foreground: 150 8% 38%;
+
+    /* Accent: Bronze (was Cedar Amber) */
+    --accent: 28 55% 45%;
+    --accent-foreground: 38 30% 97%;
+
+    /* Bronze token — kept under the legacy `cedar` name to avoid a sweeping
+       rename across the design system. All `text-cedar` etc. usage is now bronze. */
+    --cedar: 28 55% 45%;
+    --cedar-foreground: 38 30% 97%;
+    --cedar-hover: 28 60% 38%;
+
+    /* Evergreen token — explicit name for places that want the deep green */
+    --evergreen: 150 25% 16%;
+    --evergreen-foreground: 38 30% 97%;
     
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 100%;
-    
-    --border: 25 12% 88%;
-    --input: 25 10% 93%;
-    --ring: 28 50% 52%;
+
+    --border: 35 15% 86%;
+    --input: 35 12% 92%;
+    --ring: 28 55% 45%;
 
     --radius: 0.5rem;
 
-    --sidebar-background: 30 15% 96%;
-    --sidebar-foreground: 20 10% 20%;
-    --sidebar-primary: 20 10% 12%;
-    --sidebar-primary-foreground: 30 20% 97%;
-    --sidebar-accent: 25 10% 93%;
-    --sidebar-accent-foreground: 20 10% 12%;
-    --sidebar-border: 25 12% 88%;
-    --sidebar-ring: 28 50% 52%;
-    
+    --sidebar-background: 38 25% 96%;
+    --sidebar-foreground: 150 15% 18%;
+    --sidebar-primary: 150 25% 16%;
+    --sidebar-primary-foreground: 38 30% 97%;
+    --sidebar-accent: 35 12% 92%;
+    --sidebar-accent-foreground: 150 25% 16%;
+    --sidebar-border: 35 15% 86%;
+    --sidebar-ring: 28 55% 45%;
+
     /* Warm Gradients */
-    --gradient-hero: linear-gradient(135deg, hsl(20 10% 8% / 0.85), hsl(20 10% 8% / 0.4));
-    --gradient-overlay: linear-gradient(180deg, hsl(20 10% 8% / 0.7), hsl(20 10% 8% / 0.2));
-    
+    --gradient-hero: linear-gradient(135deg, hsl(150 25% 8% / 0.9), hsl(150 25% 8% / 0.5));
+    --gradient-overlay: linear-gradient(180deg, hsl(150 25% 8% / 0.75), hsl(150 25% 8% / 0.25));
+
     /* Elegant Shadows */
-    --shadow-architectural: 0 25px 50px -12px hsl(20 10% 12% / 0.15);
-    --shadow-elegant: 0 10px 30px -10px hsl(20 10% 12% / 0.1);
-    
+    --shadow-architectural: 0 25px 50px -12px hsl(150 15% 10% / 0.18);
+    --shadow-elegant: 0 10px 30px -10px hsl(150 15% 10% / 0.12);
+
     /* Smooth Transitions */
     --transition-smooth: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
     --transition-fast: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
