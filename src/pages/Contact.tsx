@@ -7,8 +7,10 @@ import { useDocumentTitle } from "@/hooks/useDocumentTitle";
 import { Phone, Mail, Clock, MapPin } from "lucide-react";
 import { Link } from "react-router-dom";
 import { CONTACT } from "@/config/contact";
+import { useQuoteModal } from "@/components/quote/QuoteModalProvider";
 
 const Contact = () => {
+  const { openModal } = useQuoteModal();
   useDocumentTitle(
     "Contact",
     `Get in touch with Creek Construction — call ${CONTACT.phone} or email ${CONTACT.email}. Free quotes across Calgary, Edmonton, and surrounding Alberta.`,
@@ -148,7 +150,17 @@ const Contact = () => {
                     <li className="flex gap-3"><span className="text-cedar">·</span>Clear scope and price in writing</li>
                   </ul>
 
-                  <CedarCTA>Request a Quote</CedarCTA>
+                  <div className="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6">
+                    <CedarCTA>Request a Quote</CedarCTA>
+                    <button
+                      type="button"
+                      onClick={() => openModal(["general"])}
+                      className="text-[11px] tracking-[0.18em] uppercase text-evergreen-foreground/70 hover:text-cedar transition-colors duration-500 inline-flex items-center gap-2 min-h-[44px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cedar focus-visible:ring-offset-2 rounded-sm px-1"
+                    >
+                      or send a general message
+                      <span className="inline-block w-4 h-px bg-cedar/60" aria-hidden />
+                    </button>
+                  </div>
                 </div>
               </div>
             </ScrollRevealMotion>
