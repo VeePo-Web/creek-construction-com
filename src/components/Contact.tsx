@@ -8,6 +8,7 @@ import MediaSlot from "@/components/media/MediaSlot";
 import { MEDIA_SIZES } from "@/lib/media-sizes";
 
 const Contact = () => {
+  const { openModal } = useQuoteModal();
   return (
     <section
       id="section-contact"
