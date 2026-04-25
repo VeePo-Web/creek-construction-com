@@ -119,6 +119,17 @@ export default {
       transitionTimingFunction: {
         smooth: "cubic-bezier(0.16, 1, 0.3, 1)",
       },
+      // Semantic aspect ratios — every editorial slot maps to one of these.
+      // Use as `aspect-hero`, `aspect-bleed`, etc. on the wrapper, never the image.
+      aspectRatio: {
+        hero: "16 / 9",
+        bleed: "21 / 9",
+        editorial: "4 / 5",
+        portrait: "3 / 4",
+        square: "1 / 1",
+        detail: "4 / 3",
+        cinema: "2.39 / 1",
+      },
     },
   },
   plugins: [require("tailwindcss-animate")],
