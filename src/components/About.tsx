@@ -2,6 +2,8 @@ import ScrollRevealMotion from "@/components/ScrollRevealMotion";
 import SectionHeader from "@/components/SectionHeader";
 import CedarCTA from "@/components/CedarCTA";
 import { useCountUp } from "@/hooks/useCountUp";
+import MediaSlot from "@/components/media/MediaSlot";
+import { MEDIA_SIZES } from "@/lib/media-sizes";
 
 const StatCard = ({
   value,
@@ -92,29 +94,67 @@ const About = () => {
                 </div>
               </ScrollRevealMotion>
 
-              {/* Editorial pull quote — replaces the sauna interior photo placeholder */}
+              {/* Editorial photo + pull quote — portrait of the work, then a brand promise */}
               <ScrollRevealMotion delay={0.3} y={16}>
-                <div
-                  className="mt-12 relative px-8 md:px-10 py-10 rounded-sm grain-texture overflow-hidden"
-                  style={{
-                    background:
-                      "linear-gradient(135deg, hsl(var(--evergreen)) 0%, hsl(150 25% 12%) 100%)",
-                    borderLeft: "3px solid hsl(var(--cedar))",
-                  }}
-                >
+                <div className="mt-12 grid sm:grid-cols-5 gap-6 items-stretch">
+                  {/* Portrait photo (or evergreen plate fallback) */}
+                  <div className="sm:col-span-2">
+                    <MediaSlot
+                      query={{
+                        shot_type: ["interior", "process", "detail"],
+                        kind: "image",
+                        min_quality: "portfolio",
+                      }}
+                      sizes={MEDIA_SIZES.PORTRAIT_HALF}
+                      wrapperClassName="aspect-portrait w-full rounded-sm"
+                      cedarHover
+                      fallback={
+                        <div
+                          className="aspect-portrait w-full rounded-sm relative overflow-hidden"
+                          style={{
+                            background:
+                              "linear-gradient(135deg, hsl(150 25% 14%) 0%, hsl(150 30% 8%) 100%)",
+                          }}
+                        >
+                          <div className="absolute inset-0 grain-overlay opacity-50 pointer-events-none" />
+                          <div
+                            className="absolute inset-0"
+                            style={{
+                              background:
+                                "radial-gradient(ellipse at 30% 70%, hsl(28 55% 45% / 0.18) 0%, transparent 60%)",
+                            }}
+                          />
+                          <p className="absolute bottom-5 left-5 right-5 text-[10px] tracking-[0.25em] uppercase text-cedar/60">
+                            On the boards
+                          </p>
+                        </div>
+                      }
+                    />
+                  </div>
+
+                  {/* Brand promise slab */}
                   <div
-                    className="absolute inset-0 grain-overlay opacity-40 pointer-events-none"
-                    aria-hidden
-                  />
-                  <p className="text-[10px] tracking-[0.25em] uppercase text-cedar/80 mb-4 relative z-10">
-                    Brand promise
-                  </p>
-                  <p className="font-serif text-xl md:text-2xl text-evergreen-foreground/90 leading-snug relative z-10">
-                    "We don't market gimmicks. We market the work itself."
-                  </p>
-                  <p className="text-xs tracking-wide text-evergreen-foreground/40 mt-6 relative z-10">
-                    — Creek Construction
-                  </p>
+                    className="sm:col-span-3 relative px-6 md:px-8 py-8 md:py-10 rounded-sm grain-texture overflow-hidden"
+                    style={{
+                      background:
+                        "linear-gradient(135deg, hsl(var(--evergreen)) 0%, hsl(150 25% 12%) 100%)",
+                      borderLeft: "3px solid hsl(var(--cedar))",
+                    }}
+                  >
+                    <div
+                      className="absolute inset-0 grain-overlay opacity-40 pointer-events-none"
+                      aria-hidden
+                    />
+                    <p className="text-[10px] tracking-[0.25em] uppercase text-cedar/80 mb-4 relative z-10">
+                      Brand promise
+                    </p>
+                    <p className="font-serif text-lg md:text-xl text-evergreen-foreground/90 leading-snug relative z-10">
+                      "We don't market gimmicks. We market the work itself."
+                    </p>
+                    <p className="text-xs tracking-wide text-evergreen-foreground/40 mt-6 relative z-10">
+                      — Creek Construction
+                    </p>
+                  </div>
                 </div>
               </ScrollRevealMotion>
             </div>
