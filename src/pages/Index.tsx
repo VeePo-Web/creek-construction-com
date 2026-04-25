@@ -1,24 +1,28 @@
 import Navigation from "@/components/Navigation";
 import { useDocumentTitle } from "@/hooks/useDocumentTitle";
 import Hero from "@/components/Hero";
+import TrustStrip from "@/components/TrustStrip";
 import Services from "@/components/Services";
 import About from "@/components/About";
 import Testimonials from "@/components/Testimonials";
 import Portfolio from "@/components/Portfolio";
+import FeaturedProjects from "@/components/FeaturedProjects";
 import Contact from "@/components/Contact";
 import Footer from "@/components/Footer";
 import { LocalBusinessJsonLd } from "@/components/JsonLd";
 import EditorialBleedSection from "@/components/media/EditorialBleedSection";
-import HomeProjectRecapStrip from "@/components/media/HomeProjectRecapStrip";
 
 const Index = () => {
   useDocumentTitle(
     "Excellence in the Work",
-    "Creek Construction — residential exterior construction across Calgary, Edmonton, and surrounding Alberta. Decks, fencing, sheds, painting, siding. Free quotes.",
+    "Creek Construction — WCB-covered, fully insured exterior contractor in Calgary, Edmonton & Alberta. Decks, fencing, sheds, painting & siding. Free written quotes.",
   );
 
   return (
-    <main className="min-h-screen" aria-label="Creek Construction — residential exterior construction in Alberta">
+    <main
+      className="min-h-screen"
+      aria-label="Creek Construction — residential exterior construction in Alberta"
+    >
       <a
         href="#section-services"
         className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[100] focus:bg-cedar focus:text-cedar-foreground focus:px-6 focus:py-3 focus:text-minimal focus:rounded-sm focus:shadow-lg"
@@ -27,10 +31,15 @@ const Index = () => {
       </a>
       <LocalBusinessJsonLd />
       <Navigation />
+
       <Hero />
 
-      {/* Editorial bleed between hero & services — only renders if a hero/wide
-          shot exists. Sets up the "show, don't tell" cadence. */}
+      {/* Slim trust band — sits directly under the hero, replaces the previous
+          jarring section gradient with a calm full-width signal row. */}
+      <TrustStrip />
+
+      {/* One editorial bleed between trust and services. Discipline: never two
+          bleeds in a row. Renders nothing if no hero/wide shot is approved. */}
       <EditorialBleedSection
         query={{
           shot_type: ["hero", "wide"],
@@ -45,12 +54,12 @@ const Index = () => {
       <Services />
       <About />
       <Testimonials />
+
+      {/* Featured projects gallery — pulls from the `projects` table.
+          Renders nothing until at least 3 featured projects exist. */}
+      <FeaturedProjects />
+
       <Portfolio />
-
-      {/* 4-up project recap strip — pulls four hero-quality shots from any
-          service. Renders nothing if we don't have at least 4 approved heroes. */}
-      <HomeProjectRecapStrip />
-
       <Contact />
       <Footer />
     </main>

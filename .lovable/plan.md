@@ -1,224 +1,202 @@
+# Creek Construction — Homepage Refinement Plan
 
-# Editorial Saturation Plan — Filling the Site with Real Photography & Video
+## Read me first — what changed in scope
 
-## The honest diagnosis
+You asked for an "award-winning architect landing page" with a black/white palette and provided images. After we talked it through:
 
-I just queried the database. Here's what's actually happening right now:
+- **No rebrand.** Creek Construction stays. Same services (decks, fencing, sheds, painting, siding, pergolas), same Calgary/Edmonton/Alberta scope, same crew voice.
+- **No black/white.** We keep the warm cedar (bronze) + deep evergreen + warm cream system that's already locked into the design memory.
+- **Reference**: FlexServices.info — clean serif headline, hero photo card with a floating stat card, big trust numbers, professional crew imagery, calm conversion-first rhythm. We borrow the *clarity* and *photo-forwardness*, not the blue palette.
+- **Images**: All 113 uploaded files are still `pending` in the database. Step 1 of this plan is running the existing auto-classifier — nothing on the live page can use real photos until that's done.
 
-| Status | Count |
-|---|---|
-| `pending` (no AI metadata, no `service`, no `shot_type`) | **113** |
-| `suggested` (classified, awaiting your review) | 0 |
-| `approved` (publicly visible to the site) | **0** |
-| Rows in `projects` table | **0** |
-
-The infrastructure I shipped last loop is excellent — `<MediaSlot>`, `<EditorialPicture>`, `<AmbientVideoBleed>`, the quality-weighted query layer — but it's all **starving for data**. Every `<MediaSlot>` on the live site is silently falling back to its placeholder because there are zero approved photos to pull. That's why the site doesn't *look* filled with your photography even though the pipes are connected.
-
-There are also only **two** `<MediaSlot>` instances wired right now (Hero video bleed + Portfolio service cards). A truly "filled" editorial site needs **20–30 slots** distributed across Home, Services, Work, About, and per-project pages — sequenced like a magazine, not sprinkled like a Pinterest board.
-
-This plan fixes both problems in one pass.
+The current homepage is already strong (it has the Editorial Media System, slot-based image fetching, ambient bleeds, recap strip). This plan **refines and saturates** it to FlexServices polish, it doesn't rebuild from scratch.
 
 ---
 
-## The three-filter test for every decision below
+## Phase 1 — Saturate the media library (prerequisite, ~3 min)
 
-1. **Elevate the human experience** — A visitor on a phone in Cochrane should *feel* the craft before they read a single word. Photos must load instantly (LQIP blur-up, no spinners), respect `prefers-reduced-motion`, and never break layout.
-2. **Embody brand truth with excellence** — These are *your* projects, not stock. Every image must carry a provenance line, fit a deliberate aspect ratio, and live inside the cedar+evergreen system. No exceptions, no "good enough."
-3. **Innovate responsibly for impact** — Each photo must serve a job: prove credibility, anchor a service, build trust, or convert. We measure the result (LCP, CLS, scroll depth, quote-form starts), not the prettiness alone.
+Without this, every photo slot on the page falls back to a gradient.
 
----
+**1.1 Auto-classify all 113 pending files.**
+Run the existing `classify-media` edge function via the `/admin/classify` "Classify & auto-approve" button on every pending row. The function (already deployed) uses Gemini vision to assign:
+- `service` (decks / fencing / sheds / painting / siding / pergolas)
+- `shot_type` (hero / wide / detail / process / portrait / before-after)
+- `ai_quality` (hero / portfolio / supporting / context)
+- `project_guess` (groups photos by build → seeds the `projects` table when ≥3 cluster)
+- `alt` text + `lqip` placeholder + dimensions
 
-## Phase 1 — Run the classifier & auto-seed projects (foundation)
+High-confidence rows auto-promote to `approved` and physically move into `service/` or `project/` folders in storage. Anything ambiguous lands in `suggested` — visible in `/admin/classify`, one click to publish.
 
-**Why first:** Without approved metadata, every other phase is invisible. This unblocks the entire site.
+**1.2 Backfill LQIP + dimensions** for any approved-but-incomplete rows via the `backfill-lqip` edge function (also already deployed). Required so every `<EditorialPicture>` renders with zero CLS and a blur-up.
 
-### 1.1 Run the AI classifier on all 113 files
-- I'll add a one-shot trigger so I can kick off `classifyMany()` programmatically (current flow requires you to be on `/admin/classify` and click a button). I'll add a "**Classify & auto-approve high-confidence**" button to that page that:
-  - Runs the Gemini classifier on all `pending` files (~$0.55 total at $0.005/photo).
-  - Auto-approves anything the AI scores `quality: portfolio` or `hero` *and* assigns a `service` *and* an alt text — these are safe.
-  - Leaves `quality: reference`, anything missing fields, and all `.MOV` videos in **`suggested`** state for your manual review (a much smaller pile, maybe 15–25 items).
-- This means in ~3 minutes you go from 0 approved → ~80–95 approved, with a focused review queue for the rest.
-
-### 1.2 Detect & cluster project groups automatically
-- The classifier already returns `project_guess`. I'll add a **clustering pass** that groups consecutive `IMG_xxxx` filenames sharing a `project_guess` into a candidate project, then upserts a row in the `projects` table with `featured: true` if the group has ≥3 photos including a `hero` shot.
-- Result: 4–8 real projects appear in `/work` automatically, named (e.g.) "Bridgeland Cedar Deck", "Sherwood Park Privacy Fence" — you rename inline if desired.
-
-### 1.3 Promote per-project hero
-- For each project, the highest-quality `shot_type: hero` photo becomes `projects.hero_path`.
-- The single best video clip per project (if any) becomes `projects.video_path` for the per-project page bleed.
-
-### 1.4 Bridge to public site
-- Already wired in `Classify.tsx`'s `handleApprove` — verified during audit. Approving a photo with a `project_slug` upserts a `projects` row. Phase 1.2's auto-cluster uses the same path, so nothing custom is needed.
+**1.3 Smoke test the data layer.**
+Confirm `useApprovedMedia({ service: 'decks', shot_type: 'hero' })` returns at least one row before Phase 3 starts. If a service ends up with zero approved hero shots, log it — the slot will use the existing gradient fallback (still beautiful, just not ideal).
 
 ---
 
-## Phase 2 — The Editorial Slot Map (where photos go)
+## Phase 2 — Design tokens (small, surgical)
 
-This is the actual *design plan* for media distribution. Every slot has a job, an aspect ratio, a query, and a fallback. No photo appears "just because we have one."
+We're not changing the palette. We're *extending* it for two new patterns FlexServices uses well.
 
-### 2.1 Home (`/`) — the storytelling spine
-Sequenced as a thermal crescendo: cool gradient → first photo → quiet copy → richer photo → CTA.
-
-| # | Section | Slot | Aspect | Query | Fallback |
-|---|---|---|---|---|---|
-| 1 | Hero (existing) | Right-side ambient video bleed | Free (right 55%) | `kind: video, min_quality: portfolio` | Pure evergreen gradient (current) |
-| 2 | **NEW between Hero & Services** | Full-bleed photo divider w/ provenance caption | 21:9 | `shot_type: wide \| hero, min_quality: hero` | Skip (return null) |
-| 3 | Services (existing block) | **NEW** small photo chip per service card (decks/fencing/painting) | 4:3 | `service: <s>, shot_type: detail \| elevation` | Lucide icon (current) |
-| 4 | About preview (existing) | **NEW** portrait-oriented "process" photo to the right of the copy | 3:4 | `shot_type: process` | Cedar gradient panel |
-| 5 | Testimonials (existing) | **NEW** quiet desaturated background bleed | 16:9 cover | `shot_type: texture \| process` | Current grain texture |
-| 6 | Portfolio (existing 3-card) | Real photo per card (already wired) | 4:5 | per-service hero | Icon plate (current) |
-| 7 | **NEW between Portfolio & Contact** | "Project recap" 4-up strip pulled from any 4 hero shots | 1:1 each | `shot_type: hero, min_quality: hero, limit: 4` | Skip section entirely |
-| 8 | Contact (existing) | **NEW** subtle texture bleed in the right column | 4:5 | `shot_type: texture` | Current evergreen panel |
-
-That's **5 new image slots + 1 new strip + 1 enhanced video** on the home page alone. Every one degrades gracefully.
-
-### 2.2 Services (`/services`) — proof per discipline
-Currently zero photos. Becomes a portfolio-first page.
-
-- **Hero**: keep the evergreen gradient hero, but add an **ambient bleed at the bottom** that fades into the first service block — pulls a `wide` shot of any service.
-- **Per-service section** (we'll restructure the SERVICES list rendering): each service gets a **2-column block** — copy on the left, a 3:4 portrait photo on the right pulled by `service: <s>, shot_type: hero`. If only smaller shots exist, fall back to a **3-thumbnail strip** (`detail` shots). If nothing exists, fall back to the current accordion-only view.
-- **Between sections**: 21:9 cinematic divider every 2 services (`<ImageDivider>` style) using `texture` or `process` shots — gives the page breathing rhythm.
-- **FAQ section**: precede with a quiet `21:9` desaturated bleed. Optional — only renders if a portfolio-grade photo is approved.
-
-That adds **6 service-block photos + 2–3 dividers** = ~9 new slots on `/services`.
-
-### 2.3 Work (`/work`) — the gallery
-Currently shows hardcoded `PROJECTS` from `src/data/projects.ts` (which is empty of new entries) plus icon placeholders. Rebuild around the DB:
-
-- **Replace `PROJECTS` import with `useProjects({ featured: true })`** — pulls live from the new auto-seeded projects.
-- For each project: render a **`<ProjectGallery>`** sourced from `useApprovedMedia({ project_slug, limit: 12 })`, sorted hero → wide → elevation → detail → process. The component already adapts beautifully to 1/2/3/4+ photos.
-- **Between projects**: a 21:9 **video bleed** if the project has one, otherwise a `texture` photo divider with the project's location stamped over it.
-- **Below real projects**: keep the icon placeholder grid for service categories with zero photos yet — but reduce its visual weight (smaller, monochrome) so it doesn't compete.
-- **Sticky project nav** on desktop (left rail): jump to each project, fades in after scrolling past the hero.
-
-### 2.4 About (`/about`) — humanize the crew
-Currently zero photography. Becomes the most personal page.
-
-- **Hero**: replace the gradient with a **wide `process` shot** if any are approved (hands working, framing, sawdust) — `shot_type: process, min_quality: portfolio`. Falls back to current evergreen gradient.
-- **"Who we are" section**: 2-column with a `process` portrait on the left.
-- **"The Process" 5-step list**: each step gets a **small square photo** (1:1, 80×80 → 200×200 responsive) — pull `process` shots, fall back to a numbered cedar circle (current).
-- **Stats row**: precede with a 21:9 wide shot — site-with-finished-deck establishes scale.
-- **CTA section**: small `texture` strip behind the CTA for warmth.
-
-That's ~7 new slots on `/about`.
-
-### 2.5 NEW per-project pages (`/work/:slug`)
-Each auto-seeded project gets a deep-link-shareable case study:
-- Editorial hero: full-bleed hero photo (or video bleed if `video_path` exists), title overlay.
-- Body: location, year, service chips, summary, and a `<ProjectGallery>` with all photos for that slug (typically 6–15 shots from one job).
-- Below gallery: "Want one like this?" CTA → opens quote modal pre-filled with the matching service.
-- Footer breadcrumb back to `/work`.
-
-This unlocks SEO long-tail (e.g. "Calgary cedar deck builder Bridgeland") and gives you shareable URLs.
-
----
-
-## Phase 3 — Format Rules (the contract every photo must obey)
-
-These get codified into an updated `MEDIA_PLAYBOOK.md` and enforced by the components themselves (warnings in dev, fallbacks in prod).
-
-### 3.1 The Image Laws (extends existing 10)
-Adding 6 new ones specific to this saturation pass:
-
-11. **Aspect ratio is sacred.** Every slot has a fixed aspect ratio set on the *wrapper*, never the image. iPhone screenshots get auto-cropped via `object-cover` — never letterboxed.
-12. **Max 1 hero/page.** Only one image per page may have `priority={true}`. The above-the-fold image. Everything else lazy-loads.
-13. **Provenance always.** Every standalone photo block (not strips, not chips) gets a `<ProvenanceCaption>` underneath: `"01 · Calgary NW · Summer 2026 · Cedar deck"`. Hover-revealed at 60% opacity.
-14. **No more than 1 active video per viewport.** Already enforced by `IntersectionObserver` in `<AmbientVideoBleed>`.
-15. **Min spacing rule.** Two media blocks must be separated by at least one copy block, or by an intentional divider. Never two photos touching.
-16. **Caption opacity ladder.** Image captions use cedar/60 → cedar/40 → cedar/20 in the thermal-crescendo pattern across a sequence of 3+ photos.
-
-### 3.2 The Video Laws (existing 5 stand)
-No changes — they're correct. We'll just *use* them more.
-
-### 3.3 Aspect-ratio token system
-Add to `tailwind.config.ts`:
+**2.1 Add a "card surface" token** — for the floating stat card, project cards, and award chips that sit *over* photos. Off-white with a 1px hairline border and a soft shadow. Lives in `index.css` as:
 ```
-aspectRatio: {
-  'hero': '16 / 9',     // page heroes
-  'bleed': '21 / 9',    // dividers between sections
-  'editorial': '4 / 5', // portfolio cards (current)
-  'portrait': '3 / 4',  // about/services side photos
-  'square': '1 / 1',    // strips & process steps
-  'detail': '4 / 3',    // service-card chips
-}
+--surface-card: 38 30% 99%;
+--surface-card-border: 35 15% 88%;
+--shadow-float: 0 16px 40px -12px hsl(150 20% 10% / 0.18);
 ```
-Now every slot uses semantic tokens, not magic numbers.
 
-### 3.4 Sizes-attribute presets
-Add to `src/lib/media-sizes.ts` — eight named presets so we never hand-write `sizes` strings again. (`HERO`, `BLEED_FULL`, `CARD_THIRD`, `CARD_HALF`, `STRIP_QUARTER`, `CHIP`, `PORTRAIT_HALF`, `THUMB`.) This is what world-class agencies do — design tokens for image delivery hints.
+**2.2 Add `aspect-photo-portrait`** (4/5) and `aspect-photo-card` (3/4) to `tailwind.config.ts` — both already nearly-there, just not registered semantically. Used by the new featured-projects grid.
 
----
+**2.3 Add a "trust strip" rhythm class** — a thin band that sits between sections (cream → muted → cream) with an evergreen hairline. Replaces a couple of jarring gradient transitions on the current page.
 
-## Phase 4 — Performance & SEO hardening
-
-### 4.1 LQIP backfill on approve
-When you approve a photo in `/admin/classify`, the edge function will fetch the image, generate a 16×16 base64 LQIP, store dimensions, and write both into `media_metadata.lqip` + `width` + `height`. Means **zero CLS** and **instant blur-up** site-wide. Currently those fields are null, which is why the blur step is being skipped.
-
-### 4.2 Image sitemap
-New edge function `image-sitemap` returns an `image-sitemap.xml` listing every approved photo with caption + project context. Linked from `robots.txt` so Google indexes the photography for image search.
-
-### 4.3 Per-project OG cards
-Edge function `og-image` generates a 1200×630 social card per project at request time, composing the hero photo + project title + Creek logo. Wired into `<JsonLd>` and `<meta property="og:image">` for `/work/:slug` routes.
-
-### 4.4 Preload the LCP
-On Home, when the new full-bleed photo divider (slot #2) is identified as the LCP candidate, inject `<link rel="preload" as="image">` in the document head with the right responsive `imagesrcset`. Drops LCP by 200–500ms.
-
-### 4.5 Save-Data + reduced-motion compliance
-Already enforced for video. Extend to images: when `Save-Data: on`, swap full photos for LQIP-only renders on below-fold slots. Worldclass agencies (especially in regions with patchy mobile data) do this.
-
-### 4.6 Analytics events
-Lightweight `data-media-slot="home/hero-bleed"` attributes on every `<MediaSlot>`. Easy to wire to GA4 / Plausible later for which photos drive scroll depth.
+No new colors. No black/white. No new fonts.
 
 ---
 
-## Phase 5 — The motion & interaction layer
+## Phase 3 — Section-by-section refinement
 
-Restraint, not razzle-dazzle. Three rules:
+Each section is an *upgrade* of what exists, not a replacement. I'll keep section IDs (`section-hero`, `section-services`, etc.) so anchor links and the nav progress bar keep working.
 
-1. **Photos drift, never bounce.** A 1.5% scale on hover over 700ms with `cubic-bezier(0.25, 0.1, 0.25, 1)`. Already in `EditorialPicture`'s `cedarHover`. Default ON for portfolio cards & project galleries; OFF for ambient bleeds (which already have video motion).
-2. **Captions reveal on intent.** Provenance captions translate up 8px + fade 0→100% on hover/focus. Tab-key reachable for accessibility.
-3. **Section transitions use the photos as anchors.** When a photo bleed enters viewport, the *next* copy block triggers its `<ScrollRevealMotion>` with a 200ms delay — chaining the eye downward.
+### 3.1 Hero (`src/components/Hero.tsx`)
 
-All of the above respects `prefers-reduced-motion: reduce` (skips animation entirely, photos render at final state).
+Today: evergreen gradient + radial glow + an ambient video slot in the right 55%. Type sits on the left.
+
+**Upgrade**:
+- Keep the evergreen background and the silent-video bleed (it works).
+- **Replace the hard right-edge video crop with a FlexServices-style "photo card on the right"**: a rounded `aspect-[4/5]` card that holds the hero photo or video, with **a floating stat card overlapping its bottom-left corner** showing "07 Years on tools · 200+ Builds · Calgary + Edmonton". Card uses the new `--surface-card` token.
+- The hero photo is pulled via `<MediaSlot query={{ shot_type: 'hero', min_quality: 'hero' }} priority />`. If no hero is approved yet, the existing evergreen gradient still fills the card.
+- Tighten the headline: keep "Excellence in the Work." but drop the italic "Pride in every detail." sub-line into a smaller eyebrow position. Replace with a single sub-headline: "Decks, fencing, sheds, painting & siding — built to last across Alberta."
+- CTA row stays (`Request a Quote` + `or call …`), but I'll add a **small trust row above the CTA**: three thin chips ("WCB covered · Fully insured · Locally owned") to mirror FlexServices' trust band.
+- Mobile: stat card collapses to a single inline row beneath the photo. Photo height capped to 60vh on phones.
+
+### 3.2 NEW — Awards / Trust strip
+
+A slim full-width band immediately under the hero. **Not "awards" in the architect sense** — Creek doesn't have AIA awards. Instead:
+- Section label: "TRUSTED ACROSS ALBERTA"
+- Five-column row of small marks: `WCB Covered`, `Fully Insured`, `Google · 5.0★`, `Locally Owned`, `Free Estimates`. Each rendered as a typographic mark (lucide icon + label, monochrome cedar-on-cream), not a logo lockup we don't have rights to.
+- Below the row: a horizontal `EditorialBleedSection` pulling a `wide` shot — just one strip, 21:9, with provenance caption ("Calgary · 2025 · Custom cedar deck"). This is the section break between hero and services.
+
+Net new file: `src/components/TrustStrip.tsx`. Slots into `src/pages/Index.tsx` between `<Hero />` and the existing `<EditorialBleedSection>` (or replaces it — I'll keep one bleed, not two, to avoid stacking).
+
+### 3.3 Services (`src/components/Services.tsx`)
+
+Today: 6 service cards in a 3-column grid + "We handle / You handle" matrix.
+
+**Upgrade**:
+- Each service card gets a **small photo header** — a 16:9 strip at the top of the card, pulled via `<MediaSlot query={{ service: <id>, shot_type: ['hero','detail'] }} sizes={MEDIA_SIZES.CHIP} />`. If no photo is approved for that service, the icon-only treatment we have now stays as the fallback.
+- Card hover: subtle Ken Burns scale (1.02) on the photo, cedar overlay at 8% (we already have the warmth principle in memory).
+- Keep the "We handle / You handle" matrix but **shrink it** — it currently dominates the section. Tighter padding (p-8 → p-6), smaller heading scale, two columns merge to a single rhythm on tablet.
+- Section label stays Roman numeral II per the existing SectionHeader pattern.
+
+### 3.4 About (`src/components/About.tsx`)
+
+Today: copy + brand promise quote on the left, 5-step process + 3 stat cards + CTA on the right.
+
+**Upgrade**:
+- **Add a portrait photo** above the brand-promise quote on the left — pulled via `<MediaSlot query={{ shot_type: 'portrait', min_quality: 'portfolio' }} />`. Aspect 3:4. Caption underneath in the existing minimal label style: the owner's name + "Founder · On every site". Falls back to the existing evergreen gradient block if no portrait is approved.
+- The brand-promise quote slab stays — it's strong.
+- Replace one of the three stat cards (currently "$0 quotes / 48h response / 2 metros") with a more emotional metric: "**507+ builds completed**" using `useCountUp`. Keep the other two.
+- The 5-step process keeps the thermal-crescendo border opacity (locked in memory).
+
+### 3.5 Testimonials (`src/components/Testimonials.tsx`)
+
+Today: three placeholder testimonial cards with initials + 5-star rating + CTA.
+
+**Upgrade**:
+- Keep the three-card structure, but **add a "project photo thumbnail" to each card** — a small 1:1 image in the top-right corner of each card, pulled via `<MediaSlot query={{ service: <matching service> }} sizes={MEDIA_SIZES.THUMB} />`. Ties the testimonial back to a real build.
+- The "trust strip" footer (5-star rating + CTA) stays.
+- Copy stays placeholder until the user supplies real testimonials — I won't invent quotes.
+
+### 3.6 NEW — Featured Projects gallery
+
+This is the "featured projects" you asked for. Right now we have `<HomeProjectRecapStrip />` (4-up grid of hero photos) and a separate `<Portfolio />` with 3 service cards. They overlap.
+
+**Resolution**:
+- Keep `<Portfolio />` as the **service-anchored "Recent Work"** section (3 cards, one per primary service, click → quote modal pre-filled).
+- Replace `<HomeProjectRecapStrip />` with a richer **`<FeaturedProjects />` section** that pulls the top 6 rows from the `projects` table where `featured = true`, rendered as an asymmetric 2-row layout:
+  - Row 1: one large 60% card (hero project) + two stacked 40% cards.
+  - Row 2: three equal cards.
+- Each card: hero photo via `<EditorialPicture>`, project title (DM Serif Display), location + service tag, and a "View project" link that jumps to `/work#<slug>`. (Per-project routes are out of scope for this loop; the user deferred them.)
+- If fewer than 6 featured projects exist after Phase 1 classification, the layout collapses gracefully (4-up, then 3-up, then hidden).
+
+Net new file: `src/components/FeaturedProjects.tsx`. Slots into `src/pages/Index.tsx` after `<Portfolio />` and before `<Contact />`.
+
+### 3.7 Contact (`src/components/Contact.tsx`)
+
+Today: copy + tel/email links + service-area badges + "what to expect" card.
+
+**Upgrade**:
+- Wrap the section in an evergreen background (matches the hero) so the page closes the same way it opens — narrative bookends.
+- Add a **photo to the right column** — a `<MediaSlot query={{ shot_type: 'wide' }} aspectRatio="4/3" />` showing crew on-site. Falls back to the existing layout if nothing approved.
+- Service-area badges become hover-active chips with the cedar-tint principle from memory.
+
+### 3.8 Footer (no change)
+
+Already clean. Leave it alone.
 
 ---
 
-## Phase 6 — What I'll build, in order, when you approve
+## Phase 4 — Page-level orchestration
 
-Each step is independently shippable so you'll see progress every few minutes.
+**`src/pages/Index.tsx`** ends up as:
 
-1. **Auto-approve + auto-cluster trigger** in `/admin/classify` (Phase 1.1 + 1.2). Run it. Verify ~80 approved photos appear.
-2. **LQIP + dimension extraction** edge function, retrofit to all approved rows (Phase 4.1).
-3. **Aspect-ratio tokens + sizes presets** (Phase 3.3 + 3.4). One file each.
-4. **Home page — 7 new slots** (Phase 2.1).
-5. **Services page rebuild — 9 new slots** (Phase 2.2).
-6. **About page — 7 new slots** (Phase 2.4).
-7. **Work page rebuild around live `projects` table** (Phase 2.3).
-8. **Per-project case-study route `/work/:slug`** (Phase 2.5).
-9. **`MEDIA_PLAYBOOK.md` v2** with the new laws codified (Phase 3.1).
-10. **Image sitemap + per-project OG cards + LCP preload** (Phase 4.2–4.4).
-11. **QA pass**: Lighthouse run on each page, verify LCP < 2.0s, CLS < 0.05, accessibility = 100, all photos have alt text.
+```
+<Navigation />
+<Hero />
+<TrustStrip />              ← new
+<EditorialBleedSection />   ← keep, single instance
+<Services />
+<About />
+<Testimonials />
+<FeaturedProjects />        ← new (replaces HomeProjectRecapStrip)
+<Portfolio />
+<Contact />
+<Footer />
+```
 
----
-
-## What I will NOT do (boundaries from the persona prompt)
-
-- ❌ Use any stock photo. Every image is yours, classified and approved.
-- ❌ Auto-publish anything the AI flagged `quality: reject` or with empty alt text. Those go to manual review only.
-- ❌ Add motion that triggers without `prefers-reduced-motion` respected.
-- ❌ Cram every photo onto every page — restraint > saturation. If we have only 5 great deck photos, decks gets 5 slots, not 15. Better to leave a slot empty than fill it with a `reference`-quality shot.
-- ❌ Touch the Supabase reserved schemas, `client.ts`, `types.ts`, or `.env`.
-- ❌ Add dark patterns (false scarcity counters, urgency timers, etc.) — explicitly forbidden in the brief.
+Section spacing: standardize to `py-24 md:py-32` everywhere (some sections currently drift). Background alternation: `bg-background` → `bg-secondary` → `bg-background` → `bg-muted` → `bg-evergreen` (Contact). The trust strip and bleed sit *between* sections, not as their own padded section.
 
 ---
 
-## One judgment call I want your blessing on
+## Phase 5 — Performance & SEO discipline
 
-The auto-approver in Phase 1.1 will publish ~80 photos to your live site without you eyeballing each one first. The AI is good but not perfect — there's a small risk one or two ship with awkward alt text or a wrong service tag.
+Non-negotiables, applied across every change above:
 
-**Two ways to handle it:**
+- **Hero photo gets `priority`** and `fetchpriority="high"` (one per page, already enforced by `<EditorialPicture>`).
+- Every other `<MediaSlot>` is lazy.
+- Every photo passes a `MEDIA_SIZES.*` preset (no hand-written `sizes` strings).
+- Section wrappers use `content-visibility: auto` + `contain-intrinsic-size` (already locked in memory; I'll audit each new section to confirm).
+- All new images use `<EditorialPicture>` (LQIP + aspect-ratio lock = zero CLS).
+- New `<TrustStrip>` and `<FeaturedProjects>` components get proper landmark roles + `aria-labelledby`.
+- Update the `useDocumentTitle` description on `Index.tsx` to mention the trust signals ("WCB covered, locally owned, free estimates") for richer search snippets.
+- `LocalBusinessJsonLd` already on the page — confirm it includes the new trust signals as `additionalProperty` entries.
 
-- **A — Auto-publish high-confidence, you fix in flight** (recommended): Site fills up in 3 minutes. You scan the live `/work` page after, click anything wrong → drops you into the editor. Fast.
-- **B — All 113 stay in `suggested` state, you click-approve each** (safer): Takes you ~20 minutes of clicking, but nothing ships unreviewed.
+---
 
-I'll default to **A** unless you say otherwise when you approve this plan. (You can still reject any individual photo from the editor afterward — it'll be unpublished within seconds.)
+## What I'm NOT doing in this loop (deferred)
+
+- Per-project case study routes (`/work/[slug]`) — separate effort, ~30 min.
+- Image sitemap / dynamic OG cards — both queued from earlier loops.
+- ffmpeg.wasm video transcoder — `<AmbientVideoBleed>` handles raw `.MOV` directly for now.
+- Inventing testimonial copy or owner bio — waiting on real content from you.
+
+---
+
+## Risks & honest tradeoffs
+
+1. **Phase 1 auto-approve will publish high-confidence photos to the live site without your eyeballing each one.** That's how we agreed to handle it. If anything looks wrong post-launch, `/admin/classify` lets you reject in one click.
+2. **If the AI classifier mis-tags a photo's `service`, the wrong photo will appear in the wrong service card.** Mitigation: each service card still works visually with the icon fallback, and you can fix tags in the admin.
+3. **`<FeaturedProjects />` needs at least 3-4 featured projects to feel substantial.** If Phase 1 only seeds 1-2 projects, I'll downgrade the layout to a single-row 3-up grid automatically, and we plan a Phase 6 to seed manually.
+4. **Hero stats ("07 Years · 200+ Builds") are placeholder until you confirm real numbers.** I'll mark them with a comment so they're easy to find and edit.
+
+---
+
+## Order of operations once approved
+
+1. Trigger the auto-classifier on all 113 pending files. **(~3 min, runs in the background.)**
+2. Add the new design tokens to `index.css` and `tailwind.config.ts`.
+3. Build `<TrustStrip />` and `<FeaturedProjects />` as new components.
+4. Refine `<Hero />`, `<Services />`, `<About />`, `<Testimonials />`, `<Portfolio />`, `<Contact />` in place.
+5. Reorder `src/pages/Index.tsx` to the new flow.
+6. Audit performance (lazy/priority, sizes presets, content-visibility).
+7. Deliver. Tell you which slots ended up empty and need follow-up photos.

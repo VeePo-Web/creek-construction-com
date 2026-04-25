@@ -3,6 +3,8 @@ import SectionHeader from "@/components/SectionHeader";
 import CedarCTA from "@/components/CedarCTA";
 import { Phone, Mail } from "lucide-react";
 import { CONTACT } from "@/config/contact";
+import MediaSlot from "@/components/media/MediaSlot";
+import { MEDIA_SIZES } from "@/lib/media-sizes";
 
 const Contact = () => {
   return (
@@ -55,6 +57,20 @@ const Contact = () => {
             </div>
 
             <div>
+              <ScrollRevealMotion delay={0.15}>
+                <MediaSlot
+                  query={{
+                    shot_type: ["wide", "hero", "elevation"],
+                    kind: "image",
+                    min_quality: "portfolio",
+                  }}
+                  sizes={MEDIA_SIZES.HALF}
+                  wrapperClassName="aspect-detail w-full rounded-sm mb-8"
+                  cedarHover
+                  fallback={null}
+                />
+              </ScrollRevealMotion>
+
               <ScrollRevealMotion delay={0.2}>
                 <h3 className="text-minimal text-muted-foreground mb-6">DIRECT CONTACT</h3>
                 <div className="space-y-3 mb-10">

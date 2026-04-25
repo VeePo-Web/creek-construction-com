@@ -4,6 +4,9 @@ import CedarCTA from "@/components/CedarCTA";
 import { Check, Minus } from "lucide-react";
 import { SERVICES } from "@/config/services";
 import { useQuoteModal } from "@/components/quote/QuoteModalProvider";
+import MediaSlot from "@/components/media/MediaSlot";
+import { MEDIA_SIZES } from "@/lib/media-sizes";
+import type { ServiceCategory } from "@/lib/api/public-media";
 
 const Services = () => {
   const { openModal } = useQuoteModal();
@@ -43,33 +46,67 @@ const Services = () => {
                     onClick={() => openModal([service.id])}
                     role="listitem"
                     aria-label={`Request a quote for ${service.title}`}
-                    className="group w-full text-left grain-texture flex flex-col items-start space-y-4 p-6 rounded-sm transition-all duration-500 shadow-contact hover:shadow-elevated hover:bg-cedar/[0.03] hover:translate-y-[-3px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cedar focus-visible:ring-offset-2 cursor-pointer min-h-[220px]"
+                    className="group w-full text-left grain-texture flex flex-col items-stretch overflow-hidden rounded-sm transition-all duration-500 shadow-contact hover:shadow-elevated hover:bg-cedar/[0.03] hover:translate-y-[-3px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cedar focus-visible:ring-offset-2 cursor-pointer min-h-[320px]"
                     style={{
                       border: "1px solid hsl(35 15% 86% / 0.6)",
                       borderLeftWidth: "3px",
                       borderLeftColor: `hsl(var(--cedar) / ${service.intensity})`,
                     }}
                   >
-                    <div className="flex items-center justify-between w-full">
-                      <Icon
-                        className="h-6 w-6 text-cedar/70 transition-colors duration-500 group-hover:text-cedar"
-                        aria-hidden
-                      />
-                      <span className="text-[10px] tracking-[0.2em] uppercase text-muted-foreground/50 tabular-nums">
-                        {String(i + 1).padStart(2, "0")}
+                    {/* Photo header — pulled from approved cloud media for this service.
+                        Falls back to a warm cedar-on-evergreen plate with the icon when
+                        no photo is available yet. */}
+                    <MediaSlot
+                      query={{
+                        service: service.id as ServiceCategory,
+                        shot_type: ["hero", "detail", "wide"],
+                        kind: "image",
+                        min_quality: "portfolio",
+                      }}
+                      sizes={MEDIA_SIZES.THIRD}
+                      wrapperClassName="w-full aspect-hero relative"
+                      className="transition-transform duration-[1.2s] group-hover:scale-[1.04]"
+                      fallback={
+                        <div
+                          className="w-full aspect-hero relative overflow-hidden"
+                          style={{
+                            background:
+                              "linear-gradient(135deg, hsl(150 25% 14%) 0%, hsl(150 25% 8%) 100%)",
+                          }}
+                        >
+                          <div className="absolute inset-0 grain-overlay opacity-40 pointer-events-none" />
+                          <Icon
+                            className="absolute inset-0 m-auto h-12 w-12 text-cedar/40 transition-all duration-700 group-hover:text-cedar/70 group-hover:scale-110"
+                            aria-hidden
+                            strokeWidth={1.4}
+                          />
+                        </div>
+                      }
+                    />
+
+                    <div className="p-6 flex flex-col flex-1">
+                      <div className="flex items-center justify-between w-full mb-3">
+                        <Icon
+                          className="h-5 w-5 text-cedar/70 transition-colors duration-500 group-hover:text-cedar"
+                          aria-hidden
+                          strokeWidth={1.5}
+                        />
+                        <span className="text-[10px] tracking-[0.2em] uppercase text-muted-foreground/50 tabular-nums">
+                          {String(i + 1).padStart(2, "0")}
+                        </span>
+                      </div>
+                      <div className="flex-1">
+                        <h3 className="font-serif text-2xl text-foreground mb-2 transition-colors duration-500 group-hover:text-cedar">
+                          {service.title}
+                        </h3>
+                        <p className="text-sm text-muted-foreground leading-relaxed">
+                          {service.description}
+                        </p>
+                      </div>
+                      <span className="text-[10px] tracking-[0.18em] uppercase text-cedar/70 group-hover:text-cedar transition-colors duration-500 mt-4">
+                        Request a Quote →
                       </span>
                     </div>
-                    <div className="flex-1">
-                      <h3 className="font-serif text-2xl text-foreground mb-2 transition-colors duration-500 group-hover:text-cedar">
-                        {service.title}
-                      </h3>
-                      <p className="text-sm text-muted-foreground leading-relaxed">
-                        {service.description}
-                      </p>
-                    </div>
-                    <span className="text-[10px] tracking-[0.18em] uppercase text-cedar/70 group-hover:text-cedar transition-colors duration-500">
-                      Request a Quote →
-                    </span>
                   </button>
                 </ScrollRevealMotion>
               );
