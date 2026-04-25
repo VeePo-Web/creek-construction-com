@@ -19,6 +19,8 @@ export const LocalBusinessJsonLd = () => (
       name: CONTACT.businessName,
       description: CONTACT.description,
       url: CONTACT.siteUrl,
+      logo: `${CONTACT.siteUrl}/creek-logo-square.png`,
+      image: `${CONTACT.siteUrl}/creek-logo-square.png`,
       telephone: `+1${CONTACT.phoneTel}`,
       email: CONTACT.email,
       areaServed: CONTACT.cities.map((name) => ({ "@type": "City", name })),
