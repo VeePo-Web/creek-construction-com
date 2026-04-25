@@ -41,8 +41,9 @@ function json(body: unknown, status = 200) {
   });
 }
 
+// deno-lint-ignore no-explicit-any
 async function uniqueName(
-  admin: ReturnType<typeof createClient>,
+  admin: any,
   folder: string,
   filename: string,
   upsert: boolean,
@@ -85,13 +86,11 @@ Deno.serve(async (req) => {
     const userClient = createClient(supabaseUrl, anonKey, {
       global: { headers: { Authorization: authHeader } },
     });
-    const token = authHeader.replace("Bearer ", "");
-    const { data: claimsData, error: claimsErr } =
-      await userClient.auth.getClaims(token);
-    if (claimsErr || !claimsData?.claims?.sub) {
+    const { data: userData, error: userErr } = await userClient.auth.getUser();
+    if (userErr || !userData?.user?.id) {
       return json({ success: false, error: "Unauthorized" }, 401);
     }
-    const userId = claimsData.claims.sub as string;
+    const userId = userData.user.id;
 
     const admin = createClient(supabaseUrl, serviceKey);
     const { data: roleCheck, error: roleErr } = await admin.rpc("has_role", {
