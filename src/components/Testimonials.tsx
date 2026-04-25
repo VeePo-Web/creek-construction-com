@@ -82,10 +82,10 @@ const Testimonials = () => {
                   role="listitem"
                   aria-label={`Testimonial from ${t.name}, ${t.location}`}
                 >
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
+                  <div className="flex items-start justify-between gap-4">
+                    <div className="flex items-center gap-3 min-w-0">
                       <div
-                        className="w-9 h-9 rounded-full flex items-center justify-center text-[11px] font-medium tracking-wider transition-all duration-500 group-hover/card:scale-110"
+                        className="w-9 h-9 rounded-full flex items-center justify-center text-[11px] font-medium tracking-wider transition-all duration-500 group-hover/card:scale-110 shrink-0"
                         style={{
                           background: `linear-gradient(135deg, hsl(var(--cedar) / ${0.1 + i * 0.08}), hsl(var(--cedar) / ${0.18 + i * 0.1}))`,
                           border: `1.5px solid hsl(var(--cedar) / ${0.2 + i * 0.12})`,
@@ -94,11 +94,26 @@ const Testimonials = () => {
                       >
                         {t.name.charAt(0)}
                       </div>
-                      <span className="text-minimal text-cedar">{t.type}</span>
+                      <span className="text-minimal text-cedar truncate">{t.type}</span>
                     </div>
-                    <span className="text-[11px] tracking-[0.2em] text-muted-foreground/40 font-light tabular-nums">
-                      {String(i + 1).padStart(2, "0")}/{String(testimonials.length).padStart(2, "0")}
-                    </span>
+
+                    {/* Project thumbnail — ties the testimonial back to a real build.
+                        Renders nothing if no approved photo exists for this service. */}
+                    <MediaSlot
+                      query={{
+                        service: t.service,
+                        shot_type: ["hero", "detail"],
+                        kind: "image",
+                        min_quality: "portfolio",
+                      }}
+                      sizes={MEDIA_SIZES.THUMB}
+                      wrapperClassName="w-14 h-14 rounded-sm shrink-0 hidden sm:block"
+                      fallback={
+                        <span className="text-[11px] tracking-[0.2em] text-muted-foreground/40 font-light tabular-nums hidden sm:block">
+                          {String(i + 1).padStart(2, "0")}/{String(testimonials.length).padStart(2, "0")}
+                        </span>
+                      }
+                    />
                   </div>
 
                   <div className="flex items-center gap-0.5" role="img" aria-label={`${t.rating} out of 5 stars`}>
