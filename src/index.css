@@ -51,30 +51,30 @@
     
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 100%;
-    
-    --border: 25 12% 88%;
-    --input: 25 10% 93%;
-    --ring: 28 50% 52%;
+
+    --border: 35 15% 86%;
+    --input: 35 12% 92%;
+    --ring: 28 55% 45%;
 
     --radius: 0.5rem;
 
-    --sidebar-background: 30 15% 96%;
-    --sidebar-foreground: 20 10% 20%;
-    --sidebar-primary: 20 10% 12%;
-    --sidebar-primary-foreground: 30 20% 97%;
-    --sidebar-accent: 25 10% 93%;
-    --sidebar-accent-foreground: 20 10% 12%;
-    --sidebar-border: 25 12% 88%;
-    --sidebar-ring: 28 50% 52%;
-    
+    --sidebar-background: 38 25% 96%;
+    --sidebar-foreground: 150 15% 18%;
+    --sidebar-primary: 150 25% 16%;
+    --sidebar-primary-foreground: 38 30% 97%;
+    --sidebar-accent: 35 12% 92%;
+    --sidebar-accent-foreground: 150 25% 16%;
+    --sidebar-border: 35 15% 86%;
+    --sidebar-ring: 28 55% 45%;
+
     /* Warm Gradients */
-    --gradient-hero: linear-gradient(135deg, hsl(20 10% 8% / 0.85), hsl(20 10% 8% / 0.4));
-    --gradient-overlay: linear-gradient(180deg, hsl(20 10% 8% / 0.7), hsl(20 10% 8% / 0.2));
-    
+    --gradient-hero: linear-gradient(135deg, hsl(150 25% 8% / 0.9), hsl(150 25% 8% / 0.5));
+    --gradient-overlay: linear-gradient(180deg, hsl(150 25% 8% / 0.75), hsl(150 25% 8% / 0.25));
+
     /* Elegant Shadows */
-    --shadow-architectural: 0 25px 50px -12px hsl(20 10% 12% / 0.15);
-    --shadow-elegant: 0 10px 30px -10px hsl(20 10% 12% / 0.1);
-    
+    --shadow-architectural: 0 25px 50px -12px hsl(150 15% 10% / 0.18);
+    --shadow-elegant: 0 10px 30px -10px hsl(150 15% 10% / 0.12);
+
     /* Smooth Transitions */
     --transition-smooth: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
     --transition-fast: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
