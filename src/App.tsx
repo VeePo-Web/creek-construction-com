@@ -41,6 +41,24 @@ const App = () => (
             <Route path="/work" element={<Work />} />
             <Route path="/about" element={<About />} />
             <Route path="/contact" element={<Contact />} />
+            <Route
+              path="/admin/login"
+              element={
+                <Suspense fallback={<div className="min-h-screen bg-background" />}>
+                  <AdminLogin />
+                </Suspense>
+              }
+            />
+            <Route
+              path="/admin/media"
+              element={
+                <Suspense fallback={<div className="min-h-screen bg-background" />}>
+                  <RequireAdmin>
+                    <AdminMediaLibrary />
+                  </RequireAdmin>
+                </Suspense>
+              }
+            />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
