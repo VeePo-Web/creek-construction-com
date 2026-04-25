@@ -1,4 +1,5 @@
 import { CONTACT } from "@/config/contact";
+import { PROJECTS } from "@/data/projects";
 
 interface JsonLdProps {
   data: Record<string, unknown>;
@@ -56,5 +57,36 @@ export const BreadcrumbJsonLd = ({ items }: { items: { name: string; url: string
     }}
   />
 );
+
+/**
+ * Schema.org ItemList of CreativeWork nodes — one per real photographed project.
+ * Drives Google image-pack indexing for the /work page. Photos must be referenced
+ * by absolute URL so crawlers can resolve them.
+ */
+export const ProjectsJsonLd = () => {
+  if (PROJECTS.length === 0) return null;
+  return (
+    <JsonLd
+      data={{
+        "@context": "https://schema.org",
+        "@type": "ItemList",
+        name: "Creek Construction — Featured Projects",
+        itemListElement: PROJECTS.map((p, i) => ({
+          "@type": "ListItem",
+          position: i + 1,
+          item: {
+            "@type": "CreativeWork",
+            name: p.title,
+            description: p.summary,
+            dateCreated: String(p.year),
+            locationCreated: { "@type": "Place", name: `${p.location}, AB, Canada` },
+            creator: { "@type": "Organization", name: CONTACT.businessName, url: CONTACT.siteUrl },
+            image: p.photos.map((photo) => `${CONTACT.siteUrl}${photo.src}`),
+          },
+        })),
+      }}
+    />
+  );
+};
 
 export default JsonLd;

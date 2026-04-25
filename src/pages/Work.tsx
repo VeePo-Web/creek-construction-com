@@ -4,6 +4,7 @@ import CedarCTA from "@/components/CedarCTA";
 import ScrollRevealMotion from "@/components/ScrollRevealMotion";
 import SectionHeader from "@/components/SectionHeader";
 import ProjectGallery from "@/components/ProjectGallery";
+import { ProjectsJsonLd } from "@/components/JsonLd";
 import { useDocumentTitle } from "@/hooks/useDocumentTitle";
 import { Hammer, Fence, Paintbrush, Home, Trees, type LucideIcon } from "lucide-react";
 import { Link } from "react-router-dom";
@@ -35,6 +36,7 @@ const Work = () => {
 
   return (
     <main className="min-h-screen bg-background" aria-label="Our Work — Creek Construction">
+      <ProjectsJsonLd />
       <Navigation />
 
       <section className="relative bg-evergreen text-evergreen-foreground py-24 md:py-32 overflow-hidden">
