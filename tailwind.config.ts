@@ -47,6 +47,15 @@ export default {
           foreground: "hsl(var(--cedar-foreground))",
           hover: "hsl(var(--cedar-hover))",
         },
+        bronze: {
+          DEFAULT: "hsl(var(--cedar))",
+          foreground: "hsl(var(--cedar-foreground))",
+          hover: "hsl(var(--cedar-hover))",
+        },
+        evergreen: {
+          DEFAULT: "hsl(var(--evergreen))",
+          foreground: "hsl(var(--evergreen-foreground))",
+        },
         popover: {
           DEFAULT: "hsl(var(--popover))",
           foreground: "hsl(var(--popover-foreground))",
