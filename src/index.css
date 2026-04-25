@@ -1,0 +1,2048 @@
+/* Google Fonts loaded via <link> in index.html for optimal render performance */
+/* Preconnect handled by index.html link tags for font performance */
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* B&P Sauna Design System — Warm Minimalism */
+
+@layer base {
+  :root {
+    color-scheme: light;
+    /* Warm Off-White Foundation */
+    --background: 30 20% 97%;
+    --foreground: 20 10% 12%;
+    
+    --card: 30 15% 96%;
+    --card-foreground: 20 10% 12%;
+    
+    --popover: 30 20% 97%;
+    --popover-foreground: 20 10% 12%;
+    
+    /* Primary: Deep Charcoal */
+    --primary: 20 10% 12%;
+    --primary-foreground: 30 20% 97%;
+    
+    /* Secondary: Warm Light */
+    --secondary: 30 15% 93%;
+    --secondary-foreground: 20 10% 12%;
+    
+    /* Muted: Warm Gray */
+    --muted: 25 10% 93%;
+    --muted-foreground: 25 8% 45%;
+    
+    /* Accent: Cedar Amber */
+    --accent: 28 50% 52%;
+    --accent-foreground: 30 20% 97%;
+    
+    /* Cedar token for CTAs and highlights */
+    --cedar: 28 50% 52%;
+    --cedar-foreground: 30 20% 97%;
+    --cedar-hover: 28 50% 45%;
+    
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 100%;
+    
+    --border: 25 12% 88%;
+    --input: 25 10% 93%;
+    --ring: 28 50% 52%;
+
+    --radius: 0.5rem;
+
+    --sidebar-background: 30 15% 96%;
+    --sidebar-foreground: 20 10% 20%;
+    --sidebar-primary: 20 10% 12%;
+    --sidebar-primary-foreground: 30 20% 97%;
+    --sidebar-accent: 25 10% 93%;
+    --sidebar-accent-foreground: 20 10% 12%;
+    --sidebar-border: 25 12% 88%;
+    --sidebar-ring: 28 50% 52%;
+    
+    /* Warm Gradients */
+    --gradient-hero: linear-gradient(135deg, hsl(20 10% 8% / 0.85), hsl(20 10% 8% / 0.4));
+    --gradient-overlay: linear-gradient(180deg, hsl(20 10% 8% / 0.7), hsl(20 10% 8% / 0.2));
+    
+    /* Elegant Shadows */
+    --shadow-architectural: 0 25px 50px -12px hsl(20 10% 12% / 0.15);
+    --shadow-elegant: 0 10px 30px -10px hsl(20 10% 12% / 0.1);
+    
+    /* Smooth Transitions */
+    --transition-smooth: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+    --transition-fast: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .dark {
+    color-scheme: dark;
+    /* Dark Cedar Foundation */
+    --background: 20 10% 8%;
+    --foreground: 30 15% 90%;
+    
+    --card: 20 10% 10%;
+    --card-foreground: 30 15% 90%;
+    
+    --popover: 20 10% 10%;
+    --popover-foreground: 30 15% 90%;
+    
+    /* Primary: Warm Off-White */
+    --primary: 30 15% 90%;
+    --primary-foreground: 20 10% 8%;
+    
+    /* Secondary: Deep Warm */
+    --secondary: 20 8% 12%;
+    --secondary-foreground: 30 15% 90%;
+    
+    /* Muted: Warm Dark Gray */
+    --muted: 20 6% 15%;
+    --muted-foreground: 25 8% 55%;
+    
+    /* Accent: Cedar Amber (stays warm) */
+    --accent: 28 50% 52%;
+    --accent-foreground: 30 20% 97%;
+    
+    /* Cedar token — consistent across themes */
+    --cedar: 28 50% 52%;
+    --cedar-foreground: 30 20% 97%;
+    --cedar-hover: 28 55% 58%;
+    
+    --destructive: 0 62% 50%;
+    --destructive-foreground: 0 0% 100%;
+    
+    --border: 20 8% 18%;
+    --input: 20 6% 15%;
+    --ring: 28 50% 52%;
+
+    --sidebar-background: 20 10% 10%;
+    --sidebar-foreground: 30 15% 85%;
+    --sidebar-primary: 30 15% 90%;
+    --sidebar-primary-foreground: 20 10% 8%;
+    --sidebar-accent: 20 6% 15%;
+    --sidebar-accent-foreground: 30 15% 90%;
+    --sidebar-border: 20 8% 18%;
+    --sidebar-ring: 28 50% 52%;
+    
+    /* Dark Gradients */
+    --gradient-hero: linear-gradient(135deg, hsl(20 10% 4% / 0.9), hsl(20 10% 4% / 0.5));
+    --gradient-overlay: linear-gradient(180deg, hsl(20 10% 4% / 0.8), hsl(20 10% 4% / 0.3));
+    
+    /* Elegant Dark Shadows */
+    --shadow-architectural: 0 25px 50px -12px hsl(20 10% 4% / 0.4);
+    --shadow-elegant: 0 10px 30px -10px hsl(20 10% 4% / 0.3);
+  }
+}
+
+  /* Fluid Type Scale — clamp-based for cinematic responsiveness */
+  .text-display {
+    font-size: clamp(2.5rem, 5vw + 1rem, 5.5rem);
+    line-height: 1.05;
+    letter-spacing: -0.015em;
+    font-family: 'DM Serif Display', Georgia, serif;
+    text-wrap: balance;
+  }
+
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  /* Hero display shimmer — warm cedar gradient sweep */
+  .text-display-shimmer {
+    font-size: clamp(2.5rem, 5vw + 1rem, 5.5rem);
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+    font-family: 'DM Serif Display', Georgia, serif;
+    background: linear-gradient(
+      105deg,
+      hsl(0 0% 100%) 0%,
+      hsl(0 0% 100%) 40%,
+      hsl(28 40% 85%) 50%,
+      hsl(0 0% 100%) 60%,
+      hsl(0 0% 100%) 100%
+    );
+    background-size: 250% 100%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: text-shimmer 6s ease-in-out infinite;
+  }
+  @keyframes text-shimmer {
+    0%, 100% { background-position: 100% 50%; }
+    50% { background-position: 0% 50%; }
+  }
+
+  /* Atmospheric particle — floating ember/steam */
+  .hero-particle {
+    position: absolute;
+    width: var(--particle-size, 3px);
+    height: var(--particle-size, 3px);
+    border-radius: 50%;
+    background: hsl(28 50% 70% / var(--particle-opacity, 0.15));
+    pointer-events: none;
+    animation: particle-float var(--particle-duration, 8s) ease-in-out infinite;
+    animation-delay: var(--particle-delay, 0s);
+  }
+  @keyframes particle-float {
+    0% { transform: translateY(0) translateX(0) scale(1); opacity: 0; }
+    15% { opacity: var(--particle-opacity, 0.15); }
+    50% { transform: translateY(calc(var(--particle-travel, -80px))) translateX(var(--particle-drift, 20px)) scale(0.7); }
+    85% { opacity: var(--particle-opacity, 0.15); }
+    100% { transform: translateY(calc(var(--particle-travel, -80px) * 2)) translateX(calc(var(--particle-drift, 20px) * -1)) scale(0.3); opacity: 0; }
+  }
+
+  .text-headline {
+    font-size: clamp(2rem, 3.5vw + 0.5rem, 4rem);
+    line-height: 1.1;
+    letter-spacing: -0.015em;
+    font-family: 'DM Serif Display', Georgia, serif;
+    text-wrap: balance;
+  }
+
+  .text-subhead {
+    font-size: clamp(1.125rem, 1.5vw + 0.25rem, 1.5rem);
+    line-height: 1.5;
+    font-family: 'DM Sans', system-ui, sans-serif;
+  }
+
+  /* Premium card surface with glassmorphism */
+  .card-glass {
+    background: hsl(var(--background) / 0.6);
+    backdrop-filter: blur(12px) saturate(1.2);
+    -webkit-backdrop-filter: blur(12px) saturate(1.2);
+    border: 1px solid hsl(var(--border) / 0.5);
+    transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .card-glass:hover {
+    background: hsl(var(--background) / 0.75);
+    border-color: hsl(var(--cedar) / 0.2);
+    box-shadow: 0 12px 40px -8px hsl(var(--cedar) / 0.08),
+                0 4px 16px -4px hsl(20 10% 12% / 0.06);
+    transform: translateY(-2px);
+  }
+
+  /* Testimonial quote mark */
+  .quote-mark-float {
+    font-size: clamp(4rem, 6vw, 7rem);
+    line-height: 0.8;
+    font-family: 'DM Serif Display', Georgia, serif;
+    color: hsl(var(--cedar) / 0.12);
+    user-select: none;
+    transition: color 0.5s ease;
+  }
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  /* Custom selection — cedar warmth */
+  ::selection {
+    background: hsl(28 50% 52% / 0.2);
+    color: hsl(20 10% 12%);
+  }
+  .dark ::selection {
+    background: hsl(28 50% 52% / 0.3);
+    color: hsl(30 15% 90%);
+  }
+
+  /* Custom scrollbar — cedar-tinted, minimal */
+  ::-webkit-scrollbar {
+    width: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: hsl(var(--background));
+  }
+  ::-webkit-scrollbar-thumb {
+    background: hsl(var(--cedar) / 0.15);
+    border-radius: 3px;
+    transition: background 0.3s ease;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: hsl(var(--cedar) / 0.3);
+  }
+
+  /* Firefox scrollbar */
+  html {
+    scrollbar-width: thin;
+    scrollbar-color: hsl(28 50% 52% / 0.15) hsl(30 20% 97%);
+  }
+  .dark {
+    scrollbar-color: hsl(28 50% 52% / 0.15) hsl(20 10% 8%);
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-family: 'DM Sans', system-ui, sans-serif;
+  }
+
+  /* Image smoothing for premium feel */
+  img {
+    image-rendering: auto;
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+  }
+
+  /* Custom cursor — cedar warmth dot follower (desktop only) */
+  @media (hover: hover) and (pointer: fine) {
+    a, button, [role="button"], .cursor-pointer, [data-cursor="warm"] {
+      cursor: pointer;
+    }
+  }
+
+  /* Editorial grain texture overlay — SVG noise */
+  .grain-overlay::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.035;
+    z-index: 1;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+    background-repeat: repeat;
+    background-size: 256px 256px;
+    mix-blend-mode: overlay;
+    will-change: auto;
+  }
+  .dark .grain-overlay::before {
+    opacity: 0.06;
+  }
+  
+  /* Editorial Typography */
+  .text-architectural {
+    @apply tracking-[-0.02em] leading-[1.1];
+    font-family: 'DM Serif Display', Georgia, serif;
+  }
+  
+  .text-minimal {
+    @apply tracking-[0.15em] uppercase text-xs font-medium;
+    font-family: 'DM Sans', system-ui, sans-serif;
+  }
+
+  /* Premium Typography Utilities */
+  .text-signature {
+    font-size: clamp(1.125rem, 1.8vw, 1.5rem);
+    font-family: 'DM Serif Display', Georgia, serif;
+    font-style: italic;
+    line-height: 1.4;
+    letter-spacing: -0.01em;
+    text-shadow: 0 1px 2px hsl(20 10% 12% / 0.04);
+  }
+
+  .text-caption {
+    font-size: 13px;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    font-family: 'DM Sans', system-ui, sans-serif;
+    font-weight: 500;
+  }
+
+  .text-architectural-premium {
+    @apply text-architectural;
+    font-feature-settings: 'kern' 1, 'liga' 1, 'calt' 1, 'pnum' 1;
+    font-variation-settings: 'opsz' 14;
+    letter-spacing: -0.025em;
+    text-rendering: optimizeLegibility;
+  }
+
+  /* Material Utilities */
+  .grain-texture {
+    position: relative;
+  }
+  .grain-texture::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.015;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='grainNoise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.2' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23grainNoise)' opacity='0.5'/%3E%3C/svg%3E");
+    background-repeat: repeat;
+    background-size: 200px 200px;
+    mix-blend-mode: overlay;
+    border-radius: inherit;
+  }
+
+  .gradient-border {
+    border-image: linear-gradient(
+      180deg,
+      hsl(28 50% 52% / 0.3) 0%,
+      hsl(28 50% 52% / 0.15) 50%,
+      hsl(28 50% 52% / 0.08) 100%
+    ) 1;
+  }
+
+  .thermal-glow {
+    box-shadow: 0 0 12px hsl(28 50% 52% / 0.25),
+                0 0 24px hsl(28 50% 52% / 0.12),
+                0 4px 16px hsl(28 50% 52% / 0.08);
+  }
+  
+  /* Hero Image Overlay */
+  .hero-overlay {
+    background: var(--gradient-overlay);
+  }
+  
+  /* Smooth Reveal Animation (page-load only) */
+  .reveal {
+    @apply opacity-0 translate-y-8;
+    animation: reveal 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+  
+  .reveal-delayed {
+    @apply opacity-0 translate-y-8;
+    animation: reveal 1.2s cubic-bezier(0.16, 1, 0.3, 1) 0.3s forwards;
+  }
+  
+  @keyframes reveal {
+    to {
+      @apply opacity-100 translate-y-0;
+    }
+  }
+
+  /* Hero ambient drift — cinematic Ken Burns before scroll */
+  @keyframes hero-drift {
+    0% { transform: scale(1.15) translate(0, 0); }
+    50% { transform: scale(1.18) translate(-8px, -4px); }
+    100% { transform: scale(1.15) translate(0, 0); }
+  }
+
+  /* Typographic curtain reveal — clip-path text entrance */
+  @keyframes clip-reveal {
+    from { clip-path: inset(100% 0 0 0); }
+    to { clip-path: inset(0 0 0 0); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .hero-drift-active {
+      animation: none !important;
+      transform: scale(1.15);
+    }
+    /* Disable clip-reveal, hero-image-entrance, and shimmer for reduced motion */
+    [style*="clip-reveal"],
+    .hero-image-entrance,
+    .text-display-shimmer {
+      animation: none !important;
+      clip-path: none !important;
+      opacity: 1 !important;
+    }
+  }
+
+  /* Progressive image shimmer */
+  @keyframes img-shimmer {
+    0%, 100% { background-position: -200% 50%; }
+    50% { background-position: 200% 50%; }
+  }
+
+  /* Cedar divider line */
+  .divider-line {
+    @apply w-16 h-px;
+    background-color: hsl(var(--cedar));
+  }
+
+  /* Scroll indicator — cedar heat drip */
+  .scroll-indicator {
+    @apply w-px h-20 relative overflow-hidden;
+    background-color: hsl(var(--cedar) / 0.15);
+  }
+
+  .scroll-indicator::after {
+    content: '';
+    @apply absolute top-0 left-0 w-full;
+    height: 40%;
+    background: linear-gradient(180deg, hsl(var(--cedar) / 0.9), hsl(var(--cedar) / 0));
+    animation: heat-drip 2.4s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  }
+
+  @keyframes heat-drip {
+    0% { transform: translateY(-100%); opacity: 0; }
+    15% { opacity: 1; }
+    85% { opacity: 1; }
+    100% { transform: translateY(250%); opacity: 0; }
+  }
+
+  /* Nav link underline — cedar slide-in from left + warmth glow */
+  .nav-link-underline {
+    @apply relative;
+    transition: letter-spacing 0.3s cubic-bezier(0.16, 1, 0.3, 1), text-shadow 0.3s ease;
+  }
+  .nav-link-underline::after {
+    content: '';
+    @apply absolute left-0 bottom-[-4px] w-full h-px;
+    background-color: hsl(var(--cedar));
+    transform: scaleX(0);
+    transform-origin: right;
+    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), transform-origin 0s 0.4s;
+  }
+  .nav-link-underline:hover::after,
+  .nav-link-underline.active::after {
+    transform: scaleX(1);
+    transform-origin: left;
+    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), transform-origin 0s;
+  }
+  .nav-link-underline:hover {
+    letter-spacing: 0.18em;
+    text-shadow: 0 0 20px hsl(28 50% 52% / 0.15);
+  }
+  .nav-link-underline.active {
+    text-shadow: 0 0 30px hsl(28 50% 52% / 0.1);
+  }
+  .nav-link-underline.nav-transparent::after {
+    background-color: hsl(var(--primary-foreground));
+  }
+
+  /* Section dot on progress bar */
+  .nav-section-dot {
+    width: 3px;
+    height: 3px;
+    border-radius: 50%;
+    background: hsl(var(--cedar));
+    position: absolute;
+    bottom: -1px;
+  }
+
+  /* Steam Trail: narrative section label */
+  .nav-section-label {
+    position: absolute;
+    bottom: 4px;
+    font-size: 9px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: hsl(var(--cedar));
+    white-space: nowrap;
+    pointer-events: none;
+  }
+
+  /* Ritual Timer: warming glow on progress bar */
+  .cedar-warming {
+    box-shadow: 0 0 4px hsl(28 50% 52% / 0.15), 0 0 12px hsl(28 50% 52% / 0.05);
+    transition: box-shadow 0.6s ease;
+  }
+
+  /* Cedar Curtain: background texture layer */
+  .cedar-curtain-bg {
+    position: fixed;
+    inset: 0;
+    background-size: cover;
+    background-position: center;
+    opacity: 0.04;
+    pointer-events: none;
+    transform: scale(1.1);
+    transition: transform 0.3s ease;
+  }
+  /* Cedar wipe page transition */
+  @keyframes cedar-wipe {
+    0% { transform: scaleX(0); }
+    100% { transform: scaleX(1); }
+  }
+
+  /* Focus-visible — cedar warmth ring with glow (WCAG 2.1 compliant) */
+  :focus-visible {
+    outline: 2px solid hsl(var(--cedar));
+    outline-offset: 3px;
+    border-radius: 2px;
+    box-shadow: 0 0 0 4px hsl(var(--cedar) / 0.12), 0 0 12px hsl(28 50% 52% / 0.08);
+    transition: box-shadow 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  /* Refined focus for interactive cards & links */
+  a:focus-visible, button:focus-visible {
+    outline-offset: 4px;
+    box-shadow: 0 0 0 5px hsl(var(--cedar) / 0.15), 0 0 20px hsl(28 50% 52% / 0.1);
+  }
+  /* Remove default focus outline on mouse click, keep for keyboard */
+  :focus:not(:focus-visible) {
+    outline: none;
+    box-shadow: none;
+  }
+
+  /* Season-Aware Navigation — All Four Seasons */
+
+  /* Winter */
+  nav[data-season="winter"]:not(.bg-transparent) {
+    --background: 210 15% 96%;
+  }
+  nav[data-season="winter"] .cedar-progress {
+    animation: cedar-pulse 3s ease-in-out infinite;
+  }
+
+  /* Spring */
+  nav[data-season="spring"]:not(.bg-transparent) {
+    --background: 120 10% 96%;
+  }
+
+  /* Summer */
+  nav[data-season="summer"]:not(.bg-transparent) {
+    --background: 35 15% 97%;
+  }
+
+  /* Fall */
+  nav[data-season="fall"]:not(.bg-transparent) {
+    --background: 20 18% 95%;
+  }
+  @keyframes stones-glow {
+    0%, 100% {
+      box-shadow: 0 0 6px hsl(28 50% 52% / 0.3), 0 0 20px hsl(28 50% 52% / 0.08);
+    }
+    50% {
+      box-shadow: 0 0 8px hsl(28 50% 52% / 0.5), 0 0 24px hsl(28 50% 52% / 0.15);
+    }
+  }
+  .cedar-stones-glow {
+    animation: stones-glow 4s ease-in-out infinite;
+  }
+
+  /* #7 The Threshold: one-shot cedar pulse across progress bar */
+  @keyframes threshold-sweep {
+    0% { transform: scaleX(0); opacity: 1; }
+    60% { transform: scaleX(1); opacity: 1; }
+    100% { transform: scaleX(1); opacity: 0; }
+  }
+  .threshold-pulse-bar {
+    background-color: hsl(var(--cedar));
+    transform-origin: left;
+    animation: threshold-sweep 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+
+  /* Scale-up reveal for portfolio images — cinematic entrance */
+  .reveal-scale-initial {
+    opacity: 0;
+    transform: scale(0.94) translateY(12px);
+    filter: blur(2px);
+    transition: opacity 1.4s cubic-bezier(0.16, 1, 0.3, 1),
+                transform 1.4s cubic-bezier(0.16, 1, 0.3, 1),
+                filter 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .reveal-scale-visible {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+    filter: blur(0);
+  }
+
+  /* Portfolio image hover zoom — subtle cinematic */
+  .portfolio-image-hover {
+    transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .group:hover .portfolio-image-hover {
+    transform: scale(1.04);
+  }
+
+
+
+  /* #11 Season Shift: extended transition during seasonal change */
+  .nav-season-shifting {
+    transition: background-color 2s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  }
+  .nav-season-shifting .cedar-progress {
+    animation: cedar-season-flicker 2s ease-in-out;
+  }
+  @keyframes cedar-season-flicker {
+    0%, 100% { opacity: 1; }
+    25% { opacity: 0.4; }
+    50% { opacity: 0.9; }
+    75% { opacity: 0.5; }
+  }
+
+  /* #13 Cedar Grain: scroll-direction texture on progress bar border */
+  .nav-grain-container {
+    position: relative;
+  }
+  .nav-grain-container::before {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: repeating-linear-gradient(
+      90deg,
+      transparent,
+      transparent 3px,
+      hsl(var(--cedar) / 0.04) 3px,
+      hsl(var(--cedar) / 0.04) 4px
+    );
+    background-size: 8px 2px;
+    opacity: 0;
+    transition: opacity 0.4s ease;
+    pointer-events: none;
+  }
+  .nav-grain-active::before {
+    opacity: 1;
+  }
+  .nav-grain-container[data-scroll-dir="down"]::before {
+    animation: grain-scroll-right 0.3s linear infinite;
+  }
+  .nav-grain-container[data-scroll-dir="up"]::before {
+    animation: grain-scroll-left 0.3s linear infinite;
+  }
+  @keyframes grain-scroll-right {
+    from { background-position: 0 0; }
+    to { background-position: 8px 0; }
+  }
+  @keyframes grain-scroll-left {
+    from { background-position: 8px 0; }
+    to { background-position: 0 0; }
+  }
+
+  /* #14 Stone Count: milestone markers on progress bar */
+  .nav-stone {
+    position: absolute;
+    bottom: -2px;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background-color: hsl(var(--cedar) / 0.4);
+    transform: scale(0) translateX(-50%);
+    transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+    pointer-events: none;
+    z-index: 2;
+  }
+  .nav-stone-collected {
+    transform: scale(1) translateX(-50%);
+  }
+
+  /* #14 Stone Count: completion glow */
+  .stones-complete-glow {
+    animation: stones-complete-flash 0.5s ease-out;
+  }
+  @keyframes stones-complete-flash {
+    0% { box-shadow: 0 0 4px hsl(28 50% 52% / 0.3), 0 0 12px hsl(28 50% 52% / 0.1); }
+    50% { box-shadow: 0 0 10px hsl(28 50% 52% / 0.6), 0 0 30px hsl(28 50% 52% / 0.2); }
+    100% { box-shadow: 0 0 4px hsl(28 50% 52% / 0.3), 0 0 12px hsl(28 50% 52% / 0.1); }
+  }
+
+  /* #15 Loyly Exhale: warm footer dwell overlay */
+  .loyly-exhale {
+    background-color: hsl(28 50% 52% / 0.03);
+    transition: opacity 1s ease;
+  }
+  .loyly-exhale-bar {
+    box-shadow: 0 0 8px hsl(28 50% 52% / 0.4), 0 0 24px hsl(28 50% 52% / 0.12) !important;
+  }
+
+  /* #16 Kiuas Heartbeat: velocity-synced progress bar pulse */
+  @keyframes kiuas-heartbeat {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.7; }
+  }
+  .kiuas-pulse-active {
+    animation: kiuas-heartbeat var(--pulse-speed, 2s) ease-in-out infinite;
+  }
+
+  /* #18 The First Light: one-time cedar sweep */
+  @keyframes first-light-sweep {
+    0% { width: 0%; box-shadow: 0 0 8px hsl(28 50% 52% / 0.5); }
+    75% { width: 100%; box-shadow: 0 0 12px hsl(28 50% 52% / 0.6); }
+    100% { width: 0%; box-shadow: none; }
+  }
+  .first-light-bar {
+    background-color: hsl(var(--cedar));
+    animation: first-light-sweep 2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+
+  /* #19 Smoke Signal: ghost bar dissipation */
+  @keyframes smoke-fade {
+    0% { opacity: 0.6; filter: blur(0px); }
+    100% { opacity: 0; filter: blur(1.5px); }
+  }
+  .smoke-signal-ghost {
+    background-color: hsl(var(--cedar));
+    animation: smoke-fade 300ms ease-out forwards;
+    pointer-events: none;
+  }
+
+  /* #21 The Resonance: active link ambient hum */
+  @keyframes link-resonance {
+    0%, 100% { text-shadow: none; }
+    50% { text-shadow: 0 0 8px hsl(28 50% 52% / 0.15); }
+  }
+  .nav-link-resonance {
+    animation: link-resonance 4s ease-in-out infinite;
+  }
+  .resonance-suppressed .nav-link-resonance {
+    animation: none;
+    text-shadow: none;
+  }
+
+  /* #22 The Tideline: scroll high-water mark */
+  .nav-tideline {
+    position: absolute;
+    bottom: -1px;
+    width: 1px;
+    height: 4px;
+    background-color: hsl(var(--cedar) / 0.15);
+    pointer-events: none;
+    z-index: 3;
+    transition: left 0.1s linear;
+  }
+
+  /* #24 The Cooling: page exit thermal shift */
+  .nav-cooling {
+    filter: hue-rotate(-10deg) saturate(0.8);
+    transition: filter 0.3s ease, opacity 0.3s ease !important;
+  }
+  .nav-cooling .cedar-progress {
+    opacity: 0.5;
+  }
+  .nav-reheating {
+    filter: none;
+    transition: filter 0.5s ease !important;
+  }
+
+  /* #25 The Gathering: multi-visit depth memory */
+  .nav-depth-memory {
+    background: linear-gradient(to right, hsl(var(--cedar) / 0.02), hsl(var(--cedar) / 0.03));
+    height: 2px;
+    z-index: 0;
+  }
+
+  /* #27 The Patina: visit-count surface wear */
+  [data-patina="1"] {
+    border-color: hsl(28 30% 70% / 0.15);
+  }
+  [data-patina="2"] {
+    border-bottom-width: 2px;
+    border-color: hsl(28 30% 70% / 0.2);
+    box-shadow: inset 0 0 2px hsl(var(--cedar) / 0.05);
+  }
+  [data-patina="3"] {
+    border-bottom-width: 2px;
+    border-color: hsl(28 30% 70% / 0.2);
+    box-shadow: inset 0 0 2px hsl(var(--cedar) / 0.05);
+    border-image: linear-gradient(to right, hsl(var(--cedar) / 0.08), transparent, hsl(var(--cedar) / 0.08)) 1;
+  }
+
+  /* #28 The Communion: section dot warmth cascade */
+  .dot-heated {
+    background: hsl(28 55% 58%) !important;
+    animation: dot-heat-flash 200ms ease-out;
+  }
+  @keyframes dot-heat-flash {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.3); }
+    100% { transform: scale(1); }
+  }
+  .dot-communion {
+    animation: dot-communion-pulse 300ms ease-out forwards;
+  }
+  @keyframes dot-communion-pulse {
+    0% { box-shadow: none; transform: scale(1); }
+    50% { box-shadow: 0 0 4px hsl(28 50% 52% / 0.4); transform: scale(1.2); }
+    100% { box-shadow: none; transform: scale(1); }
+  }
+
+  /* #29 The Inscription: scroll depth achievement label */
+  .nav-inscription {
+    position: absolute;
+    right: 4px;
+    bottom: 2px;
+    font-size: 5px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: hsl(var(--cedar));
+    opacity: 0.15;
+    pointer-events: none;
+    z-index: 4;
+    font-family: 'DM Sans', system-ui, sans-serif;
+    font-weight: 500;
+  }
+  .nav-inscription-fade-in {
+    animation: inscription-reveal 500ms ease-out forwards;
+  }
+  @keyframes inscription-reveal {
+    from { opacity: 0; }
+    to { opacity: 0.15; }
+  }
+
+  /* #30 The Vapour: idle cursor steam wisps */
+  .vapour-wisp {
+    position: absolute;
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: hsl(var(--cedar) / 0.03);
+    pointer-events: none;
+    z-index: 5;
+    animation: vapour-rise 2s ease-out forwards;
+  }
+  @keyframes vapour-rise {
+    from { transform: translateY(0); opacity: 0.03; }
+    to { transform: translateY(-20px); opacity: 0; }
+  }
+
+  /* #31 The Ember Memory: CTA warmth persistence */
+  .cta-ember-cooling {
+    animation: cta-ember-fade 1.5s ease-out forwards;
+  }
+  @keyframes cta-ember-fade {
+    from { box-shadow: inset 0 0 20px rgba(184, 126, 69, 0.15); }
+    to { box-shadow: inset 0 0 20px rgba(184, 126, 69, 0); }
+  }
+
+  /* #32 The Grain Shift: theme toggle cedar grain sweep */
+  .nav-grain-shift::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: repeating-linear-gradient(
+      90deg,
+      transparent,
+      transparent 2px,
+      hsl(var(--cedar) / 0.08) 2px,
+      hsl(var(--cedar) / 0.08) 3px
+    );
+    background-size: 200% 1px;
+    animation: grain-shift-sweep 400ms ease-out forwards;
+    pointer-events: none;
+    z-index: 5;
+  }
+  @keyframes grain-shift-sweep {
+    from { background-position: 0% 0; opacity: 1; }
+    to { background-position: 100% 0; opacity: 0; }
+  }
+
+  /* #33 The Undertow: reverse scroll progress echo */
+  .progress-echo {
+    background-color: hsl(var(--cedar) / 0.1);
+    pointer-events: none;
+    z-index: 0;
+    transition: width 0.1s linear, opacity 0.2s ease;
+  }
+
+  /* #34 The Anchor: section dot tooltip */
+  .nav-section-dot {
+    pointer-events: auto;
+  }
+  .nav-dot-tooltip {
+    position: absolute;
+    bottom: 8px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 8px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: hsl(var(--cedar));
+    opacity: 0.3;
+    white-space: nowrap;
+    pointer-events: none;
+    font-family: 'DM Sans', system-ui, sans-serif;
+    font-weight: 500;
+    animation: dot-tooltip-fade-in 150ms ease-out forwards;
+  }
+  @keyframes dot-tooltip-fade-in {
+    from { opacity: 0; transform: translateX(-50%) translateY(2px); }
+    to { opacity: 0.3; transform: translateX(-50%) translateY(0); }
+  }
+
+  /* #35 The Hearthstone: 404 warm redirect pulse */
+  .nav-hearthstone-pulse {
+    background: hsl(var(--cedar)) !important;
+    animation: hearthstone-glow 2s ease-in-out infinite;
+  }
+  @keyframes hearthstone-glow {
+    0%, 100% { box-shadow: 0 0 6px hsl(28 50% 52% / 0.3), 0 0 16px hsl(28 50% 52% / 0.1); }
+    50% { box-shadow: 0 0 10px hsl(28 50% 52% / 0.5), 0 0 24px hsl(28 50% 52% / 0.2); }
+  }
+
+  /* #36 The Stave: keyboard navigation warmth trail */
+  .nav-stave::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: -4px;
+    width: 100%;
+    height: 1px;
+    background-color: hsl(var(--cedar) / 0.2);
+    animation: stave-fade 600ms ease-out forwards;
+    pointer-events: none;
+  }
+  @keyframes stave-fade {
+    from { opacity: 1; }
+    to { opacity: 0; }
+  }
+
+  /* #37 The Kondenssi: scroll pause condensation */
+  .condensation-drop {
+    position: absolute;
+    bottom: -1px;
+    width: 2px;
+    height: 2px;
+    border-radius: 50%;
+    background: hsl(var(--cedar) / 0.08);
+    pointer-events: none;
+    z-index: 5;
+    animation: condense-drip 2.5s ease-out forwards;
+  }
+  @keyframes condense-drip {
+    0%, 60% { transform: translateY(0); opacity: 1; }
+    100% { transform: translateY(3px); opacity: 0; }
+  }
+
+  /* #38 The Threshold Bell: section transition micro-flash */
+  .section-bell {
+    position: absolute;
+    bottom: -3px;
+    width: 1px;
+    height: 6px;
+    background: hsl(var(--cedar) / 0.4);
+    pointer-events: none;
+    z-index: 6;
+    transform-origin: bottom;
+    animation: section-bell-ring 300ms ease-out forwards;
+  }
+  @keyframes section-bell-ring {
+    0% { transform: scaleY(0); opacity: 1; }
+    50% { transform: scaleY(1); opacity: 1; }
+    100% { transform: scaleY(1); opacity: 0; }
+  }
+
+  /* #39 The Muisti: navigation memory constellation */
+  .muisti-star {
+    position: absolute;
+    bottom: -1px;
+    border-radius: 50%;
+    background: hsl(var(--cedar));
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  /* #40 The Löyly Count: cumulative scroll ritual counter */
+  .loyly-count {
+    position: absolute;
+    left: 4px;
+    bottom: 2px;
+    font-size: 5px;
+    letter-spacing: 0.1em;
+    color: hsl(var(--cedar));
+    opacity: 0.1;
+    pointer-events: none;
+    z-index: 4;
+    font-family: 'DM Sans', system-ui, sans-serif;
+    font-weight: 500;
+  }
+  .loyly-tier-2 {
+    color: hsl(35 60% 55%);
+    opacity: 0.12;
+  }
+  .loyly-tier-3 {
+    color: hsl(40 65% 58%);
+    opacity: 0.15;
+    text-shadow: 0 0 3px hsl(40 65% 58% / 0.3);
+  }
+
+  /* #41 The Kindling: first-ever scroll ignition spark */
+  .kindling-spark {
+    position: absolute;
+    bottom: -1px;
+    left: 0;
+    width: 3px;
+    height: 3px;
+    border-radius: 50%;
+    background: hsl(var(--cedar));
+    pointer-events: none;
+    z-index: 6;
+    animation: kindling-streak 400ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+  @keyframes kindling-streak {
+    0% { transform: translateX(0) scale(1); opacity: 0.6; }
+    100% { transform: translateX(15vw) scale(0.5); opacity: 0; }
+  }
+
+  /* #42 The Sisu: scroll endurance glow */
+  .sisu-glow {
+    filter: saturate(1.1) brightness(1.05);
+    transition: filter 500ms ease;
+  }
+
+  /* #43 The Kiuas Door: mobile menu thermal gradient */
+  .kiuas-door-open::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(180deg, hsl(var(--cedar) / 0.15), transparent);
+    pointer-events: none;
+    z-index: 11;
+    transition: opacity 0.3s ease;
+  }
+  .kiuas-door-closing::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(180deg, hsl(var(--cedar) / 0.25), transparent);
+    pointer-events: none;
+    z-index: 11;
+    animation: kiuas-door-seal 200ms ease-out forwards;
+  }
+  @keyframes kiuas-door-seal {
+    0% { opacity: 1; }
+    100% { opacity: 0; }
+  }
+
+  /* #45 The Rekka: rapid scroll ember particles */
+  .rekka-ember {
+    position: absolute;
+    bottom: -1px;
+    width: 2px;
+    height: 2px;
+    border-radius: 50%;
+    background: hsl(var(--cedar) / 0.2);
+    pointer-events: none;
+    z-index: 5;
+    animation: rekka-fade 300ms ease-out forwards;
+  }
+  @keyframes rekka-fade {
+    0% { opacity: 0.2; transform: scale(1); }
+    100% { opacity: 0; transform: scale(0.5); }
+  }
+}
+
+
+/* Article body editorial typography — premium reading experience (consolidated) */
+.article-body-editorial p {
+  font-size: clamp(1rem, 0.5vw + 0.9rem, 1.125rem);
+  line-height: 1.85;
+  color: hsl(var(--muted-foreground));
+  max-width: 65ch;
+  text-wrap: pretty;
+}
+.article-body-editorial h2 {
+  position: relative;
+  padding-left: 1.5rem;
+  text-wrap: balance;
+}
+.article-body-editorial h2::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 4px;
+  height: 60%;
+  background: linear-gradient(180deg, hsl(28 50% 52% / 0.6), hsl(28 50% 52% / 0.15));
+  border-radius: 2px;
+}
+.article-body-editorial strong {
+  color: hsl(var(--foreground));
+  font-weight: 500;
+}
+.article-body-editorial li::marker {
+  color: hsl(28 50% 52% / 0.4);
+}
+.article-body-editorial li {
+  transition: background-color 0.3s ease;
+}
+.article-body-editorial li:hover {
+  background-color: hsl(28 50% 52% / 0.03);
+}
+.article-body-editorial a {
+  color: hsl(28 50% 52%);
+  text-decoration-color: hsl(28 50% 52% / 0.3);
+  text-underline-offset: 3px;
+  transition: text-decoration-color 0.3s ease, color 0.3s ease;
+}
+.article-body-editorial a:hover {
+  text-decoration-color: hsl(28 50% 52%);
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .reveal,
+  .reveal-delayed {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+  
+  .scroll-indicator {
+    animation: none !important;
+  }
+
+  .cedar-stones-glow {
+    animation: none !important;
+  }
+
+  .threshold-pulse-bar {
+    animation: none !important;
+    opacity: 0 !important;
+  }
+
+  .reveal-scale-initial {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+
+  .nav-season-shifting,
+  .nav-season-shifting .cedar-progress {
+    animation: none !important;
+    transition: none !important;
+  }
+
+  .nav-grain-container::before {
+    animation: none !important;
+    opacity: 0 !important;
+  }
+
+  .nav-stone {
+    transition: none !important;
+  }
+
+  .stones-complete-glow {
+    animation: none !important;
+  }
+
+  .loyly-exhale {
+    transition: none !important;
+  }
+
+  .kiuas-pulse-active {
+    animation: none !important;
+  }
+
+  .first-light-bar {
+    animation: none !important;
+    opacity: 0 !important;
+  }
+
+  .smoke-signal-ghost {
+    animation: none !important;
+    opacity: 0 !important;
+  }
+
+  .nav-link-resonance {
+    animation: none !important;
+  }
+
+  .nav-cooling, .nav-reheating {
+    filter: none !important;
+  }
+
+  .dot-heated, .dot-communion {
+    animation: none !important;
+  }
+
+  .nav-inscription-fade-in {
+    animation: none !important;
+    opacity: 0.15 !important;
+  }
+
+  .vapour-wisp {
+    animation: none !important;
+    opacity: 0 !important;
+  }
+
+  .cta-ember-cooling {
+    animation: none !important;
+  }
+
+  .nav-grain-shift::after {
+    animation: none !important;
+    opacity: 0 !important;
+  }
+
+  .nav-hearthstone-pulse {
+    animation: none !important;
+  }
+
+  .nav-dot-tooltip {
+    animation: none !important;
+  }
+
+  .nav-stave::after {
+    animation: none !important;
+    opacity: 0 !important;
+  }
+
+  .condensation-drop {
+    animation: none !important;
+    opacity: 0 !important;
+  }
+
+  .section-bell {
+    animation: none !important;
+    opacity: 0 !important;
+  }
+
+  .kindling-spark {
+    animation: none !important;
+    opacity: 0 !important;
+  }
+
+  .sisu-glow {
+    filter: none !important;
+    transition: none !important;
+  }
+
+  .kiuas-door-open::before,
+  .kiuas-door-closing::before {
+    display: none !important;
+  }
+
+  .rekka-ember {
+    animation: none !important;
+    opacity: 0 !important;
+  }
+  
+  *  {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
+}
+
+/* ─── Editorial Spacing & Typography Refinements ─── */
+
+/* Optical margin alignment for large serif headings */
+.text-display,
+.text-headline {
+  text-wrap: balance;
+}
+
+/* Premium pull-quote styling */
+.pull-quote {
+  position: relative;
+  padding-left: 2rem;
+  border-left: 3px solid hsl(var(--cedar) / 0.25);
+  font-style: italic;
+  font-family: 'DM Serif Display', Georgia, serif;
+  font-size: clamp(1.25rem, 2vw + 0.5rem, 1.75rem);
+  line-height: 1.5;
+  color: hsl(var(--foreground) / 0.55);
+  margin: 2.5rem 0;
+  transition: border-color 0.5s ease, color 0.5s ease;
+}
+.pull-quote:hover {
+  border-color: hsl(var(--cedar) / 0.5);
+  color: hsl(var(--foreground) / 0.8);
+}
+
+/* Section transition — cedar heat gradient between sections */
+.section-heat-transition {
+  height: 1px;
+  background: linear-gradient(90deg, transparent 0%, hsl(var(--cedar) / 0.15) 20%, hsl(var(--cedar) / 0.3) 50%, hsl(var(--cedar) / 0.15) 80%, transparent 100%);
+}
+
+/* Responsive container padding refinement for large screens */
+@media (min-width: 1600px) {
+  .container {
+    max-width: 1440px;
+  }
+}
+
+/* Improved link hover with cedar underline sweep */
+.cedar-link {
+  position: relative;
+  color: hsl(var(--cedar));
+  transition: color 0.3s ease;
+}
+.cedar-link::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 100%;
+  height: 1px;
+  background: hsl(var(--cedar));
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.cedar-link:hover::after {
+  transform: scaleX(1);
+  transform-origin: left;
+}
+
+/* Smooth image loading placeholder for all ProgressiveImage instances */
+.img-placeholder-cedar {
+  background: linear-gradient(135deg, hsl(var(--secondary)) 0%, hsl(25 15% 92%) 50%, hsl(var(--secondary)) 100%);
+}
+
+/* ─── Article Body Editorial Typography (consolidated) ─── */
+/* NOTE: Single source of truth — removed duplicates from lines 1034-1058 and 1537-1557 */
+
+/* ─── Editorial Card Surface ─── */
+.card-editorial {
+  background: hsl(var(--background) / 0.5);
+  backdrop-filter: blur(8px) saturate(1.1);
+  -webkit-backdrop-filter: blur(8px) saturate(1.1);
+  border: 1px solid hsl(var(--border) / 0.4);
+  transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.card-editorial:hover {
+  background: hsl(var(--background) / 0.7);
+  border-color: hsl(var(--cedar) / 0.25);
+  box-shadow:
+    0 16px 48px -12px hsl(var(--cedar) / 0.06),
+    0 6px 20px -6px hsl(20 10% 12% / 0.05);
+  transform: translateY(-3px);
+}
+
+/* ─── Image Reveal on Scroll ─── */
+.img-reveal {
+  opacity: 0;
+  transform: scale(0.97);
+  filter: blur(4px) saturate(0.8);
+  transition:
+    opacity 1.2s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 1.2s cubic-bezier(0.16, 1, 0.3, 1),
+    filter 1s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.img-reveal-visible {
+  opacity: 1;
+  transform: scale(1);
+  filter: blur(0) saturate(1);
+}
+
+/* ─── Drop Cap Refinement ─── */
+.article-drop-cap::first-letter {
+  float: left;
+  font-size: 3.5em;
+  line-height: 0.8;
+  font-family: 'DM Serif Display', Georgia, serif;
+  color: hsl(var(--cedar));
+  margin-right: 0.75rem;
+  margin-top: 0.15em;
+  font-weight: 400;
+}
+
+/* ─── Smooth Focus Transitions for Form Fields ─── */
+input:focus,
+select:focus,
+textarea:focus {
+  transition: border-color 0.3s ease, box-shadow 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* ─── Premium CTA Button — Thermal Shimmer on Hover ─── */
+.cta-thermal {
+  position: relative;
+  overflow: hidden;
+}
+.cta-thermal::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 60%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    hsl(28 55% 60% / 0.12) 40%,
+    hsl(28 55% 60% / 0.2) 50%,
+    hsl(28 55% 60% / 0.12) 60%,
+    transparent 100%
+  );
+  transition: none;
+  pointer-events: none;
+}
+.cta-thermal:hover::before {
+  animation: cta-shimmer-sweep 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+@keyframes cta-shimmer-sweep {
+  from { left: -100%; }
+  to { left: 150%; }
+}
+
+/* ─── Footer Cedar Grain Shimmer ─── */
+.footer-grain-shimmer {
+  position: relative;
+}
+.footer-grain-shimmer::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    hsl(28 50% 52% / 0.06) 15%,
+    hsl(28 50% 52% / 0.12) 50%,
+    hsl(28 50% 52% / 0.06) 85%,
+    transparent 100%
+  );
+}
+
+/* ─── Section Provenance Counter ─── */
+.section-counter {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum";
+}
+
+/* ─── Smooth Image Aspect-Ratio Containers ─── */
+.aspect-cinematic {
+  aspect-ratio: 16 / 9;
+}
+.aspect-editorial {
+  aspect-ratio: 3 / 2;
+}
+.aspect-portrait {
+  aspect-ratio: 3 / 4;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cta-thermal::before {
+    animation: none !important;
+    display: none;
+  }
+}
+
+/* ─── Portfolio Image Hover Lift ─── */
+.portfolio-card-lift {
+  transition: transform 0.7s cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.portfolio-card-lift:hover {
+  transform: translateY(-4px);
+  box-shadow:
+    0 20px 60px -15px hsl(var(--cedar) / 0.12),
+    0 8px 24px -8px hsl(20 10% 12% / 0.08);
+}
+
+/* ─── FAQ Accordion Thermal Glow ─── */
+[data-state="open"].faq-thermal {
+  box-shadow:
+    0 0 0 1px hsl(var(--cedar) / 0.15),
+    0 8px 32px -8px hsl(var(--cedar) / 0.08),
+    inset 0 1px 0 hsl(var(--cedar) / 0.06);
+}
+
+/* ─── Mobile Section Padding Rhythm ─── */
+@media (max-width: 768px) {
+  .text-display {
+    font-size: clamp(2rem, 8vw, 3.5rem);
+  }
+  .text-headline {
+    font-size: clamp(1.75rem, 6vw, 2.5rem);
+  }
+  section {
+    scroll-margin-top: 80px;
+  }
+  /* Reduce contain-intrinsic-size on mobile for accurate estimation */
+  #section-truth,
+  #section-services,
+  #about,
+  #section-testimonials,
+  #work,
+  #section-vignettes,
+  #section-contact {
+    contain-intrinsic-size: auto 600px;
+  }
+}
+
+/* ─── Testimonial Card Hover Depth — Staggered Shadows ─── */
+.testimonial-depth-1:hover { box-shadow: 0 12px 40px -10px hsl(var(--cedar) / 0.08); }
+.testimonial-depth-2:hover { box-shadow: 0 16px 48px -12px hsl(var(--cedar) / 0.1); }
+.testimonial-depth-3:hover { box-shadow: 0 20px 56px -14px hsl(var(--cedar) / 0.12); }
+
+/* ─── Blog Card Cinematic Image Treatment ─── */
+.blog-card-image {
+  position: relative;
+  overflow: hidden;
+}
+.blog-card-image::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, transparent 50%, hsl(20 10% 8% / 0.15) 100%);
+  pointer-events: none;
+  transition: opacity 0.5s ease;
+}
+.group:hover .blog-card-image::after {
+  background: linear-gradient(180deg, transparent 30%, hsl(28 50% 52% / 0.08) 100%);
+}
+
+/* ─── Section Divider — Warm Breath Line ─── */
+.breath-divider {
+  width: 100%;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    hsl(var(--cedar) / 0.08) 10%,
+    hsl(var(--cedar) / 0.2) 30%,
+    hsl(var(--cedar) / 0.35) 50%,
+    hsl(var(--cedar) / 0.2) 70%,
+    hsl(var(--cedar) / 0.08) 90%,
+    transparent 100%
+  );
+}
+
+/* ─── Premium Image Vignette Overlay ─── */
+.img-vignette::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(ellipse at center, transparent 55%, hsl(20 10% 8% / 0.12) 100%);
+}
+
+/* ─── Smooth Image Entrance for Sub-Page Heroes (consolidated) ─── */
+/* NOTE: Single definition — removed duplicate from line 1889 */
+.hero-image-entrance {
+  animation: hero-image-enter 1.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+@keyframes hero-image-enter {
+  from {
+    opacity: 0.7;
+    transform: scale(1.2);
+    filter: blur(2px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1.12);
+    filter: blur(0);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .hero-image-entrance {
+    animation: none;
+    opacity: 1;
+    transform: scale(1.12);
+  }
+}
+
+/* Article body editorial — paragraph hover warmth */
+.article-body-editorial p {
+  transition: color 0.3s ease;
+}
+.article-body-editorial p:hover {
+  color: hsl(var(--foreground) / 0.85);
+}
+
+/* ─── Contact Form Field Group Stagger ─── */
+.form-field-stagger > * {
+  opacity: 0;
+  transform: translateY(8px);
+  animation: form-field-enter 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+.form-field-stagger > *:nth-child(1) { animation-delay: 0.05s; }
+.form-field-stagger > *:nth-child(2) { animation-delay: 0.1s; }
+.form-field-stagger > *:nth-child(3) { animation-delay: 0.15s; }
+.form-field-stagger > *:nth-child(4) { animation-delay: 0.2s; }
+.form-field-stagger > *:nth-child(5) { animation-delay: 0.25s; }
+.form-field-stagger > *:nth-child(6) { animation-delay: 0.3s; }
+@keyframes form-field-enter {
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ─── Footer Link Thermal Trail ─── */
+.footer-link-thermal {
+  position: relative;
+}
+.footer-link-thermal::before {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0;
+  height: 1px;
+  background: hsl(var(--cedar) / 0.4);
+  transition: width 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.footer-link-thermal:hover::before {
+  width: 100%;
+}
+
+/* ─── Testimonial Card Depth Layers ─── */
+.testimonial-card-depth {
+  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.testimonial-card-depth:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 16px 48px -12px hsl(var(--cedar) / 0.1),
+              0 4px 16px -4px hsl(20 10% 12% / 0.05);
+}
+
+/* ─── FAQ Accordion Thermal Glow (Enhanced) ─── */
+.faq-thermal {
+  position: relative;
+}
+.faq-thermal::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.5s ease;
+  box-shadow: inset 0 0 0 1px hsl(var(--cedar) / 0.08),
+              0 0 24px -4px hsl(28 50% 52% / 0.08);
+}
+.faq-thermal[data-state="open"]::after {
+  opacity: 1;
+}
+
+/* ─── Timeline Node Pulse ─── */
+@keyframes timeline-node-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 hsl(28 50% 52% / 0); }
+  50% { box-shadow: 0 0 0 8px hsl(28 50% 52% / 0.1); }
+}
+.timeline-node-active {
+  animation: timeline-node-pulse 3.5s ease-in-out infinite;
+}
+
+/* ─── Comparison Row Hover Glow ─── */
+.comparison-row-bp {
+  transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.comparison-row-bp:hover {
+  background: hsl(28 50% 52% / 0.04);
+  padding-left: 1.25rem;
+}
+.comparison-row-typical {
+  transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.comparison-row-typical:hover {
+  background: hsl(var(--destructive) / 0.03);
+  padding-left: 1.25rem;
+}
+
+/* ─── Blog Category Filter Active Sweep ─── */
+@keyframes filter-sweep {
+  from { transform: scaleX(0); transform-origin: left; }
+  to { transform: scaleX(1); transform-origin: left; }
+}
+.category-filter-active::after {
+  animation: filter-sweep 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* ─── Service Card Hover Warmth Gradient ─── */
+.service-card-warmth {
+  position: relative;
+  overflow: hidden;
+}
+.service-card-warmth::before {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 0;
+  background: linear-gradient(180deg, transparent, hsl(28 50% 52% / 0.04));
+  transition: height 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  pointer-events: none;
+}
+.service-card-warmth:hover::before {
+  height: 100%;
+}
+
+/* ─── Portfolio Image Reveal Shimmer ─── */
+@keyframes portfolio-shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+.portfolio-loading-shimmer {
+  background: linear-gradient(90deg, 
+    hsl(var(--muted)) 0%, 
+    hsl(var(--muted-foreground) / 0.05) 50%, 
+    hsl(var(--muted)) 100%
+  );
+  background-size: 200% 100%;
+  animation: portfolio-shimmer 1.5s ease-in-out infinite;
+}
+
+/* ─── Smooth Section Transition Bleed ─── */
+.section-bleed-top {
+  position: relative;
+}
+.section-bleed-top::before {
+  content: '';
+  position: absolute;
+  top: -1px;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, 
+    transparent 0%, 
+    hsl(var(--cedar) / 0.06) 20%, 
+    hsl(var(--cedar) / 0.12) 50%, 
+    hsl(var(--cedar) / 0.06) 80%, 
+    transparent 100%
+  );
+  pointer-events: none;
+}
+
+/* ─── Stat Counter Glow on Intersection ─── */
+@keyframes stat-glow-in {
+  0% { text-shadow: none; }
+  50% { text-shadow: 0 0 20px hsl(28 50% 52% / 0.2); }
+  100% { text-shadow: none; }
+}
+.stat-glow-animate {
+  animation: stat-glow-in 1.5s ease-out 0.5s;
+}
+
+/* ─── Scroll Margin for Anchor Navigation ─── */
+section[id] {
+  scroll-margin-top: 100px;
+}
+
+/* ─── Content-Visibility: Paint-Holding for Below-Fold Sections ─── */
+/* Dramatically improves initial render by deferring layout/paint of off-screen sections */
+#section-truth,
+#section-services,
+#about,
+#section-testimonials,
+#work,
+#section-vignettes,
+#section-contact {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 800px;
+}
+
+/* ─── Hanging Punctuation for Pull-Quotes ─── */
+blockquote,
+.quote-mark-float {
+  hanging-punctuation: first last;
+}
+
+/* ─── Optical Kerning for Premium Headings ─── */
+.text-display,
+.text-headline,
+.text-architectural {
+  font-kerning: normal;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  font-feature-settings: "kern" 1, "liga" 1;
+}
+
+/* ─── Improved Touch Target Sizing (WCAG 2.5.8) ─── */
+@media (pointer: coarse) {
+  a, button, [role="button"] {
+    min-height: 44px;
+    min-width: 44px;
+  }
+}
+
+/* ─── Enhanced Service Area Tag Hover ─── */
+.service-area-tag {
+  position: relative;
+  overflow: hidden;
+}
+.service-area-tag::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, hsl(28 50% 52% / 0.04), hsl(28 50% 52% / 0.08));
+  opacity: 0;
+  transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  pointer-events: none;
+}
+.service-area-tag:hover::before {
+  opacity: 1;
+}
+
+/* ─── Premium Number Counter Typography ─── */
+.tabular-cedar {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum";
+  letter-spacing: 0.05em;
+}
+
+/* ─── Smooth Image Crossfade on Route Change ─── */
+.img-crossfade {
+  opacity: 0;
+  transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.img-crossfade-visible {
+  opacity: 1;
+}
+
+/* ─── Contact Form Completion Celebration ─── */
+@keyframes completion-ring {
+  0% { transform: scale(0.8); opacity: 0; }
+  50% { transform: scale(1.05); opacity: 1; }
+  100% { transform: scale(1); opacity: 1; }
+}
+.form-completion-ring {
+  animation: completion-ring 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* ─── Breadcrumb Separator Warmth ─── */
+.breadcrumb-dot {
+  display: inline-block;
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: hsl(var(--cedar) / 0.3);
+  vertical-align: middle;
+}
+
+/* ─── Enhanced Dark Mode Image Treatment ─── */
+.dark img:not([role="presentation"]) {
+  filter: brightness(0.95) contrast(1.02);
+}
+
+/* ─── Portfolio Number Overlay Depth ─── */
+.portfolio-number-overlay {
+  text-shadow: 0 4px 24px hsl(20 10% 4% / 0.5);
+  transition: all 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.group:hover .portfolio-number-overlay {
+  text-shadow: 0 4px 24px hsl(28 50% 52% / 0.3), 0 0 40px hsl(28 50% 52% / 0.15);
+}
+
+/* ─── Premium Hover Lift for Cards ─── */
+.hover-lift {
+  transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.hover-lift:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 32px -8px hsl(var(--cedar) / 0.08);
+}
+@media (prefers-reduced-motion: reduce) {
+  .hover-lift:hover,
+  .portfolio-card-lift:hover {
+    transform: none;
+  }
+}
+
+/* ─── Cinematic Section Entrance — Warm Fade ─── */
+.section-warm-entrance {
+  position: relative;
+}
+.section-warm-entrance::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 64px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, hsl(var(--cedar) / 0.3), transparent);
+  pointer-events: none;
+}
+
+/* ─── Premium Quote Mark Enhancement ─── */
+.quote-mark-float {
+  filter: drop-shadow(0 2px 8px hsl(28 50% 52% / 0.06));
+}
+
+/* ─── Breadcrumb Home Link Warmth ─── */
+nav[aria-label="Breadcrumb"] a:hover {
+  text-shadow: 0 0 12px hsl(28 50% 52% / 0.15);
+}
+
+/* ─── Service Area Chip Hover Micro-lift ─── */
+.service-area-chip {
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+              border-color 0.5s ease,
+              background-color 0.5s ease,
+              padding-left 0.5s ease;
+}
+.service-area-chip:hover {
+  transform: translateY(-1px);
+}
+
+/* ─── Mobile Touch Feedback ─── */
+@media (hover: none) {
+  .cta-thermal:active {
+    transform: scale(0.97);
+    transition: transform 0.1s ease;
+  }
+  .card-glass:active {
+    transform: scale(0.99);
+  }
+}
+
+/* article-body-editorial li: consolidated above in lines ~1142-1147 */
+
+/* ─── Blog Card Image Hover Warmth ─── */
+.blog-card-image-warm::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, transparent 50%, hsl(28 50% 52% / 0.12) 100%);
+  opacity: 0;
+  transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  pointer-events: none;
+}
+.group:hover .blog-card-image-warm::after {
+  opacity: 1;
+}
+
+/* ─── Testimonial Depth Layers (md+ only via Tailwind prefix) ─── */
+@media (min-width: 768px) {
+  .md\:testimonial-depth-1 { transform: translateY(0); }
+  .md\:testimonial-depth-2 { transform: translateY(8px); }
+  .md\:testimonial-depth-3 { transform: translateY(16px); }
+}
+
+/* ─── FAQ Thermal Glow Enhancement ─── */
+.faq-thermal[data-state="open"] {
+  box-shadow: 0 4px 24px -4px hsl(28 50% 52% / 0.08),
+              inset 0 1px 0 hsl(28 50% 52% / 0.06);
+}
+
+
+/* ─── High Contrast Mode (WCAG prefers-contrast) ─── */
+@media (prefers-contrast: more) {
+  :root {
+    --border: 20 10% 60%;
+    --muted-foreground: 20 10% 30%;
+  }
+  .dark {
+    --border: 30 15% 50%;
+    --muted-foreground: 30 15% 75%;
+  }
+  .card-glass,
+  .card-editorial {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    border-width: 2px !important;
+  }
+  .grain-overlay::before {
+    display: none !important;
+  }
+  .text-display-shimmer {
+    -webkit-text-fill-color: unset !important;
+    background: none !important;
+    color: inherit !important;
+  }
+}
+
+/* ─── Print Styles ─── */
+@media print {
+  .grain-overlay::before,
+  .scroll-indicator,
+  .hero-particle,
+  nav,
+  footer,
+  [aria-hidden="true"] {
+    display: none !important;
+  }
+  body {
+    color: black !important;
+    background: white !important;
+  }
+  img {
+    filter: none !important;
+    break-inside: avoid;
+  }
+  section {
+    content-visibility: visible !important;
+    break-inside: avoid;
+  }
+  a[href]::after {
+    content: " (" attr(href) ")";
+    font-size: 0.8em;
+    color: #666;
+  }
+  .text-display, .text-headline {
+    color: black !important;
+  }
+}
