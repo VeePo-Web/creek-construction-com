@@ -53,6 +53,7 @@ import {
   Film,
   ExternalLink,
   Check,
+  Sparkles,
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
@@ -364,6 +365,13 @@ const MediaLibrary = () => {
             </p>
           </div>
           <div className="flex items-center gap-2">
+            <Button
+              variant="default"
+              size="sm"
+              onClick={() => navigate("/admin/classify")}
+            >
+              <Sparkles className="h-4 w-4" /> Classify with AI
+            </Button>
             <Button
               variant="outline"
               size="sm"

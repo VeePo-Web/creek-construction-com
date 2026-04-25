@@ -1,227 +1,214 @@
-## Goal
+# Plan: World-Class Photo & Video Distribution
 
-A worldclass, private **Media Library** at `/admin/media` modeled on (and improved from) RoyalMechanical's storage manager. You drop in 200+ photos/videos at once — even 8 MB each — they upload to Lovable Cloud Storage in parallel, organized into folders. Then I (the AI) pull from that library when wiring photos into projects, instead of you uploading through chat.
+## The situation
 
-This is **infrastructure**, not a public page. It will sit behind email/password auth + an `admin` role. The front-of-site editorial aesthetic remains untouched.
+You have **113 raw assets** in `media-library/uncategorized/`:
+- **106 iPhone screenshots** (`img_6215.png` → `img_6493.png`, etc.) — likely PNG-saved photos
+- **7 .MOV videos** — silent ambient material
+
+Zero metadata. Zero project assignment. Filenames are useless. We cannot place them editorially without first **knowing what's in each frame**. Two of those (6339–6341) already live in `Riverbend Studio Shed`.
+
+So this plan is in **three acts**: (1) understand the assets, (2) prepare them for the web, (3) distribute them across the site with editorial restraint.
 
 ---
 
-## Why this approach (vs. continuing chat uploads)
+## ACT I — Classification & metadata (the unlock)
 
-| Today (chat) | New (Media Library) |
+### 1. AI Vision Classifier (edge function `classify-media`)
+
+Build one new edge function `supabase/functions/classify-media/index.ts`. Admin-only. For each asset:
+
+1. Generate a small (1024px max edge) preview from the public URL.
+2. POST it to **Lovable AI Gateway** (`google/gemini-2.5-pro` — the strongest at vision + nuance, worth the cost for one-time classification of 100+ shots).
+3. Use **tool calling** (structured output, not free-text JSON) to extract:
+   ```json
+   {
+     "service": "decks|fencing|sheds|painting|siding|pergolas|interiors|exterior|other",
+     "shot_type": "hero|elevation|detail|interior|process|wide|aerial|texture",
+     "subject": "1-line description (e.g. 'cedar privacy fence with horizontal slats, mid-build, framing visible')",
+     "alt": "12-22 word geographic + structural alt text — never marketing copy",
+     "project_guess": "kebab-case slug suggestion or null",
+     "quality": "hero|portfolio|reference|reject  // rejects = blurry, accidental, screenshots-of-screenshots",
+     "season": "summer|fall|winter|spring|unknown",
+     "notes": "any caveat (e.g. 'duplicate of img_6234', 'wrong orientation')"
+   }
+   ```
+4. Persist into `media_metadata` (already has the right columns).
+5. Surface results in the existing `/admin/media` detail drawer with a “**AI suggestion**” chip you can accept-or-edit in one click.
+
+### 2. Cluster into project groups
+
+After classification, a small server-side step groups assets by `service` + `project_guess` + filename proximity (sequential `img_NNNN` numbers shot within minutes are almost certainly the same project). Each cluster becomes a candidate project — you confirm/rename before they go live.
+
+### 3. New admin screen `/admin/classify`
+
+A two-pane reviewer:
+- **Left**: thumbnail grid of unclassified assets, multi-select.
+- **Right**: AI suggestion card with editable fields + “Approve all in cluster” bulk action.
+Once approved, the asset is **moved** from `uncategorized/` into `{service}/{project-slug}/` (the existing `move` op in `manage-media-library` already handles this).
+
+### 4. Reject pile
+
+`quality: 'reject'` shots stay in `uncategorized/_rejected/` for your review — never deleted automatically.
+
+---
+
+## ACT II — Asset preparation pipeline
+
+### Images
+
+Building a second edge function `process-media` that, **after classification**, does for each accepted image:
+
+1. **Strip iPhone letterbox bars** (the black/white margins on `.PNG` screenshots).
+2. **Re-encode**: PNG → JPEG (q82) for photos; keep PNG only for the few that need transparency.
+3. **Generate three responsive variants** stored alongside the original in the bucket:
+   - `…-2000.jpg` (full-bleed hero)
+   - `…-1200.jpg` (gallery)
+   - `…-640.jpg` (mobile / blurhash placeholder source)
+4. **Create AVIF + WebP siblings** for next-gen formats (5–25 % smaller).
+5. **Compute a tiny LQIP** (16×24 px JPEG, base64) and write it into `media_metadata.lqip` (new column) — this becomes the blur-up placeholder, replacing the current shimmer for cached, instant blur reveals.
+6. **Strip EXIF** (privacy + a few KB savings).
+7. **Persist `width` / `height`** into `media_metadata` so we never get layout shift.
+
+### Videos (the 7 .MOV files)
+
+Decision locked: **silent autoplay ambient bleeds.** Pipeline:
+
+1. Probe with `ffprobe` to get duration, dimensions, and orientation.
+2. **Trim to ≤ 8 seconds** (the editorial sweet spot — long enough to feel intentional, short enough that nobody waits for a “loop point”). I'll pick the most cinematic 8-second window using a simple motion-content heuristic (skip first 0.5s for handshake jitter).
+3. **Drop audio entirely** (`-an`).
+4. **Encode three sources**:
+   - `.mp4` H.264, `crf 22`, `tune film`, `faststart` — universal.
+   - `.webm` VP9, `crf 32` — smaller for Chromium/Firefox.
+   - **`.jpg` poster frame** at the visually richest moment (use ffmpeg `-vf "thumbnail"`).
+5. **Cap at 1080p edge**; downscale anything taller. Target ≤ 2.5 MB per file.
+6. **Loop seamlessly**: re-encode with a 0.4s crossfade tail-to-head when the source doesn't loop cleanly.
+
+### New components introduced
+
+| Component | Purpose |
 |---|---|
-| 10 files at a time | Hundreds at a time, parallelized |
-| Files live in chat history | Files live in Cloud Storage with stable URLs |
-| I have to copy/process each file | I `list` → pick → reference URLs directly |
-| Hard to reuse, reorganize, delete | Drag-and-drop folder management, bulk ops |
-| No video support over chat | Videos are first-class (MP4/WebM/MOV) |
-
-Once this exists, your workflow becomes: **"Add the riverbend interior batch from the library to the Riverbend project."** I then read the library, pick the right files, and update `src/data/projects.ts` to reference the Cloud Storage URLs.
+| `<AmbientVideoBleed />` | Full-bleed silent video. Renders `<video muted autoplay loop playsinline preload="metadata" poster=…>` only when (a) `prefers-reduced-motion` is not set, (b) `navigator.connection.saveData` is false, (c) the section enters the viewport (IntersectionObserver). Falls back to the poster frame as a still image otherwise. WCAG-safe, mobile-data-respectful. |
+| `<EditorialPicture />` | A `<picture>` with AVIF → WebP → JPEG sources, srcset for the 3 sizes, sizes hint, LQIP background, `decoding="async"`, optional `fetchPriority="high"` for above-the-fold. Replaces the current `<ProgressiveImage>` for cloud-hosted assets. |
+| `<MediaCDN />` helper | Resolves `media://{path}` references to the right Supabase public URL + variant. Decouples markup from storage layout — if we ever migrate to a real CDN (Cloudflare, Bunny), only this resolver changes. |
+| `useCloudMedia(filter)` hook | Reads from `media_metadata` via a typed selector, returns memoized lists for any (service, project, shot-type) combo. This is what every page uses — never hard-coded asset imports for cloud media. |
 
 ---
 
-## Architecture
+## ACT III — Editorial distribution (where each photo *actually* goes)
 
-### 1. Storage bucket — `media-library`
+Below is the page-by-page plan. Every placement is intentional; nothing is decoration. Captions are **never** rendered front-facing per your standing rule — they live only in `alt` and JSON-LD.
 
-A single public bucket, organized by folder = "category". Public read so the site can serve images via CDN; writes/moves/deletes are gated by an edge function using the service role key (clients never touch the service role).
+### `/` (Home)
 
-**Why one bucket, many folders** (vs. many buckets): matches Royal's proven model, lets you re-organize without re-uploading, and one CDN base URL keeps the data registry clean.
-
-**Initial folders** (seeded — you can add more from the UI):
-- `riverbend-studio-shed` (current project)
-- `decks`
-- `fencing`
-- `sheds`
-- `painting`
-- `siding`
-- `pergolas`
-- `process` (in-progress / behind-the-scenes shots)
-- `hero` (atmospheric / cinematic plates)
-- `team` (faces, crew at work)
-- `videos` (clips, walkthroughs, time-lapses)
-- `uncategorized` (auto-created landing zone for things uploaded without a folder)
-
-### 2. Database — `profiles` + `user_roles` + RLS
-
-Per Lovable's security rules, roles live in their own table — never on `profiles` — so I cannot accidentally introduce a privilege-escalation vector.
-
-- `profiles(id uuid PK → auth.users, full_name, created_at)` — auto-populated by trigger on signup.
-- `app_role` enum: `'admin' | 'user'`.
-- `user_roles(id, user_id, role, unique(user_id, role))`.
-- `has_role(_user_id, _role)` SECURITY DEFINER function — used by RLS and by the edge function to verify admin status.
-- Storage access: the edge function checks `has_role(auth.uid(), 'admin')` before allowing upload/move/delete/rename. Listing is also admin-gated to keep the library private.
-
-### 3. Auth
-
-- **Email + password** sign-in (default, per Lovable Cloud guidelines).
-- **Google sign-in** (default).
-- New routes: `/admin/login` (sign-in / sign-up form) and `/admin/media` (library, gated).
-- First user to sign up gets the `admin` role automatically (via a one-shot trigger that only fires when the `user_roles` table is empty). Subsequent users default to `user` and need to be promoted manually via a SQL migration.
-- Email auto-confirm will be **enabled** for this admin flow only — you don't want to chase verification links to manage your own media. (If you'd rather verify, say so and I'll flip it.)
-- A `<RequireAdmin />` route guard wraps `/admin/*`, redirects non-admins to `/admin/login`.
-
-### 4. Edge function — `manage-media-library`
-
-One function, multiple operations (matching Royal's clean pattern):
-
-| Op | Purpose | Notes |
+| Slot | Treatment | Source |
 |---|---|---|
-| `list` | Return all folders + files with public URLs, sizes, content types, dimensions where available | Scans top-level folders, lists each |
-| `upload` | Multipart form upload | Streams file → bucket; sanitizes filename; supports `upsert` |
-| `move` | Move single file to another folder | Copy → delete original |
-| `bulkMove` | Move N files to a folder | Loops; returns per-file results |
-| `rename` | Rename within folder | Used to apply our `{slug}-{NN}-{shot-type}.ext` convention |
-| `delete` | Delete single | |
-| `bulkDelete` | Delete N | |
-| `createFolder` | Create empty folder marker | Drops a `.keep` file so empty folders persist |
+| **Hero** | Stays photo-free. Adds **one ambient `<AmbientVideoBleed />`** as a low-opacity (12 %) right-side bleed behind the headline — preferably a slow pan of cedar grain or a blade through wood. Reinforces craft without competing with type. | First eligible video tagged `texture` or `process` |
+| **Services strip** | Each of the 6 service cards gets a **subtle background photo** at 14 % opacity revealed on hover (50 % opacity, 600 ms cedar warmth). Already-discovered photos pulled by `service`. | `useCloudMedia({ service, shot_type: 'detail' \|\| 'hero', limit: 1 })` |
+| **About teaser** (existing) | Add a **2-up asymmetric photo pair** between the existing copy block and the stats row — one wide environmental shot + one tight detail. Sets the “we work outdoors in Alberta” tone before stats. | Best two `quality: 'hero'` shots not used elsewhere |
+| **Portfolio strip** | Already wired to `getProjectsByService('sheds')`. Once Aspen Fence / Bridgeland Deck etc. are confirmed projects, they auto-light-up. No code change. | Existing |
+| **Footer pre-bleed** | A new full-width **`<AmbientVideoBleed />`** above the footer — 280 px tall, pure visual signature. The “end credits” shot. | Best video tagged `wide` |
 
-Every op verifies the caller's JWT and that they have the `admin` role. CORS configured for the app origin + preview domain.
+### `/services`
 
-`verify_jwt = true` for this function (override from the project default) so unauthenticated callers are rejected at the edge before we even check roles.
+The services page is currently text-heavy and photo-empty. New treatment:
 
-### 5. Frontend — `/admin/media`
+1. **Per-service inline gallery**: under each accordion service item, when expanded, render a **3-photo editorial strip** (one tall + two squares) using `<ProjectGallery>` in 3-photo mode. Photos pulled by `service`. No labels. Hover reveals a single line: *“Riverbend Studio Shed · Edmonton · 2025.”*
+2. **Sticky sidebar “moodboard”** on desktop (≥ lg): a slow vertical scroll of 6 small thumbnails — one per service — that pulses a subtle cedar glow as you scroll the corresponding section. Replaces today’s blank right column.
+3. **Hero**: keep evergreen gradient (per your constraint that subpage heros are gradient-based), but add **one looping ambient bleed** at 18 % opacity behind the page title.
 
-Visually consistent with Creek's editorial system (off-white surfaces, cedar accents, DM Serif Display headers, generous whitespace) but utilitarian — this is a tool, not a brochure page. No hero animation, no scroll choreography. Fast.
+### `/work`
 
-**Top bar**
-- Page title "Media Library", subtitle showing "N files across M folders · X.X GB"
-- "New folder" button (opens dialog → calls `createFolder`)
-- "Refresh" button
-- Sign-out
+Already the photo-densest page. Upgrades:
 
-**Bulk-upload dropzone** (the centerpiece)
-- Full-width drag-and-drop area
-- Folder selector (defaults to `uncategorized`)
-- Accepts `image/*` and `video/*` — explicit list: jpg, jpeg, png, webp, avif, heic, gif, mp4, webm, mov, m4v
-- **Per-file 50 MB cap** (more than enough for 8 MB photos and short clips; matches Supabase Storage's default object limit)
-- **Concurrency control**: uploads in batches of 4 in parallel (sweet spot — fast without saturating residential upload bandwidth or hitting edge function timeouts)
-- **Resilient queue**: each file gets its own row showing thumbnail, name, target folder, progress bar, status (`queued`, `uploading`, `done`, `failed`). Failures are retryable individually. Successful files persist in the queue list until you "Clear completed".
-- **Auto-rename on collision**: if `riverbend-01.jpg` exists, new file becomes `riverbend-01-2.jpg` (with a small toggle to overwrite instead).
-- **Heavy-duty support**: chunked reads via `File.stream()` so 8 MB+ files don't spike memory; FormData upload through the edge function (signed-URL upgrade path noted below).
+1. **Service filter chips** at the top: All · Decks · Fencing · Sheds · Painting · Siding · Pergolas. Filters the project list. (Nothing fancy — `useState` + a derived array.) Reads from `useCloudMedia` so it auto-populates as new projects come online.
+2. **Each project gets**:
+   - Existing `<ProjectGallery>` (1/2/3/masonry adaptive layout).
+   - A new **silent `<AmbientVideoBleed />` divider** between projects — only when a video is tagged to that project. Otherwise, a typographic divider (the existing `<ImageDivider>`).
+3. **Project hero shot** uses `fetchPriority="high"`, AVIF, and the LQIP for instant LCP.
+4. **JSON-LD** (`ProjectsJsonLd`) is already wired — automatically picks up new projects.
 
-**Folder grid** (mirrors Royal's pattern, refined)
-- Each folder = a card with title, count badge, total size
-- Inside: 96×96 thumbnails in a wrap grid; videos show a film-strip overlay + duration; images lazy-load
-- Click thumbnail = select; shift-click = range select; cmd/ctrl-click = toggle
-- Right-click any image → context menu: "Move to → [folders]", "Rename…", "Copy URL", "Open in new tab", "Delete"
-- Drag-and-drop between folder cards (Royal's `@dnd-kit` pattern — proven, accessible, keyboard-supported)
-- Selection action bar appears at top when ≥1 selected: count + "Move to ▾", "Delete", "Copy URLs", "Clear"
-- Empty folder shows a dashed dropzone
+### `/about`
 
-**Detail drawer** (right-side `<Sheet>`)
-- Click a file → opens drawer with: large preview (or `<video controls>`), filename, folder, dimensions (for images), duration (for videos), size, content type, full public URL with copy button, "alt text" input (saved to a `media_metadata` table — see "Metadata" below), "Delete" button.
+1. **Hero image bleed**: the evergreen gradient stays, but a **right-anchored ambient video** (40 % width, 60 % opacity, masked into a soft-edged column) plays behind the headline. A working-hands type of clip if we have one. If not, an environmental wide shot as a still image.
+2. **“Who We Are” section**: introduce a **single full-bleed editorial photo** between the intro copy and the process steps. Captionless. The hero project shot.
+3. **“The Creek Process” steps**: each of the 5 steps gets a **tiny 64×64 thumbnail** to its left — a specific shot that visualizes that step (request = blueprint detail, build = framing, walkthrough = finished product). All pulled from cloud media tagged `process`.
+4. **“Where We Work”**: keep the city pills. Add a **single panoramic photo** (Calgary or Edmonton skyline if any qualify, otherwise a wide rural shot) above the pills as a place-setting frame.
 
-### 6. Optional but high-value: `media_metadata` table
+### `/contact`
 
-The bucket only stores files. To attach editorial information that follows the file (alt text, capture date, location, project slug, shot type), we add:
+Add **one ambient video bleed** as the page background at 8 % opacity — pure mood, never competing with the form. This is the final touchpoint before submission; we want it to feel like a place, not a form.
 
-```
-media_metadata(
-  id uuid PK,
-  storage_path text UNIQUE,    -- e.g. "riverbend-studio-shed/riverbend-01-hero.jpg"
-  alt text,
-  caption text,
-  project_slug text,
-  shot_type text,
-  width int,
-  height int,
-  duration_seconds int,        -- for video
-  taken_at timestamptz,
-  created_at timestamptz default now(),
-  updated_at timestamptz default now()
-)
-```
+### Shared site-wide upgrades
 
-RLS: admins read/write all; nobody else can touch it.
-
-**Why this matters**: when I later wire a photo into `src/data/projects.ts`, I read `media_metadata` to pull the alt text *you* wrote — guaranteeing SEO-quality descriptive alts without me guessing. It also unlocks future features (filter library by project, "show me everything I tagged 'fencing'", etc.).
-
-### 7. AI ↔ Library handoff (the key payoff)
-
-After this ships, our content workflow looks like this:
-
-1. You: "Upload these 40 photos to the `decks` folder." → drag-drop into the library.
-2. You (in chat): "Add the new decks photos to a project called Westwood Estate."
-3. Me: I call `list` → see the 40 new files in `decks/` → pick the best 6 in editorial sequence → write a new entry in `src/data/projects.ts` referencing the Cloud Storage public URLs (no more `import` statements for these — they live in storage, served via CDN, with proper `width`/`height` from `media_metadata`).
-
-`ProgressiveImage` and `ProjectGallery` already accept any `src` string, so they'll work unchanged with cloud URLs.
-
-### 8. Performance / scale guardrails
-
-- **Public CDN cache** (Supabase Storage default 1 hour, we'll bump to 1 year via `Cache-Control: public, max-age=31536000, immutable`) — image requests will be near-instant after first hit.
-- **`<img loading="lazy" decoding="async">`** on all library thumbnails so opening a folder of 100 doesn't stall the page.
-- **`content-visibility: auto`** on each folder card so off-screen folders skip layout/paint (matches your existing perf-rendering memory).
-- **Pagination fallback**: if any folder exceeds 200 files, we show first 200 + "Load more" instead of all-at-once.
-- **`sharp`-style server resize**: out of scope for v1 (Supabase doesn't run sharp). Library shows originals; the front-of-site continues to use the manually optimized JPEGs in `src/assets/` for the few hand-curated hero images, and Cloud-served originals for the long tail. If image weight becomes a problem we add Cloudflare Image Resizing or a transform edge function in v2.
-
-### 9. Future v2 (not building now, just leaving room)
-- **Signed-URL direct uploads** — bypass the edge function for 100 MB+ video files, removing the function's CPU/memory from the path. (Worth it once we have actual video volume.)
-- **Video thumbnail extraction** via an edge function that grabs frame 1.
-- **Search** (filename, alt text, project_slug) — trivial once `media_metadata` exists.
-- **Bulk-tag** UI (select N → assign project_slug + shot_type to all).
+1. **`<NarrativeBreadcrumb>`** — when a breadcrumb is on a project page, show a **6×6 px pulsing thumbnail dot** of the project's hero. Tiny, editorial, almost subliminal.
+2. **OG / Twitter cards** — every project page now has an auto-generated OG image (use the project hero, 1200×630, with a thin cedar bottom bar containing the project name in DM Serif). One edge function: `og-image-generator`. SEO + social sharing win.
+3. **Sitemap + image sitemap** — a generated `/sitemap.xml` and `/sitemap-images.xml` that lists every project image with its alt text. Critical for Google Image SEO.
 
 ---
 
-## Files / migrations to be created
+## Performance budget (non-negotiable)
 
-**Database migrations**
-- `profiles` table + insert trigger on `auth.users`
-- `app_role` enum + `user_roles` table + `has_role()` SECURITY DEFINER fn
-- One-shot "first user becomes admin" trigger
-- `media_metadata` table + RLS
-- Storage bucket `media-library` (public read, restricted write)
-- Storage RLS policies (write/delete/update gated to `has_role(auth.uid(), 'admin')`)
+For every page touched, the following must hold after the upgrade:
 
-**Edge function**
-- `supabase/functions/manage-media-library/index.ts`
-- `supabase/config.toml` block: `[functions.manage-media-library] verify_jwt = true`
+| Metric | Target |
+|---|---|
+| LCP | ≤ 2.0 s on 4G (p75) |
+| CLS | < 0.02 |
+| Total photo bytes per route | ≤ 600 KB initial, lazy-load the rest |
+| Total video bytes per route | ≤ 2.5 MB initial (one bleed only), defer rest until idle |
+| INP | ≤ 200 ms |
 
-**Frontend — admin shell**
-- `src/lib/api/media-library.ts` — typed client (mirrors Royal's `storageApi` shape, plus `uploadMany` with concurrency control)
-- `src/hooks/useAuth.tsx` — Supabase auth state hook (`onAuthStateChange` set up before `getSession`, per the auth knowledge file)
-- `src/hooks/useIsAdmin.tsx` — checks `has_role` via RPC
-- `src/components/admin/RequireAdmin.tsx` — route guard
-- `src/pages/admin/Login.tsx` — email/password + Google sign-in
-- `src/pages/admin/MediaLibrary.tsx` — page shell
-- `src/components/admin/media/UploadDropzone.tsx` — drag-drop + queue
-- `src/components/admin/media/UploadQueueItem.tsx` — per-file row
-- `src/components/admin/media/FolderGrid.tsx` — droppable folder cards
-- `src/components/admin/media/MediaCard.tsx` — draggable thumbnail (image OR video)
-- `src/components/admin/media/MediaDetailDrawer.tsx` — right-side `<Sheet>` with metadata editor
-- `src/components/admin/media/AddFolderDialog.tsx`
-- `src/components/admin/media/SelectionActionBar.tsx`
-
-**Routing**
-- Update `src/App.tsx`: lazy-load `Login` and `MediaLibrary`, wrap admin routes in `<RequireAdmin>`. Routes added **above** the `*` catch-all.
-- Add `noindex` meta on admin routes so Google never sees them.
-
-**Dependencies to add**
-- `@dnd-kit/core` and `@dnd-kit/utilities` (for drag-and-drop)
-- (Auth, supabase-js, etc. already present via Lovable Cloud)
-
-**Memory file updates**
-- New `mem://architecture/admin-media-library` describing the bucket name, folder convention, and the rule "always read alt text from `media_metadata` when wiring images into projects".
-- Update `mem://design/logo-asset-map.md` to note that **logos** stay in `src/assets` (hand-curated), and **project photography** flows through the Media Library.
+Mechanisms used to hit these:
+- AVIF/WebP fallback chain.
+- Responsive `srcset` + `sizes`.
+- `<AmbientVideoBleed>` only loads sources after IntersectionObserver fires *and* `requestIdleCallback`.
+- LQIP base64 inline → no extra request.
+- `content-visibility: auto` on every below-the-fold gallery section.
+- Per-project page: a single `<link rel="preload" as="image" imagesrcset=…>` for the LCP hero.
 
 ---
 
-## What you'll do once after I build it
+## Accessibility
 
-1. Sign up at `/admin/login` (you become the admin automatically as the first user).
-2. Drop your ~200 photos and videos into the dropzone, choosing folders as you go (or dump everything into `uncategorized` and sort later — both work).
-3. Tell me "wire X folder into Y project" and I take it from there.
+- Every `<img>` and `<video>` carries the AI-generated alt text (you'll review/edit in the classifier UI before approval).
+- Videos have `aria-hidden="true"` when used purely as ambient texture (they're decoration; the content is the surrounding text). When a video carries narrative weight, it gets a `<track kind="descriptions">` and a poster image with meaningful alt.
+- `prefers-reduced-motion` disables all ambient video — falls back to poster stills.
+- `prefers-reduced-data` (where supported) does the same.
+- Touch targets on the `/work` filter chips ≥ 44px (WCAG 2.5.8).
 
 ---
 
-## Open questions before I build (one quick decision)
+## Build order (what I'll do, in order, once you approve)
 
-Just one. Everything else I have a strong default for.
+| # | Step | Touches |
+|---|---|---|
+| 1 | **DB migration**: add `media_metadata.lqip text`, `media_metadata.variants jsonb`, `media_metadata.ai_review_status text`, `projects` table (slug, title, service, status, year, summary, hero_path, video_path) — so projects become data, not code. | `supabase/migrations/` |
+| 2 | **Edge function `classify-media`**: vision classification via Lovable AI. Tool-calling for structured output. | new |
+| 3 | **Edge function `process-media`**: image variant generation, EXIF strip, LQIP, format conversion, video transcode + poster. | new |
+| 4 | **Edge function `og-image-generator`**: per-project OG cards. | new |
+| 5 | **Edge function `sitemap-xml`** + **`image-sitemap-xml`**. | new |
+| 6 | **Admin `/admin/classify`**: review/approve UI. | new page |
+| 7 | **Run the classifier** over all 113 assets. Estimated cost: ~$0.40 in Lovable AI credits. | one-time |
+| 8 | **You spend ~15 minutes** approving / correcting in the classifier UI. | manual |
+| 9 | **Run the processor** over approved assets. ~5 minutes server time. | one-time |
+| 10 | **`<EditorialPicture>`**, **`<AmbientVideoBleed>`**, **`<MediaCDN>`**, **`useCloudMedia`** — the new primitives. | new components |
+| 11 | **Wire Home, Services, Work, About, Contact** to use cloud media via `useCloudMedia`. Gradually replace placeholder icons. | edits to existing pages |
+| 12 | **Lighthouse + WebPageTest** sweep on each route. Iterate until budgets are green. | QA |
+| 13 | **Sitemaps** registered in `index.html` + Search Console payload. | small |
 
-**Auth model**: I'm planning **email/password + Google sign-in**, with **email auto-confirm enabled** so you don't need to click a verification link to manage your own admin tool. Confirm — or say "require email verification" and I'll flip it.
+---
 
-Also worth flagging: **first signup = admin** is convenient but means anyone who finds `/admin/login` *before* you sign up could claim the role. Mitigations:
-- I'll deploy this and you sign up immediately (60-second window).
-- Or I can hard-code your email as the only allowed signup. Say the word and tell me the email.
+## What this gives you
 
-I'll proceed with the convenient default unless you say otherwise.
+- A **scalable** pipeline: drop 200 more raw photos into the cloud, hit “classify all”, approve in 20 minutes, and they auto-distribute to the right pages with proper alt text, sizes, OG cards, and sitemaps.
+- **Captionless on the front, fully described in the metadata.** Image SEO wins without visual noise.
+- **Performance unchanged or better** despite the photo density — AVIF + LQIP + lazy + bleed-only-on-visible.
+- **Editorial restraint**: photos never crowd type, videos are silent texture, every placement earns its space. This is how Fantasy and Pentagram do it: the work is the marketing.
+- **No more `lov-image-upload` / chat uploads** ever. Cloud-first, AI-assisted, you-in-control.
+
+---
+
+## One open question before I build
+
+Do you want me to also **write a project page route** (`/work/[slug]`) so each project becomes a deep-link-shareable case study (Bridgeland Deck, Riverbend Studio Shed, etc.), or keep `/work` as a single scroll? I'd recommend per-project pages for SEO and shareability — they take ~30 minutes more — but it's your call. I'll default to **yes, build per-project pages** unless you say otherwise when you approve.
