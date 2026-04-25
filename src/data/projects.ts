@@ -90,6 +90,13 @@ export const PROJECTS: Project[] = [
         height: 666,
         shotType: "elevation",
       },
+      {
+        src: riverbendInterior,
+        alt: "Interior view through the framed doorway of an Edmonton backyard studio shed mid-construction, showing OSB stud walls, a table saw on its stand, and tools on the plywood threshold.",
+        width: 887,
+        height: 1578,
+        shotType: "interior",
+      },
     ],
     featured: true,
   },
