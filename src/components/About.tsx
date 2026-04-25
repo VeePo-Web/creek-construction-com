@@ -197,7 +197,7 @@ const About = () => {
                 <div className="pt-8 mt-8 border-t border-border">
                   <div className="grid grid-cols-3 gap-4" role="group" aria-label="Key stats">
                     <StatCard value={2} suffix="" label="Major metros" heading="SERVING" borderOpacity={0.2} note="Calgary + Edmonton" />
-                    <StatCard value={0} prefix="$" suffix="" label="No obligation" heading="QUOTES" borderOpacity={0.5} note="Always free" />
+                    <StatCard value={200} suffix="+" label="Projects built" heading="ON RECORD" borderOpacity={0.55} note="Across Alberta" />
                     <StatCard value={48} suffix="h" label="Typical reply" heading="RESPONSE" borderOpacity={0.85} />
                   </div>
                 </div>
