@@ -1,5 +1,6 @@
 import CedarCTA from "@/components/CedarCTA";
 import { CONTACT } from "@/config/contact";
+import MediaSlot from "@/components/media/MediaSlot";
 
 const Hero = () => {
   return (
@@ -17,6 +18,25 @@ const Hero = () => {
             "radial-gradient(ellipse at 30% 20%, hsl(150 30% 22%) 0%, hsl(150 25% 12%) 55%, hsl(150 30% 6%) 100%)",
         }}
       />
+      {/* Optional silent video bleed — appears only when an approved video exists.
+          Confined to the right 45% so type stays clean on the left. */}
+      <div className="absolute inset-y-0 right-0 w-full md:w-[55%] pointer-events-none opacity-30 md:opacity-40 mix-blend-screen">
+        <MediaSlot
+          variant="bleed"
+          query={{ kind: "video", min_quality: "portfolio" }}
+          height="100%"
+          opacity={0.85}
+          fallback={null}
+        />
+        {/* Soft fade from evergreen on the left edge so the video never feels pasted-in */}
+        <div
+          className="absolute inset-0"
+          style={{
+            background:
+              "linear-gradient(90deg, hsl(150 30% 8%) 0%, hsl(150 30% 8% / 0.6) 30%, transparent 100%)",
+          }}
+        />
+      </div>
       <div className="absolute inset-0 grain-overlay opacity-40 pointer-events-none" />
       <div
         className="absolute inset-x-0 bottom-0 h-40 pointer-events-none"
