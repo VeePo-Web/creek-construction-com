@@ -138,6 +138,7 @@ const Work = () => {
                       location: w.location,
                       description: w.description,
                       icon: w.icon,
+                      service: w.service as import("@/lib/api/public-media").ServiceCategory,
                     }}
                     index={i}
                     total={PLACEHOLDERS.length}
