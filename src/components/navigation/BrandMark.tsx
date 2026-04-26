@@ -55,6 +55,9 @@ const BrandMark = ({ onDark = false, className }: BrandMarkProps) => {
           className={cn(
             "font-serif italic mt-1 leading-none whitespace-nowrap",
             "text-[10px] sm:text-[11px] md:text-xs",
+            // Hide the eyebrow in the cramped md→lg band so the section
+            // rail and right cluster have room. Returns at lg+.
+            "hidden sm:block md:hidden lg:block",
             eyebrowClass,
           )}
         >
