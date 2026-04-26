@@ -99,6 +99,29 @@ export const BRAND = {
 } as const;
 
 // ─────────────────────────────────────────────────────────────────────
+// BACKDROPS — composed CSS gradients used as section/hero backgrounds.
+// Use as inline `style={{ background: BACKDROP.evergreenRadial }}`
+// ─────────────────────────────────────────────────────────────────────
+
+export const BACKDROP = {
+  /** Hero / dark-section radial — evergreen with a warm core. */
+  evergreenRadial:
+    "radial-gradient(ellipse at 25% 25%, hsl(150 30% 22%) 0%, hsl(150 25% 12%) 60%, hsl(150 30% 6%) 100%)",
+  /** Card-fallback plate — diagonal evergreen. */
+  evergreenPlate:
+    "linear-gradient(135deg, hsl(150 25% 18%) 0%, hsl(150 30% 8%) 100%)",
+  /** Bronze warmth wash — used as ghost background on hover for light surfaces. */
+  bronzeWash:
+    "linear-gradient(135deg, hsl(var(--cedar) / 0.07) 0%, hsl(var(--cedar) / 0.02) 100%)",
+  /** Bronze glow — for floating cards / accent halos over photos. */
+  bronzeGlow:
+    "radial-gradient(ellipse at 70% 30%, hsl(28 55% 45% / 0.18) 0%, transparent 60%)",
+  /** Section bottom fade — into secondary surface. */
+  fadeToSecondary:
+    "linear-gradient(180deg, transparent 0%, hsl(var(--secondary)) 100%)",
+} as const;
+
+// ─────────────────────────────────────────────────────────────────────
 // SEMANTIC SURFACES
 // Background tokens by purpose, not color.
 // ─────────────────────────────────────────────────────────────────────
