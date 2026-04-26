@@ -678,18 +678,37 @@ const Classify = () => {
             <Button
               size="sm"
               variant="default"
-              onClick={handleClassifyAndAutoApprove}
-              disabled={classifying || counts.pending === 0}
+              onClick={handleServerSideClassifyAll}
+              disabled={serverRunning || classifying || counts.pending === 0}
               className="bg-cedar text-cedar-foreground hover:bg-cedar/90"
+              title="Server-side: classifies everything in the background. Tab can be closed."
             >
-              {classifying ? (
+              {serverRunning ? (
                 <Loader2 className="h-4 w-4 animate-spin" />
               ) : (
                 <Zap className="h-4 w-4" />
               )}
+              {serverRunning
+                ? serverPolling
+                  ? `Working… ${counts.pending} left`
+                  : "Starting…"
+                : `Auto-classify all (${counts.pending})`}
+            </Button>
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={handleClassifyAndAutoApprove}
+              disabled={classifying || serverRunning || counts.pending === 0}
+              title="Classify in the browser (must keep tab open)"
+            >
+              {classifying ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <Sparkles className="h-4 w-4" />
+              )}
               {classifying
                 ? `${classifyProgress.done}/${classifyProgress.total}`
-                : `Classify & auto-approve (${counts.pending})`}
+                : "Classify in browser"}
             </Button>
             <Button
               size="sm"
