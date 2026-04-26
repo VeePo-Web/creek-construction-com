@@ -57,15 +57,15 @@ const Hero = () => {
         items={TRUST_ITEMS}
         variant="rule"
         onDark
-        className="mb-10"
+        className="mb-6 sm:mb-10"
         ariaLabel="Trust signals"
       />
 
-      <div className="flex flex-wrap items-center gap-6">
+      <div className="flex flex-wrap items-center gap-x-6 gap-y-3">
         <CedarCTA>Request a Quote</CedarCTA>
         <a
           href={`tel:${CONTACT.phoneTel}`}
-          className="inline-flex items-center gap-2 text-[11px] tracking-[0.18em] uppercase text-evergreen-foreground/70 hover:text-cedar transition-colors min-h-[44px] px-2"
+          className="inline-flex items-center gap-2 text-[12px] tracking-[0.16em] uppercase text-evergreen-foreground/70 hover:text-cedar transition-colors min-h-[44px] px-2"
         >
           or call {CONTACT.phone}
         </a>
