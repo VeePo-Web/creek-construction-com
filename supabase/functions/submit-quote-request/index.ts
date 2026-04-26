@@ -96,7 +96,7 @@ Deno.serve(async (req) => {
         name,
         phone,
         email: email || null,
-        address_or_area: addressOrArea,
+        address_or_area: addressOrArea || "(not provided)",
         services,
         project_details: projectDetails || null,
         property_type: propertyType || null,
