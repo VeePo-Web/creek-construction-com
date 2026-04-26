@@ -23,7 +23,17 @@
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=DM+Serif+Display&display=swap" />
+    <!-- Non-blocking font load: print media trick swaps to all once loaded.
+         Weight axis narrowed to the four weights the design system uses. -->
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Serif+Display&display=swap"
+      media="print"
+      onload="this.media='all'"
+    />
+    <noscript>
+      <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Serif+Display&display=swap" />
+    </noscript>
 
     <meta property="og:title" content="Creek Construction — Excellence in the Work" />
     <meta property="og:description" content="Residential exterior construction across Calgary and Edmonton. Decks, fencing, sheds, painting, siding. Free quotes." />
