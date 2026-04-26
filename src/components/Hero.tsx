@@ -10,7 +10,7 @@ import { useFirstApprovedMedia } from "@/hooks/useApprovedMedia";
 import BronzeRule from "@/components/ui/bronze-rule";
 import TrustChips from "@/components/ui/trust-chip";
 import StatTrio, { type StatItem } from "@/components/ui/stat-trio";
-import { BACKDROP } from "@/lib/colors";
+import { BACKDROP, TEXT } from "@/lib/colors";
 import { BODY } from "@/lib/typography";
 
 /**
@@ -103,7 +103,7 @@ const Hero = () => {
             </h1>
 
             <p
-              className={`${BODY.lead} text-evergreen-foreground/75 ${hasMedia ? "max-w-xl" : "max-w-2xl"} mb-10`}
+              className={`${BODY.lead} text-evergreen-foreground/90 ${TEXT.onDark.legibleShadow} ${hasMedia ? "max-w-xl" : "max-w-2xl"} mb-10`}
             >
               Decks, fencing, sheds, painting and siding — built to last across
               Alberta. Our crew owns the work from quote to final nail.

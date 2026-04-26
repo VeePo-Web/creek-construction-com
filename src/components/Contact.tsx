@@ -14,7 +14,6 @@ const Contact = () => {
       id="section-contact"
       className="py-24 md:py-32 bg-background relative overflow-hidden grain-overlay"
       aria-labelledby="contact-heading"
-      style={{ contentVisibility: "auto", containIntrinsicSize: "auto 700px" }}
     >
       <div
         className="absolute top-0 inset-x-0 h-40 pointer-events-none"
@@ -28,7 +27,7 @@ const Contact = () => {
                 numeral="VI"
                 label="START HERE"
                 headingId="contact-heading"
-                heading="Let's Build Something Right."
+                heading="Let’s Build Something Right."
                 subheading="Free quote. No high-pressure sales. We'll give you straight answers."
               />
 

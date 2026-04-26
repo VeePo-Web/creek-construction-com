@@ -62,7 +62,6 @@ const Portfolio = () => {
       id="work"
       className={`${SECTION_PADDING.default} bg-muted relative`}
       aria-labelledby="portfolio-heading"
-      style={{ contentVisibility: "auto", containIntrinsicSize: "auto 1200px" }}
     >
       <div
         className="absolute top-0 inset-x-0 h-24 pointer-events-none"

@@ -119,6 +119,12 @@ export const BACKDROP = {
   /** Section bottom fade — into secondary surface. */
   fadeToSecondary:
     "linear-gradient(180deg, transparent 0%, hsl(var(--secondary)) 100%)",
+  /** Cinematic vignette — over a hero photograph. */
+  cinematicVignette:
+    "linear-gradient(180deg, hsl(20 10% 8% / 0.3) 0%, hsl(20 10% 8% / 0.12) 38%, hsl(20 10% 8% / 0.55) 72%, hsl(20 10% 8% / 0.85) 100%)",
+  /** Cinematic radial vignette — softer edge darken over photos. */
+  cinematicRadial:
+    "radial-gradient(ellipse at center, transparent 40%, hsl(20 10% 8% / 0.2) 100%)",
 } as const;
 
 // ─────────────────────────────────────────────────────────────────────
@@ -157,9 +163,15 @@ export const TEXT = {
   /** On dark backgrounds (evergreen, footer). */
   onDark: {
     primary: "text-evergreen-foreground",
-    secondary: "text-evergreen-foreground/70",
-    tertiary: "text-evergreen-foreground/50",
+    secondary: "text-evergreen-foreground/85",
+    tertiary: "text-evergreen-foreground/60",
     accent: "text-cedar",
+    /**
+     * Subtle drop-shadow utility class (defined in src/index.css) that lifts
+     * body / lead text off textured evergreen radials so contrast holds AA
+     * even at /85 opacity. Compose with text-evergreen-foreground/* classes.
+     */
+    legibleShadow: "text-on-dark-legible",
   },
 } as const;
 
