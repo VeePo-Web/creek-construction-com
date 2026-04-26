@@ -430,7 +430,8 @@ const CinematicBleed = (props: CinematicBleedProps) => {
       {/* Content */}
       <div className="container mx-auto px-6 relative z-10 pb-16 md:pb-20">
         <div className="max-w-3xl">
-          <BreadcrumbTrail items={props.breadcrumb} onDark className="mb-6" />
+          {/* Breadcrumb intentionally omitted — HeaderBreadcrumb in the
+              chrome owns sub-page wayfinding so the hero photo stays clean. */}
 
           <BronzeRule
             numeral={props.numeral}
@@ -549,7 +550,8 @@ const ServicePortrait = (props: ServicePortraitProps) => {
 
       <div className="container mx-auto px-6 relative z-10 pb-20 md:pb-24 pt-32">
         <div className="max-w-3xl">
-          <BreadcrumbTrail items={props.breadcrumb} onDark className="mb-6" />
+          {/* Breadcrumb intentionally omitted — see CinematicBleed for the
+              same rationale. HeaderBreadcrumb owns sub-page wayfinding. */}
 
           <BronzeRule
             numeral={props.numeral}
