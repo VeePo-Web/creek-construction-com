@@ -9,6 +9,7 @@ import { useQuoteModal } from "@/components/quote/QuoteModalProvider";
 import CedarCTA from "@/components/CedarCTA";
 import BronzeRule from "@/components/ui/bronze-rule";
 import { useFirstApprovedMedia } from "@/hooks/useApprovedMedia";
+import type { MediaQuery } from "@/lib/api/public-media";
 
 interface GlobalMenuProps {
   /** Controlled open state. */
@@ -71,8 +72,8 @@ const GlobalMenu = ({ isOpen, onClose, id = "global-menu" }: GlobalMenuProps) =>
   // Editorial hero in the right column — pulled fresh from the approved
   // photography library each open. Falls back to evergreen if nothing
   // matches yet (the panel still looks intentional).
-  const heroQuery = useMemo(
-    () => ({ shot_type: ["hero", "wide"] as const, min_quality: "hero" as const, kind: "image" as const }),
+  const heroQuery = useMemo<MediaQuery>(
+    () => ({ shot_type: ["hero", "wide"], min_quality: "hero", kind: "image" }),
     [],
   );
   const heroPhoto = useFirstApprovedMedia(heroQuery);
@@ -118,7 +119,7 @@ const GlobalMenu = ({ isOpen, onClose, id = "global-menu" }: GlobalMenuProps) =>
     const p = heroPhoto.item;
     if (!p) return null;
     const loc = p.alt?.split(" in ")[1]?.split(",")[0]?.trim();
-    const parts = [p.service, loc, p.year ? String(p.year) : null].filter(Boolean);
+    const parts = [p.service, loc].filter(Boolean);
     return parts.length ? parts.join(" · ") : null;
   })();
 
