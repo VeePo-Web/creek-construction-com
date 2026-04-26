@@ -156,7 +156,7 @@ const EvergreenTypographic = (props: EvergreenTypographicProps) => {
   return (
     <section
       className={cn(
-        "relative overflow-hidden text-evergreen-foreground py-24 md:py-32 min-h-[72vh] md:min-h-[78vh] flex items-center",
+        "relative overflow-hidden text-evergreen-foreground py-24 md:py-32 min-h-[68vh] md:min-h-[78vh] flex items-center",
         props.className,
       )}
       aria-label={lines.join(" ")}
@@ -204,7 +204,9 @@ const EvergreenTypographic = (props: EvergreenTypographicProps) => {
 
       <div className="container mx-auto px-6 relative z-10">
         <div className="max-w-2xl">
-          <BreadcrumbTrail items={props.breadcrumb} onDark className="mb-6" />
+          {/* Breadcrumb intentionally omitted — HeaderBreadcrumb in the chrome
+              owns sub-page wayfinding (v3.1). The `breadcrumb` prop is still
+              accepted for back-compat but no longer renders here. */}
 
           <BronzeRule
             numeral={props.numeral ?? "I"}
@@ -223,7 +225,7 @@ const EvergreenTypographic = (props: EvergreenTypographicProps) => {
           {props.subtitle && (
             <p
               className={cn(
-                "mt-6 text-lg italic font-serif max-w-xl",
+                "mt-5 md:mt-6 text-lg italic font-serif max-w-xl",
                 "text-evergreen-foreground/95",
                 TEXT.onDark.legibleShadow,
               )}
