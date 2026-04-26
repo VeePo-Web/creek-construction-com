@@ -29,12 +29,14 @@ const About = () => {
       <Navigation />
 
       <PageHero
-        variant="evergreen"
+        variant="evergreen-typographic"
         breadcrumb={[{ label: "Home", to: "/" }, { label: "About" }]}
         numeral="I"
         sectionLabel="OUR STORY"
-        title="Built on the work itself."
-        subtitle="Locally owned. Calgary and Edmonton. No gimmicks — just the craft."
+        title={["Built on the", "work itself."]}
+        italic="Locally owned. No gimmicks."
+        subtitle="Calgary and Edmonton. The crew you meet is the crew on-site."
+        ambientClipQuery={{ kind: "video", min_quality: "portfolio" }}
       />
 
       <section className={`${SECTION_PADDING.default} grain-overlay`} aria-labelledby="story-heading">
