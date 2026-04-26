@@ -296,15 +296,37 @@ const GlobalMenu = ({ isOpen, onClose, id = "global-menu" }: GlobalMenuProps) =>
                   }}
                 >
                   {heroPhoto.item ? (
-                    <img
-                      src={heroPhoto.item.url}
-                      alt={heroPhoto.item.alt}
-                      className="absolute inset-0 w-full h-full object-cover hero-kenburns"
-                      loading="lazy"
-                      decoding="async"
-                    />
+                    heroGallery.items.map((p, i) => (
+                      <img
+                        key={p.storage_path}
+                        src={p.url}
+                        alt={i === galleryIdx ? p.alt : ""}
+                        className={cn(
+                          "absolute inset-0 w-full h-full object-cover hero-kenburns transition-opacity duration-[1200ms] ease-out",
+                          i === galleryIdx ? "opacity-100" : "opacity-0",
+                        )}
+                        loading={i === 0 ? "eager" : "lazy"}
+                        decoding="async"
+                        aria-hidden={i === galleryIdx ? undefined : true}
+                      />
+                    ))
                   ) : (
-                    <div className="absolute inset-0 bg-evergreen" />
+                    <div
+                      className="absolute inset-0 overflow-hidden"
+                      style={{ background: BACKDROP.cedarPlate }}
+                    >
+                      <div className="absolute inset-0 grain-overlay opacity-40 pointer-events-none" />
+                      <div
+                        className="absolute top-6 left-6 h-px"
+                        style={{
+                          width: "80px",
+                          background: "linear-gradient(90deg, hsl(var(--cedar) / 0.7), transparent)",
+                        }}
+                      />
+                      <p className="absolute bottom-6 left-6 right-6 text-[10px] tracking-[0.25em] uppercase text-cedar/80 font-medium">
+                        Field photography updates each season — request a quote and we'll send our latest project deck.
+                      </p>
+                    </div>
                   )}
                   <div
                     aria-hidden
