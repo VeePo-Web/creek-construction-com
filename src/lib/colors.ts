@@ -107,9 +107,13 @@ export const BACKDROP = {
   /** Hero / dark-section radial — evergreen with a warm core. */
   evergreenRadial:
     "radial-gradient(ellipse at 25% 25%, hsl(150 30% 22%) 0%, hsl(150 25% 12%) 60%, hsl(150 30% 6%) 100%)",
-  /** Card-fallback plate — diagonal evergreen. */
+  /** Card-fallback plate — diagonal evergreen, deeper. */
   evergreenPlate:
     "linear-gradient(135deg, hsl(150 25% 18%) 0%, hsl(150 30% 8%) 100%)",
+  /** Card surface — diagonal evergreen, mid-tone. Used by Contact CTA card,
+   *  Hero photo card overlays, About brand-promise plate. */
+  evergreenCard:
+    "linear-gradient(135deg, hsl(var(--evergreen)) 0%, hsl(150 25% 10%) 100%)",
   /** Bronze warmth wash — used as ghost background on hover for light surfaces. */
   bronzeWash:
     "linear-gradient(135deg, hsl(var(--cedar) / 0.07) 0%, hsl(var(--cedar) / 0.02) 100%)",
