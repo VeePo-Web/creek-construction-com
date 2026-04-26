@@ -1,157 +1,213 @@
+# Fantasy.co Hero System — Full Site Reskin
 
-# Plan — Fantasy.co-grade Hero System for every page
+## The diagnosis (from the live database, not memory)
 
-## Why this matters now
+- **0 assets** carry `ai_quality = 'hero'`. Every hero query in the codebase asks for `min_quality: "hero"` and silently falls back. That is why pages look flat.
+- We have **19 portfolio-tier shed process shots, 7 portfolio elevations**, and a deep `reference` bench (~70 photos). Plenty of raw material — the gate is wrong, not the inventory.
+- Sub-pages (`/work`, `/about`, `/contact`) all use `variant="evergreen"` — a flat type-only hero. The `cinematic` branch in `PageHero` exists but is never invoked. Dead code.
+- `/services` uses `PageHero` too but with no portrait or service signature.
+- Homepage `Hero.tsx` already has an *adaptive* two-column layout, but with no hero media approved it collapses to single-column every render.
 
-I audited every hero on the site. Three structural problems are blocking world-class work:
+## The thesis
 
-1. **Homepage Hero photo is invisible.** `Hero.tsx` queries `min_quality: "hero"` but the database has zero `hero`-tier images — only `portfolio` and `reference`. The two-column layout silently collapses to type-only on every load.
-2. **Every sub-page (Services, Work, About, Contact) renders the flat `evergreen` PageHero variant** — same radial gradient, same paragraph. No photography, no motion, no service-specific texture. This is the *opposite* of Fantasy.co's "every screen earns its frame" principle.
-3. **The `cinematic` PageHero variant exists but is dead code** — it takes a single static `image` prop (not a database query), has no video support, no foreground composition, no sequenced reveal.
+A Fantasy.co-grade hero is **cinematic, type-driven, and choreographed**. Three ingredients:
 
-We have 24 portfolio-grade photos and 7 approved videos sitting unused. This plan turns the hero layer into the brand's strongest weapon.
+1. **Real photography pulled from the cloud** — never a gradient placeholder.
+2. **Kinetic typography** — clip-path line reveals, weight shifts, italic punctuation that lands on a beat.
+3. **Provenance & narrative chrome** — floating cards that tell you *where, when, what* without ever overlapping the headline.
 
----
+Pages are not interchangeable. Each gets a hero variant tuned to its job:
 
-## What "Fantasy.co quality" means here
-
-Filtering through your three values:
-
-- **Elevate the human experience** → heroes load fast, never CLS, respect `prefers-reduced-motion`, surface a single clear CTA, work flawlessly on a 360px phone.
-- **Embody brand truth** → every hero photograph is an actual Creek build (zero stock), warmth comes from cedar tones, type is DM Serif Display with hanging punctuation.
-- **Innovate responsibly** → motion serves comprehension (Ken Burns ≤ 1.06× scale, clip-reveal ≤ 700ms), video is decorative-only with a still poster fallback, no autoplay sound — ever.
-
----
-
-## Architecture — one canonical hero, four expressive variants
-
-Rebuild `src/components/ui/page-hero.tsx` so a single component drives every hero on the site, choosing layout intelligently from props + live media:
-
-| Variant | Used on | Composition |
+| Page | Variant | Why |
 |---|---|---|
-| `editorial-split` | **Homepage** (replaces current `Hero.tsx`) | Two-column: typographic stack left, full-bleed photo + floating stat card right. Photo + stats both adapt based on what's actually in the library. |
-| `cinematic-bleed` | **/work** | Full-viewport photo OR looping muted video, reveal-clip headline staggered in 3 lines, bronze rule as a horizon, scroll-bound parallax (≤6%). |
-| `service-portrait` | **/services**, future per-service detail | Right-side portrait photo of an actual deck/fence/shed, left-side service-aware kicker that swaps based on most-photographed service in DB. |
-| `evergreen-typographic` | **/about**, **/contact** | Current type-only treatment, but with bronze numeral set in a wider grid, animated underline on first paint, optional grain texture intensity slider. |
-
-All four share: BreadcrumbTrail → BronzeRule → headline → subtitle → description → children CTA stack. The *only* thing that changes is the background layer and the column geometry. This keeps the system honest.
+| Home `/` | `editorial-split` | Two-column: headline + portrait. Best for trust-building. |
+| Work `/work` | `cinematic-bleed` | Full-bleed photo or muted-loop video. Photography is the product. |
+| Services `/services` | `service-portrait` | Triptych of service shots behind kinetic headline. |
+| About `/about` | `evergreen-typographic` (refined) | Crew is private — type carries the weight, with a single ambient field clip behind. |
+| Contact `/contact` | `evergreen-typographic` (refined) | Same. Gets a single contact-card collage. |
 
 ---
 
-## Step 1 — Promote real photography to `hero` tier
+## Phase 1 — Promote real heroes (data, not code)
 
-The library has 9 strong `portfolio` elevations. Pick the 5 most editorial (deck framing, charcoal shed, horizontal-slat fence, cedar storage shed, wood-deck rail) and promote them to `ai_quality = 'hero'` so the existing query starts returning data. This is a one-line SQL migration — instant fix for the invisible homepage photo.
+**1.1 Inventory the strongest candidates** via the admin tool and a SQL audit:
 
-I'll also relax the homepage hero query to `min_quality: 'portfolio'` as a safety net so this never silently fails again.
-
-## Step 2 — Add a `cinematic-bleed` `PageHero` variant that takes a query
-
-Rewrite `PageHero` so the `cinematic` variant accepts either:
-- `image: string` (static, current behavior), **or**
-- `query: MediaQuery` (live database lookup), **or**
-- `videoQuery: MediaQuery` (looping muted background video, with poster fallback)
-
-When `videoQuery` resolves to an approved `.mp4`/`.webm`, render `<video autoplay muted loop playsinline preload="metadata" poster={firstFramePoster}>`. When it resolves to `.mov` or nothing, fall back to the still hero. Fully `prefers-reduced-motion` aware: motion-reduced users get the still poster only.
-
-## Step 3 — Cinematic motion choreography
-
-Add a sequenced reveal director on hero mount, using the existing `reveal-clip` keyframe + a new `hero-stagger` orchestrator:
-
-1. **0ms** — image/video crossfades in from `opacity 0 → 1` over 600ms, easing `cubic-bezier(.2,.8,.2,1)`.
-2. **180ms** — bronze rule scales `scaleX(0) → scaleX(1)` from left, 500ms.
-3. **300ms** — headline lines clip-reveal in sequence (each 80ms behind the previous). Three-line max.
-4. **560ms** — subtitle fades + lifts `translateY(8px) → 0`, 500ms.
-5. **720ms** — CTA + tel link fade in, 400ms.
-
-Total choreography under 1.2s — enough to feel intentional, fast enough to not block interaction. Reduced-motion users get all of it instantly with `opacity` only.
-
-## Step 4 — Per-page hero programming
-
-| Page | Variant | Media query | Headline copy (kept) |
-|---|---|---|---|
-| `/` (Index) | `editorial-split` | `shot_type: ['hero','elevation','wide']`, `min_quality: 'portfolio'` | "Excellence in the Work." |
-| `/work` | `cinematic-bleed` | `videoQuery` first (any approved video), fallback to `shot_type: 'wide'` portfolio image | "The work speaks first." |
-| `/services` | `service-portrait` | Top-photographed service's best `elevation` shot | "Built right. Built once." (NEW — replaces flat) |
-| `/about` | `evergreen-typographic` (enhanced) | none — keep typographic | "Local crews. Real work." |
-| `/contact` | `evergreen-typographic` (enhanced) | none — keep typographic | "Tell us about the project." |
-
-## Step 5 — Headline kinetic typography
-
-Today the `<h1>` is a single block. Upgrade to a `<KineticHeadline>` primitive that splits the title at sentence boundaries and animates each line independently:
-
-```
-<span class="reveal-clip" style="--delay: 0ms">Excellence in the Work.</span>
-<span class="reveal-clip italic text-cedar" style="--delay: 80ms">Pride in every detail.</span>
+```sql
+-- Promote the top 8 portfolio elevations + best process wides to hero
+UPDATE media_metadata
+   SET ai_quality = 'hero'
+ WHERE ai_review_status = 'approved'
+   AND ai_quality = 'portfolio'
+   AND shot_type IN ('elevation','wide')
+   AND width >= 1600;
 ```
 
-The italic accent line uses the cedar accent at `0.62em` (already tokenized) but now lifts in a beat *after* the main statement — exactly the Pentagram cadence.
+Plus a manual promote for 2-3 standout `process` shots (judged by aspect + composition, picked by AI Vision against the alt text).
 
-## Step 6 — Foreground depth — the floating provenance card
+**1.2 Relax the homepage gate as a safety net.** In `src/lib/api/public-media.ts` the quality ordering already lets `portfolio` qualify when `min_quality:'portfolio'` is set. We change *callers* — every hero query becomes `min_quality: 'portfolio'` for now, with a `prefer_hero: true` client-side sort that pushes hero-tier first. No more silent fallback.
 
-Add a `HeroProvenanceCard` that floats over the bottom-left of cinematic heroes:
-- `Numeral · location · year · service` in micro-uppercase
-- One-sentence narrative caption pulled from `media_metadata.alt`
-- Subtle backdrop-blur on a 95%-opaque cedar-tinted surface
-
-This is what gives Fantasy heroes their "this is real, here's the receipt" feel. It also doubles as ProvenanceCaption for SEO.
-
-## Step 7 — Mobile-first behaviour
-
-- Heroes drop from `min-h-screen` → `min-h-[78vh]` on `<sm` and `<md` to prevent thumb fatigue.
-- Two-column layouts collapse to *photo first, type second* on `<lg` — the photo is the hook.
-- Video heroes never autoplay over cellular: detect `navigator.connection.saveData` / `effectiveType === '2g' | '3g'` and fall back to poster.
-- Floating cards re-flow inline (not absolute) below `lg`.
-
-## Step 8 — Performance contract
-
-Hard budgets for every hero:
-- LCP image ≤ 180KB after `?width=1920&quality=82` Supabase transform; preloaded with `<link rel="preload" as="image" fetchpriority="high">` injected by a new `useHeroPreload(query)` hook so we hit LCP before the React tree mounts.
-- `content-visibility: auto` on every section *below* the hero.
-- `contain: layout style paint` on the hero section itself (already there for cinematic — extend to all variants).
-- Video poster generated server-side at upload time (already wired in `auto-classify-batch`); we just consume the `poster_path` column.
-
-## Step 9 — Accessibility contract
-
-- `<h1>` is exactly one per page, lives inside `<section aria-label>`.
-- All hero photographs use the database `alt` text — already authored.
-- Skip-to-content link already implemented; verify focus ring is `focus-visible:ring-cedar` on both light and dark hero backgrounds (currently inconsistent on `/about` evergreen).
-- All animations respect `@media (prefers-reduced-motion: reduce)` via the existing global override in `index.css`.
-- Color contrast: validate every headline against its hero photo's bottom-third luminance. Apply `TEXT.onDark.legibleShadow` automatically on `cinematic-bleed`.
-
-## Step 10 — Documentation + governance
-
-- Update `mem://design/component-primitive-map` with the four hero variants and which pages use which.
-- Add a `/style-guide#heroes` section that renders all four variants live with annotated overlays — so the next contributor cannot drift.
-- Add JSDoc on `PageHero` listing the four variants, motion timing constants, and the performance budget so it appears on hover in IDE.
+**1.3 Field-clip qualification.** For `/work` cinematic variant we want a 6-12s muted MP4. Backfill: re-run `auto-classify-batch` with the new `kind: 'video'` rule, mark any approved `.mov` as `ai_quality:'portfolio'` and let UI accept it.
 
 ---
 
-## Files this will touch
+## Phase 2 — New kinetic primitives (3 small files)
 
-**Edit**
-- `src/components/ui/page-hero.tsx` — add `editorial-split`, `service-portrait` variants, query support, video support, sequenced reveal
-- `src/components/Hero.tsx` — refactor to delegate to `<PageHero variant="editorial-split">`, eliminating duplicated layout logic
-- `src/pages/Work.tsx` — switch to `cinematic-bleed` with videoQuery
-- `src/pages/Services.tsx` — switch to `service-portrait`
-- `src/pages/About.tsx`, `src/pages/Contact.tsx` — adopt enhanced `evergreen-typographic`
-- `src/index.css` — add `hero-stagger` keyframes + delay variables
-- `src/lib/motion.ts` — add `HERO_TIMINGS` constants (one source of truth)
-- `src/pages/StyleGuide.tsx` — new "Heroes" section
+### 2.1 `src/components/ui/kinetic-headline.tsx`
+A composable headline that splits the title into lines, then animates each line with a `clip-path` reveal on a staggered delay. API:
 
-**Create**
-- `src/components/ui/kinetic-headline.tsx` — line-split + per-line clip-reveal
-- `src/components/ui/hero-provenance-card.tsx` — floating bottom-left receipt
-- `src/hooks/useHeroPreload.ts` — injects `<link rel=preload>` for LCP image
-- `supabase/migrations/<ts>_promote_hero_quality.sql` — promote 5 best portfolio elevations to `hero`
+```tsx
+<KineticHeadline
+  lines={['Excellence in', 'the Work.']}
+  italic="Pride in every detail."
+  size="display"            // 'display' | 'cinematic' | 'service'
+  staggerMs={120}
+  onDark
+/>
+```
 
-**Memory**
-- Update `mem://design/component-primitive-map`
-- New `mem://features/hero-system-v7` documenting the four variants, timings, query patterns
+- Honors `prefers-reduced-motion`: clip-path becomes opacity 0→1.
+- Italic tail auto-renders with a hairline 1px cedar underline that *draws* in 600ms after the last line lands.
+- Uses `HEADLINE.display` from `src/lib/typography.ts` — never a hand-rolled font size.
+- Exposes `onComplete` callback so downstream chrome (provenance card, CTA) waits its turn.
+
+### 2.2 `src/components/ui/hero-provenance-card.tsx`
+A floating editorial card with: numeral, eyebrow, location, year, optional bronze rule, optional CTA. Glassmorphic surface (`hsl(var(--surface-card) / 0.97)`), subtle shadow, drop-in for any hero variant. Replaces the bespoke "stat card" inside `Hero.tsx`.
+
+### 2.3 `src/hooks/useHeroPreload.ts`
+Injects `<link rel="preload" as="image" fetchpriority="high">` into `<head>` *before* React renders the `<img>`. Resolves the LCP race condition where the hero image starts loading after Hydration. Driven by a single `usePublicMediaUrl(query)` resolved at module-init for the homepage hero.
 
 ---
 
-## What "done" looks like
+## Phase 3 — `PageHero` v2: four variants
 
-Open every page in turn. Every hero feels *inevitable* — like it could not have been designed any other way. Photography on the homepage is real Calgary work, animated in with the discipline of a Pentagram opener. `/work` opens with a video of a deck being built, headline clip-revealing line by line. `/services` lands on a portrait of a finished cedar fence. `/about` and `/contact` stay typographic but feel intentional, not empty. Nothing janks. LCP under 2.0s on a throttled 4G connection. Reduced-motion users get the same composition, instantly.
+Rewrite `src/components/ui/page-hero.tsx` (keep the export name + `evergreen` variant for backward-compat) so it dispatches to four sub-components:
 
-That is Fantasy.co quality.
+### `editorial-split` — Home
+- Two-column: 7/5 desktop, stacked mobile.
+- Left: BronzeRule → KineticHeadline → italic subtitle → TrustChips → CedarCTA + tel link.
+- Right: 4:5 aspect portrait inside an 8px radius frame with a 1px cedar/15 border.
+- Floating ProvenanceCard sits **−24px left, −32px bottom** of the photo (lg+).
+- Background: `BACKDROP.evergreenRadial` + grain — same evergreen as today.
+
+### `cinematic-bleed` — Work
+- Full-bleed `<img>` or `<video muted loop autoplay playsinline>` at 80vh / min 600px.
+- Foreground rendered at `bottom-left`, max-width 720px:
+  - Hairline cedar rule (24px wide) → numeral + eyebrow → KineticHeadline (size `cinematic`).
+  - Subtitle italic.
+  - **Caption rail** along the bottom edge: `service · location · year — photographer`. Renders hairline-divided.
+- Two vignettes: `cinematicVignette` (radial) + a top-down 30% black gradient so the nav stays legible.
+- Ken Burns drift on the image (1.0 → 1.06 over 14s, ease-out) — disabled under reduced motion.
+- LCP image preloaded via `useHeroPreload`.
+
+### `service-portrait` — Services
+- A 3-column triptych grid behind the headline:
+  - cols: 1fr 2fr 1fr at desktop, single image at mobile.
+  - Each tile pulls `MediaSlot` queries with `service: 'decks'`, `'fencing'`, `'sheds'`. Each gets a different `aspect` (`portrait`, `editorial`, `portrait`) so the silhouettes differ.
+- Headline overlaid in a center column with a black-to-transparent radial behind it (`mix-blend-multiply` on the photos).
+- Service chips below the headline render as horizontal hairline-divided pills (link to anchored sections on Services page).
+
+### `evergreen-typographic` — About + Contact
+- Keeps today's evergreen radial but adds:
+  - A **single ambient field clip** that loops top-right at 24% opacity (4:3 aspect, 320×240 max). Picked by query: `kind: 'video', shot_type: 'process'`. Renders nothing if no clip approved.
+  - KineticHeadline replaces the static `<h1>`.
+  - A new "spine" element on the left edge: a 1px vertical cedar line `bronzeStep(0,1)` running floor-to-headline-center, drawn in 800ms.
+  - Sister-studio footnote (currently in `/work`) becomes a re-usable slot.
+
+---
+
+## Phase 4 — Per-page reskin work
+
+### `src/pages/Index.tsx` + `src/components/Hero.tsx`
+- `Hero.tsx` becomes a pure consumer of `PageHero variant="editorial-split"` with custom children (TrustChips + dual CTA).
+- StatTrio + BronzeRule live inside the new `HeroProvenanceCard`.
+- Remove the duplicated background layering — `PageHero` owns it now.
+- Add `useHeroPreload(query)` at the top of `Index.tsx` so the LCP image preloads in `<head>`.
+
+### `src/pages/Work.tsx`
+Switch hero to:
+```tsx
+<PageHero
+  variant="cinematic-bleed"
+  query={{ shot_type: ['hero','elevation','wide'], min_quality: 'portfolio', kind: 'any' }}
+  posterQuery={{ shot_type:'elevation', min_quality:'portfolio' }}
+  numeral="I" sectionLabel="SELECTED WORK"
+  title={['The work', 'speaks first.']}
+  subtitle="Selected projects across Calgary, Edmonton, and the towns in between."
+  caption={{ service: 'Mixed', location: 'Alberta', year: 2025 }}
+  height="80vh" minHeight="600px"
+/>
+```
+
+### `src/pages/Services.tsx`
+Switch to `variant="service-portrait"` with three queries (decks/fencing/sheds). Headline becomes `['Built outside.', 'Built to last.']` italic tail "Six services. One crew."
+
+### `src/pages/About.tsx` + `src/pages/Contact.tsx`
+Adopt `evergreen-typographic` refinement. About gets `subject: 'process'` ambient clip; Contact gets `subject: 'wide'` if available, else nothing (slot is null-safe).
+
+---
+
+## Phase 5 — Motion choreography (cross-cutting)
+
+Define a tiny orchestrator hook `useHeroSequence()` that returns named beats:
+
+| Beat | Time | Element |
+|---|---|---|
+| `t0` | 0ms | image fade in (opacity 0 → 1, 600ms) |
+| `t1` | 200ms | bronze rule scale-x 0 → 1 (400ms) |
+| `t2` | 350ms | numeral + eyebrow fade-up (300ms) |
+| `t3` | 500ms | headline line 1 clip-reveal (700ms) |
+| `t4` | 620ms | headline line 2 (700ms) |
+| `t5` | 1100ms | italic subtitle fade-up (400ms) |
+| `t6` | 1300ms | provenance card fade + lift (500ms) |
+| `t7` | 1500ms | CTA fade + bronze underline draw (400ms) |
+
+All beats sourced from `DURATION` in `src/lib/motion.ts` (no magic numbers). Reduced-motion collapses to a single 300ms opacity fade for the whole composition.
+
+---
+
+## Phase 6 — Accessibility & performance budget
+
+- **Headline** stays `<h1>` semantically; lines split by `<span aria-hidden>` so screen readers read the full string.
+- **Cinematic video** ships with `aria-hidden`, a poster fallback, and pauses off-screen via existing `IntersectionObserver` in `AmbientVideoBleed`.
+- LCP target: **< 2.0s** on Home (preloaded portrait, ~120KB AVIF).
+- CLS target: **0.00** — every image carries explicit `width`/`height` and an `aspect-ratio` wrapper.
+- Total JS added by all new primitives: **~3KB gzipped** (headline split is CSS-driven; no Framer Motion dependency added).
+- Reduced motion path verified for every beat.
+
+---
+
+## Phase 7 — Memory + governance
+
+After implementation, update memory:
+
+- New file `mem://design/hero-system-v2.md` — variants, sequence beats, when to use which.
+- Update `mem://architecture/core-design-system` to mark `SubPageHero` deprecated in favor of `PageHero`.
+- Update `MEDIA_PLAYBOOK.md` to note that `min_quality: 'portfolio'` is now the canonical hero gate; `'hero'` is reserved for editor-promoted assets.
+
+---
+
+## Files this will create or change
+
+**Create (3):**
+- `src/components/ui/kinetic-headline.tsx`
+- `src/components/ui/hero-provenance-card.tsx`
+- `src/hooks/useHeroPreload.ts`
+
+**Rewrite (1):**
+- `src/components/ui/page-hero.tsx` — variant dispatcher + 4 sub-components
+
+**Edit (5):**
+- `src/components/Hero.tsx` — consume new PageHero
+- `src/pages/Index.tsx` — add preload hook
+- `src/pages/Work.tsx` — cinematic-bleed
+- `src/pages/Services.tsx` — service-portrait
+- `src/pages/About.tsx` + `src/pages/Contact.tsx` — refined evergreen
+
+**Migration (1):**
+- Promote portfolio→hero on qualifying assets; loosen caller gates.
+
+---
+
+## What this delivers
+
+A site where every hero **earns its space** with real photography, type that lands on a beat, and chrome that respects the photo. No more gradient placeholders. No more flat sub-pages. Each page distinct in rhythm, unified in voice. Fantasy.co caliber — measured by LCP, CLS, *and* the gut feeling of the first 3 seconds.

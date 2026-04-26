@@ -26,12 +26,13 @@ const Contact = () => {
       <Navigation />
 
       <PageHero
-        variant="evergreen"
+        variant="evergreen-typographic"
         breadcrumb={[{ label: "Home", to: "/" }, { label: "Contact" }]}
         numeral="I"
         sectionLabel="GET IN TOUCH"
-        title="Let’s talk about your project."
-        subtitle="Free quote. No high-pressure sales. Honest answers."
+        title={["Let’s talk about", "your project."]}
+        italic="Free quote. Honest answers."
+        subtitle="No high-pressure sales. We respond within 24–48 hours."
       />
 
       <section className={`${SECTION_PADDING.default} grain-overlay`} aria-labelledby="contact-heading">

@@ -1,181 +1,692 @@
-import { useHeroParallax } from "@/hooks/useHeroParallax";
+import { useMemo, type ReactNode } from "react";
+
 import { cn } from "@/lib/utils";
 import { BACKDROP, TEXT } from "@/lib/colors";
-import { HEADLINE } from "@/lib/typography";
 import BreadcrumbTrail, { type BreadcrumbItem } from "@/components/ui/breadcrumb-trail";
 import BronzeRule from "@/components/ui/bronze-rule";
+import KineticHeadline, { type KineticSize } from "@/components/ui/kinetic-headline";
+import HeroProvenanceCard from "@/components/ui/hero-provenance-card";
+import MediaSlot from "@/components/media/MediaSlot";
+import { useApprovedMedia, useFirstApprovedMedia } from "@/hooks/useApprovedMedia";
+import { useHeroParallax } from "@/hooks/useHeroParallax";
+import { useHeroPreload } from "@/hooks/useHeroPreload";
+import { MEDIA_SIZES } from "@/lib/media-sizes";
+import type { MediaQuery } from "@/lib/api/public-media";
 
-interface PageHeroBaseProps {
-  /** Breadcrumb items shown above the headline. Last item is the current page. */
+// ─────────────────────────────────────────────────────────────────────
+// Types
+// ─────────────────────────────────────────────────────────────────────
+
+export type PageHeroVariant =
+  | "evergreen-typographic"
+  | "editorial-split"
+  | "cinematic-bleed"
+  | "service-portrait"
+  // Back-compat aliases — still consumed across the codebase:
+  | "evergreen"
+  | "cinematic";
+
+interface BaseProps {
   breadcrumb: BreadcrumbItem[];
-  /** Roman numeral or short tag rendered before the eyebrow rule. */
   numeral?: string;
-  /** Eyebrow label rendered after the rule (uppercase). */
   sectionLabel: string;
-  /** The h1 of the page. */
-  title: string;
-  /** Italic serif sub-line beneath the title. */
+  /** Title — string (one line) OR an array of lines for KineticHeadline. */
+  title: string | string[];
+  /** Italic punctuation tail rendered in cedar with hairline underline draw. */
+  italic?: string;
+  /** Plain prose subtitle below the headline. */
   subtitle?: string;
-  /** Optional additional supporting copy. */
+  /** Tertiary copy below the subtitle. */
   description?: string;
-  /** Extra interactive content (CTA, badges) below the description. */
-  children?: React.ReactNode;
-  /** Skip-to-content target id (rendered as the focusable a11y skip link). */
+  /** Extra interactive content (CTA, badges) under the description. */
+  children?: ReactNode;
   skipToId?: string;
   className?: string;
 }
 
-interface EvergreenVariant extends PageHeroBaseProps {
-  variant?: "evergreen";
-  image?: never;
-  imageAlt?: never;
-  height?: never;
-  minHeight?: never;
+interface EvergreenTypographicProps extends BaseProps {
+  variant?: "evergreen-typographic" | "evergreen";
+  /** Optional ambient field clip query (rendered top-right at low opacity). */
+  ambientClipQuery?: MediaQuery;
 }
 
-interface CinematicVariant extends PageHeroBaseProps {
-  variant: "cinematic";
-  /** Hero photograph (eager, fetchpriority high). */
-  image: string;
-  imageAlt: string;
-  /** Hero height — default 70vh. */
+interface EditorialSplitProps extends BaseProps {
+  variant: "editorial-split";
+  /** Photo query for the right column. */
+  query: MediaQuery;
+  /** Optional provenance card content. */
+  provenance?: {
+    eyebrow?: string;
+    heading?: string;
+    body?: string;
+    location?: string;
+    year?: number;
+    service?: string;
+    children?: ReactNode;
+  };
+}
+
+interface CinematicBleedProps extends BaseProps {
+  variant: "cinematic-bleed";
+  /** Image query (always required as fallback / poster). */
+  query: MediaQuery;
+  /** Optional video query — when matched, renders a muted loop. */
+  videoQuery?: MediaQuery;
+  /** Provenance caption rail along the bottom edge. */
+  caption?: { service?: string; location?: string; year?: number };
   height?: string;
-  /** Minimum height — default 500px. */
   minHeight?: string;
 }
 
-type PageHeroProps = EvergreenVariant | CinematicVariant;
+interface ServicePortraitProps extends BaseProps {
+  variant: "service-portrait";
+  /** 2–3 service queries that compose the triptych behind the headline. */
+  queries: MediaQuery[];
+}
 
-/**
- * PageHero — the canonical sub-page opener.
- *
- * Two variants:
- *   - "evergreen" (default): tokenized evergreen radial backdrop, no photo.
- *     Replaces 4 hand-rolled hero blocks across Services / Work / About /
- *     Contact pages. Pure typography composition.
- *   - "cinematic": full-bleed parallax photograph + cinematic vignette.
- *     Replaces SubPageHero. Used for image-led pages (currently /work).
- *
- * Both variants compose the same primitives: BreadcrumbTrail, BronzeRule,
- * HEADLINE.display, BACKDROP.* — so the visual rhythm is consistent across
- * the entire site.
- */
-const PageHero = (props: PageHeroProps) => {
-  const isCinematic = props.variant === "cinematic";
-  const heroImgRef = useHeroParallax();
+interface CinematicLegacyProps extends BaseProps {
+  /** Legacy: pre-rewrite cinematic with a static image. */
+  variant: "cinematic";
+  image: string;
+  imageAlt: string;
+  height?: string;
+  minHeight?: string;
+}
 
-  const headlineSize = "clamp(2.5rem, 5vw, 4rem)";
+type PageHeroProps =
+  | EvergreenTypographicProps
+  | EditorialSplitProps
+  | CinematicBleedProps
+  | ServicePortraitProps
+  | CinematicLegacyProps;
+
+// ─────────────────────────────────────────────────────────────────────
+// Helpers
+// ─────────────────────────────────────────────────────────────────────
+
+function toLines(title: string | string[]): string[] {
+  return Array.isArray(title) ? title : [title];
+}
+
+function SkipLink({ skipToId }: { skipToId?: string }) {
+  if (!skipToId) return null;
+  return (
+    <a
+      href={`#${skipToId}`}
+      className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[100] focus:bg-cedar focus:text-cedar-foreground focus:px-6 focus:py-3 focus:text-minimal focus:rounded-sm focus:shadow-lg"
+    >
+      Skip to content
+    </a>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────────
+// Variant: evergreen-typographic
+// Type-led, evergreen radial + grain. Optional ambient field clip top-right.
+// Used on /about, /contact, /services (when no portrait queries supplied).
+// ─────────────────────────────────────────────────────────────────────
+
+const EvergreenTypographic = (props: EvergreenTypographicProps) => {
+  const lines = toLines(props.title);
+  const ambient = useFirstApprovedMedia(
+    props.ambientClipQuery ?? { kind: "video", min_quality: "portfolio" },
+  );
+  const showAmbient = Boolean(props.ambientClipQuery && ambient.item?.is_video);
 
   return (
-    <>
-      {props.skipToId && (
-        <a
-          href={`#${props.skipToId}`}
-          className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[100] focus:bg-cedar focus:text-cedar-foreground focus:px-6 focus:py-3 focus:text-minimal focus:rounded-sm focus:shadow-lg"
+    <section
+      className={cn(
+        "relative overflow-hidden bg-evergreen text-evergreen-foreground py-24 md:py-32",
+        props.className,
+      )}
+      aria-label={lines.join(" ")}
+    >
+      <div className="absolute inset-0 opacity-90" style={{ background: BACKDROP.evergreenRadial }} />
+      <div className="absolute inset-0 grain-overlay opacity-40 pointer-events-none" />
+
+      {/* Spine — left vertical bronze hairline */}
+      <div
+        aria-hidden
+        className="hidden md:block absolute left-6 top-1/2 -translate-y-1/2 w-px bg-cedar/30"
+        style={{ height: "calc(100% - 8rem)" }}
+      />
+
+      {/* Ambient field clip (small, decorative) */}
+      {showAmbient && ambient.item && (
+        <div
+          aria-hidden
+          className="hidden lg:block absolute top-10 right-10 w-[280px] aspect-[4/3] rounded-[8px] overflow-hidden"
+          style={{
+            border: "1px solid hsl(var(--cedar) / 0.18)",
+            opacity: 0.32,
+            mixBlendMode: "screen",
+          }}
         >
-          Skip to content
-        </a>
+          <video
+            src={ambient.item.url}
+            muted
+            autoPlay
+            loop
+            playsInline
+            className="w-full h-full object-cover"
+          />
+        </div>
       )}
 
-      <section
-        className={cn(
-          "relative overflow-hidden",
-          isCinematic
-            ? "flex items-end"
-            : "bg-evergreen text-evergreen-foreground py-24 md:py-32",
-          props.className,
-        )}
-        style={
-          isCinematic
-            ? {
-                height: props.height ?? "70vh",
-                minHeight: props.minHeight ?? "500px",
-                contain: "layout style paint",
-              }
-            : undefined
-        }
-        aria-label={props.title}
-      >
-        {/* Background layers */}
-        {isCinematic ? (
-          <>
-            <img
-              ref={heroImgRef}
-              src={props.image}
-              alt={props.imageAlt}
-              width="1920"
-              height="1080"
-              className="absolute inset-0 w-full h-full object-cover hero-image-entrance"
-              loading="eager"
-              fetchPriority="high"
-              decoding="sync"
-              sizes="100vw"
-              style={{ transform: "scale(1.12)" }}
-            />
-            <div className="absolute inset-0" style={{ background: BACKDROP.cinematicVignette }} />
-            <div className="absolute inset-0 pointer-events-none" style={{ background: BACKDROP.cinematicRadial }} />
-          </>
-        ) : (
-          <>
-            <div className="absolute inset-0 opacity-90" style={{ background: BACKDROP.evergreenRadial }} />
-            <div className="absolute inset-0 grain-overlay opacity-40 pointer-events-none" />
-          </>
-        )}
+      <div className="container mx-auto px-6 relative z-10">
+        <div className="max-w-4xl">
+          <BreadcrumbTrail items={props.breadcrumb} onDark className="mb-6" />
 
-        {/* Content */}
-        <div
-          className={cn(
-            "container mx-auto px-6 relative z-10",
-            isCinematic && "pb-16",
+          <BronzeRule
+            numeral={props.numeral ?? "I"}
+            label={props.sectionLabel}
+            variant="onDark"
+            className="mb-6 hero-rule-draw"
+          />
+
+          <KineticHeadline
+            lines={lines}
+            italic={props.italic}
+            size="display"
+            onDark
+          />
+
+          {props.subtitle && (
+            <p
+              className={cn(
+                "mt-6 text-lg italic font-serif max-w-xl",
+                "text-evergreen-foreground/85",
+                TEXT.onDark.legibleShadow,
+              )}
+            >
+              {props.subtitle}
+            </p>
           )}
+
+          {props.description && (
+            <p
+              className={cn(
+                "mt-4 max-w-2xl text-sm leading-relaxed",
+                "text-evergreen-foreground/70",
+                TEXT.onDark.legibleShadow,
+              )}
+            >
+              {props.description}
+            </p>
+          )}
+
+          {props.children && <div className="mt-8 hero-provenance-enter" style={{ ["--kinetic-delay" as never]: "1100ms" }}>{props.children}</div>}
+        </div>
+      </div>
+    </section>
+  );
+};
+
+// ─────────────────────────────────────────────────────────────────────
+// Variant: editorial-split
+// Two-column homepage hero. Type left, photograph right with floating
+// provenance card overlapping the bottom-left corner.
+// ─────────────────────────────────────────────────────────────────────
+
+const EditorialSplit = (props: EditorialSplitProps) => {
+  const lines = toLines(props.title);
+  const { item, loading } = useFirstApprovedMedia(props.query);
+
+  // Preload the LCP candidate as soon as we resolve a URL.
+  useHeroPreload(item?.url, MEDIA_SIZES.PORTRAIT_HALF);
+
+  const hasMedia = !loading && Boolean(item);
+
+  // Headline uses the larger display size when paired with a photo.
+  return (
+    <section
+      id="section-hero"
+      className={cn(
+        "relative min-h-[88vh] md:min-h-screen flex items-center overflow-hidden",
+        props.className,
+      )}
+      aria-label={lines.join(" ")}
+    >
+      <div className="absolute inset-0 bg-evergreen" />
+      <div className="absolute inset-0 opacity-90" style={{ background: BACKDROP.evergreenRadial }} />
+      <div className="absolute inset-0 grain-overlay opacity-40 pointer-events-none" />
+      <div
+        className="absolute inset-x-0 bottom-0 h-32 pointer-events-none"
+        style={{ background: "linear-gradient(180deg, transparent, hsl(var(--secondary)) 100%)" }}
+      />
+
+      <div className="container mx-auto px-6 relative z-10 py-20 md:py-28 lg:py-32">
+        <div
+          className={
+            hasMedia
+              ? "grid lg:grid-cols-12 gap-10 lg:gap-16 items-center"
+              : "max-w-5xl"
+          }
         >
-          <div className="max-w-7xl mx-auto">
+          {/* ─── Left column ─── */}
+          <div className={hasMedia ? "lg:col-span-7 max-w-2xl" : ""}>
             <BreadcrumbTrail items={props.breadcrumb} onDark className="mb-6" />
 
             <BronzeRule
-              numeral={props.numeral ?? "I"}
+              numeral={props.numeral}
               label={props.sectionLabel}
               variant="onDark"
-              className="mb-4"
+              className="mb-6 hero-rule-draw"
             />
 
-            <h1
-              className={cn(HEADLINE.display, "text-evergreen-foreground mb-4")}
-              style={{ fontSize: headlineSize }}
-            >
-              <span className={cn(isCinematic && "block reveal-clip")}>
-                {props.title}
-              </span>
-            </h1>
+            <KineticHeadline
+              lines={lines}
+              italic={props.italic}
+              size={hasMedia ? "cinematic" : "display"}
+              onDark
+            />
 
             {props.subtitle && (
               <p
                 className={cn(
-                  "text-lg italic font-serif max-w-xl mb-4",
-                  "text-evergreen-foreground/85",
+                  "mt-6 text-lg md:text-xl text-evergreen-foreground/90",
                   TEXT.onDark.legibleShadow,
+                  hasMedia ? "max-w-xl" : "max-w-2xl",
                 )}
               >
                 {props.subtitle}
               </p>
             )}
 
-            {props.description && (
-              <p
-                className={cn(
-                  "max-w-2xl text-sm leading-relaxed",
-                  "text-evergreen-foreground/70",
-                  TEXT.onDark.legibleShadow,
-                )}
+            {props.children && (
+              <div
+                className="mt-10 hero-provenance-enter"
+                style={{ ["--kinetic-delay" as never]: "1300ms" }}
               >
-                {props.description}
-              </p>
+                {props.children}
+              </div>
             )}
-
-            {props.children && <div className="mt-8">{props.children}</div>}
           </div>
+
+          {/* ─── Right column — photo card + floating provenance ─── */}
+          {hasMedia && (
+            <div className="lg:col-span-5 relative">
+              <div className="relative">
+                <div
+                  className="relative rounded-[8px] overflow-hidden shadow-float"
+                  style={{ border: "1px solid hsl(var(--cedar) / 0.15)" }}
+                >
+                  <MediaSlot
+                    query={props.query}
+                    priority
+                    sizes={MEDIA_SIZES.PORTRAIT_HALF}
+                    wrapperClassName="aspect-editorial w-full"
+                    fallback={null}
+                  />
+
+                  <div
+                    className="absolute inset-x-0 bottom-0 h-1/3 pointer-events-none"
+                    style={{
+                      background:
+                        "linear-gradient(0deg, hsl(150 30% 6% / 0.55) 0%, transparent 100%)",
+                    }}
+                  />
+                </div>
+
+                {props.provenance && (
+                  <div className="mt-6 lg:mt-0 lg:absolute lg:left-[-24px] lg:bottom-[-32px] lg:max-w-[340px]">
+                    <HeroProvenanceCard
+                      eyebrow={props.provenance.eyebrow}
+                      heading={props.provenance.heading}
+                      body={props.provenance.body}
+                      location={props.provenance.location ?? item?.alt?.split(" in ")[1]?.split(",")[0]}
+                      year={props.provenance.year}
+                      service={props.provenance.service ?? item?.service ?? undefined}
+                      delayMs={1500}
+                    >
+                      {props.provenance.children}
+                    </HeroProvenanceCard>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
         </div>
-      </section>
+      </div>
+    </section>
+  );
+};
+
+// ─────────────────────────────────────────────────────────────────────
+// Variant: cinematic-bleed
+// Full-bleed photo (or muted-loop video). Used on /work.
+// ─────────────────────────────────────────────────────────────────────
+
+const CinematicBleed = (props: CinematicBleedProps) => {
+  const lines = toLines(props.title);
+  const heroImgRef = useHeroParallax();
+
+  const photo = useFirstApprovedMedia(props.query);
+  const video = useFirstApprovedMedia(
+    props.videoQuery ?? { kind: "video", min_quality: "portfolio" },
+  );
+  const useVideo = Boolean(props.videoQuery && video.item?.is_video);
+
+  // Preload the LCP photograph (always — even when video plays, the poster
+  // is the photo and it is what the user sees first).
+  useHeroPreload(photo.item?.url, MEDIA_SIZES.HERO_FULL);
+
+  const captionLine = useMemo(() => {
+    if (!props.caption) return null;
+    const { service, location, year } = props.caption;
+    return [service, location, year ? String(year) : null].filter(Boolean).join(" · ");
+  }, [props.caption]);
+
+  return (
+    <section
+      className={cn("relative overflow-hidden flex items-end", props.className)}
+      style={{
+        height: props.height ?? "82vh",
+        minHeight: props.minHeight ?? "620px",
+        contain: "layout style paint",
+      }}
+      aria-label={lines.join(" ")}
+    >
+      {/* Background — video preferred, photo fallback */}
+      {useVideo && video.item ? (
+        <video
+          src={video.item.url}
+          muted
+          autoPlay
+          loop
+          playsInline
+          poster={photo.item?.url}
+          className="absolute inset-0 w-full h-full object-cover"
+          aria-hidden
+        />
+      ) : photo.item ? (
+        <img
+          ref={heroImgRef}
+          src={photo.item.url}
+          alt={photo.item.alt}
+          width={photo.item.width ?? 1920}
+          height={photo.item.height ?? 1080}
+          className="absolute inset-0 w-full h-full object-cover hero-kenburns"
+          loading="eager"
+          fetchPriority="high"
+          decoding="sync"
+          sizes={MEDIA_SIZES.HERO_FULL}
+        />
+      ) : (
+        // Evergreen fallback when nothing matches yet
+        <div className="absolute inset-0" style={{ background: BACKDROP.evergreenPlate }} />
+      )}
+
+      {/* Cinematic vignette stack */}
+      <div className="absolute inset-0" style={{ background: BACKDROP.cinematicVignette }} aria-hidden />
+      <div className="absolute inset-0 pointer-events-none" style={{ background: BACKDROP.cinematicRadial }} aria-hidden />
+      {/* Top scrim so navigation stays legible */}
+      <div
+        className="absolute inset-x-0 top-0 h-32 pointer-events-none"
+        style={{ background: "linear-gradient(180deg, hsl(20 10% 6% / 0.55) 0%, transparent 100%)" }}
+        aria-hidden
+      />
+
+      {/* Content */}
+      <div className="container mx-auto px-6 relative z-10 pb-16 md:pb-20">
+        <div className="max-w-3xl">
+          <BreadcrumbTrail items={props.breadcrumb} onDark className="mb-6" />
+
+          <BronzeRule
+            numeral={props.numeral}
+            label={props.sectionLabel}
+            variant="onDark"
+            className="mb-6 hero-rule-draw"
+          />
+
+          <KineticHeadline
+            lines={lines}
+            italic={props.italic}
+            size="cinematic"
+            onDark
+          />
+
+          {props.subtitle && (
+            <p
+              className={cn(
+                "mt-6 text-lg md:text-xl italic font-serif max-w-xl",
+                "text-evergreen-foreground/90",
+                TEXT.onDark.legibleShadow,
+              )}
+            >
+              {props.subtitle}
+            </p>
+          )}
+
+          {props.children && (
+            <div
+              className="mt-8 hero-provenance-enter"
+              style={{ ["--kinetic-delay" as never]: "1500ms" }}
+            >
+              {props.children}
+            </div>
+          )}
+
+          {captionLine && (
+            <div
+              className="mt-10 pt-6 border-t border-evergreen-foreground/15 hero-provenance-enter"
+              style={{ ["--kinetic-delay" as never]: "1700ms" }}
+            >
+              <p className="text-[10px] tracking-[0.25em] uppercase text-evergreen-foreground/60 tabular-nums">
+                {captionLine}
+              </p>
+            </div>
+          )}
+        </div>
+      </div>
+    </section>
+  );
+};
+
+// ─────────────────────────────────────────────────────────────────────
+// Variant: service-portrait
+// 2–3 service photographs composed as a backdrop triptych behind the
+// headline. Used on /services.
+// ─────────────────────────────────────────────────────────────────────
+
+const ServicePortrait = (props: ServicePortraitProps) => {
+  const lines = toLines(props.title);
+
+  // Resolve up to 3 photographs, one per query.
+  const a = useFirstApprovedMedia(props.queries[0] ?? {});
+  const b = useFirstApprovedMedia(props.queries[1] ?? {});
+  const c = useFirstApprovedMedia(props.queries[2] ?? {});
+  const tiles = [a.item, b.item, c.item].filter(Boolean);
+
+  useHeroPreload(a.item?.url, MEDIA_SIZES.THIRD);
+
+  const hasAny = tiles.length > 0;
+
+  return (
+    <section
+      className={cn(
+        "relative overflow-hidden bg-evergreen text-evergreen-foreground",
+        "min-h-[78vh] md:min-h-[82vh] flex items-end",
+        props.className,
+      )}
+      aria-label={lines.join(" ")}
+    >
+      {/* Triptych background */}
+      {hasAny && (
+        <div
+          aria-hidden
+          className="absolute inset-0 grid grid-cols-1 md:grid-cols-3 gap-1 opacity-70"
+        >
+          {tiles.map((m, i) => (
+            <div
+              key={m!.storage_path + i}
+              className={cn(
+                "relative overflow-hidden",
+                i === 1 ? "hidden md:block" : "",
+                i === 2 ? "hidden md:block" : "",
+              )}
+            >
+              <img
+                src={m!.url}
+                alt=""
+                className="absolute inset-0 w-full h-full object-cover hero-kenburns"
+                style={{
+                  animationDelay: `${i * 600}ms`,
+                  animationDuration: "16s",
+                }}
+                loading={i === 0 ? "eager" : "lazy"}
+                fetchPriority={i === 0 ? "high" : undefined}
+                decoding={i === 0 ? "sync" : "async"}
+              />
+            </div>
+          ))}
+        </div>
+      )}
+
+      <div className="absolute inset-0" style={{ background: BACKDROP.cinematicVignette }} aria-hidden />
+      <div className="absolute inset-0 pointer-events-none" style={{ background: BACKDROP.evergreenRadial, opacity: 0.55 }} aria-hidden />
+      <div className="absolute inset-0 grain-overlay opacity-30 pointer-events-none" />
+
+      <div className="container mx-auto px-6 relative z-10 pb-20 md:pb-24 pt-32">
+        <div className="max-w-3xl">
+          <BreadcrumbTrail items={props.breadcrumb} onDark className="mb-6" />
+
+          <BronzeRule
+            numeral={props.numeral}
+            label={props.sectionLabel}
+            variant="onDark"
+            className="mb-6 hero-rule-draw"
+          />
+
+          <KineticHeadline
+            lines={lines}
+            italic={props.italic}
+            size="cinematic"
+            onDark
+          />
+
+          {props.subtitle && (
+            <p
+              className={cn(
+                "mt-6 text-lg italic font-serif max-w-xl text-evergreen-foreground/90",
+                TEXT.onDark.legibleShadow,
+              )}
+            >
+              {props.subtitle}
+            </p>
+          )}
+
+          {props.description && (
+            <p
+              className={cn(
+                "mt-4 max-w-2xl text-sm leading-relaxed text-evergreen-foreground/70",
+                TEXT.onDark.legibleShadow,
+              )}
+            >
+              {props.description}
+            </p>
+          )}
+
+          {props.children && (
+            <div className="mt-8 hero-provenance-enter" style={{ ["--kinetic-delay" as never]: "1500ms" }}>
+              {props.children}
+            </div>
+          )}
+        </div>
+      </div>
+    </section>
+  );
+};
+
+// ─────────────────────────────────────────────────────────────────────
+// Variant: cinematic (legacy — static image prop)
+// Preserved for back-compat with any old consumer.
+// ─────────────────────────────────────────────────────────────────────
+
+const CinematicLegacy = (props: CinematicLegacyProps) => {
+  const lines = toLines(props.title);
+  const heroImgRef = useHeroParallax();
+
+  return (
+    <section
+      className={cn("relative overflow-hidden flex items-end", props.className)}
+      style={{
+        height: props.height ?? "70vh",
+        minHeight: props.minHeight ?? "500px",
+        contain: "layout style paint",
+      }}
+      aria-label={lines.join(" ")}
+    >
+      <img
+        ref={heroImgRef}
+        src={props.image}
+        alt={props.imageAlt}
+        width="1920"
+        height="1080"
+        className="absolute inset-0 w-full h-full object-cover hero-image-entrance"
+        loading="eager"
+        fetchPriority="high"
+        decoding="sync"
+        sizes="100vw"
+        style={{ transform: "scale(1.12)" }}
+      />
+      <div className="absolute inset-0" style={{ background: BACKDROP.cinematicVignette }} aria-hidden />
+      <div className="absolute inset-0 pointer-events-none" style={{ background: BACKDROP.cinematicRadial }} aria-hidden />
+
+      <div className="container mx-auto px-6 relative z-10 pb-16">
+        <div className="max-w-3xl">
+          <BreadcrumbTrail items={props.breadcrumb} onDark className="mb-6" />
+          <BronzeRule
+            numeral={props.numeral ?? "I"}
+            label={props.sectionLabel}
+            variant="onDark"
+            className="mb-4"
+          />
+          <KineticHeadline lines={lines} italic={props.italic} size="cinematic" onDark />
+          {props.subtitle && (
+            <p
+              className={cn(
+                "mt-4 text-lg italic font-serif max-w-xl text-evergreen-foreground/85",
+                TEXT.onDark.legibleShadow,
+              )}
+            >
+              {props.subtitle}
+            </p>
+          )}
+          {props.children && <div className="mt-8">{props.children}</div>}
+        </div>
+      </div>
+    </section>
+  );
+};
+
+// ─────────────────────────────────────────────────────────────────────
+// Dispatcher
+// ─────────────────────────────────────────────────────────────────────
+
+const PageHero = (props: PageHeroProps) => {
+  return (
+    <>
+      <SkipLink skipToId={props.skipToId} />
+      {(() => {
+        switch (props.variant) {
+          case "editorial-split":
+            return <EditorialSplit {...(props as EditorialSplitProps)} />;
+          case "cinematic-bleed":
+            return <CinematicBleed {...(props as CinematicBleedProps)} />;
+          case "service-portrait":
+            return <ServicePortrait {...(props as ServicePortraitProps)} />;
+          case "cinematic":
+            return <CinematicLegacy {...(props as CinematicLegacyProps)} />;
+          case "evergreen":
+          case "evergreen-typographic":
+          case undefined:
+          default:
+            return (
+              <EvergreenTypographic {...(props as EvergreenTypographicProps)} />
+            );
+        }
+      })()}
     </>
   );
 };

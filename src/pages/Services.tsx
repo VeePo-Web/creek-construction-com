@@ -42,13 +42,19 @@ const Services = () => {
       <Navigation />
 
       <PageHero
-        variant="evergreen"
+        variant="service-portrait"
         breadcrumb={[{ label: "Home", to: "/" }, { label: "Services" }]}
         numeral="I"
         sectionLabel="EXTERIOR CONSTRUCTION"
-        title="Six things, done right."
+        title={["Built outside.", "Built to last."]}
+        italic="Six services. One crew."
         subtitle="All residential. All exterior. All built to outlast Alberta winters."
         skipToId="all-services-heading"
+        queries={[
+          { service: "decks", shot_type: ["hero", "elevation", "wide"], min_quality: "portfolio", kind: "image" },
+          { service: "sheds", shot_type: ["hero", "elevation", "wide"], min_quality: "portfolio", kind: "image" },
+          { service: "fencing", shot_type: ["hero", "elevation", "wide"], min_quality: "portfolio", kind: "image" },
+        ]}
       >
         <CedarCTA>Request a Quote</CedarCTA>
       </PageHero>

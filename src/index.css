@@ -362,6 +362,87 @@
     to { clip-path: inset(0 0 0 0); }
   }
 
+  /* ─────────────────────────────────────────────────────────────
+     KINETIC HEADLINE
+     Per-line clip reveal driven by a CSS variable delay. Used by
+     <KineticHeadline>; do NOT use directly in pages.
+     ───────────────────────────────────────────────────────────── */
+  .kinetic-line {
+    display: block;
+    clip-path: inset(0 0 100% 0);
+    transform: translateY(0.4em);
+    opacity: 0;
+    will-change: clip-path, transform, opacity;
+    animation: kinetic-line-in 900ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    animation-delay: var(--kinetic-delay, 0ms);
+  }
+  @keyframes kinetic-line-in {
+    0%   { clip-path: inset(0 0 100% 0); transform: translateY(0.4em); opacity: 0; }
+    35%  { opacity: 1; }
+    100% { clip-path: inset(0 0 0    0); transform: translateY(0);    opacity: 1; }
+  }
+
+  /* Italic punctuation tail with a hairline cedar underline that draws in. */
+  .kinetic-italic {
+    display: inline-block;
+    position: relative;
+    opacity: 0;
+    transform: translateY(0.3em);
+    animation: kinetic-italic-in 700ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    animation-delay: var(--kinetic-delay, 0ms);
+  }
+  .kinetic-italic::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -0.18em;
+    height: 1px;
+    background: hsl(var(--cedar) / 0.45);
+    transform-origin: left center;
+    transform: scaleX(0);
+    animation: kinetic-underline-draw 800ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    animation-delay: calc(var(--kinetic-delay, 0ms) + 380ms);
+  }
+  @keyframes kinetic-italic-in {
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes kinetic-underline-draw {
+    to { transform: scaleX(1); }
+  }
+
+  /* Provenance card lift */
+  .hero-provenance-enter {
+    opacity: 0;
+    transform: translateY(12px);
+    animation: hero-provenance-in 600ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    animation-delay: var(--kinetic-delay, 0ms);
+  }
+  @keyframes hero-provenance-in {
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Bronze rule scale-x reveal — used as the hero "horizon line". */
+  .hero-rule-draw {
+    transform-origin: left center;
+    transform: scaleX(0);
+    animation: hero-rule-in 500ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    animation-delay: var(--kinetic-delay, 0ms);
+  }
+  @keyframes hero-rule-in {
+    to { transform: scaleX(1); }
+  }
+
+  /* Cinematic Ken Burns — slow drift on full-bleed hero images. */
+  .hero-kenburns {
+    animation: hero-kenburns 14s cubic-bezier(0.4, 0, 0.6, 1) forwards;
+    transform-origin: center 60%;
+  }
+  @keyframes hero-kenburns {
+    from { transform: scale(1.0); }
+    to   { transform: scale(1.06); }
+  }
+
   /* Sub-page hero image cinematic Ken Burns entrance. */
   .hero-image-entrance {
     animation: hero-image-enter 1.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
@@ -409,10 +490,20 @@
     }
 
     .hero-image-entrance,
-    .reveal {
+    .reveal,
+    .kinetic-line,
+    .kinetic-italic,
+    .hero-provenance-enter,
+    .hero-rule-draw,
+    .hero-kenburns {
       animation: none !important;
       opacity: 1 !important;
       transform: none !important;
+      clip-path: none !important;
+    }
+    .kinetic-italic::after {
+      transform: scaleX(1) !important;
+      animation: none !important;
     }
 
     .grain-overlay::before,

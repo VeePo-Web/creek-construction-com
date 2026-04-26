@@ -45,16 +45,22 @@ const Work = () => {
       <Navigation />
 
       <PageHero
-        variant="evergreen"
+        variant="cinematic-bleed"
         breadcrumb={[{ label: "Home", to: "/" }, { label: "Our Work" }]}
         numeral="I"
-        sectionLabel="SELECTED PROJECTS"
-        title="The work speaks first."
-        subtitle="Selected recent projects across Calgary, Edmonton, and surrounding Alberta."
+        sectionLabel="SELECTED WORK"
+        title={["The work", "speaks first."]}
+        italic="Alberta-built. Crew-owned."
+        subtitle="Selected projects across Calgary, Edmonton, and the towns in between."
+        query={{ shot_type: ["hero", "elevation", "wide"], min_quality: "portfolio", kind: "image" }}
+        videoQuery={{ kind: "video", min_quality: "portfolio" }}
+        caption={{ service: "Mixed services", location: "Alberta", year: new Date().getFullYear() }}
+        height="84vh"
+        minHeight="640px"
       >
         {/* Sister studios — quiet editorial footnote */}
-        <div className="flex items-center gap-3 text-evergreen-foreground/30">
-          <div className="w-8 h-px bg-evergreen-foreground/20" />
+        <div className="flex items-center gap-3 text-evergreen-foreground/40">
+          <div className="w-8 h-px bg-evergreen-foreground/30" />
           <span className="text-[10px] tracking-[0.25em] uppercase">
             Sister studios · B &amp; P Saunas · Hickory &amp; Rose
           </span>
