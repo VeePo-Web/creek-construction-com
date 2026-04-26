@@ -1,198 +1,138 @@
-# Conversion + Performance Pass v4 — Finishing the Reduction
+# Style Guide v4 — Editorial Governance Reference
 
-> The last three passes landed structure, the modal collapse, and the mobile FAB. This pass closes out the **remaining 12 wrappers**, the **last 37 `transition-all` instances**, the **4-tile Contact stack** that should be one panel, and adds the **Footer's tertiary Quote CTA** — the final conversion attempt before the user leaves the page.
+**Goal.** Promote `/style-guide` from a "developer reference" to a stakeholder-grade brand book. Same source-of-truth philosophy (everything still imported from `src/lib/*` so it can never drift from the live tokens), but with the **structural discipline of RoyalMechanical's guide** and the **clean, restrained aesthetic of FlexServices**.
 
-> Verified state of the codebase as of right now:
-> - 12 `ScrollRevealMotion` callsites still alive across `Services.tsx`, `About.tsx`, `Contact.tsx`, `FeaturedProjects.tsx`, `Services` page, `Contact` page, `About` page, `Work` page.
-> - 37 `transition-all` / `duration-700` instances across `src/components` and `src/pages` — most are mechanical swaps to explicit property lists.
-> - `Contact.tsx` still renders 4 separate bordered tiles with their own grain layers and 500ms transitions — exactly what audit-pass v3 flagged for collapse.
-> - Hero CTA pair on iPhone SE drops below the fold; subtitle line-height is `relaxed` and TrustChips has a `mb-10` that's too generous on `<sm`.
-> - Footer has no Quote CTA — the user has scrolled all the way down and we don't make one last ask.
+**Why now.** The current page imports `VERBAL_IDENTITY` and `VISUAL_DIRECTION.colorUsage` but never renders them. Card padding, subhead rhythm, eyebrow casing, and copy-button states drift between sections because every section reaches for its own ad-hoc Tailwind. The result is exactly what you described: the data is there, the surface looks "cheap and inconsistent."
+
+This plan fixes both problems in a single pass: (1) **one card system + one section template** that every block must use, and (2) **three new sections** that surface the brand data we already have.
 
 ---
 
-## A · Eliminate the remaining `ScrollRevealMotion` wrappers (the highest-leverage perf cut)
+## A. Layout primitives — the consistency contract
 
-The shim works but every wrapped node still adds a DOM element + observer subscription. **Apply `useReveal` at the section root and drop the per-child wrappers entirely.** The user perceives a section appearing as a unit; per-item staggers were never serving the brand.
+Move every visual primitive into a single block at the top of `src/pages/StyleGuide.tsx` so a future contributor cannot reinvent them.
 
-### A1 · `src/components/Services.tsx`
-- Drop the `<ScrollRevealMotion key={service.id} delay={i * 0.08} y={28}>` around each service tile (6 wrappers gone).
-- Apply `useReveal` to the section's outer `<div className="container">` so the whole grid fades in as one. Net: **6 observers → 1**.
-- Remove the now-unused `ScrollRevealMotion` import.
+1. **`<GuideShell>`** — single page chrome. Renders the cream canvas, the v4 header strip, the two-column grid (`200px` rail + content), and the footer. Today these styles live inline at the bottom of the file; promoting them means the page can never go off-grid.
+2. **`<GuideSection>`** — replaces today's hand-rolled `<section className="mb-32">…</section>` blocks. Props: `id`, `numeral`, `eyebrow`, `title`, `description`, `children`. Owns the bottom margin, scroll-margin, and `<SectionAnchor>` so every section ends with the same breathing room.
+3. **`<Subhead>`** stays, but is rewritten to `mt-16 mb-6 first:mt-0` and gains a leading hairline (`<div className="h-px w-8 bg-cedar/30 mb-3" />`) — a Royal-style detail that visually separates each subsection without ever looking decorative.
+4. **`<TokenCard>`** — one canonical card. Replaces the inconsistent mix of `<Card>`, bare `<div className="border …">`, and the column rows used in Royal's pattern. Props: `title`, `value`, `description?`, `preview?`. Always renders title row → optional preview → mono `value` chip → copy button. **All token rows in Color/Spacing/Motion sections route through this.**
+5. **`<DoDontGrid>`** — two-column do/don't card stack used at the end of Type, Spacing, and Motion. Today each section re-implements this; one component locks the casing of `✓ Do` / `✕ Don't`, the bronze/40 left border, and the muted strikethrough on "don't" items.
+6. **`<RuleList>`** — replaces the various `<ul className="space-y-3">` patterns used for Non-Negotiables and Photography Rules. Two variants: `accent` (cedar bullet, dark text) and `mute` (gray dash, muted text).
+7. **`<EyebrowLabel>`** — a tiny text component that produces the `text-[10px] tracking-[0.25em] uppercase text-cedar` label used 30+ times across the page. Right now every instance is a hand-typed Tailwind string and they drift (some are `text-[11px]`, some are `tracking-[0.18em]`).
 
-### A2 · `src/components/About.tsx`
-- Drop all four `ScrollRevealMotion` wrappers (the lead paragraphs, the brand-promise plate, the process column heading, the process step list).
-- Apply `useReveal` to the outer `.container` once.
-- Replace the `hover:translate-x-1` on process steps with `hover:translate-x-1` already there — already compositor-only, **no change needed there**.
-- But: replace the `transition-colors duration-500` on step number + heading with `duration-300` (matches the new motion token cadence).
-
-### A3 · `src/components/Contact.tsx`
-- Drop **all five** `ScrollRevealMotion` wrappers in this section.
-- Apply `useReveal` to the outer container.
-- See section B below for the bigger collapse of the four contact tiles.
-
-### A4 · `src/components/FeaturedProjects.tsx`
-- Drop the per-card `ScrollRevealMotion` (was wrapping every `ProjectCard`).
-- Drop the "See all work" wrapper at the bottom.
-- The cards naturally appear together as part of the section — apply `useReveal` to the section root.
-
-### A5 · `src/components/media/FieldClipsStrip.tsx` and `HomeProjectRecapStrip.tsx`
-- Both are now off the homepage but live on `/work`. Drop their per-item wrappers same way.
-
-### A6 · `src/pages/About.tsx`, `src/pages/Contact.tsx`, `src/pages/Services.tsx`, `src/pages/Work.tsx`, `src/pages/NotFound.tsx`
-- Same pattern — section root only, no per-child wrappers.
-
-**Net DOM reduction**: ~28 wrapper `<div>`s gone from the homepage alone. ~50 across the full site.
+After this primitive layer lands, every section becomes ~30% shorter and structurally identical — which is what makes it feel "designed" instead of assembled.
 
 ---
 
-## B · Collapse the four Contact tiles into one panel
+## B. Header & rail — quiet authority
 
-`src/components/Contact.tsx` currently stacks:
-1. The MediaSlot photo card
-2. The "DIRECT CONTACT" `<a>` for phone with grain + border + hover
-3. The same again for email
-4. The "SERVICE AREAS" chip cloud
-5. The "What to expect" card-glass plate
+The current hero is a stand-alone `<section>` near the bottom of the file with its own bespoke spacing. Replace it with a **fixed editorial header strip** modeled on Royal's `lg:ml-56` shift, but tuned to Creek's warmer canvas:
 
-That's **5 paint roots** for what reads as one column. The audit (B5 in v3 plan) called for a single bordered card with internal hairlines. Concretely:
+- **Top strip.** Pre-title eyebrow `Creek Construction · Brand & Design System · v1.0 · April 2026`. One line, hairline rule beneath, no decorative chips.
+- **Headline.** `font-serif text-5xl md:text-6xl lg:text-7xl text-balance` reading "**The Editorial Brain.**" — replaces today's "Creek Construction Style Guide" which is descriptive, not memorable.
+- **Standfirst.** `BRAND_SPINE.purpose` rendered in `font-serif italic text-xl text-foreground/65 max-w-2xl`. Same content as today, but moved into the header instead of duplicated in the Brand section.
+- **Index strip.** A horizontal mini-TOC under the standfirst — `I · Brand · II · Color · III · Type · IV · Spacing · V · Motion · VI · Components · VII · Performance · VIII · Governance · IX · Verbal · X · Imagery · XI · Logo`. Cedar numerals, muted labels, hairline separators between each entry. Acts as a one-glance map of the document.
 
-### B1 · Restructure to a single panel
-- Wrap the phone, email, service areas, and "what to expect" content inside **one** `<aside>` with `border border-border/40 rounded-sm` and a single grain layer.
-- Use internal `<hr className="border-border/30 my-6" />` (or just `border-b` on each row) to separate sections — no per-row borders, no per-row grain, no per-row shadow.
-- The phone + email rows become flex rows with `Phone` / `Mail` icons, label, value. Hover state is **only** a color change on the value (`hover:text-cedar`), not a 500ms `transition-all` on background/border/shadow.
-- Service areas remain a chip cloud but lose the per-chip `grain-texture` and `shadow-contact` (15 paint roots → 0).
-- "What to expect" becomes a small list at the bottom of the same panel — no second `card-glass` container.
-
-### B2 · Drop the `group-hover/contact:scale-110` icon scale
-- 16px icons scaling 10% on hover is decorative noise. Remove (matches v3 C7).
-
-### B3 · Drop the duplicate Hero/Contact secondary CTAs
-- v3 already removed Services bottom CTA. Contact still has just the primary `<CedarCTA>` — verify it's the only CTA in the section and remove any "or send a general message" text if it crept back in.
+The existing **`<LeftRail>`** stays as the sticky companion on `lg`, but its anchors get the new section IDs and its label uppercases harmonize with the header strip.
 
 ---
 
-## C · `transition-all` → explicit property lists (mechanical sweep)
+## C. Eight existing sections — refit, not rewrite
 
-37 remaining instances. Browser must monitor every animatable property on each `transition-all`. Replace with what's actually changing:
+Each section keeps its content but gets re-routed through the new primitives. No content is removed.
 
-- `hover:bg-X` only → `transition-colors`
-- `hover:scale-X` / `hover:translate-X` → `transition-transform`
-- `hover:shadow-X` → `transition-shadow`
-- combined → `transition-[background-color,box-shadow,border-color]` etc.
-
-### Files in scope (verified):
-- `src/components/Contact.tsx` (lines 61, 74, 97) — already addressed via section B's collapse, but if any survive, swap them.
-- `src/pages/Contact.tsx` (lines 59, 75) — phone/email tile transitions.
-- `src/pages/About.tsx` (lines 95, 126) — process tiles + city chips.
-- `src/components/FeaturedProjects.tsx` (line 113) — "View project" arrow.
-- `src/components/ui/project-tile.tsx` (lines 100, 123, 132, 143, 183) — card hover stack.
-- `src/components/ui/sidebar.tsx` line 257, `src/components/ui/progress.tsx` line 16 — admin-area UI; lower priority but still mechanical.
-
-### And: drop `duration-700` → `duration-300` on hover-trigger transitions
-- 500–700ms hovers feel deliberate but hold compositor layers alive 2–3× longer than needed. INP improves measurably when fewer cards are in the "transitioning" state at once.
-- Keep entrance/reveal animations at 400–500ms (they need to feel intentional). Touch-only.
+| § | Section       | Changes |
+|---|---------------|---------|
+| I | **Brand** | Drop the inline tagline duplication (now in header). Tabs stay. Add a fifth tab **Color Usage** that renders `VISUAL_DIRECTION.colorUsage` (`evergreen`, `bronze`, `cream`, `stone`) — currently exported but invisible. |
+| II | **Color** | Every divider/border/shadow row routes through `<TokenCard>`. Swatch component keeps its photography-style header but the metadata table beneath is unified. Add `BACKDROP` (gradient backgrounds) preview row — they're exported but never shown. |
+| III | **Typography** | `<TypeSpecimen>` becomes a `<TokenCard>` variant. Add `LINE_HEIGHT` and `LETTER_SPACING` tables that exist in `typography.ts` but aren't on the page today. |
+| IV | **Spacing** | All token tables route through `<TokenCard>`. The 8px grid reference (`GRID_8PX`) gets its own visual ladder — currently never rendered despite being exported. |
+| V | **Motion** | Easing demos keep their hover-to-play behavior; their card chrome is normalized. Add the `KEYFRAME` reference list (also exported, also currently invisible). |
+| VI | **Components** | Aspect ratios + form inputs + card surfaces stay. Add a **"Components in situ"** strip that shows live `BronzeRule`, `TrustChips`, `StatTrio`, `CedarCTA` (primary + secondary), and `SectionHeader` (default + quiet) so the page documents the *shipped library*, not just the tokens. Direct imports from `@/components/ui/*` and `@/components/SectionHeader`. |
+| VII | **Performance** | Table stays. The `LAST_MEASURED` block is moved out of the component and into a top-of-file constant with a `// Update after every perf pass` comment so contributors know it's the artifact, not auto-magic. |
+| VIII | **Governance** | Cards route through the new primitive. Add a final **"This page is alive"** block stating the page is rendered from `src/lib/*.ts` and changes there propagate here without touching the JSX. |
 
 ---
 
-## D · Hero mobile fold tightening (the conversion-critical visual)
+## D. Three new sections — surfacing what's already in the data
 
-On iPhone SE (375×667) the Hero CTA pair drops below the fold. Verified in the file: `subtitle` uses default leading (relaxed), TrustChips has `mb-10` (40px), and the dual CTA + tel link wraps to 3 lines on `<sm`. Three small edits restore above-the-fold:
+These are the missing surfaces that make today's guide feel half-built.
 
-### D1 · `src/components/Hero.tsx`
-- TrustChips: change `className="mb-10"` to `className="mb-6 sm:mb-10"`.
-- CTA row: change `gap-6` → `gap-x-6 gap-y-3` so the wrap doesn't add a full row gap.
-- The `or call` link: change `text-[11px]` → `text-[12px]` for legibility but tighten `tracking` so it occupies same width.
+**§ IX. Verbal Identity** (new, between Governance and the footer is wrong — it goes between Brand and Color so it reads as part of the editorial brain).
+Renders:
+- `VERBAL_IDENTITY.capitalization` as a `do / wrong[]` row with curly-quote examples.
+- `VERBAL_IDENTITY.services` capitalization as chip rows.
+- `VERBAL_IDENTITY.punctuation` as a numbered `<RuleList accent>`.
+- A "Phone & address format" `<TokenCard>` triplet rendering `phone`, `email`, `serviceArea` so contributors copy the canonical strings instead of typing them.
 
-### D2 · Verify in `PageHero` (variant `editorial-split`)
-- The subtitle prop renders inside `PageHero`. If it uses `leading-relaxed`, override to `leading-snug` on `<sm`. (Read first — only patch if confirmed.)
+**§ X. Imagery & Media.**
+Pulls `VISUAL_DIRECTION.photographyRules` (already exported) into a dedicated section with three sub-blocks:
+- **Provenance contract** — short prose paragraph explaining MEDIA_PLAYBOOK.md and the EditorialPicture / MediaSlot / EditorialBleedSection trio (cross-link to memory).
+- **Aspect ratio ladder** — lift the AspectRatios array out of Components and re-render it here in context, with a one-sentence usage note per ratio.
+- **Fallback gradients** — render `BACKDROP.editorialFallback` (and friends) as live tiles so contributors see what an empty media slot looks like instead of guessing.
 
----
+**§ XI. Logo & Marks.**
+Cross-references the `mem://design/logo-asset-map` rules in code:
+- The Creek wordmark in light + dark contexts (renders `BrandMark` directly with `onDark` toggle).
+- The favicon and social-card logo files listed as `<TokenCard>` rows pointing at their public-folder paths.
+- A "Don't do this to the logo" do/don't grid (no recolor, no rotate, no add-effects, minimum 32px high).
 
-## E · Footer Quote CTA — the final conversion attempt
-
-Currently `Footer.tsx` has phone, email, navigation links, service areas, and the legal row. **No CTA**. The user has consumed everything we offered; a single tertiary "Request a Quote" line above the legal row is the last ask before they leave the page.
-
-### E1 · Add a single inline CTA
-- Above the `mt-16 pt-8 border-t` row, add a small horizontal flex row:
-  - Left: `<p>` with text `"Ready to start? Tell us about your project."`
-  - Right: a `<CedarCTA>` (small variant) labeled `"Request a Quote"`.
-- Hairline `border-t border-evergreen-foreground/10` above it to separate from the 3-column block.
-- Padding `py-8 mt-12`.
-- On `<sm`: stacks vertically, CTA full-width.
-
-### E2 · Footer keeps minimum visual weight
-- No grain overlay, no shadow, no hover surface — the CTA is the only interactive element here.
+These three sections take the page from "developer notes" to a brand book a stakeholder could actually walk a new hire through.
 
 ---
 
-## F · Sweep small remaining noise
+## E. Visual polish pass — kills the "cheap" feeling
 
-### F1 · Drop the inner `grain-overlay` in `FeaturedProjects.tsx` line 78
-- It stacks on a `linear-gradient` background that's already textured. Audit v3 flagged this; still present.
+These are the small, repeated details that, today, add up to the page looking thrown together. Fixing them in the primitives applies the fix everywhere at once.
 
-### F2 · `src/pages/NotFound.tsx`
-- Has an inner grain layer that v3 flagged. Drop it.
-
-### F3 · `MobileQuoteFAB.tsx` — confirm visibility logic on `/contact`
-- Currently FAB hides only when intersecting `#section-contact` (which only exists on the homepage). On `/contact` page the section ID is also `section-contact`, so it should hide correctly there. Verify in the deploy that the FAB is hidden on `/contact` after scroll past 600px.
-- One observed gap: on the `/services`, `/about`, `/work` pages the FAB stays visible because none of those have `#section-contact`. **That's correct behavior** — those pages SHOULD have the FAB.
-
-### F4 · Audit `useReveal` import is consistent
-- Some files may still import `ScrollRevealMotion` after the wrappers are gone — clean the imports so we don't ship dead code.
+1. **Eyebrow casing & tracking.** Lock to one spec: `text-[10px] uppercase tracking-[0.25em] text-cedar font-medium`. Every variant (some sections use `text-[11px]`, some use `tracking-[0.18em]`, some use `text-cedar/80`) collapses into `<EyebrowLabel>`.
+2. **Card padding.** All `<TokenCard>` and `<Card>` instances use `p-6` content + `p-5` for compact rows. Today they range from `p-4` to `p-8` randomly.
+3. **Border tone.** Standardize on `border-border/60` for cards and `border-border/40` for inner separators. Remove the `border-cedar/30` accent on cards (it adds noise) — keep cedar borders only for the `do` card in `<DoDontGrid>`.
+4. **Code chips.** Today there are three rendering styles (`bg-secondary/60`, `bg-muted`, `bg-secondary`). Lock to one: `bg-secondary/50 text-foreground/80 font-mono text-[11px] px-2 py-1 rounded-sm`.
+5. **Copy button.** Rebuild as a 28×28 hit target with a centered icon and an `aria-live` announcement on "Copied". Today the button appears with two different sizes between sections.
+6. **Curly quotes.** Sweep the file for any `"` / `'` left over and replace with `"` / `'` / `'`. Memory rule already calls for this; one of the type specimens has a stray straight apostrophe.
+7. **Numbering style.** All Roman numerals render with `tabular-nums text-cedar/40` at one consistent size. The current page has both `text-cedar/40` and `text-cedar/60` instances.
+8. **Footer.** Replace the current "Source: src/lib/*.ts" with two short lines: a copyright/version line on the left, a "Built from `src/lib/*` — change tokens there to update this page" note on the right. Reads as documentation, not boilerplate.
 
 ---
 
-## G · QA contract
+## F. Anti-drift rules — the "never inconsistent again" gate
 
-After implementation:
+These get added as block comments inside `src/pages/StyleGuide.tsx` and as bullets in `STYLE_GUIDE.md` so future edits cannot regress the surface:
 
-1. **Wrapper count**: `rg -l "ScrollRevealMotion" src/components src/pages` returns **only** `src/components/ScrollRevealMotion.tsx` (the shim itself, kept for backward compat) — zero callsites.
-2. **transition-all count**: `rg "transition-all" src/components src/pages | wc -l` returns ≤ 5 (only inside primitive UI components like `sidebar.tsx`/`progress.tsx` where the property set is intentionally broad).
-3. **Contact section paints**: One panel, one grain layer, one shadow root for the right column. Visually inspect at desktop + mobile.
-4. **Hero mobile fold**: At 375×667 viewport, the "Request a Quote" button is fully visible without scroll.
-5. **Footer**: Bottom of every page now ends with a small "Ready to start? Request a Quote" line above the legal row. CTA opens the modal.
-6. **Type-check**: clean.
-7. **Build**: succeeds.
-8. **Visual diff**: identical hero copy, identical service grid, calmer About process column, single-panel Contact column, footer with one final CTA.
-9. **Reduced motion**: still skips all reveals (the shared `useReveal` honors `prefers-reduced-motion`).
-10. **No console errors** on `/`, `/services`, `/about`, `/contact`, `/work`.
+- **Rule 1.** No JSX in this file is allowed to use `<div className="border …">` directly — every bordered surface MUST use `<TokenCard>` or `<Card>`.
+- **Rule 2.** No hand-written `text-[10px] uppercase tracking-[…]` strings — must go through `<EyebrowLabel>`.
+- **Rule 3.** No new section may be added without `<GuideSection>` — the numeral, eyebrow, and scroll margin are then guaranteed.
+- **Rule 4.** Any new token in `src/lib/*` requires a corresponding row in this file before merge. Enforced by review (no automation), but the rule is documented in `STYLE_GUIDE.md`.
+- **Rule 5.** No section may import from `@/components/ui/*` directly except VI (Components in situ) — keeps the Token sections honest about being *token references*, not component demos.
 
 ---
 
-## H · Files touched
+## G. Files touched
 
-### Edited
-- `src/components/Services.tsx` — drop wrappers, apply `useReveal` once.
-- `src/components/About.tsx` — drop 4 wrappers, apply `useReveal` once, tighten step durations.
-- `src/components/Contact.tsx` — drop 5 wrappers, **collapse 4 tiles to 1 panel**, drop icon scale, swap `transition-all`.
-- `src/components/FeaturedProjects.tsx` — drop per-card + footer wrappers, apply `useReveal` once, drop inner grain, swap `transition-all`.
-- `src/components/Hero.tsx` — D1 mobile-fold tightening.
-- `src/components/Footer.tsx` — E1 add tertiary Quote CTA.
-- `src/components/media/FieldClipsStrip.tsx` — drop wrappers.
-- `src/components/media/HomeProjectRecapStrip.tsx` — drop wrappers.
-- `src/components/SectionHeader.tsx` — drop any wrapper if present.
-- `src/pages/Services.tsx` — drop wrappers, sweep `transition-all`.
-- `src/pages/About.tsx` — drop wrappers, swap `transition-all` (lines 95, 126).
-- `src/pages/Contact.tsx` — drop wrappers, swap `transition-all` (lines 59, 75).
-- `src/pages/Work.tsx` — drop wrappers.
-- `src/pages/NotFound.tsx` — drop inner grain.
-- `src/components/ui/project-tile.tsx` — swap `transition-all` and `duration-700`.
-- `src/components/ui/page-hero.tsx` — D2 verify subtitle leading on `<sm` (read first; only patch if needed).
+- `src/pages/StyleGuide.tsx` — major refactor (rewrite around the new primitives, add §IX–XI, route every existing section through `<GuideSection>` + `<TokenCard>` + `<EyebrowLabel>`).
+- `STYLE_GUIDE.md` — append the anti-drift rules from §F. Bump "Last revised" line.
+- `mem://design/token-architecture.md` — add a one-line note that `/style-guide` now renders Verbal Identity, Imagery, and Logo sections, so contributors know to update them when those tokens change.
 
-### Mechanical sweep (no visual change)
-- `transition-all` → explicit property list across the verified files.
-- `duration-700` → `duration-300` on hover-only transitions.
-
-### Kept as-is
-- `src/components/ScrollRevealMotion.tsx` — kept as a shim so any future re-introduction doesn't break, but no callsites use it.
-- `src/lib/*` — frozen design tokens.
-- `src/components/quote/QuoteModal.tsx` — already optimized in v3.
-- `src/components/MobileQuoteFAB.tsx` — already complete.
-- All admin routes, RLS, schema — untouched.
+**Not touched.** All `src/lib/*.ts` files remain untouched — this pass is purely how those tokens are *displayed*. No contracts change.
 
 ---
 
-## I · The principle
+## H. Verification checklist (before declaring done)
 
-Every wrapper the user doesn't see costs something. Every transition that doesn't communicate state costs INP. Every CTA that doesn't appear at a moment of decision is a lost lead. This pass takes the site from "structurally clean" to **"shipped"** — the level of finish where you stop noticing the design and start noticing the work.
+- TypeScript compiles clean (`tsc --noEmit`).
+- Every existing section still renders its tokens; nothing dropped.
+- New sections (§IX, §X, §XI) render on first paint with no console warnings.
+- Copy button works on every chip and announces "Copied" once per click.
+- All anchor links in the header strip and `<LeftRail>` jump to the right scroll position with the correct top offset (`scroll-mt-24`).
+- Lighthouse a11y on `/style-guide` ≥ 95 (color contrast, focus rings, alt text on the BrandMark preview, keyboard nav of tabs).
+- Page weight of `/style-guide` stays under 80 KB JS (gz) — it's lazy-loaded, but it should still be the lightest route on the site.
+- `mem://index.md` doesn't need editing; the existing token-architecture entry already covers `/style-guide`.
+
+---
+
+## I. Out of scope
+
+- No design-token changes (no new colors, no new fonts, no new motion curves). Those are separate plans.
+- No publishing of `/style-guide` to the public nav — it stays at `/style-guide`, lazy-loaded, `noindex, nofollow`. Internal-only.
+- No Markdown export of the style guide. The page IS the artifact; if a stakeholder wants a PDF, they print to PDF from the rendered page.
