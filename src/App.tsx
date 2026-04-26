@@ -8,6 +8,7 @@ import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import { QuoteModalProvider } from "@/components/quote/QuoteModalProvider";
 import RequireAdmin from "@/components/admin/RequireAdmin";
+import MobileQuoteFAB from "@/components/MobileQuoteFAB";
 
 // Public routes are lazy except Home (the LCP/entry route).
 // Each non-home route ships its own JS chunk so visitors only download
@@ -36,6 +37,20 @@ function ScrollToTop() {
     window.scrollTo({ top: 0, left: 0, behavior: "instant" });
   }, [pathname]);
   return null;
+}
+
+/**
+ * Gate the mobile Quote FAB to public marketing routes only — never on
+ * admin, /style-guide, or /contact (the contact page is itself a CTA).
+ */
+function PublicMobileFAB() {
+  const { pathname } = useLocation();
+  const blocked =
+    pathname.startsWith("/admin") ||
+    pathname.startsWith("/style-guide") ||
+    pathname.startsWith("/contact");
+  if (blocked) return null;
+  return <MobileQuoteFAB />;
 }
 
 const App = () => (
