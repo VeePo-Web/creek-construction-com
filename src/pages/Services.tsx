@@ -1,7 +1,6 @@
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import CedarCTA from "@/components/CedarCTA";
-import ScrollRevealMotion from "@/components/ScrollRevealMotion";
 import SectionHeader from "@/components/SectionHeader";
 import PageHero from "@/components/ui/page-hero";
 import ServiceTile from "@/components/ui/service-tile";
@@ -95,15 +94,14 @@ const Services = () => {
 
             <div className={`grid md:grid-cols-2 ${GRID_GAP.default} mt-12`} role="list">
               {SERVICES.map((s, i) => (
-                <ScrollRevealMotion key={s.id} delay={i * 0.06} y={24}>
-                  <ServiceTile
-                    item={s}
-                    index={i}
-                    total={SERVICES.length}
-                    variant="compact"
-                    onClick={() => openModal([s.id])}
-                  />
-                </ScrollRevealMotion>
+                <ServiceTile
+                  key={s.id}
+                  item={s}
+                  index={i}
+                  total={SERVICES.length}
+                  variant="compact"
+                  onClick={() => openModal([s.id])}
+                />
               ))}
             </div>
           </div>
@@ -130,70 +128,66 @@ const Services = () => {
 
             <div className="mt-12 grid md:grid-cols-2 gap-0">
               {/* WE HANDLE */}
-              <ScrollRevealMotion>
-                <div
-                  aria-label="What we handle"
-                  className="p-10 md:p-12 border border-cedar/20 rounded-sm h-full shadow-elevated"
-                  style={{ background: BACKDROP.bronzeWash }}
-                >
-                  <div className="flex items-baseline justify-between mb-8">
-                    <h3 className="text-minimal text-cedar">WE HANDLE</h3>
-                    <span className="text-[11px] tracking-[0.2em] text-cedar/50 tabular-nums">
-                      {String(WE_HANDLE.length).padStart(2, "0")} ITEMS
-                    </span>
-                  </div>
-                  <div className="space-y-3" role="list">
-                    {WE_HANDLE.map((item, i) => (
-                      <div
-                        key={i}
-                        role="listitem"
-                        className="flex items-start gap-3 py-2.5 pl-3 rounded-sm transition-colors duration-300 hover:bg-cedar/[0.05]"
-                        style={{ borderLeft: `2px solid hsl(var(--cedar) / ${bronzeStep(i, WE_HANDLE.length)})` }}
-                      >
-                        <Check
-                          className="h-3.5 w-3.5 text-cedar/70 mt-0.5 flex-shrink-0"
-                          aria-hidden
-                        />
-                        <p className="text-foreground text-sm">{item}</p>
-                      </div>
-                    ))}
-                  </div>
+              <div
+                aria-label="What we handle"
+                className="p-10 md:p-12 border border-cedar/20 rounded-sm h-full shadow-elevated"
+                style={{ background: BACKDROP.bronzeWash }}
+              >
+                <div className="flex items-baseline justify-between mb-8">
+                  <h3 className="text-minimal text-cedar">WE HANDLE</h3>
+                  <span className="text-[11px] tracking-[0.2em] text-cedar/50 tabular-nums">
+                    {String(WE_HANDLE.length).padStart(2, "0")} ITEMS
+                  </span>
                 </div>
-              </ScrollRevealMotion>
+                <div className="space-y-3" role="list">
+                  {WE_HANDLE.map((item, i) => (
+                    <div
+                      key={i}
+                      role="listitem"
+                      className="flex items-start gap-3 py-2.5 pl-3 rounded-sm transition-colors duration-300 hover:bg-cedar/[0.05]"
+                      style={{ borderLeft: `2px solid hsl(var(--cedar) / ${bronzeStep(i, WE_HANDLE.length)})` }}
+                    >
+                      <Check
+                        className="h-3.5 w-3.5 text-cedar/70 mt-0.5 flex-shrink-0"
+                        aria-hidden
+                      />
+                      <p className="text-foreground text-sm">{item}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
 
               {/* YOU HANDLE */}
-              <ScrollRevealMotion delay={0.12}>
-                <div
-                  aria-label="What you handle"
-                  className="p-10 md:p-12 border border-border/60 rounded-sm h-full shadow-contact bg-background"
-                >
-                  <div className="flex items-baseline justify-between mb-8">
-                    <h3 className="text-minimal text-muted-foreground">YOU HANDLE</h3>
-                    <span className="text-[11px] tracking-[0.2em] text-muted-foreground/40 tabular-nums">
-                      {String(YOU_HANDLE.length).padStart(2, "0")} ITEMS
-                    </span>
-                  </div>
-                  <div className="space-y-3" role="list">
-                    {YOU_HANDLE.map((item, i) => (
-                      <div
-                        key={i}
-                        role="listitem"
-                        className="flex items-start gap-3 py-2.5 pl-3 rounded-sm transition-colors duration-300 hover:bg-cedar/[0.03]"
-                        style={{ borderLeft: "2px solid hsl(35 15% 86% / 0.5)" }}
-                      >
-                        <Minus
-                          className="h-3.5 w-3.5 text-muted-foreground/40 mt-0.5 flex-shrink-0"
-                          aria-hidden
-                        />
-                        <div>
-                          <p className="text-foreground text-sm">{item.task}</p>
-                          <p className="text-xs text-muted-foreground mt-1">{item.note}</p>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
+              <div
+                aria-label="What you handle"
+                className="p-10 md:p-12 border border-border/60 rounded-sm h-full shadow-contact bg-background"
+              >
+                <div className="flex items-baseline justify-between mb-8">
+                  <h3 className="text-minimal text-muted-foreground">YOU HANDLE</h3>
+                  <span className="text-[11px] tracking-[0.2em] text-muted-foreground/40 tabular-nums">
+                    {String(YOU_HANDLE.length).padStart(2, "0")} ITEMS
+                  </span>
                 </div>
-              </ScrollRevealMotion>
+                <div className="space-y-3" role="list">
+                  {YOU_HANDLE.map((item, i) => (
+                    <div
+                      key={i}
+                      role="listitem"
+                      className="flex items-start gap-3 py-2.5 pl-3 rounded-sm transition-colors duration-300 hover:bg-cedar/[0.03]"
+                      style={{ borderLeft: "2px solid hsl(35 15% 86% / 0.5)" }}
+                    >
+                      <Minus
+                        className="h-3.5 w-3.5 text-muted-foreground/40 mt-0.5 flex-shrink-0"
+                        aria-hidden
+                      />
+                      <div>
+                        <p className="text-foreground text-sm">{item.task}</p>
+                        <p className="text-xs text-muted-foreground mt-1">{item.note}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
             </div>
           </div>
         </div>
