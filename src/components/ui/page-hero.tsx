@@ -284,16 +284,18 @@ const EditorialSplit = (props: EditorialSplitProps) => {
     <section
       id="section-hero"
       className={cn(
-        "relative min-h-[88vh] md:min-h-screen flex items-center overflow-hidden text-evergreen-foreground",
+        "relative min-h-[82vh] md:min-h-screen flex items-center overflow-hidden text-evergreen-foreground",
         props.className,
       )}
       aria-label={lines.join(" ")}
     >
-      {/* Photographic triptych backdrop — replaces the old solid evergreen */}
+      {/* Photographic triptych backdrop — replaces the old solid evergreen.
+          leftWide scrim holds heavier black through 56% so the headline column
+          AND the floating provenance card both stay legible. */}
       <HeroTriptych
         queries={triptychQueries}
         rhythm="asymmetric"
-        scrim="left"
+        scrim="leftWide"
         priority
         fallbackCaptions={[
           "Decks · Calgary",
@@ -312,7 +314,9 @@ const EditorialSplit = (props: EditorialSplitProps) => {
         >
           {/* ─── Left column ─── */}
           <div className={hasMedia ? "lg:col-span-7 max-w-2xl" : ""}>
-            <BreadcrumbTrail items={props.breadcrumb} onDark className="mb-6" />
+            {/* Breadcrumb intentionally omitted — HeaderBreadcrumb in the chrome
+                owns wayfinding (v3.1). On Home there's no sub-page context, so
+                the eyebrow comes from BronzeRule's sectionLabel only. */}
 
             <BronzeRule
               numeral={props.numeral}
@@ -331,7 +335,7 @@ const EditorialSplit = (props: EditorialSplitProps) => {
             {props.subtitle && (
               <p
                 className={cn(
-                  "mt-6 text-lg md:text-xl text-evergreen-foreground/90",
+                  "mt-5 md:mt-6 text-lg md:text-xl text-evergreen-foreground/90",
                   TEXT.onDark.legibleShadow,
                   hasMedia ? "max-w-xl" : "max-w-2xl",
                 )}
