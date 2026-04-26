@@ -122,7 +122,7 @@ const HeroTriptych = ({
         {columns.map((col, i) => (
           <TriptychColumn
             key={i}
-            column={i}
+            column={i as 0 | 1 | 2}
             media={col.media}
             icon={col.icon}
             caption={col.caption}
