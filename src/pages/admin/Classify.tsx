@@ -87,6 +87,8 @@ const Classify = () => {
   const [edits, setEdits] = useState<Partial<AssetRow>>({});
   const [classifying, setClassifying] = useState(false);
   const [classifyProgress, setClassifyProgress] = useState({ done: 0, total: 0 });
+  const [serverRunning, setServerRunning] = useState(false);
+  const [serverPolling, setServerPolling] = useState(false);
 
   // Title + noindex
   useEffect(() => {
