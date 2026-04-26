@@ -18,7 +18,7 @@ interface HeaderBreadcrumbProps {
  */
 const HeaderBreadcrumb = ({ className }: HeaderBreadcrumbProps) => {
   const { pathname } = useLocation();
-  const meta = ROUTE_BREADCRUMB[pathname];
+  const meta = getRouteBreadcrumb(pathname);
   if (!meta) return null;
 
   return (
