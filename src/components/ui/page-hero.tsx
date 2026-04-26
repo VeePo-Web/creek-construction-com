@@ -209,7 +209,7 @@ const EvergreenTypographic = (props: EvergreenTypographicProps) => {
               accepted for back-compat but no longer renders here. */}
 
           <BronzeRule
-            numeral={props.numeral ?? "I"}
+            numeral={props.numeral}
             label={props.sectionLabel}
             variant="onDark"
             className="mb-6 hero-rule-draw"
