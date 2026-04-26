@@ -12,6 +12,11 @@ interface CedarCTAProps {
   children: string;
   variant?: "primary" | "secondary";
   className?: string;
+  /**
+   * Optional side-effect to run *before* the modal opens (e.g. closing
+   * a menu). Runs synchronously; modal opens immediately after.
+   */
+  onActivate?: () => void;
 }
 
 /**
@@ -22,7 +27,7 @@ interface CedarCTAProps {
  * design tokens. The thermal shimmer comes from the .cta-thermal utility
  * in src/index.css.
  */
-const CedarCTA = ({ to, preselectServices, children, variant = "primary", className }: CedarCTAProps) => {
+const CedarCTA = ({ to, preselectServices, children, variant = "primary", className, onActivate }: CedarCTAProps) => {
   const { openModal } = useQuoteModal();
 
   const secondaryClass = cn(
@@ -68,7 +73,14 @@ const CedarCTA = ({ to, preselectServices, children, variant = "primary", classN
   }
 
   return (
-    <button type="button" onClick={() => openModal(preselectServices)} className={className_}>
+    <button
+      type="button"
+      onClick={() => {
+        onActivate?.();
+        openModal(preselectServices);
+      }}
+      className={className_}
+    >
       {inner}
     </button>
   );

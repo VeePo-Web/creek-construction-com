@@ -274,7 +274,7 @@ const GlobalMenu = ({ isOpen, onClose, id = "global-menu" }: GlobalMenuProps) =>
                 >
                   <Phone className="h-3.5 w-3.5" aria-hidden /> {CONTACT.phone}
                 </a>
-                <CedarCTA onClick={onClose}>Request a Quote</CedarCTA>
+                <CedarCTA onActivate={onClose}>Request a Quote</CedarCTA>
               </div>
             </div>
           </div>
