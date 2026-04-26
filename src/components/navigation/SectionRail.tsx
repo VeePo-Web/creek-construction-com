@@ -46,6 +46,8 @@ export function scrollToAnchor(anchor: string) {
  */
 const SectionRail = ({ sections, faded = false, className }: SectionRailProps) => {
   const active = useActiveSection(sections);
+  const { pathname } = useLocation();
+  const breadcrumbOwnsContext = ROUTES_WITH_HEADER_BREADCRUMB.has(pathname);
 
   const handleClick = useCallback(
     (e: React.MouseEvent<HTMLAnchorElement>, anchor: string) => {
