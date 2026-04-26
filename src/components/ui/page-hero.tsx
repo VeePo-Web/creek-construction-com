@@ -7,6 +7,7 @@ import BronzeRule from "@/components/ui/bronze-rule";
 import KineticHeadline, { type KineticSize } from "@/components/ui/kinetic-headline";
 import HeroProvenanceCard from "@/components/ui/hero-provenance-card";
 import MediaSlot from "@/components/media/MediaSlot";
+import HeroTriptych from "@/components/media/HeroTriptych";
 import { useApprovedMedia, useFirstApprovedMedia } from "@/hooks/useApprovedMedia";
 import { useHeroParallax } from "@/hooks/useHeroParallax";
 import { useHeroPreload } from "@/hooks/useHeroPreload";
