@@ -5,14 +5,17 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import Index from "./pages/Index";
-import Services from "./pages/Services";
-import Work from "./pages/Work";
-import About from "./pages/About";
-import Contact from "./pages/Contact";
 import NotFound from "./pages/NotFound";
 import { QuoteModalProvider } from "@/components/quote/QuoteModalProvider";
-import QuoteModal from "@/components/quote/QuoteModal";
 import RequireAdmin from "@/components/admin/RequireAdmin";
+
+// Public routes are lazy except Home (the LCP/entry route).
+// Each non-home route ships its own JS chunk so visitors only download
+// what they actually browse to.
+const Services = lazy(() => import("./pages/Services"));
+const Work = lazy(() => import("./pages/Work"));
+const About = lazy(() => import("./pages/About"));
+const Contact = lazy(() => import("./pages/Contact"));
 
 const AdminLogin = lazy(() => import("./pages/admin/Login"));
 const AdminMediaLibrary = lazy(() => import("./pages/admin/MediaLibrary"));
@@ -20,6 +23,12 @@ const AdminClassify = lazy(() => import("./pages/admin/Classify"));
 const StyleGuide = lazy(() => import("./pages/StyleGuide"));
 
 const queryClient = new QueryClient();
+
+/**
+ * Calm, layout-stable fallback while a route chunk loads.
+ * Matches the page background so there's no flash, no spinner.
+ */
+const RouteSkeleton = () => <div className="min-h-screen bg-background" aria-hidden />;
 
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -34,55 +43,43 @@ const App = () => (
     <TooltipProvider>
       <Toaster />
       <Sonner />
-      <BrowserRouter>
+      <BrowserRouter
+        future={{
+          v7_startTransition: true,
+          v7_relativeSplatPath: true,
+        }}
+      >
         <QuoteModalProvider>
           <ScrollToTop />
-          <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/services" element={<Services />} />
-            <Route path="/work" element={<Work />} />
-            <Route path="/about" element={<About />} />
-            <Route path="/contact" element={<Contact />} />
-            <Route
-              path="/admin/login"
-              element={
-                <Suspense fallback={<div className="min-h-screen bg-background" />}>
-                  <AdminLogin />
-                </Suspense>
-              }
-            />
-            <Route
-              path="/admin/media"
-              element={
-                <Suspense fallback={<div className="min-h-screen bg-background" />}>
+          <Suspense fallback={<RouteSkeleton />}>
+            <Routes>
+              <Route path="/" element={<Index />} />
+              <Route path="/services" element={<Services />} />
+              <Route path="/work" element={<Work />} />
+              <Route path="/about" element={<About />} />
+              <Route path="/contact" element={<Contact />} />
+              <Route path="/admin/login" element={<AdminLogin />} />
+              <Route
+                path="/admin/media"
+                element={
                   <RequireAdmin>
                     <AdminMediaLibrary />
                   </RequireAdmin>
-                </Suspense>
-              }
-            />
-            <Route
-              path="/admin/classify"
-              element={
-                <Suspense fallback={<div className="min-h-screen bg-background" />}>
+                }
+              />
+              <Route
+                path="/admin/classify"
+                element={
                   <RequireAdmin>
                     <AdminClassify />
                   </RequireAdmin>
-                </Suspense>
-              }
-            />
-            <Route
-              path="/style-guide"
-              element={
-                <Suspense fallback={<div className="min-h-screen bg-background" />}>
-                  <StyleGuide />
-                </Suspense>
-              }
-            />
-            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-          <QuoteModal />
+                }
+              />
+              <Route path="/style-guide" element={<StyleGuide />} />
+              {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </Suspense>
         </QuoteModalProvider>
       </BrowserRouter>
     </TooltipProvider>
