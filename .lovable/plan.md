@@ -1,164 +1,185 @@
-# Style Guide v2 — Render, Clean, Govern
+# Style Guide v3 — Performance Surgery
 
-The 5 token modules under `src/lib/` are already shipped and type-checking. This plan completes the initiative by **making them visible** (a live `/style-guide` page modeled on RoyalMechanical's), **removing the dead weight** that's making the site feel slow, and **replacing the obsolete sauna-brand markdown** with a code-first governance doc.
-
----
-
-## What I confirmed during the audit
-
-- **`src/index.css` = 2,061 lines** with a `.dark { ... }` block, dead keyframes (`text-shimmer`, `particle-float`, sauna ritual effects), and *two* separate `@layer base` blocks (lines 13 and 244) — the file's been edited additively for months without a sweep.
-- **`src/components/NavProgressBar.tsx` = 441 lines** and **imported by zero files**. Confirmed via `rg` across `src/` and `supabase/`. Every CSS class it references (`hearthstone`, `loyly-*`, `kiuas-*`, `sisu-*`, `nav-section-dot`, `condensation-drop`, `progress-echo`, `section-bell`, `muisti-star`, `smoke-signal`, `first-light`, `threshold-pulse`, `stones-complete`, `cedar-warming`, `patina`, `warm-return`, ~30 selectors) is therefore orphan CSS too.
-- **`STYLE_GUIDE.md` = 717 lines** describing the old B&P Sauna brand. Anyone using it as a reference produces off-brand work.
-- **RoyalMechanical's `/style-guide` is 2,084 lines** and uses a clean pattern: `CopyButton` + `SectionHeader` + `TokenCard` primitives, then renders every `lib/*` module top-to-bottom with a left-rail nav. The Creek version follows the same blueprint, scaled to our smaller token surface.
+The cosmetic layer is done. Style Guide v2 shipped (`/style-guide`, code-first tokens, 432-line `index.css`, `NavProgressBar` deleted). The user's actual pain — **"a lot of the website is slow performance wise"** — is still there, and a fresh profile of `/` on mobile (390×844) confirms exactly why.
 
 ---
 
-## Phase A — The live `/style-guide` page
+## The diagnosis (measured, not guessed)
 
-### A1. New file: `src/pages/StyleGuide.tsx` (~1,400 lines)
+From `browser--performance_profile` on `/` just now:
 
-Lazy-loaded route at `/style-guide`. **Excluded from indexing** (robots.txt) and the public navigation. Direct URL only — same approach as RoyalMechanical.
+| Metric | Now | Target (`PERFORMANCE_BUDGETS`) | Verdict |
+|---|---|---|---|
+| **First Contentful Paint** | **5,420 ms** | < 1,800 ms | 🔴 3× over critical |
+| **Full Page Load** | **6,506 ms** | < 2,500 ms | 🔴 2.6× over critical |
+| **DOM Content Loaded** | 5,173 ms | < 2,000 ms | 🔴 over |
+| Script Duration | 545 ms | < 250 ms | 🟡 over |
+| Layout Count | 21 | < 10 | 🟡 over |
+| JS Heap | 13.4 MB | < 30 MB | 🟢 OK |
+| Resource Count | 121 | < 60 | 🔴 2× over |
 
-**Page structure** (left-rail sticky nav + scrollable sections, scroll-mt-24 for anchor offsets):
+Slowest individual resources, in order:
 
-1. **Hero** — `Creek Construction Style Guide` + version pill ("v1.0 · April 2026") + a one-line philosophy quote pulled from `BRAND_SPINE.purpose`.
-2. **Brand Identity** — renders `BRAND_SPINE`, `VOICE` (do/don't side-by-side), `VALUE_PROP` pillars, `VERBAL_IDENTITY`, `VISUAL_DIRECTION.principles`, `NON_NEGOTIABLES`, `DEALBREAKERS`. Tabs to switch between "Spine / Voice / Value Prop / Visual / Guardrails".
-3. **Color** — every entry in `BRAND` rendered as a 200×200 swatch with hex/hsl + a `CopyButton`. `SURFACE` / `TEXT` / `BORDER` / `BUTTON` shown in working previews. `BRONZE_OPACITY` rendered as a 7-step gradient strip. `CONTRAST` table with AA/AAA badges colored by pass level.
-4. **Typography** — every `HEADLINE.*` / `BODY.*` / `EYEBROW.*` / `QUOTE.*` / `STAT.*` / `UI.*` rendered live with the Tailwind class string copyable beneath. `TYPOGRAPHY_RULES.do` and `.dont` in two columns with green-check / red-x icons.
-5. **Spacing** — `SECTION_PADDING` rendered as colored rectangles to scale; `MAX_WIDTH` shown as horizontal bars; `CONTENT_GAP` as a vertical stack with measurements; `TOUCH_TARGET` as 44/48/56 squares with a finger emoji for scale.
-6. **Motion** — every `EASING` curve animated on hover (a small dot crosses 200px); `DURATION` selectable from buttons that re-trigger the demo; `HOVER.*` patterns on demo cards; `FOCUS.*` rings on focusable buttons; `SCROLL_REVEAL` triggered via an Intersection demo. **Every demo wrapped in `motion-reduce:` classes** so the page itself respects the rule it documents.
-7. **Components** — live previews of `<CedarCTA>`, `<SectionHeader>`, `<SubPageHero>`, MediaSlot fallback, `Card`, form inputs, and dividers. Each shows the import line as copyable code.
-8. **Editorial Media** — embedded MEDIA_PLAYBOOK rules + live `<EditorialPicture>` and `<EditorialBleed>` examples. Aspect-ratio tokens (`aspect-hero`, `aspect-bleed`, `aspect-editorial`, `aspect-portrait`, `aspect-detail`, `aspect-cinema`) shown as labeled rectangles.
-9. **Performance Budgets** — renders `PERFORMANCE_BUDGETS` and `ACCESSIBILITY` from `brand-identity.ts` as a table with target / critical columns and a "current measurement" column we'll fill in after the cleanup.
-10. **Governance** — renders `GOVERNANCE` (ownership, before-adding-a-token checklist, deprecation policy, contributor checklist).
+1. `Services.tsx` — 1,256 ms (loaded eagerly with main bundle)
+2. `Portfolio.tsx` — 1,208 ms (eager)
+3. `creek-logo-nav-sm.png` — **1,155 ms · 48 KB** (a 44×44px nav logo!)
+4. `QuoteModal.tsx` — **1,038 ms · 37 KB · 879 lines** (loaded on every page even though it only opens on a CTA click)
+5. Supabase media query for hero bleed — 1,038 ms
 
-**Primitives** (defined inline at the top of the file):
-- `CopyButton({ text })` — clipboard write with 2s checkmark feedback
-- `SectionHeader({ id, eyebrow, title, description })` — anchor target + page rhythm
-- `TokenCard({ name, value, preview, copy })` — uniform card for any token
-- `Swatch({ name, hsl, hex, usage })` — color tile
-- `LeftNav({ sections })` — sticky on lg+; horizontal pill scroller on mobile
+`public/creek-logo-square.png` is **1.4 MB uncompressed** (used somewhere in OG/socials), and `og-image.png` is 515 KB. Sums to ~1.9 MB of avoidable image weight even if not on the critical path.
 
-**Why ~1,400 lines and not ~900 or ~2,000:** Our token surface is smaller than RoyalMechanical's (Creek has 5 brand colors vs their 12; one dialect of buttons vs three). The 1,400 number is a measured estimate — anything larger is over-specced; smaller drops important demos.
+96 script files load on `/`, including the entire admin section's deps (because `App.tsx` statically imports `Index`, `Services`, `Work`, `About`, `Contact` — each pulls its component tree, which pulls Supabase, framer-motion, etc.).
 
-### A2. Wire the route
-
-- `src/App.tsx` — add `const StyleGuide = lazy(() => import("./pages/StyleGuide"));` and `<Route path="/style-guide" element={<Suspense fallback={null}><StyleGuide /></Suspense>} />`.
-- `public/robots.txt` — append `Disallow: /style-guide`.
-
-### A3. Don't link it from public nav
-
-Direct URL only. Stakeholders bookmark it; the site never advertises it.
+This is **not** a CSS or design problem anymore. It's a JS/asset payload problem. The cure is the same philosophy we applied to CSS: ship only what the user needs *now*, defer the rest.
 
 ---
 
-## Phase B — The CSS surgery
+## What v3 does
 
-### B1. Delete `NavProgressBar.tsx` outright
+### Phase A — Code-split the public routes (biggest single win)
 
-Audit confirmed zero imports in `src/` and `supabase/`. Deleting it is a 441-line drop with no risk.
+`src/App.tsx` currently does:
 
-### B2. Slim `src/index.css` from 2,061 → ~700 lines
-
-**Delete:**
-- The `.dark { ... }` token block (light-mode-only is locked in `mem://design/aesthetic-direction`)
-- Every `nav-*` rule (was only used by NavProgressBar)
-- Every `loyly-*`, `kiuas-*`, `sisu-*`, `hearthstone`, `condensation-drop`, `progress-echo`, `section-bell`, `muisti-star`, `smoke-signal`, `first-light`, `threshold-pulse`, `stones-complete`, `cedar-warming`, `patina`, `warm-return` rule (sauna-brand vestiges)
-- Duplicate `@layer base` block (lines 244+) — merge into the first
-- Dead keyframes: `text-shimmer`, `particle-float`, `cta-shimmer-sweep`, `timeline-node-pulse`, `filter-sweep`, `portfolio-shimmer`, `stat-glow-in`, `completion-ring`, `form-field-enter`, `hero-drift` (verify each is unused before delete; 9/10 are)
-- Per-component novelty utilities that exist as Tailwind compositions in components anyway: `service-card-warmth`, `comparison-row-bp`, `comparison-row-typical`, `category-filter-active`, `testimonial-depth-1/2/3`, `testimonial-card-depth`, `faq-thermal`, `footer-grain-shimmer`, `footer-link-thermal`, `breath-divider`, `section-bleed-top`
-
-**Keep & promote into `@layer components`** (so Tailwind purges if unused):
-- `.text-display`, `.text-architectural`, `.text-minimal` (used in 30+ components)
-- `.card-glass`, `.grain-overlay`, `.grain-texture` (used by Hero, Footer, sections)
-- `.aspect-bleed`, `.aspect-editorial`, `.aspect-portrait`, `.aspect-detail`, `.aspect-cinematic` (referenced by media components)
-- `.hero-image-entrance` (Hero photo card)
-- `.cedar-link` underline sweep, `.cedar-progress` rail (live in Nav + Contact)
-- The single `prefers-reduced-motion` and `prefers-contrast` consolidations at the bottom
-
-**Rename** `--cedar` → `--bronze` in `:root`, with **one** alias line `--cedar: var(--bronze);` for back-compat. Update tailwind.config.ts to expose both `cedar` and `bronze` color names pointing at the same HSL var.
-
-**Expected reduction:** 2,061 → ~700 lines. Roughly **30 KB off the critical-CSS payload (gzipped ~6 KB)**, faster First Paint, faster Tailwind builds.
-
-### B3. Don't split into 4 files yet
-
-The original plan called for `base.css` / `components.css` / `editorial.css` / `motion.css`. After auditing, ~700 lines in one file is fine — splitting adds 4 import statements without runtime benefit. We'll split if we cross 1,200 lines again.
-
----
-
-## Phase C — Replace `STYLE_GUIDE.md`
-
-Rewrite the 717-line B&P-Sauna doc as a thin pointer:
-
-```md
-# Creek Construction — Style Guide
-
-The style guide is **code-first**. The five files in `src/lib/` are the source of truth:
-
-- `colors.ts` — palette, surfaces, text, buttons, shadows, dividers, contrast
-- `typography.ts` — headlines, body, eyebrow, quote, stat, UI
-- `spacing.ts` — section padding, container, gaps, touch targets
-- `motion.ts` — easing, duration, hover patterns, focus rings, scroll reveal
-- `brand-identity.ts` — voice, value prop, non-negotiables, dealbreakers, perf budgets
-
-Visit `/style-guide` for the rendered, copy-to-clipboard reference.
-
-This markdown file documents only **governance** — how the system evolves.
+```tsx
+import Index from "./pages/Index";
+import Services from "./pages/Services";
+import Work from "./pages/Work";
+import About from "./pages/About";
+import Contact from "./pages/Contact";
 ```
 
-Then ~150 lines of governance sections: how to add a token, deprecation policy, contributor checklist, performance review cadence, accessibility review cadence. **No design decisions in this file** — those live in code.
+Every visitor downloads all five page bundles before anything paints. Switch to `React.lazy()` for the four non-home routes and wrap them in `<Suspense>` with a calm `<RouteSkeleton />` fallback (full-bleed `bg-background` + a `min-h-screen` div — zero layout shift, no spinner flash). Keep `Index` eager (it's the LCP route and the entrypoint) but lazy everything else.
 
----
+**Predicted impact:** Removes ~150 KB of JS from the critical path. Cuts initial parse time by 200–400 ms.
 
-## Phase D — Performance verification
+### Phase B — Lazy-load `QuoteModal` (37 KB, 879 lines)
 
-After the cleanup lands:
+`QuoteModal` mounts on every page via `<App>` even though it only renders content when `openModal()` is called. Move it behind a `lazy()` boundary that only resolves when the modal first opens. The provider context stays eager (it owns the open/close state); only the heavy form ships when needed.
 
-1. `bunx tsc --noEmit -p tsconfig.app.json` — full type pass
-2. `browser--navigate_to_sandbox` to `/style-guide` and `/` — visual confirmation
-3. `browser--performance_profile` on the homepage at mobile viewport (390×844) — capture LCP, CLS, INP, JS heap, layout count
-4. Compare against `PERFORMANCE_BUDGETS` in `brand-identity.ts`; fill in the "current measurement" column on the `/style-guide` performance page
-5. If any budget is missed, list the bottleneck and propose a follow-up plan (don't silently fail)
+```tsx
+const QuoteModal = lazy(() => import("@/components/quote/QuoteModal"));
+// Inside provider, render:
+{isOpen && (
+  <Suspense fallback={null}>
+    <QuoteModal />
+  </Suspense>
+)}
+```
+
+**Predicted impact:** −37 KB JS off every initial page load. The modal is still instant from the user's perspective (lazy chunk fetches in <100 ms on warm cache, and the open animation hides the fetch on cold cache).
+
+### Phase C — Compress + retire the giant logos
+
+Audit results:
+
+| File | Size now | Target | Action |
+|---|---|---|---|
+| `public/creek-logo-square.png` | **1,379,935 B (1.4 MB)** | < 60 KB | Re-export at 512×512 PNG-8 + add a 256×256 webp; update OG/JSON-LD references |
+| `public/og-image.png` | 515,160 B | < 200 KB | Re-encode as compressed JPG (OG accepts) or PNG-8 |
+| `src/assets/creek-logo-nav-sm.png` | 49,132 B | < 8 KB | Re-export at 88×88 (2× of 44×44) PNG-8 with palette quantization, and add a `.webp` sibling |
+| `src/assets/creek-logo-nav-md.png` | 82,865 B | (delete) | Nav uses `-sm` only — confirmed in `Navigation.tsx`; this file is dead weight in the asset pipeline |
+| `src/assets/creek-logo-nav-lg.png` | 173,019 B | (delete) | Same — unused at nav scale |
+| `src/assets/creek-logo-lg.png` | 294,033 B | Verify usage; if footer-only, downsize to 200×200 |
+| `src/assets/creek-logo-profile-400.png` | 215,640 B | Used for JSON-LD profile image — verify; downsize to 256×256 if so |
+
+Deletes are confirmed-safe via `rg` against `src/` and `index.html`. Everything else gets re-exported with `nix run nixpkgs#imagemagick` (palette quantization + strip metadata) and `nix run nixpkgs#libwebp` for `.webp` siblings. Components get a `<picture>` wrapper with `webp` first and `png` fallback.
+
+**Predicted impact:** ~1.7 MB removed from project total; nav logo drops from 1,155 ms load to <100 ms; OG card weight halved.
+
+### Phase D — Fix the render-blocking font request
+
+The Google Fonts `<link>` is render-blocking. Two cheap improvements:
+
+1. **Add `media="print" onload="this.media='all'"`** trick to make the stylesheet load non-blocking, with a `<noscript>` fallback for accessibility.
+2. **Trim the DM Sans axis specification.** Right now we request the full optical-size + weight axes (`9..40,100..1000`). Audit reveals we use only weights 300, 400, 500, 600 — request a narrower range to cut the font file by ~40%.
+
+```html
+<link
+  rel="stylesheet"
+  href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Serif+Display&display=swap"
+  media="print"
+  onload="this.media='all'"
+/>
+<noscript>
+  <link rel="stylesheet" href="…same url…" />
+</noscript>
+```
+
+**Predicted impact:** −300–500 ms off FCP on cold loads.
+
+### Phase E — Stop the QuoteModal CSS-effect leak
+
+Hidden in v2: `cta-thermal::before` runs a 0.8 s pseudo-element animation on every CedarCTA hover. When `<TrustStrip>`, `<Hero>`, and `<Contact>` all render CTAs above the fold, the browser composites those layers eagerly. Add `will-change: transform; content-visibility: auto` to the modal trigger surfaces — and more importantly, apply `loading="lazy"` + `decoding="async"` to every secondary `<img>` (the hero is `priority`, but everything below should defer).
+
+I'll also wrap the homepage's below-fold sections in `content-visibility: auto; contain-intrinsic-size: 600px;` (the existing memory `mem://standards/performance-rendering-strategy` already prescribes this — verify it's actually applied, fix if missing).
+
+### Phase F — Silence the React Router warnings
+
+Two console warnings on every load (`v7_startTransition`, `v7_relativeSplatPath`). Cosmetic, but a world-class console is empty. Add the `future` prop to `<BrowserRouter>`:
+
+```tsx
+<BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
+```
+
+### Phase G — Render the new perf measurements on `/style-guide`
+
+The `/style-guide` Performance section currently shows targets vs. critical from `PERFORMANCE_BUDGETS`. Add a third column **"Last measured"** with the post-cleanup numbers, plus a tiny date stamp (`Measured 2026-04-26, mobile 4G simulated, /`). This makes the budgets *real*: any regression shows up in the column instead of in a forgotten lighthouse report.
+
+Add a small `<PerfBadge>` component that color-codes the cell green/amber/red based on the threshold logic in `brand-identity.ts`.
 
 ---
 
 ## File-level change list
 
-**Create**
-- `src/pages/StyleGuide.tsx` (~1,400 lines, lazy-loaded)
-
 **Edit**
-- `src/App.tsx` — add lazy `/style-guide` route
-- `src/index.css` — slim 2,061 → ~700, rename `--cedar` → `--bronze` with alias
-- `tailwind.config.ts` — keep both `cedar` and `bronze` Tailwind names mapped to the same var
-- `public/robots.txt` — `Disallow: /style-guide`
-- `STYLE_GUIDE.md` — replace with pointer + governance only
+- `src/App.tsx` — lazy-load Services / Work / About / Contact; add Router future flags
+- `src/components/quote/QuoteModalProvider.tsx` — lazy-load `QuoteModal`, render only when open
+- `index.html` — async font load with noscript fallback; narrowed weight axis
+- `src/components/Navigation.tsx` — `<picture>` wrapper for the nav logo (webp + png)
+- `src/pages/Index.tsx` — confirm `content-visibility: auto` is applied to below-fold sections (it should be wrapping each `<section>` per memory; if not, add)
+- `src/pages/StyleGuide.tsx` — add "Last measured" column + `<PerfBadge>` to the Performance section
 
-**Delete**
-- `src/components/NavProgressBar.tsx` (441 lines, zero imports)
+**Re-encode (script-based, in `/tmp/`, output to project paths)**
+- `public/creek-logo-square.png` — 1.4 MB → ~50 KB (PNG-8, 512×512)
+- `public/og-image.png` — 515 KB → ~180 KB (compressed)
+- `src/assets/creek-logo-nav-sm.png` — 48 KB → ~6 KB (PNG-8 at 88×88)
+- Add `.webp` siblings for each that's used in components
+
+**Delete (after `rg` confirms zero references)**
+- `src/assets/creek-logo-nav-md.png`
+- `src/assets/creek-logo-nav-lg.png`
 
 **Memory updates**
-- New `mem://design/token-architecture.md` — index pointing at the 5 lib modules + the `/style-guide` route
-- Update `mem://design/aesthetic-direction.md` — note that color tokens now live in `src/lib/colors.ts` and the `--cedar` CSS var is aliased to `--bronze`
-- Retire `mem://design/thermal-crescendo-pattern.md` — its successor (`bronzeStep()` helper in `colors.ts`) replaces the manual three-opacity cascade
+- Update `mem://standards/performance-rendering-strategy` with the new measurements + the lazy-load policy ("home eager, every other route + modal lazy")
+- Add a note to `mem://design/token-architecture` that `/style-guide` now displays live perf measurements
 
 ---
 
-## Risks & calls I'm making
+## Order of operations & verification
 
-- **Renaming `--cedar` to `--bronze` in CSS, with a one-line alias** keeps every existing `text-cedar` Tailwind class working. The alias is permanent — I won't migrate component code in this pass.
-- **Deleting `NavProgressBar.tsx` outright** rather than slimming it. Confirmed zero imports. If you ever want a reading-progress bar back, we'll build a clean ~80-line replacement that pulls from `motion.ts` tokens.
-- **Not splitting `index.css` into 4 files yet.** ~700 lines is single-file-friendly; splitting prematurely just adds imports.
-- **Performance numbers come *after* the cleanup**, not before. Reason: the cleanup itself is the optimization; measuring the bloated baseline only matters if we plan to compare. We have qualitative evidence (audit findings) that the baseline is over budget; quantitative numbers go straight onto the new perf page.
-- **The `/style-guide` page is not in the public nav** — direct URL only, robots-disallowed. Same as RoyalMechanical and FlexServices.
+1. Phase A (route splits) — `tsc`, then re-profile `/`. Expected: FCP ~3,500 ms.
+2. Phase B (modal split) — `tsc`, profile. Expected: FCP ~3,200 ms, modal still opens <200 ms on click.
+3. Phase C (image surgery) — re-encode in `/tmp/`, copy in, verify each image renders correctly via `browser--screenshot` at desktop + mobile, profile. Expected: nav logo <100 ms, total transfer down ~1.5 MB on a hard refresh.
+4. Phase D (font async) — profile. Expected: FCP <2,500 ms.
+5. Phase E (visibility / lazy images) — profile, watch Layout Count drop from 21.
+6. Phase F (router flags) — `read_console_logs` should return zero warnings.
+7. Phase G (style-guide perf table) — visit `/style-guide#performance`, screenshot.
+8. Final: re-run `browser--performance_profile` on `/` at 390×844 mobile viewport. Record the numbers in the new "Last measured" column. If any metric is still over **critical**, append a follow-up to this plan rather than declare victory.
 
 ---
 
-## What this plan does NOT do (next moves after this lands)
+## What this plan deliberately does NOT do
 
-- Doesn't migrate every existing component to import from the new `lib/*` modules. That's a sweep best done as we touch each component for unrelated work — forced migration risks breaking working surfaces.
-- Doesn't redesign any homepage section. The token system enables future redesigns; it is not itself a redesign.
-- Doesn't touch the admin pages or edge functions.
-- Doesn't add any new public routes (besides `/style-guide`, which is hidden).
+- **Doesn't migrate every component to import from `src/lib/*` yet.** That's the next sweep; forcing it here risks breaking working surfaces while we're surgically optimizing.
+- **Doesn't replace framer-motion.** It's pulled in by 4 components, tree-shakes well, and `PageTransition` provides real value. Removing it is a bigger conversation about cinematic identity, not a perf fix.
+- **Doesn't touch admin routes or edge functions.** They're already lazy and outside the public critical path.
+- **Doesn't add a service worker / app shell.** Premature for a 5-page brochure site. Revisit if traffic ever justifies a PWA.
+- **Doesn't introduce a CDN-level image transform.** The current asset pipeline (Vite + static files) is fine *if* the source files are properly sized. This plan fixes the source files, not the pipeline.
 
-When you approve, I'll ship in this order: route + page → CSS surgery → NavProgressBar delete → STYLE_GUIDE.md rewrite → memory updates → perf snapshot.
+---
+
+## Honest call I'm making
+
+The biggest single win here is **route splitting (Phase A)** — by itself it likely cuts FCP by 1.5–2 seconds. The image surgery is high-effort, medium-impact (mostly OG/social weight, which doesn't touch FCP). I'm doing both because both are required to meet the budget, but if you want a faster ship I can land A + B + D in one pass and queue C / E / F / G as a follow-up. Default plan is to land all seven phases in one focused go.
+
+When you approve, I'll execute in order: A → B → F → D → E → C → G → final perf snapshot rendered on `/style-guide`.
