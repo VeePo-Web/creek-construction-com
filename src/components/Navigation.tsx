@@ -111,11 +111,13 @@ const Navigation = ({ transparent: _transparent }: NavigationProps) => {
               Mobile: [📞] [Quote-pill] [☰]
               Tablet/Desktop: [phone link] [Quote CTA] [☰ MENU] */}
           <div className="flex items-center gap-1 md:gap-2 shrink-0">
-            {/* Mobile-only phone icon button (44x44) */}
+            {/* Mobile + tablet (< lg) phone icon button. A 44x44 cedar-bordered
+                tap target — keeps "call us" one tap away without consuming
+                the horizontal real estate that the full text link does. */}
             <a
               href={`tel:${CONTACT.phoneTel}`}
               className={cn(
-                "md:hidden inline-flex items-center justify-center w-11 h-11 rounded-sm",
+                "lg:hidden inline-flex items-center justify-center w-11 h-11 rounded-sm",
                 "border border-cedar/20 hover:border-cedar/50 hover:bg-cedar/5",
                 "text-cedar transition-colors duration-300",
                 "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cedar focus-visible:ring-offset-2",
@@ -125,10 +127,10 @@ const Navigation = ({ transparent: _transparent }: NavigationProps) => {
               <Phone className="h-4 w-4" aria-hidden />
             </a>
 
-            {/* Tablet/desktop phone link */}
+            {/* Desktop-only (lg+) phone link with the number spelled out */}
             <a
               href={`tel:${CONTACT.phoneTel}`}
-              className="hidden md:inline-flex items-center gap-2 text-[11px] tracking-[0.18em] uppercase text-foreground/75 hover:text-cedar transition-colors min-h-[44px] px-2"
+              className="hidden lg:inline-flex items-center gap-2 text-[11px] tracking-[0.18em] uppercase text-foreground/75 hover:text-cedar transition-colors min-h-[44px] px-2"
               aria-label={`Call ${CONTACT.phone}`}
             >
               <span aria-hidden className="block w-1 h-1 rounded-full bg-cedar/60" />
@@ -154,19 +156,22 @@ const Navigation = ({ transparent: _transparent }: NavigationProps) => {
               Request a Quote
             </button>
 
+            {/* Desktop (lg+) menu trigger — pill with "MENU" label */}
             <MenuTrigger
               isOpen={menuOpen}
               onClick={() => setMenuOpen((v) => !v)}
               controlsId={MENU_ID}
-              withLabel={isScrolled}
-              className="hidden md:flex"
+              withLabel
+              className="hidden lg:flex"
             />
-            {/* Mobile menu trigger (no label, square 48x48) */}
+            {/* Mobile + tablet (< lg) menu trigger — square 48x48, no label.
+                Below lg the chrome simply doesn't have room for a label
+                without colliding with the section rail. */}
             <MenuTrigger
               isOpen={menuOpen}
               onClick={() => setMenuOpen((v) => !v)}
               controlsId={MENU_ID}
-              className="md:hidden"
+              className="lg:hidden"
             />
           </div>
         </div>
