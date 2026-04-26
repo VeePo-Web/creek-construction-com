@@ -39,7 +39,7 @@ const About = () => {
         ambientClipQuery={{ kind: "video", min_quality: "portfolio" }}
       />
 
-      <section className={`${SECTION_PADDING.default} grain-overlay`} aria-labelledby="story-heading">
+      <section id="section-story" className={`${SECTION_PADDING.default} grain-overlay`} aria-labelledby="story-heading">
         <div className="container mx-auto px-6">
           <div className="max-w-3xl">
             <SectionHeader
@@ -70,7 +70,7 @@ const About = () => {
         </div>
       </section>
 
-      <section className={`${SECTION_PADDING.default} bg-secondary grain-overlay`} aria-labelledby="process-heading">
+      <section id="section-process" className={`${SECTION_PADDING.default} bg-secondary grain-overlay`} aria-labelledby="process-heading">
         <div className="container mx-auto px-6">
           <div className={`${MAX_WIDTH.content} mx-auto`}>
             <SectionHeader
@@ -105,7 +105,7 @@ const About = () => {
         </div>
       </section>
 
-      <section className={`${SECTION_PADDING.default} grain-overlay`} aria-labelledby="areas-heading">
+      <section id="section-areas" className={`${SECTION_PADDING.default} grain-overlay`} aria-labelledby="areas-heading">
         <div className="container mx-auto px-6">
           <div className={`${MAX_WIDTH.content} mx-auto`}>
             <SectionHeader

@@ -69,7 +69,7 @@ const Work = () => {
 
       {/* Featured editorial galleries — real photographed projects */}
       {PROJECTS.length > 0 && (
-        <section className={`${SECTION_PADDING.default} grain-overlay`} aria-labelledby="featured-heading">
+        <section id="section-featured" className={`${SECTION_PADDING.default} grain-overlay`} aria-labelledby="featured-heading">
           <div className="container mx-auto px-6">
             <div className={`${MAX_WIDTH.wide} mx-auto`}>
               <SectionHeader
@@ -117,7 +117,7 @@ const Work = () => {
       )}
 
       {/* Service-category placeholder grid — replaced as real photos arrive */}
-      <section className={`${SECTION_PADDING.default} bg-muted grain-overlay`} aria-labelledby="gallery-heading">
+      <section id="section-gallery" className={`${SECTION_PADDING.default} bg-muted grain-overlay`} aria-labelledby="gallery-heading">
         <div className="container mx-auto px-6">
           <div className={`${MAX_WIDTH.wide} mx-auto`}>
             <SectionHeader
