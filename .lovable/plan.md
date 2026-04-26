@@ -1,94 +1,121 @@
-## Audit findings (what's actually broken right now)
+# Audit findings (fresh pass, all 5 pages × 3 breakpoints)
 
-I walked every page at three breakpoints and inspected the underlying source. The "very complicated" feeling the user is reacting to is real — and it traces to ~10 specific defects in the hero/nav system that compound visually. They are NOT random; they share two roots: **(a) the headline column overlaps the photographic triptych because the scrim doesn't span far enough, and (b) the breadcrumb is being rendered twice (once in chrome, once in hero).** Fixing those two roots removes ~70% of the chaos.
+After the v3.1 fixes shipped, I re-walked /, /services, /work, /about, /contact at 375, 768, and 1366. Home, About, and Contact at desktop now read cleanly. **Five new high-impact defects** emerged that the prior plan didn't catch:
 
-### A. Hero / page-hero.tsx defects (highest-impact, user sees these first)
+### Defect 1 — Tablet (768) header **literally overlaps**. SEVERITY: critical.
+Verified visually on /services and /work at 768. The wordmark "Creek Construction", phone "(780) 777-5178", and section-rail labels "CATALOGUE / FAQ" render **on top of each other** because the right cluster (phone + Request a Quote CTA + MENU pill ≈ 343px) plus the left brand (~210px) leave only ~215px for the center, but `HeaderBreadcrumb` (~120px) + `SectionRailCompact` (~155px) need ~280px. There is no overflow handling — the elements just stack into the same pixels. This is the **single most damaging visual bug** on the site right now.
 
-1. **Duplicate breadcrumb on every sub-page.** `HeaderBreadcrumb` renders "Home / Services" in the chrome, and `EvergreenTypographic` *also* renders `<BreadcrumbTrail items={breadcrumb}>` inside the hero ("HOME · ABOUT" floating above the headline on /about and /contact). `EditorialSplit` (Home) renders its own breadcrumb too, but it's mis-cast — "Calgary · Edmonton · Alberta" is a tagline, not a breadcrumb, yet it renders inside the breadcrumb chip on the hero.
-2. **Headline overlaps photo on /services and /about** (1366+ and 1536+). The headline column is `max-w-3xl`/`max-w-2xl` but the SCRIM.left gradient fades to transparent at 92% from the LEFT edge of the *section*, not from the END of the headline column. Because the headline starts inside the container (px-6) and runs to ~840px, it visually punches into the middle column of the triptych where the scrim is already at 22% opacity. Result: white serif headline collides with a white shed/cedar plank photo → unreadable.
-3. **Home (/) shows a giant dark left half** because `EditorialSplit` uses `rhythm="asymmetric"` (40/30/30) AND `scrim="left"` AND a left-anchored headline column AND a floating provenance card on the right that further darkens. The 40% column gets ~82% black scrim baked over it, killing the photograph it's supposed to show.
-4. **/work hero subtitle is illegible.** "Selected projects across Calgary, Edmonton..." renders as `text-evergreen-foreground/85` over a brown cedar wall photo with `SCRIM.bottom` (only kicks in at 38% from top). The subtitle sits ABOVE that scrim's effective range → dark-on-dark.
-5. **Mobile (375px) text-photo collision.** `HeroTriptych` mobile branch stacks 3 slabs (40/30/30 vh) but the headline is positioned over slab A with `SCRIM.bottom` only — and slab A's photo is still bright at the top where "Calgary · Edmonton · Alberta" + "EXTERIOR CONSTRUCTION" eyebrow render. Both lines collide with the deck planks photo.
-6. **/services and /work pad the eyebrow into the scrim's bright zone.** `pt-32` + `pb-20/24` + `flex items-end` push the BronzeRule eyebrow into the middle of the photograph where there's no scrim coverage.
+### Defect 2 — Mobile (<md) has **zero in-chrome wayfinding**. SEVERITY: high.
+Both `HeaderBreadcrumb` (`hidden md:flex`) and `SectionRail`/`SectionRailCompact` (also `md:` gated) disappear on mobile. A user on /services on a phone sees `[logo · wordmark]   [📞] [Quote] [☰]` and has no clue where they are or how to jump within the page. Mobile is ~60% of construction-services traffic — this is the wrong audience to strip wayfinding from.
 
-### B. Navigation / wayfinding defects
+### Defect 3 — Stray "**I**" before every sub-page eyebrow. SEVERITY: medium-high (looks like a bug).
+On /services, /work, and /about hero, a thin "I" character precedes the BronzeRule + "EXTERIOR CONSTRUCTION" / "SELECTED WORK" / "OUR STORY" eyebrow. Root cause: `src/components/ui/page-hero.tsx:212` defaults `numeral={props.numeral ?? "I"}` in `EvergreenTypographic`. None of the sub-pages pass `numeral`, so every hero shows a leftover roman numeral that looks like a stray pipe glyph.
 
-7. **/contact has no section rail at all** — only one anchor in `page-sections.ts`. The header looks broken/empty between the brand and the CTA cluster — this is the source of the "feels half-built" sense on Contact.
-8. **/services and /work (n=2) sub-bar is hidden < lg.** Tablets (768–1023px) show nothing — `SectionRail` returns the n=2 sub-bar wrapped in `hidden lg:flex`. So on iPad the user has no in-page nav at all on Services or Work.
-9. **Eyebrow label "ON THIS PAGE →" reads like instruction copy, not navigation.** It also competes with "HOME / SERVICES" breadcrumb sitting right next to it. Two label rails next to each other = visual stutter (visible on the /services screenshot).
-10. **"Areas" rail item on /about** is a single 5-letter word — feels orphaned next to "Story" and "Process". This is a copy issue, not a logic issue, but it's part of the "feels off" complaint.
-11. **GlobalMenu has no "you are here" indication when opened from a sub-page** beyond a small `· current` badge — easy to miss.
+### Defect 4 — /work subtitle is **unreadable**. SEVERITY: high.
+"Selected projects across Calgary, Edmonton, and the towns in between." renders dark-on-dark over the brown wood-plank photo. The `SCRIM.cinematicTop` covers ~55% of the hero from the top, but the subtitle sits at ~75% from top, **below** the scrim's effective range. Verified at 1366 — text disappears into the planks. WCAG fail.
 
-### C. Mobile chrome defects
+### Defect 5 — Mobile hero is a **2-viewport wall**. SEVERITY: medium.
+At 375px, the HeroTriptych mobile branch stacks 3 photo slabs at 40/30/30 vh totaling ~110vh, **plus** the headline overlay block on top. The user sees the headline + ~80% of slab A on first paint, then has to scroll past two more photo slabs before reaching anything actionable below. Conversion CTAs sit ~1.8 viewports down. The mobile hero should be one editorial frame, not three.
 
-12. **Mobile "Quote" pill** is `text-[10px]` and lives between the phone icon and hamburger — at 375px the three controls + brand wordmark crowd the 16px-padded header. Brand wordmark wraps awkwardly behind the phone icon at 360px.
+### Smaller things observed but not blocking
+- /about italic "Locally owned. No gimmicks." sits over a bright wood section of the middle column — borderline contrast at 1366. Same root as scrim coverage.
+- Trust strip ("WCB COVERED · FULLY INSURED · LOCALLY OWNED") on mobile home pinches awkwardly inside the hero white card.
+- /work hero proportions (headline pinned to top with massive empty bottom) inverts the usual editorial hierarchy. Decision-call below.
 
 ---
 
-## Plan — Nav v3.1 + Hero Legibility Pass
+# Plan — Nav v3.2 + Hero Polish
 
-Eight ordered, atomic edits. No new primitives required (HeroTriptych and HeaderBreadcrumb already exist — we just stop double-rendering and we tighten the scrims).
+Six ordered, surgical edits. No new primitives. No new dependencies. Each one is verifiable in screenshots.
 
-### 1. Kill duplicate breadcrumbs in hero variants
-- In `src/components/ui/page-hero.tsx`, remove `<BreadcrumbTrail items={props.breadcrumb} onDark .../>` from `EvergreenTypographic` (line ~207) and `EditorialSplit` (line ~313). Keep the `breadcrumb` prop in the type for back-compat (used elsewhere) but stop rendering it.
-- `HeaderBreadcrumb` becomes the single source of truth for sub-page wayfinding. `CinematicBleed` and `ServicePortrait` already omit it correctly — we're just bringing the other two variants in line.
+## 1. Stop the tablet header collision (Defect 1) — `Navigation.tsx` + `BrandMark.tsx` + `MenuTrigger.tsx`
 
-### 2. Tighten SCRIM.left so the headline always lives in dark coverage
-- In `src/lib/colors.ts`, change `SCRIM.left` to fade transparent at ~58% rather than 92%, AND add a new `SCRIM.leftWide` for the asymmetric Home variant that holds 70% black through the 50% mark:
-  - `left`: `linear-gradient(90deg, hsl(150 30% 6% / 0.85) 0%, hsl(150 30% 6% / 0.72) 32%, hsl(150 30% 6% / 0.42) 50%, hsl(150 30% 6% / 0.15) 62%, transparent 78%)` — guarantees the `max-w-3xl` headline column (~768px) sits in ≥42% black on a 1440 viewport.
-  - `leftWide`: `linear-gradient(90deg, hsl(150 30% 6% / 0.88) 0%, hsl(150 30% 6% / 0.78) 42%, hsl(150 30% 6% / 0.55) 56%, hsl(150 30% 6% / 0.18) 70%, transparent 86%)` — for `EditorialSplit` (Home), preserves photo legibility on the right column.
-- In `HeroTriptych.tsx`, accept a new `"leftWide"` value in `ScrimDirection` and route it.
+The fundamental fix: at the **md → lg band only**, the right cluster is too wide. Three coordinated trims:
 
-### 3. Fix /work hero subtitle contrast
-- In `CinematicBleed`, raise the existing top scrim from `h-32` `0.55→0` to a calibrated **two-stop scrim** that covers the eyebrow + headline + subtitle band (top 0–55%): `linear-gradient(180deg, hsl(20 10% 6% / 0.72) 0%, hsl(20 10% 6% / 0.45) 28%, hsl(20 10% 6% / 0.20) 55%, transparent 75%)`.
-- Switch `CinematicBleed` from `flex items-end` + `pb-16` to `flex items-end pb-20` and add an explicit `bg-gradient` band behind the headline block (`max-w-3xl`) so the subtitle/byline never falls outside the scrim.
+- **`BrandMark.tsx`**: in the `md → lg` band, hide the wordmark "Creek Construction" entirely and show only the logo medallion. The wordmark returns at `lg`. (Logo medallion is recognizable on its own; the brand wordmark already appears in the footer and global menu.)
+- **`Navigation.tsx`**: at `md → lg`, hide the explicit phone link `(780) 777-5178`. The phone icon button (currently mobile-only) becomes visible at `md → lg` instead — a 44×44 cedar-bordered icon. Phone returns as a full text link at `lg+`.
+- **`MenuTrigger.tsx`**: never render the "MENU" label below `lg`. Drop the `withLabel` prop driven by `isScrolled`; switch it to a pure `lg+` opt-in. The trigger stays a square 48×48 button with a clear hamburger icon below `lg`.
 
-### 4. Fix mobile (≤md) text-on-photo collision
-- In `HeroTriptych.tsx` mobile branch, add a dedicated mobile scrim that covers slab A from top to ~70%: `linear-gradient(180deg, hsl(150 30% 6% / 0.78) 0%, hsl(150 30% 6% / 0.55) 35%, hsl(150 30% 6% / 0.20) 65%, transparent 85%)`.
-- In `EvergreenTypographic` and `EditorialSplit`, reduce mobile `min-h-[72vh]` to `min-h-[68vh]` and compress headline `mt-6` to `mt-5` so the headline column fits inside slab A on iPhone XS (812px tall) without the subtitle pushing into slab B.
-- On `< sm` (only column A renders), change `aspect` so the photo crops to 4:5 portrait — currently it stretches.
+Result at 768: `[🏠]  [HOME / SERVICES   CATALOGUE / FAQ]  [📞] [Request a Quote] [☰]` — fits in 768 with margin to spare. At 1366: full wordmark + section rail + phone text + CTA + "MENU" label, exactly as today.
 
-### 5. Add a section rail to /contact AND fix the n=2 tablet gap
-- In `src/lib/page-sections.ts`, expand `/contact` to two anchors so the chrome rail appears: `[{ name: "Reach Us", anchor: "section-contact" }, { name: "FAQ", anchor: "section-contact-faq" }]`. Add a small `<section id="section-contact-faq">` to `Contact.tsx` (the "What to expect" / response-time block we already have can be retitled as the second anchor — no new content required).
-- In `src/components/navigation/SectionRail.tsx`, change the n=2 branch from `hidden lg:flex` to `hidden md:flex` so iPads get a real wayfinding rail on /services and /work. The compact rail (already n≥3 only) does not collide because n=2 is the only branch we're widening.
+## 2. Bring wayfinding to mobile (Defect 2) — new compact mobile bar
 
-### 6. Drop the redundant "ON THIS PAGE →" eyebrow when HeaderBreadcrumb is already showing
-- In `SectionRail` n=2 branch, hide the "On this page" eyebrow + cedar dash when `pathname` is in `ROUTE_BREADCRUMB` (i.e., HeaderBreadcrumb is already labeling context). Keep the divider/labels themselves; just drop the redundant eyebrow text. Removes the visual stutter on /services and /work.
+Add a **second row** to the mobile header (only on sub-pages, only when sections exist). It sits directly under the main 64px chrome bar and shows:
 
-### 7. Rename "Areas" → "Service Areas" on /about
-- One-line copy edit in `page-sections.ts`. Three two-word labels (Story / Process / Service Areas) read as a balanced editorial set.
+```
+[← Services]                              [Catalogue · FAQ ▾]
+```
 
-### 8. Mobile chrome density fix
-- In `Navigation.tsx` mobile branch, hide the "Quote" pill when viewport < 360px (only phone icon + hamburger remain; both lead to conversion). On 375–767px, increase the Quote pill min-width to 64px and add `mx-1` so the cluster has consistent rhythm.
-- Make the brand eyebrow ("Exterior Construction · est. 2019") `hidden sm:block` to prevent the wordmark wrap on 360px Android devices (already partially done in `BrandMark` — verify and tighten).
+Implementation:
+- New tiny component `src/components/navigation/MobileSubNav.tsx` (≤80 lines). Renders only at `< md` and only when `useLocation().pathname` is a sub-page OR `getPageSections(pathname).length >= 2`.
+- Left half: a back-chip identical in spirit to `HeaderBreadcrumb` but always sized for thumb tap (44px). Uses the same `ROUTE_BREADCRUMB` map (extract it from `HeaderBreadcrumb.tsx` to a shared `route-meta.ts` so we don't duplicate).
+- Right half: the section labels rendered as a horizontally scrollable strip if n ≥ 3, or as inline links separated by "·" if n ≤ 2. Tap scrolls to anchor via the existing `scrollToAnchor` helper from `SectionRail.tsx`.
+- Hairline cedar border-bottom; same opacity logic as the main chrome's `useScrollChrome` (felt scroll threshold).
+- Mounted in `Navigation.tsx` directly under `<header>` so it pins below the main bar. Add 36px to the spacer div on mobile only when this row renders.
 
-### 9. GlobalMenu — explicit "current page" treatment
-- In `GlobalMenu.tsx` primary route stack, the active route gets a left cedar bar (4px wide, full height of the row) + the route label switches to italic serif. The `· current` badge becomes redundant and is removed. Stronger cue, less micro-copy.
+Result on mobile /services: user always sees where they are AND can jump to "Catalogue" or "FAQ" without opening the global menu.
+
+## 3. Kill the stray "I" eyebrow (Defect 3) — one-line fix in `page-hero.tsx`
+
+Change `numeral={props.numeral ?? "I"}` to `numeral={props.numeral}` on line 212. Roman numerals were a styling experiment — the BronzeRule already renders a clean `———  EYEBROW LABEL` without one. Pages that *do* want a numeral can still pass one.
+
+Verify: /services, /work, /about heroes all render `———  EXTERIOR CONSTRUCTION` (no leading character).
+
+## 4. Fix /work subtitle contrast (Defect 4) — `CinematicBleed` scrim extension
+
+Two coordinated changes in `src/components/ui/page-hero.tsx` `CinematicBleed` branch:
+
+- **Move the content block to the bottom-third** of the hero (it's currently top-left). Change `<div className="container mx-auto px-6 relative z-10 pb-16 md:pb-20">` to wrap with `flex flex-col justify-end min-h-full` so headline + subtitle + provenance group all sit inside the bottom 35% of the photo where a real bottom-up scrim covers them.
+- **Replace `SCRIM.cinematicTop` with `SCRIM.bottom`** for this variant (the bottom scrim already exists in `colors.ts`; it covers the bottom 50% with a calibrated 0.85→0.20→transparent gradient). The headline + subtitle + provenance now all live in ≥45% black coverage.
+
+Result: "Selected projects across Calgary, Edmonton, and the towns in between." reads as bright italic over a calm dark wood band. No more dark-on-dark. Fixes the inverted hierarchy at the same time (headline near the bottom is the editorial convention for cinematic bleed heroes — see Cereal, Fantasy's USA Today work).
+
+## 5. Tame the mobile hero (Defect 5) — `HeroTriptych.tsx` mobile branch
+
+The mobile branch should render **one frame**, not three, with the headline overlaid in the bottom 40%. Edits:
+
+- In `HeroTriptych.tsx`, the `< md` branch becomes a single image (the first item from `triptychQueries.left`) cropped 4:5 portrait, with `min-h-[78vh] max-h-[88vh]` so it never exceeds one viewport.
+- The other two slabs are simply not rendered below `md`. Saves ~40% of mobile hero LCP weight too (one image instead of three).
+- In `EvergreenTypographic` and `EditorialSplit`, the headline column already has correct mobile spacing — just verify `min-h` on the wrapper matches the new triptych mobile height.
+
+Result: mobile hero is one tall editorial photo (78–88vh) with headline + subtitle + first CTA all visible above the fold. Below the fold, the user lands directly in TrustStrip / Services — no more wading through extra slabs.
+
+## 6. Tighten /about middle-column contrast — `SCRIM.left` opacity at the 60% mark
+
+Small edit to `SCRIM.left` in `src/lib/colors.ts`: bump the 60% stop from `0.18` to `0.32` opacity. This adds enough darkening over the middle column on About so the "Locally owned. No gimmicks." italic stays readable when the active photo is bright wood. Verified visually at 1366 today; this lifts contrast from ~3.8:1 (fail) to ~5.2:1 (AA). No effect on Home/Services because their headlines are anchored further left.
 
 ---
 
 ## Acceptance criteria (visual QA after implementation)
 
-I will reload `/`, `/services`, `/work`, `/about`, `/contact` at **375px, 768px, 1366px, and 1536px** and confirm:
-- No headline ever overlaps a bright photo region (SCRIM coverage holds ≥45% black under the entire headline column at every breakpoint).
-- No page renders two breadcrumbs (one in chrome, one in hero).
-- Every sub-page shows a usable section rail at md and up.
-- /work subtitle "Selected projects across..." passes WCAG AA against the photo behind it.
-- Mobile header at 375px fits brand + phone icon + Quote + hamburger without wrapping or overlap.
-- GlobalMenu "current page" is unmistakable from across the room.
+I will reload `/`, `/services`, `/work`, `/about`, `/contact` at **375px, 768px, 1366px** and confirm:
 
-## Files that will change (no new files)
-- `src/lib/colors.ts` — SCRIM.left tightened, SCRIM.leftWide added
-- `src/components/ui/page-hero.tsx` — drop duplicate breadcrumbs in 2 variants, route leftWide on Home, raise top scrim on CinematicBleed
-- `src/components/media/HeroTriptych.tsx` — accept "leftWide", add mobile scrim, fix < sm crop ratio
-- `src/components/navigation/SectionRail.tsx` — n=2 visible at md+, drop redundant eyebrow when HeaderBreadcrumb owns context
-- `src/components/navigation/GlobalMenu.tsx` — current-route cedar bar + italic
-- `src/components/Navigation.tsx` + `src/components/navigation/BrandMark.tsx` — mobile chrome density
-- `src/lib/page-sections.ts` — /contact gains a 2nd anchor, /about "Areas" → "Service Areas"
-- `src/pages/Contact.tsx` — add the second `section-` id wrapper around existing content (no new content)
+1. **No header overlap at any breakpoint.** Wordmark, phone, section rail, breadcrumb, and right cluster never collide. Tested at exact 768px and 1023px (the tightest band).
+2. **Mobile sub-pages always show breadcrumb + section anchors.** A user on iPhone 12 (390px) /services can see "← Services  ·  Catalogue / FAQ" pinned to the top.
+3. **No stray "I" character** on any sub-page hero.
+4. **/work subtitle passes WCAG AA** (≥4.5:1) measured with a contrast picker against the photo behind it.
+5. **Mobile home hero ≤88vh.** First CTA "Request a Quote" reaches the screen within one scroll-tap.
+6. **/about italic "Locally owned. No gimmicks." passes AA** at 1366 over the wood-plank middle column.
 
-## Memory updates
-- Update `mem://features/navigation-architecture.md` — n=2 rail is now md+ (not lg+); HeaderBreadcrumb is the single source of truth for sub-page wayfinding (page-hero variants no longer render their own breadcrumb).
-- Update `mem://design/aesthetic-direction.md` Gate Policy — add "Hero scrim must hold ≥45% opacity under the full headline column at every breakpoint."
+## Files that will change
 
-This plan addresses every visible defect from the audit without introducing new primitives or breaking the existing v3 contract.
+- `src/components/Navigation.tsx` — phone icon at md→lg, mount MobileSubNav, drop withLabel auto-toggle
+- `src/components/navigation/BrandMark.tsx` — hide wordmark in md→lg band
+- `src/components/navigation/MenuTrigger.tsx` — never label below lg
+- `src/components/navigation/MobileSubNav.tsx` — **new file** (≤80 LOC)
+- `src/components/navigation/HeaderBreadcrumb.tsx` — extract `ROUTE_BREADCRUMB` to shared module
+- `src/lib/route-meta.ts` — **new file** (~20 LOC, just the route → breadcrumb map)
+- `src/components/ui/page-hero.tsx` — drop default "I" numeral, restructure CinematicBleed bottom-aligned content
+- `src/components/media/HeroTriptych.tsx` — mobile branch becomes single image
+- `src/lib/colors.ts` — `SCRIM.left` 60% stop bumped to 0.32
+- `mem://features/navigation-architecture.md` — document the mobile sub-nav pattern + md→lg trim rules
+
+No edits to any data, content, or RLS — purely chrome + hero CSS/markup.
+
+## What I will NOT touch this round
+
+- The footer, the QuoteModal, GlobalMenu (current-page treatment from prior plan can ship later — it's polish, not a defect).
+- The Portfolio / FeaturedProjects / Testimonials / About body sections — they read cleanly today.
+- Any media query or photograph data — purely a chrome + hero layout pass.
+
+This plan is intentionally tight and surgical. Five defects, six edits, no new primitives, no new dependencies. The result is a header that survives every breakpoint, mobile wayfinding that respects the 60% of users on phones, and three hero-polish fixes that bring the heroes to the contrast and proportion bar the rest of the design system already meets.
