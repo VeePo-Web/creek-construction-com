@@ -69,22 +69,13 @@ const About = () => {
                       query={{
                         shot_type: ["interior", "process", "detail"],
                         kind: "image",
-                        min_quality: "portfolio",
+                        min_quality: "reference",
                       }}
                       sizes={MEDIA_SIZES.PORTRAIT_HALF}
-                      wrapperClassName="aspect-portrait w-full rounded-sm"
+                      wrapperClassName="aspect-portrait w-full rounded-sm overflow-hidden"
                       cedarHover
-                      fallback={
-                        <div
-                          className="aspect-portrait w-full rounded-sm relative overflow-hidden"
-                          style={{ background: BACKDROP.evergreenPlate }}
-                        >
-                          <div className="absolute inset-0" style={{ background: BACKDROP.bronzeGlow }} />
-                          <p className="absolute bottom-5 left-5 right-5 text-[10px] tracking-[0.25em] uppercase text-cedar/60">
-                            On the boards
-                          </p>
-                        </div>
-                      }
+                      fallbackVariant="cedar"
+                      fallbackCaption="On the boards · Calgary"
                     />
                   </div>
 
