@@ -92,14 +92,6 @@ export function EditorialFallback({
   icon?: LucideIcon;
   caption?: string;
 }) {
-  variant = "stone",
-  icon: Icon,
-  caption,
-}: {
-  variant?: MediaFallbackVariant;
-  icon?: LucideIcon;
-  caption?: string;
-}) {
   return (
     <div
       className="absolute inset-0 overflow-hidden"
