@@ -41,11 +41,14 @@ const BrandMark = ({ onDark = false, className }: BrandMarkProps) => {
         height={44}
         className="h-9 w-9 md:h-11 md:w-11 object-contain transition-transform duration-500 group-hover/brand:scale-[1.03]"
       />
-      <div className="block">
+      {/* Wordmark stack — hidden in the cramped md→lg band so the section
+          rail and right cluster have room to breathe. The logo medallion
+          alone carries the brand at tablet sizes. Wordmark returns at lg. */}
+      <div className="block md:hidden lg:block">
         <p
           className={cn(
             "font-serif leading-none whitespace-nowrap",
-            "text-[15px] sm:text-base md:text-lg",
+            "text-[15px] sm:text-base lg:text-lg",
             titleClass,
           )}
         >
@@ -54,10 +57,8 @@ const BrandMark = ({ onDark = false, className }: BrandMarkProps) => {
         <p
           className={cn(
             "font-serif italic mt-1 leading-none whitespace-nowrap",
-            "text-[10px] sm:text-[11px] md:text-xs",
-            // Hide the eyebrow in the cramped md→lg band so the section
-            // rail and right cluster have room. Returns at lg+.
-            "hidden sm:block md:hidden lg:block",
+            "text-[10px] sm:text-[11px] lg:text-xs",
+            "hidden sm:block",
             eyebrowClass,
           )}
         >

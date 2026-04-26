@@ -66,7 +66,7 @@ const SectionRail = ({ sections, faded = false, className }: SectionRailProps) =
         aria-label="Page sections"
         aria-hidden={faded ? true : undefined}
         className={cn(
-          "hidden md:flex items-center gap-3 transition-opacity duration-500",
+          "hidden lg:flex items-center gap-3 transition-opacity duration-500",
           faded ? "opacity-0 pointer-events-none" : "opacity-100",
           className,
         )}
