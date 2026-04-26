@@ -5,10 +5,10 @@ import CedarCTA from "@/components/CedarCTA";
 import MediaSlot from "@/components/media/MediaSlot";
 import { MEDIA_SIZES } from "@/lib/media-sizes";
 import type { ServiceCategory } from "@/lib/api/public-media";
+import { SECTION_PADDING, MAX_WIDTH, GRID_GAP } from "@/lib/spacing";
+import { QUOTE } from "@/lib/typography";
 
 // PLACEHOLDER TESTIMONIALS — replace with real customer quotes when available.
-// Keep the structure: { quote, name, location, type, service, rating } and the cards
-// will rerender automatically. `service` ties the photo thumbnail to the right work.
 const Testimonials = () => {
   const testimonials = [
     {
@@ -43,7 +43,7 @@ const Testimonials = () => {
   return (
     <section
       id="section-testimonials"
-      className="py-24 md:py-32 relative overflow-hidden grain-overlay"
+      className={`${SECTION_PADDING.default} relative overflow-hidden`}
       aria-labelledby="testimonials-heading"
       style={{
         contentVisibility: "auto",
@@ -57,7 +57,7 @@ const Testimonials = () => {
         style={{ background: "linear-gradient(180deg, transparent 0%, hsl(var(--muted)) 100%)" }}
       />
       <div className="container mx-auto px-6">
-        <div className="max-w-7xl mx-auto">
+        <div className={`${MAX_WIDTH.wide} mx-auto`}>
           <SectionHeader
             numeral="IV"
             label="FROM ALBERTA HOMEOWNERS"
@@ -71,7 +71,7 @@ const Testimonials = () => {
           <div className="mb-16" />
 
           <div
-            className="grid md:grid-cols-3 gap-6 lg:gap-8 group/cards"
+            className={`grid md:grid-cols-3 ${GRID_GAP.default} group/cards`}
             role="list"
             style={{ contain: "layout style" }}
           >
@@ -97,8 +97,6 @@ const Testimonials = () => {
                       <span className="text-minimal text-cedar truncate">{t.type}</span>
                     </div>
 
-                    {/* Project thumbnail — ties the testimonial back to a real build.
-                        Renders nothing if no approved photo exists for this service. */}
                     <MediaSlot
                       query={{
                         service: t.service,
@@ -131,7 +129,7 @@ const Testimonials = () => {
                     className={`${["w-8", "w-12", "w-20"][i]} ${["group-hover/card:w-16", "group-hover/card:w-24", "group-hover/card:w-full"][i]} h-px bg-gradient-to-r from-cedar to-cedar/50 transition-all duration-700`}
                   />
 
-                  <blockquote className="text-foreground leading-relaxed text-base md:text-lg font-light relative flex-1">
+                  <blockquote className={`${QUOTE.testimonial} relative flex-1`}>
                     <span className="quote-mark-float absolute -top-2 -left-1 group-hover/card:text-cedar/25 transition-colors duration-500" aria-hidden>
                       {"\u201C"}
                     </span>
@@ -146,7 +144,7 @@ const Testimonials = () => {
                       <p className="text-sm font-medium text-foreground transition-colors duration-500 group-hover/card:text-cedar">
                         {t.name}
                       </p>
-                      <p className="text-sm text-muted-foreground mt-1">{t.location}</p>
+                      <p className={QUOTE.attribution + " mt-1"}>{t.location}</p>
                     </cite>
                   </footer>
                 </article>
