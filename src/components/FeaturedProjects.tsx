@@ -2,11 +2,11 @@ import { Link } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
 import { useProjects } from "@/hooks/useApprovedMedia";
 import EditorialPicture from "@/components/media/EditorialPicture";
-import ScrollRevealMotion from "@/components/ScrollRevealMotion";
 import SectionHeader from "@/components/SectionHeader";
 import { MEDIA_SIZES } from "@/lib/media-sizes";
 import { supabase } from "@/integrations/supabase/client";
 import type { DBProject } from "@/lib/api/public-media";
+import { useReveal } from "@/hooks/useReveal";
 
 /**
  * FeaturedProjects — editorial gallery of `featured = true` projects from
@@ -48,8 +48,7 @@ const ProjectCard = ({ project, variant, index }: ProjectCardProps) => {
     variant === "lead" ? "text-2xl md:text-3xl" : "text-xl md:text-2xl";
 
   return (
-    <ScrollRevealMotion delay={index * 0.08} y={28} className="h-full">
-      <article className="group h-full flex flex-col">
+    <article className="group h-full flex flex-col">
         <Link
           to={`/work#${project.slug}`}
           className="block focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cedar focus-visible:ring-offset-2 rounded-sm"
@@ -75,7 +74,6 @@ const ProjectCard = ({ project, variant, index }: ProjectCardProps) => {
                   "linear-gradient(135deg, hsl(150 25% 14%) 0%, hsl(150 25% 8%) 100%)",
               }}
             >
-              <div className="absolute inset-0 grain-overlay opacity-50 pointer-events-none" />
               <span className="absolute inset-0 flex items-center justify-center font-serif text-evergreen-foreground/20 text-5xl select-none">
                 {String(index + 1).padStart(2, "0")}
               </span>
@@ -99,7 +97,7 @@ const ProjectCard = ({ project, variant, index }: ProjectCardProps) => {
           </div>
 
           <h3
-            className={`font-serif ${headingSize} text-foreground mt-2 leading-tight group-hover:text-cedar transition-colors duration-500`}
+            className={`font-serif ${headingSize} text-foreground mt-2 leading-tight group-hover:text-cedar transition-colors duration-300`}
           >
             {project.title}
           </h3>
@@ -110,17 +108,16 @@ const ProjectCard = ({ project, variant, index }: ProjectCardProps) => {
             </p>
           )}
 
-          <span className="mt-4 inline-flex items-center gap-2 text-[10px] tracking-[0.18em] uppercase text-cedar/70 group-hover:text-cedar transition-all duration-500">
+          <span className="mt-4 inline-flex items-center gap-2 text-[10px] tracking-[0.18em] uppercase text-cedar/70 group-hover:text-cedar transition-colors duration-300">
             View project
             <ArrowRight
-              className="h-3 w-3 group-hover:translate-x-1 transition-transform duration-500"
+              className="h-3 w-3 group-hover:translate-x-1 transition-transform duration-300"
               aria-hidden
             />
           </span>
         </Link>
       </article>
-    </ScrollRevealMotion>
-  );
+    );
 };
 
 const FeaturedProjects = () => {
