@@ -13,7 +13,9 @@ import SectionRailCompact from "@/components/navigation/SectionRailCompact";
 import HeaderBreadcrumb from "@/components/navigation/HeaderBreadcrumb";
 import MenuTrigger from "@/components/navigation/MenuTrigger";
 import GlobalMenu from "@/components/navigation/GlobalMenu";
+import MobileSubNav from "@/components/navigation/MobileSubNav";
 import { getPageSections } from "@/lib/page-sections";
+import { getRouteBreadcrumb } from "@/lib/route-meta";
 import { useScrollChrome } from "@/hooks/useScrollChrome";
 
 interface NavigationProps {
