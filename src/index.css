@@ -114,6 +114,17 @@
     @apply border-border;
   }
 
+  /* Section anchors used by the header SectionRail land below the sticky
+     header instead of slipping under it. Mobile header is 64px, desktop 80px. */
+  [id^="section-"] {
+    scroll-margin-top: 80px;
+  }
+  @media (max-width: 640px) {
+    [id^="section-"] {
+      scroll-margin-top: 64px;
+    }
+  }
+
   body {
     @apply bg-background text-foreground antialiased;
     font-family: 'DM Sans', system-ui, sans-serif;
