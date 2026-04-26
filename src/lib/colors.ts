@@ -156,12 +156,37 @@ export const BACKDROP = {
 // ─────────────────────────────────────────────────────────────────────
 
 export const SCRIM = {
-  /** Sweeps left→right. Headline lives in the dark left third (Home, Services, About). */
+  /**
+   * Sweeps left→right. Headline lives in the dark left ~50% of the section.
+   * Tightened (v3.1) so the column stays in ≥42% black through 50% width,
+   * preventing the headline from punching into the middle photo column.
+   * Used by /services, /about, /contact.
+   */
   left:
-    "linear-gradient(90deg, hsl(150 30% 6% / 0.82) 0%, hsl(150 30% 6% / 0.62) 36%, hsl(150 30% 6% / 0.22) 62%, hsl(150 30% 6% / 0.05) 78%, transparent 92%)",
+    "linear-gradient(90deg, hsl(150 30% 6% / 0.86) 0%, hsl(150 30% 6% / 0.74) 32%, hsl(150 30% 6% / 0.46) 50%, hsl(150 30% 6% / 0.18) 64%, transparent 80%)",
+  /**
+   * Wider variant for the asymmetric Home triptych (40/30/30). Holds heavy
+   * black through ~56% so the editorial-split headline column AND the
+   * floating provenance card both sit in legible coverage, while the
+   * right photograph still breathes.
+   */
+  leftWide:
+    "linear-gradient(90deg, hsl(150 30% 6% / 0.90) 0%, hsl(150 30% 6% / 0.80) 38%, hsl(150 30% 6% / 0.58) 56%, hsl(150 30% 6% / 0.22) 72%, transparent 88%)",
   /** Sweeps top→bottom. Headline lives in the lower 38% (Contact, Work). */
   bottom:
     "linear-gradient(180deg, transparent 0%, hsl(150 30% 6% / 0.12) 38%, hsl(150 30% 6% / 0.55) 70%, hsl(150 30% 6% / 0.85) 95%)",
+  /**
+   * Mobile-only scrim — covers the top of slab A where the headline stack
+   * lives. Heavy at 0–35%, falls off by 85% so the photo still reads.
+   */
+  mobileTop:
+    "linear-gradient(180deg, hsl(150 30% 6% / 0.82) 0%, hsl(150 30% 6% / 0.62) 30%, hsl(150 30% 6% / 0.32) 55%, hsl(150 30% 6% / 0.12) 75%, transparent 90%)",
+  /**
+   * Two-stop scrim for full-bleed cinematic heroes (Work). Covers the
+   * eyebrow→headline→subtitle band so dark-on-dark is impossible.
+   */
+  cinematicTop:
+    "linear-gradient(180deg, hsl(20 10% 6% / 0.78) 0%, hsl(20 10% 6% / 0.55) 26%, hsl(20 10% 6% / 0.28) 52%, hsl(20 10% 6% / 0.10) 72%, transparent 88%)",
   /** Universal nav legibility band — first 96px from the top. */
   topNav:
     "linear-gradient(180deg, hsl(150 30% 6% / 0.55) 0%, transparent 100%)",
