@@ -153,13 +153,9 @@ const FeaturedProjects = () => {
   return (
     <section
       id="section-featured"
-      aria-labelledby="featured-heading"
-    <section
-      id="section-featured"
       className="py-24 md:py-32 bg-background relative"
       aria-labelledby="featured-heading"
       style={{ contentVisibility: "auto", containIntrinsicSize: "auto 1200px" }}
-    >
     >
       <div className="container mx-auto px-6">
         <div className="max-w-7xl mx-auto">
