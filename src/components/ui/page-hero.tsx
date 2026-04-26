@@ -7,6 +7,7 @@ import BronzeRule from "@/components/ui/bronze-rule";
 import KineticHeadline, { type KineticSize } from "@/components/ui/kinetic-headline";
 import HeroProvenanceCard from "@/components/ui/hero-provenance-card";
 import MediaSlot from "@/components/media/MediaSlot";
+import HeroTriptych from "@/components/media/HeroTriptych";
 import { useApprovedMedia, useFirstApprovedMedia } from "@/hooks/useApprovedMedia";
 import { useHeroParallax } from "@/hooks/useHeroParallax";
 import { useHeroPreload } from "@/hooks/useHeroPreload";
@@ -48,12 +49,22 @@ interface EvergreenTypographicProps extends BaseProps {
   variant?: "evergreen-typographic" | "evergreen";
   /** Optional ambient field clip query (rendered top-right at low opacity). */
   ambientClipQuery?: MediaQuery;
+  /**
+   * Three queries that compose the photographic triptych behind the headline.
+   * When omitted, the variant draws stone-plate fallbacks (still no green).
+   */
+  triptychQueries?: [MediaQuery, MediaQuery, MediaQuery];
 }
 
 interface EditorialSplitProps extends BaseProps {
   variant: "editorial-split";
-  /** Photo query for the right column. */
+  /** Photo query for the floating provenance card on the right. */
   query: MediaQuery;
+  /**
+   * Three queries for the photographic triptych BACKDROP. Defaults to a
+   * narrative built around the `query` if omitted.
+   */
+  triptychQueries?: [MediaQuery, MediaQuery, MediaQuery];
   /** Optional provenance card content. */
   provenance?: {
     eyebrow?: string;
@@ -122,9 +133,16 @@ function SkipLink({ skipToId }: { skipToId?: string }) {
 
 // ─────────────────────────────────────────────────────────────────────
 // Variant: evergreen-typographic
-// Type-led, evergreen radial + grain. Optional ambient field clip top-right.
+// Type-led hero with a 3-column photographic triptych backdrop and a
+// left-anchored scrim guaranteeing AAA contrast on the headline.
 // Used on /about, /contact, /services (when no portrait queries supplied).
 // ─────────────────────────────────────────────────────────────────────
+
+const DEFAULT_TRIPTYCH: [MediaQuery, MediaQuery, MediaQuery] = [
+  { shot_type: ["hero", "elevation"], min_quality: "reference", kind: "image" },
+  { shot_type: ["detail", "process"], min_quality: "reference", kind: "image" },
+  { shot_type: ["wide", "interior"], min_quality: "reference", kind: "image" },
+];
 
 const EvergreenTypographic = (props: EvergreenTypographicProps) => {
   const lines = toLines(props.title);
@@ -133,21 +151,33 @@ const EvergreenTypographic = (props: EvergreenTypographicProps) => {
   );
   const showAmbient = Boolean(props.ambientClipQuery && ambient.item?.is_video);
 
+  const queries = props.triptychQueries ?? DEFAULT_TRIPTYCH;
+
   return (
     <section
       className={cn(
-        "relative overflow-hidden bg-evergreen text-evergreen-foreground py-24 md:py-32",
+        "relative overflow-hidden text-evergreen-foreground py-24 md:py-32 min-h-[72vh] md:min-h-[78vh] flex items-center",
         props.className,
       )}
       aria-label={lines.join(" ")}
     >
-      <div className="absolute inset-0 opacity-90" style={{ background: BACKDROP.evergreenRadial }} />
-      <div className="absolute inset-0 grain-overlay opacity-40 pointer-events-none" />
+      {/* Photographic triptych backdrop — replaces the old green plate */}
+      <HeroTriptych
+        queries={queries}
+        rhythm="equal"
+        scrim="left"
+        priority
+        fallbackCaptions={[
+          "Photographing this season",
+          "On the boards",
+          "Across Alberta",
+        ]}
+      />
 
       {/* Spine — left vertical bronze hairline */}
       <div
         aria-hidden
-        className="hidden md:block absolute left-6 top-1/2 -translate-y-1/2 w-px bg-cedar/30"
+        className="hidden md:block absolute left-6 top-1/2 -translate-y-1/2 w-px bg-cedar/30 z-[5]"
         style={{ height: "calc(100% - 8rem)" }}
       />
 
@@ -155,11 +185,10 @@ const EvergreenTypographic = (props: EvergreenTypographicProps) => {
       {showAmbient && ambient.item && (
         <div
           aria-hidden
-          className="hidden lg:block absolute top-10 right-10 w-[280px] aspect-[4/3] rounded-[8px] overflow-hidden"
+          className="hidden lg:block absolute top-10 right-10 w-[260px] aspect-[4/3] rounded-[8px] overflow-hidden z-[6]"
           style={{
-            border: "1px solid hsl(var(--cedar) / 0.18)",
-            opacity: 0.32,
-            mixBlendMode: "screen",
+            border: "1px solid hsl(var(--cedar) / 0.25)",
+            opacity: 0.4,
           }}
         >
           <video
@@ -174,7 +203,7 @@ const EvergreenTypographic = (props: EvergreenTypographicProps) => {
       )}
 
       <div className="container mx-auto px-6 relative z-10">
-        <div className="max-w-4xl">
+        <div className="max-w-2xl">
           <BreadcrumbTrail items={props.breadcrumb} onDark className="mb-6" />
 
           <BronzeRule
@@ -195,7 +224,7 @@ const EvergreenTypographic = (props: EvergreenTypographicProps) => {
             <p
               className={cn(
                 "mt-6 text-lg italic font-serif max-w-xl",
-                "text-evergreen-foreground/85",
+                "text-evergreen-foreground/95",
                 TEXT.onDark.legibleShadow,
               )}
             >
@@ -207,7 +236,7 @@ const EvergreenTypographic = (props: EvergreenTypographicProps) => {
             <p
               className={cn(
                 "mt-4 max-w-2xl text-sm leading-relaxed",
-                "text-evergreen-foreground/70",
+                "text-evergreen-foreground/80",
                 TEXT.onDark.legibleShadow,
               )}
             >
@@ -222,6 +251,7 @@ const EvergreenTypographic = (props: EvergreenTypographicProps) => {
   );
 };
 
+
 // ─────────────────────────────────────────────────────────────────────
 // Variant: editorial-split
 // Two-column homepage hero. Type left, photograph right with floating
@@ -232,7 +262,17 @@ const EditorialSplit = (props: EditorialSplitProps) => {
   const lines = toLines(props.title);
   const { item, loading } = useFirstApprovedMedia(props.query);
 
-  // Preload the LCP candidate as soon as we resolve a URL.
+  // Default backdrop triptych built from the focal `query` so we always get
+  // a coherent narrative when no explicit triptychQueries are supplied.
+  const defaultTriptych = useMemo<[MediaQuery, MediaQuery, MediaQuery]>(() => [
+    { ...props.query, shot_type: ["hero", "elevation"] },
+    { shot_type: ["detail", "process"], min_quality: "reference", kind: "image" },
+    { shot_type: ["wide", "interior", "elevation"], min_quality: "reference", kind: "image" },
+  ], [props.query]);
+
+  const triptychQueries = props.triptychQueries ?? defaultTriptych;
+
+  // Preload the floating provenance image (LCP after the triptych A column).
   useHeroPreload(item?.url, MEDIA_SIZES.PORTRAIT_HALF);
 
   const hasMedia = !loading && Boolean(item);
@@ -242,17 +282,22 @@ const EditorialSplit = (props: EditorialSplitProps) => {
     <section
       id="section-hero"
       className={cn(
-        "relative min-h-[88vh] md:min-h-screen flex items-center overflow-hidden",
+        "relative min-h-[88vh] md:min-h-screen flex items-center overflow-hidden text-evergreen-foreground",
         props.className,
       )}
       aria-label={lines.join(" ")}
     >
-      <div className="absolute inset-0 bg-evergreen" />
-      <div className="absolute inset-0 opacity-90" style={{ background: BACKDROP.evergreenRadial }} />
-      <div className="absolute inset-0 grain-overlay opacity-40 pointer-events-none" />
-      <div
-        className="absolute inset-x-0 bottom-0 h-32 pointer-events-none"
-        style={{ background: "linear-gradient(180deg, transparent, hsl(var(--secondary)) 100%)" }}
+      {/* Photographic triptych backdrop — replaces the old solid evergreen */}
+      <HeroTriptych
+        queries={triptychQueries}
+        rhythm="asymmetric"
+        scrim="left"
+        priority
+        fallbackCaptions={[
+          "Decks · Calgary",
+          "Cedar · detail",
+          "Across Alberta",
+        ]}
       />
 
       <div className="container mx-auto px-6 relative z-10 py-20 md:py-28 lg:py-32">
@@ -505,60 +550,34 @@ const CinematicBleed = (props: CinematicBleedProps) => {
 const ServicePortrait = (props: ServicePortraitProps) => {
   const lines = toLines(props.title);
 
-  // Resolve up to 3 photographs, one per query.
-  const a = useFirstApprovedMedia(props.queries[0] ?? {});
-  const b = useFirstApprovedMedia(props.queries[1] ?? {});
-  const c = useFirstApprovedMedia(props.queries[2] ?? {});
-  const tiles = [a.item, b.item, c.item].filter(Boolean);
-
-  useHeroPreload(a.item?.url, MEDIA_SIZES.THIRD);
-
-  const hasAny = tiles.length > 0;
+  // Coerce the queries[] tuple into HeroTriptych's [a,b,c] shape; if the
+  // caller supplied fewer than 3, pad with a sensible default.
+  const triptychQueries = useMemo<[MediaQuery, MediaQuery, MediaQuery]>(() => [
+    props.queries[0] ?? { shot_type: ["hero", "elevation"], min_quality: "reference", kind: "image" },
+    props.queries[1] ?? { shot_type: ["detail", "process"], min_quality: "reference", kind: "image" },
+    props.queries[2] ?? { shot_type: ["wide", "interior"], min_quality: "reference", kind: "image" },
+  ], [props.queries]);
 
   return (
     <section
       className={cn(
-        "relative overflow-hidden bg-evergreen text-evergreen-foreground",
+        "relative overflow-hidden text-evergreen-foreground",
         "min-h-[78vh] md:min-h-[82vh] flex items-end",
         props.className,
       )}
       aria-label={lines.join(" ")}
     >
-      {/* Triptych background */}
-      {hasAny && (
-        <div
-          aria-hidden
-          className="absolute inset-0 grid grid-cols-1 md:grid-cols-3 gap-1 opacity-70"
-        >
-          {tiles.map((m, i) => (
-            <div
-              key={m!.storage_path + i}
-              className={cn(
-                "relative overflow-hidden",
-                i === 1 ? "hidden md:block" : "",
-                i === 2 ? "hidden md:block" : "",
-              )}
-            >
-              <img
-                src={m!.url}
-                alt=""
-                className="absolute inset-0 w-full h-full object-cover hero-kenburns"
-                style={{
-                  animationDelay: `${i * 600}ms`,
-                  animationDuration: "16s",
-                }}
-                loading={i === 0 ? "eager" : "lazy"}
-                fetchPriority={i === 0 ? "high" : undefined}
-                decoding={i === 0 ? "sync" : "async"}
-              />
-            </div>
-          ))}
-        </div>
-      )}
-
-      <div className="absolute inset-0" style={{ background: BACKDROP.cinematicVignette }} aria-hidden />
-      <div className="absolute inset-0 pointer-events-none" style={{ background: BACKDROP.evergreenRadial, opacity: 0.55 }} aria-hidden />
-      <div className="absolute inset-0 grain-overlay opacity-30 pointer-events-none" />
+      <HeroTriptych
+        queries={triptychQueries}
+        rhythm="equal"
+        scrim="left"
+        priority
+        fallbackCaptions={[
+          "Decks · Calgary",
+          "Sheds · Edmonton",
+          "Fences · Alberta",
+        ]}
+      />
 
       <div className="container mx-auto px-6 relative z-10 pb-20 md:pb-24 pt-32">
         <div className="max-w-3xl">

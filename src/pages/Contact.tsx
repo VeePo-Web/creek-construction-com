@@ -33,6 +33,11 @@ const Contact = () => {
         title={["Let’s talk about", "your project."]}
         italic="Free quote. Honest answers."
         subtitle="No high-pressure sales. We respond within 24–48 hours."
+        triptychQueries={[
+          { service: "decks", shot_type: ["hero", "elevation"], min_quality: "reference", kind: "image" },
+          { shot_type: ["detail", "process"], min_quality: "reference", kind: "image" },
+          { shot_type: ["wide", "interior", "elevation"], min_quality: "reference", kind: "image" },
+        ]}
       />
 
       <section id="section-contact" className={`${SECTION_PADDING.default} grain-overlay`} aria-labelledby="contact-heading">
