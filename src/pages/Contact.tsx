@@ -40,7 +40,7 @@ const Contact = () => {
         ]}
       />
 
-      <section id="section-contact" className={`${SECTION_PADDING.default} grain-overlay`} aria-labelledby="contact-heading">
+      <section id="section-contact" className={`${SECTION_PADDING.default}`} aria-labelledby="contact-heading">
         <div className="container mx-auto px-6">
           <div className={`${MAX_WIDTH.wide} mx-auto grid md:grid-cols-2 gap-16 items-start`}>
             {/* Contact info */}
