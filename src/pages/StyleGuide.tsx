@@ -1211,12 +1211,24 @@ const GovernanceSection = () => (
 // PAGE
 // ─────────────────────────────────────────────────────────────────────
 
-const StyleGuide = () => (
-  <main className="min-h-screen bg-background">
-    <Helmet>
-      <title>Style Guide · Creek Construction</title>
-      <meta name="robots" content="noindex, nofollow" />
-    </Helmet>
+const StyleGuide = () => {
+  useDocumentTitle(
+    "Style Guide",
+    "Creek Construction internal design system reference.",
+  );
+
+  useEffect(() => {
+    const meta = document.createElement("meta");
+    meta.name = "robots";
+    meta.content = "noindex, nofollow";
+    document.head.appendChild(meta);
+    return () => {
+      document.head.removeChild(meta);
+    };
+  }, []);
+
+  return (
+    <main className="min-h-screen bg-background">
 
     {/* Hero */}
     <section className="border-b border-border/60">
