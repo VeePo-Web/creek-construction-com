@@ -122,6 +122,7 @@ const ProjectCard = ({ project, variant, index }: ProjectCardProps) => {
 
 const FeaturedProjects = () => {
   const { projects, loading } = useProjects({ featured: true, limit: 6 });
+  const { ref, cls, style } = useReveal();
 
   // Quietly hide the section if we don't have at least 3 featured projects.
   if (loading) return null;
@@ -155,7 +156,7 @@ const FeaturedProjects = () => {
       style={{ contentVisibility: "auto", containIntrinsicSize: "auto 1200px" }}
     >
       <div className="container mx-auto px-6">
-        <div className="max-w-7xl mx-auto">
+        <div ref={ref} className={`max-w-7xl mx-auto ${cls}`} style={style}>
           <div className="mb-16">
             <SectionHeader
               numeral="V"
@@ -212,18 +213,18 @@ const FeaturedProjects = () => {
             </div>
           )}
 
-          <ScrollRevealMotion delay={0.2} className="mt-16 flex justify-center">
+          <div className="mt-16 flex justify-center">
             <Link
               to="/work"
-              className="text-minimal text-cedar hover:text-cedar-hover transition-all duration-500 group/link inline-flex items-center gap-3 min-h-[44px] py-2 px-3 rounded-sm hover:bg-cedar/[0.04]"
+              className="text-minimal text-cedar hover:text-cedar-hover transition-colors duration-300 group/link inline-flex items-center gap-3 min-h-[44px] py-2 px-3 rounded-sm hover:bg-cedar/[0.04]"
             >
               <span>See all work</span>
               <ArrowRight
-                className="h-3.5 w-3.5 group-hover/link:translate-x-1 transition-transform duration-500"
+                className="h-3.5 w-3.5 group-hover/link:translate-x-1 transition-transform duration-300"
                 aria-hidden
               />
             </Link>
-          </ScrollRevealMotion>
+          </div>
         </div>
       </div>
     </section>
