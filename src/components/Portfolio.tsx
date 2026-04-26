@@ -6,6 +6,8 @@ import CedarCTA from "@/components/CedarCTA";
 import { getProjectsByService, type Project } from "@/data/projects";
 import MediaSlot from "@/components/media/MediaSlot";
 import type { ServiceCategory } from "@/lib/api/public-media";
+import { BACKDROP, bronzeStep } from "@/lib/colors";
+import { SECTION_PADDING, MAX_WIDTH } from "@/lib/spacing";
 
 interface PortfolioCard {
   title: string;
@@ -13,14 +15,21 @@ interface PortfolioCard {
   description: string;
   service: string;
   icon: LucideIcon;
-  /** When set, this card renders as a real project photo instead of the icon placeholder. */
   realProject?: Project;
 }
 
+/**
+ * Portfolio — cinematic horizontal scroll-snap strip (deliberately distinct
+ * from FeaturedProjects' tabular grid). On md+ it lays out as a 3-up grid
+ * with deeper portrait cards; on mobile it's a swipeable snap-x rail.
+ *
+ * Tokenized: SECTION_PADDING.default, MAX_WIDTH.wide, bronzeStep(),
+ * BACKDROP.evergreenPlate. NO grain on the section root — this section is
+ * cinematic / photo-led, the photos carry the texture.
+ */
 const Portfolio = () => {
   const { openModal } = useQuoteModal();
 
-  // Pull the most recent featured shed project. Falls back to icon placeholder when none exists.
   const realShed = getProjectsByService("sheds").find((p) => p.featured);
 
   const projects: PortfolioCard[] = [
@@ -36,7 +45,7 @@ const Portfolio = () => {
       location: realShed?.location ?? "Edmonton",
       description: realShed?.summary ?? "Custom backyard structures, framed and finished to last.",
       service: "sheds",
-      icon: Fence, // unused when realProject is set
+      icon: Fence,
       realProject: realShed,
     },
     {
@@ -51,7 +60,7 @@ const Portfolio = () => {
   return (
     <section
       id="work"
-      className="py-24 md:py-32 bg-muted relative grain-overlay"
+      className={`${SECTION_PADDING.default} bg-muted relative`}
       aria-labelledby="portfolio-heading"
       style={{ contentVisibility: "auto", containIntrinsicSize: "auto 1200px" }}
     >
@@ -64,7 +73,7 @@ const Portfolio = () => {
         style={{ background: "linear-gradient(180deg, transparent 0%, hsl(var(--evergreen) / 0.06) 100%)" }}
       />
       <div className="container mx-auto px-6">
-        <div className="max-w-7xl mx-auto">
+        <div className={`${MAX_WIDTH.wide} mx-auto`}>
           <div className="mb-16">
             <SectionHeader
               numeral="V"
@@ -76,12 +85,23 @@ const Portfolio = () => {
             />
           </div>
 
-          <div className="grid md:grid-cols-3 gap-6" role="list">
+          {/* Mobile: horizontal scroll-snap rail. md+: 3-up grid. */}
+          <div
+            className="flex md:grid md:grid-cols-3 gap-6 overflow-x-auto md:overflow-visible snap-x snap-mandatory md:snap-none -mx-6 md:mx-0 px-6 md:px-0 pb-4 md:pb-0"
+            role="list"
+            style={{ scrollbarWidth: "none" }}
+          >
             {projects.map((project, i) => {
               const Icon = project.icon;
               const photo = project.realProject?.hero;
+              const opacity = bronzeStep(i, projects.length);
               return (
-                <ScrollRevealMotion key={i} delay={i * 0.1} y={32}>
+                <ScrollRevealMotion
+                  key={i}
+                  delay={i * 0.1}
+                  y={32}
+                  className="snap-center shrink-0 w-[85%] sm:w-[60%] md:w-auto"
+                >
                   <article role="listitem" className="group">
                     <button
                       type="button"
@@ -90,15 +110,8 @@ const Portfolio = () => {
                       aria-label={`Request a quote like ${project.title}`}
                     >
                       <div
-                        className="relative aspect-[4/5] rounded-sm overflow-hidden grain-texture transition-all duration-700 group-hover:shadow-elevated"
-                        style={
-                          photo
-                            ? undefined
-                            : {
-                                background:
-                                  "linear-gradient(135deg, hsl(150 25% 14%) 0%, hsl(150 25% 8%) 100%)",
-                              }
-                        }
+                        className="relative aspect-[4/5] rounded-sm overflow-hidden transition-all duration-700 group-hover:shadow-elevated"
+                        style={photo ? undefined : { background: BACKDROP.evergreenPlate }}
                       >
                         {photo ? (
                           <img
@@ -112,7 +125,6 @@ const Portfolio = () => {
                             className="absolute inset-0 w-full h-full object-cover transition-transform duration-[1.2s] group-hover:scale-105"
                           />
                         ) : (
-                          // Try the cloud media library first; fall back to the icon plate.
                           <MediaSlot
                             query={{
                               service: project.service as ServiceCategory,
@@ -124,15 +136,12 @@ const Portfolio = () => {
                             wrapperClassName="absolute inset-0 w-full h-full"
                             className="transition-transform duration-[1.2s] group-hover:scale-105"
                             fallback={
-                              <>
-                                <div className="absolute inset-0 grain-overlay opacity-50 pointer-events-none" />
-                                <div className="absolute inset-0 flex items-center justify-center">
-                                  <Icon
-                                    className="h-20 w-20 text-cedar/30 group-hover:text-cedar/50 transition-all duration-700 group-hover:scale-110"
-                                    aria-hidden
-                                  />
-                                </div>
-                              </>
+                              <div className="absolute inset-0 flex items-center justify-center">
+                                <Icon
+                                  className="h-20 w-20 text-cedar/30 group-hover:text-cedar/50 transition-all duration-700 group-hover:scale-110"
+                                  aria-hidden
+                                />
+                              </div>
                             }
                           />
                         )}
@@ -161,8 +170,8 @@ const Portfolio = () => {
                       </div>
 
                       <div
-                        className="mt-4 grain-texture pl-5 py-3 pr-4 transition-all duration-500 group-hover:bg-cedar/[0.04] group-hover:pl-7 rounded-sm shadow-contact border border-border/40 group-hover:shadow-elevated"
-                        style={{ borderLeft: `2px solid hsl(var(--cedar) / ${[0.2, 0.5, 0.85][i]})` }}
+                        className="mt-4 pl-5 py-3 pr-4 transition-all duration-500 group-hover:bg-cedar/[0.04] group-hover:pl-7 rounded-sm shadow-contact border border-border/40 group-hover:shadow-elevated"
+                        style={{ borderLeft: `2px solid hsl(var(--cedar) / ${opacity})` }}
                       >
                         <p className="text-sm text-muted-foreground leading-relaxed">
                           {project.description}

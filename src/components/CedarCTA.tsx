@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useQuoteModal } from "@/components/quote/QuoteModalProvider";
+import { BUTTON } from "@/lib/colors";
 
 interface CedarCTAProps {
   /** Either pass `to` for a route link, OR omit it to open the quote modal. */
@@ -16,6 +17,10 @@ interface CedarCTAProps {
 /**
  * Primary site CTA. By default opens the global QuoteModal.
  * Pass `to` to render a normal route Link instead.
+ *
+ * Composes BUTTON.primary (base · hover · focus · transition) from the
+ * design tokens. The thermal shimmer comes from the .cta-thermal utility
+ * in src/index.css.
  */
 const CedarCTA = ({ to, preselectServices, children, variant = "primary", className }: CedarCTAProps) => {
   const { openModal } = useQuoteModal();
@@ -27,14 +32,17 @@ const CedarCTA = ({ to, preselectServices, children, variant = "primary", classN
     className,
   );
 
+  // Primary: tokenized BUTTON.primary + thermal shimmer + scale-on-press.
+  // px-10 py-5 overrides BUTTON.primary's px-8 py-4 for the larger hero CTA scale.
   const primaryClass = cn(
-    "cta-thermal inline-flex items-center gap-3 text-minimal bg-cedar text-cedar-foreground px-10 py-5 rounded-sm",
-    "hover:bg-cedar-hover hover:tracking-[0.18em] transition-all duration-500",
-    "shadow-[inset_0_1px_0_hsl(28_60%_62%/0.35),0_2px_8px_hsl(28_50%_52%/0.15)]",
-    "hover:shadow-[inset_0_1px_0_hsl(28_60%_65%/0.4),0_0_28px_hsl(28_50%_52%/0.35),0_6px_20px_hsl(28_50%_52%/0.2)]",
-    "active:scale-[0.98]",
-    "focus-visible:ring-2 focus-visible:ring-cedar focus-visible:ring-offset-2",
-    "group/cta border-none cursor-pointer",
+    BUTTON.primary.base,
+    "px-10 py-5",
+    "cta-thermal",
+    BUTTON.primary.hover,
+    BUTTON.primary.focus,
+    BUTTON.primary.transition,
+    BUTTON.primary.disabled,
+    "active:scale-[0.98] cursor-pointer border-none group/cta",
     className,
   );
 
@@ -60,11 +68,7 @@ const CedarCTA = ({ to, preselectServices, children, variant = "primary", classN
   }
 
   return (
-    <button
-      type="button"
-      onClick={() => openModal(preselectServices)}
-      className={className_}
-    >
+    <button type="button" onClick={() => openModal(preselectServices)} className={className_}>
       {inner}
     </button>
   );

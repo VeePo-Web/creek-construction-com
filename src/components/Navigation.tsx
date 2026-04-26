@@ -4,6 +4,8 @@ import { Menu, X, Phone } from "lucide-react";
 import { useQuoteModal } from "@/components/quote/QuoteModalProvider";
 import { CONTACT } from "@/config/contact";
 import logo from "@/assets/creek-logo-nav-sm.png";
+import { cn } from "@/lib/utils";
+import { BUTTON } from "@/lib/colors";
 
 interface NavigationProps {
   /** Currently unused — kept for API compatibility with legacy pages. */
@@ -19,10 +21,21 @@ const NAV_ITEMS = [
   { label: "Contact", path: "/contact" },
 ];
 
+const navLinkClass = "text-[11px] tracking-[0.2em] uppercase transition-colors min-h-[44px] flex items-center";
+
 const Navigation = ({ transparent: _transparent }: NavigationProps) => {
   const [open, setOpen] = useState(false);
   const { openModal } = useQuoteModal();
   const location = useLocation();
+
+  // Compact bronze CTA (smaller than the hero CedarCTA — same tokens).
+  const navCta = cn(
+    BUTTON.primary.base,
+    "px-5 py-2.5 text-[10px] gap-2",
+    BUTTON.primary.hover,
+    BUTTON.primary.focus,
+    BUTTON.primary.transition,
+  );
 
   return (
     <header className="sticky top-0 z-50 bg-background/85 backdrop-blur border-b border-border/40">
@@ -42,9 +55,7 @@ const Navigation = ({ transparent: _transparent }: NavigationProps) => {
               <Link
                 key={item.path}
                 to={item.path}
-                className={`text-[11px] tracking-[0.2em] uppercase transition-colors min-h-[44px] flex items-center ${
-                  active ? "text-cedar" : "text-foreground/70 hover:text-cedar"
-                }`}
+                className={cn(navLinkClass, active ? "text-cedar" : "text-foreground/70 hover:text-cedar")}
               >
                 {item.label}
               </Link>
@@ -63,7 +74,7 @@ const Navigation = ({ transparent: _transparent }: NavigationProps) => {
           <button
             type="button"
             onClick={() => openModal()}
-            className="hidden sm:inline-flex items-center bg-cedar text-cedar-foreground px-5 py-2.5 rounded-sm text-[10px] tracking-[0.18em] uppercase font-medium hover:bg-cedar-hover transition-colors min-h-[44px]"
+            className={cn(navCta, "hidden sm:inline-flex")}
           >
             Request a Quote
           </button>
@@ -87,9 +98,10 @@ const Navigation = ({ transparent: _transparent }: NavigationProps) => {
                 key={item.path}
                 to={item.path}
                 onClick={() => setOpen(false)}
-                className={`py-3 text-sm tracking-[0.15em] uppercase border-b border-border/30 last:border-0 ${
-                  location.pathname === item.path ? "text-cedar" : "text-foreground/80"
-                }`}
+                className={cn(
+                  "py-3 text-sm tracking-[0.15em] uppercase border-b border-border/30 last:border-0",
+                  location.pathname === item.path ? "text-cedar" : "text-foreground/80",
+                )}
               >
                 {item.label}
               </Link>
@@ -100,7 +112,7 @@ const Navigation = ({ transparent: _transparent }: NavigationProps) => {
                 setOpen(false);
                 openModal();
               }}
-              className="mt-4 inline-flex items-center justify-center bg-cedar text-cedar-foreground px-5 py-3 rounded-sm text-[11px] tracking-[0.18em] uppercase font-medium hover:bg-cedar-hover transition-colors min-h-[44px]"
+              className={cn(navCta, "mt-4 justify-center")}
             >
               Request a Quote
             </button>
