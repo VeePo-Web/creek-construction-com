@@ -19,11 +19,12 @@ export type TriptychRhythm = "equal" | "asymmetric" | "cinematic";
 
 /**
  * Scrim direction. Pick by where the headline column lives:
- *   left   — Home, Services, About (headline left-anchored)
- *   bottom — Contact, Work (headline bottom-anchored)
- *   none   — for places that own their own scrim (rare)
+ *   left      — Services, About (headline in left ~50%)
+ *   leftWide  — Home (asymmetric — headline + provenance card on the left half)
+ *   bottom    — Contact, Work (headline bottom-anchored)
+ *   none      — for places that own their own scrim (rare)
  */
-export type ScrimDirection = "left" | "bottom" | "none";
+export type ScrimDirection = "left" | "leftWide" | "bottom" | "none";
 
 interface HeroTriptychProps {
   /** Exactly three queries — one per column. */
