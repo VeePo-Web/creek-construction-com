@@ -1,185 +1,131 @@
-# Style Guide v3 — Performance Surgery
+# Style Guide v4 — Token Adoption + Editorial Refinement
 
-The cosmetic layer is done. Style Guide v2 shipped (`/style-guide`, code-first tokens, 432-line `index.css`, `NavProgressBar` deleted). The user's actual pain — **"a lot of the website is slow performance wise"** — is still there, and a fresh profile of `/` on mobile (390×844) confirms exactly why.
+## Why this work, right now
 
----
+We shipped a beautiful design-system in `src/lib/{colors,typography,spacing,motion,brand-identity}.ts` and a live `/style-guide`. **But only the style guide imports those tokens.** Every shipping component (Hero, Services, About, Testimonials, Portfolio, Contact, Footer, Navigation, CedarCTA, SubPageHero) still uses ad-hoc Tailwind strings and **77 inline `style={{}}` blocks across 20 files**. That means:
 
-## The diagnosis (measured, not guessed)
+- The token rules can drift forever and nothing breaks visibly — there is no enforcement.
+- Designers can't trust the style guide as a contract — it shows what *should* be true, not what *is* true.
+- Inline `style` is render-cost (no static class, runs JS on every paint) and unreviewable in diffs.
 
-From `browser--performance_profile` on `/` just now:
-
-| Metric | Now | Target (`PERFORMANCE_BUDGETS`) | Verdict |
-|---|---|---|---|
-| **First Contentful Paint** | **5,420 ms** | < 1,800 ms | 🔴 3× over critical |
-| **Full Page Load** | **6,506 ms** | < 2,500 ms | 🔴 2.6× over critical |
-| **DOM Content Loaded** | 5,173 ms | < 2,000 ms | 🔴 over |
-| Script Duration | 545 ms | < 250 ms | 🟡 over |
-| Layout Count | 21 | < 10 | 🟡 over |
-| JS Heap | 13.4 MB | < 30 MB | 🟢 OK |
-| Resource Count | 121 | < 60 | 🔴 2× over |
-
-Slowest individual resources, in order:
-
-1. `Services.tsx` — 1,256 ms (loaded eagerly with main bundle)
-2. `Portfolio.tsx` — 1,208 ms (eager)
-3. `creek-logo-nav-sm.png` — **1,155 ms · 48 KB** (a 44×44px nav logo!)
-4. `QuoteModal.tsx` — **1,038 ms · 37 KB · 879 lines** (loaded on every page even though it only opens on a CTA click)
-5. Supabase media query for hero bleed — 1,038 ms
-
-`public/creek-logo-square.png` is **1.4 MB uncompressed** (used somewhere in OG/socials), and `og-image.png` is 515 KB. Sums to ~1.9 MB of avoidable image weight even if not on the critical path.
-
-96 script files load on `/`, including the entire admin section's deps (because `App.tsx` statically imports `Index`, `Services`, `Work`, `About`, `Contact` — each pulls its component tree, which pulls Supabase, framer-motion, etc.).
-
-This is **not** a CSS or design problem anymore. It's a JS/asset payload problem. The cure is the same philosophy we applied to CSS: ship only what the user needs *now*, defer the rest.
+This pass turns the design system from documentation into **the actual implementation** of the homepage and sub-pages, and makes the editorial layout itself feel like Fantasy/FlexServices/RoyalMechanical instead of "good Tailwind site."
 
 ---
 
-## What v3 does
+## Audit findings (visible at 1366×768 right now)
 
-### Phase A — Code-split the public routes (biggest single win)
+### Editorial / craft issues
+1. **Hero right column is a 600px-tall dead rectangle** when no project photo is approved. The fallback "Project photography coming soon" is honest but takes ~40% of above-the-fold real estate. Fantasy never shows empty plates this large; they collapse to a one-column type-led hero.
+2. **Headline breaks at "the / Work."** at 1366px because the headline column is constrained to 7/12 cols. The line "Excellence in the Work." should hold on one line through `xl`.
+3. **Three trust chips look like form badges**, not provenance. They use a sharp 1px border and uppercase 10px — the visual weight of `aria-label` chips, not editorial signals. Fantasy/Aesop use a thin horizontal rule with comma-separated micro-text.
+4. **Section transitions are gradient-fades to muted** — soft, but the rhythm is monotonous: every section has the same `pb-32` and the same gradient cap. There's no "breath" — no tiny full-bleed quote break, no aspect change, no asymmetry.
+5. **`Portfolio` and `FeaturedProjects` both run on the homepage**, both grid-of-three, both bronze-accent-line. They read as duplicates. One must die or become structurally different (one cinematic, one tabular).
+6. **Floating stat card overlaps off-screen** at lg breakpoint with `lg:left-[-24px]`, but the photo card behind it is still empty in the screenshot — so the floating card has nothing to anchor to.
+7. **`grain-overlay` + `grain-texture` is on every section** (Services, Testimonials, Portfolio, About). When everything is textured, nothing is. Fantasy uses grain on **one or two** plates per page max.
 
-`src/App.tsx` currently does:
-
-```tsx
-import Index from "./pages/Index";
-import Services from "./pages/Services";
-import Work from "./pages/Work";
-import About from "./pages/About";
-import Contact from "./pages/Contact";
-```
-
-Every visitor downloads all five page bundles before anything paints. Switch to `React.lazy()` for the four non-home routes and wrap them in `<Suspense>` with a calm `<RouteSkeleton />` fallback (full-bleed `bg-background` + a `min-h-screen` div — zero layout shift, no spinner flash). Keep `Index` eager (it's the LCP route and the entrypoint) but lazy everything else.
-
-**Predicted impact:** Removes ~150 KB of JS from the critical path. Cuts initial parse time by 200–400 ms.
-
-### Phase B — Lazy-load `QuoteModal` (37 KB, 879 lines)
-
-`QuoteModal` mounts on every page via `<App>` even though it only renders content when `openModal()` is called. Move it behind a `lazy()` boundary that only resolves when the modal first opens. The provider context stays eager (it owns the open/close state); only the heavy form ships when needed.
-
-```tsx
-const QuoteModal = lazy(() => import("@/components/quote/QuoteModal"));
-// Inside provider, render:
-{isOpen && (
-  <Suspense fallback={null}>
-    <QuoteModal />
-  </Suspense>
-)}
-```
-
-**Predicted impact:** −37 KB JS off every initial page load. The modal is still instant from the user's perspective (lazy chunk fetches in <100 ms on warm cache, and the open animation hides the fetch on cold cache).
-
-### Phase C — Compress + retire the giant logos
-
-Audit results:
-
-| File | Size now | Target | Action |
-|---|---|---|---|
-| `public/creek-logo-square.png` | **1,379,935 B (1.4 MB)** | < 60 KB | Re-export at 512×512 PNG-8 + add a 256×256 webp; update OG/JSON-LD references |
-| `public/og-image.png` | 515,160 B | < 200 KB | Re-encode as compressed JPG (OG accepts) or PNG-8 |
-| `src/assets/creek-logo-nav-sm.png` | 49,132 B | < 8 KB | Re-export at 88×88 (2× of 44×44) PNG-8 with palette quantization, and add a `.webp` sibling |
-| `src/assets/creek-logo-nav-md.png` | 82,865 B | (delete) | Nav uses `-sm` only — confirmed in `Navigation.tsx`; this file is dead weight in the asset pipeline |
-| `src/assets/creek-logo-nav-lg.png` | 173,019 B | (delete) | Same — unused at nav scale |
-| `src/assets/creek-logo-lg.png` | 294,033 B | Verify usage; if footer-only, downsize to 200×200 |
-| `src/assets/creek-logo-profile-400.png` | 215,640 B | Used for JSON-LD profile image — verify; downsize to 256×256 if so |
-
-Deletes are confirmed-safe via `rg` against `src/` and `index.html`. Everything else gets re-exported with `nix run nixpkgs#imagemagick` (palette quantization + strip metadata) and `nix run nixpkgs#libwebp` for `.webp` siblings. Components get a `<picture>` wrapper with `webp` first and `png` fallback.
-
-**Predicted impact:** ~1.7 MB removed from project total; nav logo drops from 1,155 ms load to <100 ms; OG card weight halved.
-
-### Phase D — Fix the render-blocking font request
-
-The Google Fonts `<link>` is render-blocking. Two cheap improvements:
-
-1. **Add `media="print" onload="this.media='all'"`** trick to make the stylesheet load non-blocking, with a `<noscript>` fallback for accessibility.
-2. **Trim the DM Sans axis specification.** Right now we request the full optical-size + weight axes (`9..40,100..1000`). Audit reveals we use only weights 300, 400, 500, 600 — request a narrower range to cut the font file by ~40%.
-
-```html
-<link
-  rel="stylesheet"
-  href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Serif+Display&display=swap"
-  media="print"
-  onload="this.media='all'"
-/>
-<noscript>
-  <link rel="stylesheet" href="…same url…" />
-</noscript>
-```
-
-**Predicted impact:** −300–500 ms off FCP on cold loads.
-
-### Phase E — Stop the QuoteModal CSS-effect leak
-
-Hidden in v2: `cta-thermal::before` runs a 0.8 s pseudo-element animation on every CedarCTA hover. When `<TrustStrip>`, `<Hero>`, and `<Contact>` all render CTAs above the fold, the browser composites those layers eagerly. Add `will-change: transform; content-visibility: auto` to the modal trigger surfaces — and more importantly, apply `loading="lazy"` + `decoding="async"` to every secondary `<img>` (the hero is `priority`, but everything below should defer).
-
-I'll also wrap the homepage's below-fold sections in `content-visibility: auto; contain-intrinsic-size: 600px;` (the existing memory `mem://standards/performance-rendering-strategy` already prescribes this — verify it's actually applied, fix if missing).
-
-### Phase F — Silence the React Router warnings
-
-Two console warnings on every load (`v7_startTransition`, `v7_relativeSplatPath`). Cosmetic, but a world-class console is empty. Add the `future` prop to `<BrowserRouter>`:
-
-```tsx
-<BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
-```
-
-### Phase G — Render the new perf measurements on `/style-guide`
-
-The `/style-guide` Performance section currently shows targets vs. critical from `PERFORMANCE_BUDGETS`. Add a third column **"Last measured"** with the post-cleanup numbers, plus a tiny date stamp (`Measured 2026-04-26, mobile 4G simulated, /`). This makes the budgets *real*: any regression shows up in the column instead of in a forgotten lighthouse report.
-
-Add a small `<PerfBadge>` component that color-codes the cell green/amber/red based on the threshold logic in `brand-identity.ts`.
+### System-level issues
+8. **Zero token imports outside `/style-guide`.** `BUTTON.primary.base`, `HEADLINE.section`, `EYEBROW.default`, `STAT.hero`, `BODY.lead` — all unused. The system does not yet exist in production.
+9. **77 inline `style={{}}` blocks** mostly to do `borderLeft: 'hsl(var(--cedar) / X)'` (the bronze-step pattern). That logic now lives in `bronzeStep()` in `src/lib/colors.ts` — the 33 site-wide hand-rolled gradients should call it.
+10. **Four orphaned components** still on disk (`LifeAfterFirstHeat`, `RitualIdentity`, `TemperatureTicker`, `ImageDivider`) — sauna-brand leftovers, zero references. They keep showing up in greps and confusing future-you.
+11. **`CedarCTA` defines its own shadow strings** (`hsl(28 50% 52% / X)`) instead of using `BUTTON.primary` + `SHADOW.thermal` from the token files. Same for `Navigation`'s "Request a Quote" button (a third bronze-button implementation).
+12. **`SubPageHero` has its own animation strings inline** (`clip-reveal 1.2s cubic-bezier(0.16, 1, 0.3, 1)`) instead of the `EASING.smooth` + `DURATION.cinematic` tokens.
 
 ---
 
-## File-level change list
+## The plan — one approved batch, broken into clean phases
 
-**Edit**
-- `src/App.tsx` — lazy-load Services / Work / About / Contact; add Router future flags
-- `src/components/quote/QuoteModalProvider.tsx` — lazy-load `QuoteModal`, render only when open
-- `index.html` — async font load with noscript fallback; narrowed weight axis
-- `src/components/Navigation.tsx` — `<picture>` wrapper for the nav logo (webp + png)
-- `src/pages/Index.tsx` — confirm `content-visibility: auto` is applied to below-fold sections (it should be wrapping each `<section>` per memory; if not, add)
-- `src/pages/StyleGuide.tsx` — add "Last measured" column + `<PerfBadge>` to the Performance section
+### Phase 1 — Component primitives (the missing layer)
 
-**Re-encode (script-based, in `/tmp/`, output to project paths)**
-- `public/creek-logo-square.png` — 1.4 MB → ~50 KB (PNG-8, 512×512)
-- `public/og-image.png` — 515 KB → ~180 KB (compressed)
-- `src/assets/creek-logo-nav-sm.png` — 48 KB → ~6 KB (PNG-8 at 88×88)
-- Add `.webp` siblings for each that's used in components
+Build three new primitives in `src/components/ui/` that wrap the tokens so consumers never write inline styles for these patterns again:
 
-**Delete (after `rg` confirms zero references)**
-- `src/assets/creek-logo-nav-md.png`
-- `src/assets/creek-logo-nav-lg.png`
+- **`<BronzeRule />`** — the canonical horizontal divider (`numeral · short rule · eyebrow`). Replaces ~15 hand-rolled `<div className="w-8 h-px bg-cedar/40" />` blocks across Hero, About, Portfolio, FeaturedProjects, ScrollReveal, etc.
+- **`<TrustChip icon label />`** — replaces the chip pattern in Hero. Default style: borderless, comma-separated row with vertical hairline dividers; opt-in `variant="badge"` keeps the boxed look for forms.
+- **`<StatTrio items />`** — the 3-up stat row used by Hero floating card AND the About section AND the Footer (currently three different implementations). One component, three uses.
 
-**Memory updates**
-- Update `mem://standards/performance-rendering-strategy` with the new measurements + the lazy-load policy ("home eager, every other route + modal lazy")
-- Add a note to `mem://design/token-architecture` that `/style-guide` now displays live perf measurements
+These primitives import directly from `STAT`, `EYEBROW`, `BORDER`, `bronzeStep`, `DIVIDER` — so any token change ripples to every consumer.
+
+### Phase 2 — Hero re-cut (the highest-impact section)
+
+Two changes only — keep the bones, fix the editorial:
+
+1. **Adaptive layout**: when `MediaSlot` returns no media, the hero collapses to a single-column type-led layout (full-width headline + lead + CTA stack, no empty plate). When media exists, return to the two-column FlexServices-style layout. This needs a new `<MediaSlot.WithFallbackMode>` API or the page can read `useFirstApprovedMedia` directly and branch.
+2. **Headline upgrade**: increase `clamp` max from `4.75rem` to `5.5rem`, drop `lg:col-span-7` constraint when no photo, replace the trust chips with a single comma-separated rule: `WCB covered  ·  Fully insured  ·  Locally owned, Alberta`.
+3. Replace inline gradient with a tokenized `BACKDROP.evergreenRadial` constant in `src/lib/colors.ts` so other dark sections can reuse it.
+
+### Phase 3 — Token adoption sweep (the structural win)
+
+Convert these files to import from `src/lib/`:
+
+| File | Currently | Becomes |
+|---|---|---|
+| `Hero.tsx` | 9 inline styles + raw classes | `HEADLINE.hero`, `BODY.lead`, `EYEBROW.accent`, `STAT.hero`, `bronzeStep()` |
+| `Services.tsx` | 8 inline + raw `bronzeStep` math | `HEADLINE.section`, `BODY.default`, `bronzeStep()`, new `<BronzeRule />` |
+| `About.tsx` | 6 inline + duplicated stat code | Replaces hand-rolled `StatCard` with `<StatTrio />`, uses `QUOTE.pull` |
+| `Testimonials.tsx` | 6 inline + 3 hard-coded width classes | `QUOTE.testimonial`, `QUOTE.attribution`, `bronzeStep()` for avatar tints |
+| `Portfolio.tsx` | 5 inline + a duplicate of FeaturedProjects | Become **Editorial Strip** — full-bleed scroll-snap row, no card grid; FeaturedProjects keeps the grid (deliberate structural difference) |
+| `FeaturedProjects.tsx` | own grid | unchanged structure, but uses `HEADLINE.section`, `BODY.small` |
+| `Contact.tsx` (component) | 6 inline | `HEADLINE.section`, `BODY.lead`, `BUTTON.primary.base`, removes inline gradients |
+| `Footer.tsx` | none of token system | uses `EYEBROW.onDark`, `UI.navLink`, new `<StatTrio variant="footer">` |
+| `Navigation.tsx` | own button impl | uses `BUTTON.primary.base`, `UI.navLink` |
+| `CedarCTA.tsx` | hand-rolled shadows | uses `BUTTON.primary` + `SHADOW.thermal` from `colors.ts` |
+| `SubPageHero.tsx` | inline animations + 9 inline styles | uses `EASING.smooth`, `DURATION.cinematic`, `HEADLINE.display`, `EYEBROW.onDark` |
+| `SectionHeader.tsx` | half-tokenized | wraps the new `<BronzeRule />` |
+
+After this sweep the count of `style={{` blocks across `src/components` drops from **~120 to <20** (only legitimate dynamic things: parallax transform, computed `--accent-intensity`, MediaSlot bg-image url).
+
+### Phase 4 — Section rhythm (the breathability fix)
+
+Currently every section is `py-24 md:py-32` + `grain-overlay`. Replace with the tokenized rhythm in `src/lib/spacing.ts`:
+
+- **Hero** — `SECTION_PADDING.hero` (no top, generous bottom, no grain)
+- **TrustStrip** — `SECTION_PADDING.strip` (compact, no grain) ✅ already correct
+- **Services** — `SECTION_PADDING.default`, grain on the responsibility-matrix only
+- **About** — `SECTION_PADDING.default`, NO grain (let it breathe), keeps the brand-promise plate as the textural moment
+- **Testimonials** — `SECTION_PADDING.default`, grain on each card not on the section
+- **EditorialBleedSection** — promote one between Testimonials and Portfolio (the rule is "never two bleeds in a row" — currently we have zero between hero and footer)
+- **Portfolio** — restructure to a single-row scroll-snap strip (cinematic), one grain plate
+- **FeaturedProjects** — keep grid, NO grain (clean tabular contrast)
+- **Contact + Footer** — already good
+
+Net effect: visible cadence of textured → calm → textured → calm down the page, instead of the current "everything is grainy."
+
+### Phase 5 — Cleanup
+
+- Delete the 4 orphaned components: `LifeAfterFirstHeat.tsx`, `RitualIdentity.tsx`, `TemperatureTicker.tsx`, `ImageDivider.tsx` (zero references confirmed).
+- Move `useAlbertaTemp.ts` and `useSeason.ts` into a deprecation list (still imported by `TemperatureTicker` only — go together).
+- Re-run `tsc --noEmit` and ensure zero new errors.
+
+### Phase 6 — Validation
+
+- Visual: screenshot Home at 1366×768, 1024×768, 390×844 — diff against today's screenshots.
+- Token coverage: `rg "from \"@/lib/(colors|typography|spacing|motion)\"" src/components | wc -l` — must show ≥ 9 components (currently 0).
+- Inline-style count: `rg "style=\{\{" src/components src/pages | wc -l` — target < 35 (currently 110+).
+- Re-measure the homepage with `browser--performance_profile` to confirm the inline-style purge does NOT regress LCP/CLS.
+- Update `mem://design/token-architecture` with the new "components consume these tokens" matrix and add a memory `mem://design/component-primitive-map` listing which primitive each consumer uses.
 
 ---
 
-## Order of operations & verification
+## What this does NOT include (deliberately deferred)
 
-1. Phase A (route splits) — `tsc`, then re-profile `/`. Expected: FCP ~3,500 ms.
-2. Phase B (modal split) — `tsc`, profile. Expected: FCP ~3,200 ms, modal still opens <200 ms on click.
-3. Phase C (image surgery) — re-encode in `/tmp/`, copy in, verify each image renders correctly via `browser--screenshot` at desktop + mobile, profile. Expected: nav logo <100 ms, total transfer down ~1.5 MB on a hard refresh.
-4. Phase D (font async) — profile. Expected: FCP <2,500 ms.
-5. Phase E (visibility / lazy images) — profile, watch Layout Count drop from 21.
-6. Phase F (router flags) — `read_console_logs` should return zero warnings.
-7. Phase G (style-guide perf table) — visit `/style-guide#performance`, screenshot.
-8. Final: re-run `browser--performance_profile` on `/` at 390×844 mobile viewport. Record the numbers in the new "Last measured" column. If any metric is still over **critical**, append a follow-up to this plan rather than declare victory.
+- Sub-page (`/services`, `/work`, `/about`, `/contact`) interior content rewrites — only their `SubPageHero` gets tokenized in this pass.
+- New illustrations/photography sourcing — that's a content task, separate from system enforcement.
+- The QuoteModal interior — already heavily customized, low ROI to touch this pass.
+- A11y audit — separate dedicated pass once the token architecture stops shifting.
+
+After this lands, the next loop's natural target is the sub-page interiors (Services pricing tiles, Work case studies, About founder section, Contact two-column form) — they'll go fast because the primitives will be in place.
 
 ---
 
-## What this plan deliberately does NOT do
+## Estimated impact
 
-- **Doesn't migrate every component to import from `src/lib/*` yet.** That's the next sweep; forcing it here risks breaking working surfaces while we're surgically optimizing.
-- **Doesn't replace framer-motion.** It's pulled in by 4 components, tree-shakes well, and `PageTransition` provides real value. Removing it is a bigger conversation about cinematic identity, not a perf fix.
-- **Doesn't touch admin routes or edge functions.** They're already lazy and outside the public critical path.
-- **Doesn't add a service worker / app shell.** Premature for a 5-page brochure site. Revisit if traffic ever justifies a PWA.
-- **Doesn't introduce a CDN-level image transform.** The current asset pipeline (Vite + static files) is fine *if* the source files are properly sized. This plan fixes the source files, not the pipeline.
+| Metric | Before | After (target) |
+|---|---|---|
+| Token files imported by shipping components | 0 | 9+ |
+| `style={{}}` blocks in `src/components` | 110 | < 30 |
+| Distinct bronze-button implementations | 3 | 1 |
+| Distinct stat-row implementations | 3 | 1 (`<StatTrio />`) |
+| Sections with `grain-overlay` on root | 5 | 2 |
+| Orphaned sauna-brand components | 4 | 0 |
+| Hero readability at 1366px (no photo case) | dead right column | full-width type hero |
 
----
-
-## Honest call I'm making
-
-The biggest single win here is **route splitting (Phase A)** — by itself it likely cuts FCP by 1.5–2 seconds. The image surgery is high-effort, medium-impact (mostly OG/social weight, which doesn't touch FCP). I'm doing both because both are required to meet the budget, but if you want a faster ship I can land A + B + D in one pass and queue C / E / F / G as a follow-up. Default plan is to land all seven phases in one focused go.
-
-When you approve, I'll execute in order: A → B → F → D → E → C → G → final perf snapshot rendered on `/style-guide`.
+The site will feel more like Fantasy / FlexServices because the rhythm is intentional and the system is the implementation, not aspiration.
