@@ -1,11 +1,9 @@
 import ScrollRevealMotion from "@/components/ScrollRevealMotion";
 import SectionHeader from "@/components/SectionHeader";
-import CedarCTA from "@/components/CedarCTA";
-import StatTrio from "@/components/ui/stat-trio";
 import BronzeRule from "@/components/ui/bronze-rule";
 import MediaSlot from "@/components/media/MediaSlot";
 import { MEDIA_SIZES } from "@/lib/media-sizes";
-import { BACKDROP, bronzeStep } from "@/lib/colors";
+import { bronzeStep } from "@/lib/colors";
 import { SECTION_PADDING, MAX_WIDTH, GRID_GAP } from "@/lib/spacing";
 import { BODY } from "@/lib/typography";
 
@@ -18,26 +16,26 @@ const STEPS = [
 ];
 
 /**
- * About — token-driven approach section. No grain on root (intentionally calm)
- * — the brand-promise plate carries the visual weight on this section.
+ * About — homepage approach section.
+ *
+ * Calmer than the previous version: the duplicate StatTrio (already in
+ * the hero provenance card) and the standalone "Request a Quote" CTA
+ * are gone. The brand-promise plate is the section's terminal moment;
+ * the Contact section closes the page.
  */
 const About = () => {
   return (
     <section
-      id="about"
-      className={`${SECTION_PADDING.default} bg-secondary relative`}
+      id="section-about"
+      className={`${SECTION_PADDING.default} bg-secondary`}
       aria-labelledby="about-heading"
     >
-      <div
-        className="absolute bottom-0 inset-x-0 h-24 pointer-events-none z-[1]"
-        style={{ background: "linear-gradient(180deg, transparent 0%, hsl(var(--evergreen) / 0.06) 100%)" }}
-      />
       <div className="container mx-auto px-6">
         <div className={`${MAX_WIDTH.wide} mx-auto`}>
           <div className={`grid md:grid-cols-2 ${GRID_GAP.editorial} items-start`}>
             <div>
               <SectionHeader
-                numeral="III"
+                variant="quiet"
                 label="OUR APPROACH"
                 headingId="about-heading"
                 heading="Excellence is the marketing."
@@ -61,7 +59,8 @@ const About = () => {
                 </div>
               </ScrollRevealMotion>
 
-              {/* Editorial photo + brand promise plate */}
+              {/* Editorial photo + brand promise plate — the terminal moment
+                  of this column. No stats below; no CTA below. */}
               <ScrollRevealMotion delay={0.3} y={16}>
                 <div className="mt-12 grid sm:grid-cols-5 gap-6 items-stretch">
                   <div className="sm:col-span-2">
@@ -127,26 +126,6 @@ const About = () => {
                       </div>
                     </div>
                   ))}
-                </div>
-              </ScrollRevealMotion>
-
-              <ScrollRevealMotion delay={0.35}>
-                <div className="pt-8 mt-8 border-t border-border">
-                  <StatTrio
-                    variant="card"
-                    ariaLabel="Key stats"
-                    items={[
-                      { value: 2, label: "Major metros", heading: "SERVING", note: "Calgary + Edmonton" },
-                      { value: 200, suffix: "+", label: "Projects built", heading: "ON RECORD", note: "Across Alberta" },
-                      { value: 48, suffix: "h", label: "Typical reply", heading: "RESPONSE" },
-                    ]}
-                  />
-                </div>
-              </ScrollRevealMotion>
-
-              <ScrollRevealMotion delay={0.4}>
-                <div className="mt-10">
-                  <CedarCTA>Request a Quote</CedarCTA>
                 </div>
               </ScrollRevealMotion>
             </div>
