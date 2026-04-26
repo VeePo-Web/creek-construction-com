@@ -209,13 +209,11 @@ const Services = () => {
               heading="Straight answers."
               subheading="If we don’t address yours, ask on the call."
             />
-            <ScrollRevealMotion delay={0.2}>
-              <FaqAccordion items={FAQS} className="mt-10" />
-            </ScrollRevealMotion>
+            <FaqAccordion items={FAQS} className="mt-10" />
 
-            <ScrollRevealMotion delay={0.3} className="mt-16 text-center">
+            <div className="mt-16 text-center">
               <CedarCTA>Request a Quote</CedarCTA>
-            </ScrollRevealMotion>
+            </div>
           </div>
         </div>
       </section>
