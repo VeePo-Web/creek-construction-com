@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import type { LucideIcon } from "lucide-react";
 import EditorialPicture from "./EditorialPicture";
 import AmbientVideoBleed from "./AmbientVideoBleed";
 import {
@@ -6,12 +7,35 @@ import {
   useApprovedMedia,
 } from "@/hooks/useApprovedMedia";
 import type { MediaQuery, ApprovedMedia } from "@/lib/api/public-media";
+import { BACKDROP } from "@/lib/colors";
+import { cn } from "@/lib/utils";
+
+/**
+ * Editorial fallback variant. The site contract: NEVER paint a flat green
+ * plate when a photograph is missing. Every fallback should read as a
+ * deliberate, warm, designed surface.
+ *
+ *   stone     — default. Warm cream/stone diagonal. Use for cards.
+ *   cedar     — soft bronze-into-stone wash. Use for hero / brand surfaces.
+ *   evergreen — DEPRECATED for fallbacks; only for deliberate dark cards.
+ */
+export type MediaFallbackVariant = "stone" | "cedar" | "evergreen";
 
 interface SharedProps {
   /** Selector for what kind of media to pull. */
   query: MediaQuery;
-  /** Rendered when no approved media matches — keeps the section beautiful. */
-  fallback: ReactNode;
+  /**
+   * Rendered when no approved media matches.
+   * Optional: when omitted, MediaSlot renders the editorial plate defined by
+   * `fallbackVariant` (default "stone") with optional icon and caption.
+   */
+  fallback?: ReactNode;
+  /** Editorial plate variant for the auto-fallback. Default "stone". */
+  fallbackVariant?: MediaFallbackVariant;
+  /** Lucide icon centered on the auto-fallback. */
+  fallbackIcon?: LucideIcon;
+  /** 10px tracked uppercase caption laid over the auto-fallback. */
+  fallbackCaption?: string;
   /** Set true ONLY for an above-the-fold LCP image. One per page. */
   priority?: boolean;
   /** Responsive sizes hint. */
@@ -34,24 +58,109 @@ interface SingleBleedProps extends SharedProps {
 
 type MediaSlotProps = SinglePictureProps | SingleBleedProps;
 
+const PLATE_BG: Record<MediaFallbackVariant, string> = {
+  stone: BACKDROP.stonePlate,
+  cedar: BACKDROP.cedarPlate,
+  evergreen: BACKDROP.evergreenPlate,
+};
+
+const PLATE_ICON_COLOR: Record<MediaFallbackVariant, string> = {
+  stone: "text-cedar/35",
+  cedar: "text-cedar/55",
+  evergreen: "text-cedar/40",
+};
+
+const PLATE_CAPTION_COLOR: Record<MediaFallbackVariant, string> = {
+  stone: "text-cedar/65",
+  cedar: "text-cedar/75",
+  evergreen: "text-cedar/70",
+};
+
+/**
+ * Editorial auto-fallback. Renders a warm plate (stone/cedar) with optional
+ * icon and caption — consistent across every photo position site-wide.
+ */
+function EditorialFallback({
+  variant = "stone",
+  icon: Icon,
+  caption,
+}: {
+  variant?: MediaFallbackVariant;
+  icon?: LucideIcon;
+  caption?: string;
+}) {
+  return (
+    <div
+      className="absolute inset-0 overflow-hidden"
+      style={{ background: PLATE_BG[variant] }}
+      aria-hidden="true"
+    >
+      <div className="absolute inset-0 grain-overlay opacity-40 pointer-events-none" />
+      {/* Hairline cedar accent — top left */}
+      <div
+        className="absolute top-0 left-0 h-px"
+        style={{
+          width: "30%",
+          background: "linear-gradient(90deg, hsl(var(--cedar) / 0.5), transparent)",
+        }}
+      />
+      {Icon && (
+        <div className="absolute inset-0 flex items-center justify-center">
+          <Icon
+            className={cn(
+              "h-16 w-16 transition-all duration-700",
+              PLATE_ICON_COLOR[variant],
+            )}
+            strokeWidth={1.4}
+            aria-hidden
+          />
+        </div>
+      )}
+      {caption && (
+        <p
+          className={cn(
+            "absolute bottom-5 left-5 right-5 text-[10px] tracking-[0.25em] uppercase font-medium",
+            PLATE_CAPTION_COLOR[variant],
+          )}
+        >
+          {caption}
+        </p>
+      )}
+    </div>
+  );
+}
+
 /**
  * MediaSlot — the orchestrator pages use to request media.
  *
  *   <MediaSlot
- *     query={{ service: 'decks', shot_type: 'hero', min_quality: 'hero' }}
- *     fallback={<EvergreenGradient />}
+ *     query={{ service: 'decks', shot_type: 'hero', min_quality: 'reference' }}
+ *     fallbackVariant="stone"
+ *     fallbackIcon={Hammer}
+ *     fallbackCaption="New decks, photographed soon"
  *   />
  *
  * Pages NEVER import images directly. They describe what they want and
- * the system pulls from approved cloud media. If nothing matches, the
- * fallback renders — so the page is always beautiful.
+ * the system pulls from approved cloud media. If nothing matches, an
+ * editorial plate renders — so the page is always beautiful, never green.
  */
 const MediaSlot = (props: MediaSlotProps) => {
   const { item, loading } = useFirstApprovedMedia(props.query);
 
+  const renderFallback = () => {
+    if (props.fallback !== undefined) return <>{props.fallback}</>;
+    return (
+      <EditorialFallback
+        variant={props.fallbackVariant ?? "stone"}
+        icon={props.fallbackIcon}
+        caption={props.fallbackCaption}
+      />
+    );
+  };
+
   // Server hasn't responded yet — render the fallback to avoid flash
-  if (loading) return <>{props.fallback}</>;
-  if (!item) return <>{props.fallback}</>;
+  if (loading) return renderFallback();
+  if (!item) return renderFallback();
 
   if (props.variant === "bleed") {
     if (!item.is_video) {
