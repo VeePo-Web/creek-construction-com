@@ -1,91 +1,147 @@
-# Style Guide v5 — Bug Triage + Sub-Page Token Sweep
+# Style Guide v6 — Sub-Page Primitive Adoption & System Cleanup
 
-## Why this work, right now
+## Why this matters
 
-Live audit at 1366×768 surfaced **two shipping bugs** introduced by v3/v4 plus a clear next target: the **sub-pages** (`/services`, `/work`, `/about`, `/contact`) and `SubPageHero` are the last places still hand-rolled. The homepage is now token-driven; the rest of the site is not. After this pass the entire shipping surface — every route, every hero, every section — composes from the same `src/lib/` tokens and `src/components/ui/` primitives.
+In v5 I built the canonical primitives (`PageHero`, `BreadcrumbTrail`, `ServiceTile`, `FaqAccordion`, `ProjectTile`) but **none of the four sub-pages actually consume them yet**. Every sub-page (`Services`, `Work`, `About`, `Contact`) still hand-rolls:
 
-## Audit findings (live, just measured)
+- An evergreen hero with an inline `radial-gradient(...)` style block (4 copies)
+- An inline `clamp()` h1 size (4 copies)
+- A breadcrumb `<nav>` with the same 4 magic strings (4 copies)
+- Service / FAQ / project / contact card patterns built directly with Tailwind + `style={{}}` blocks
 
-### Critical bugs
-1. **Homepage sections appear empty/collapsed** at 1366px. The `style={{ contentVisibility: "auto", containIntrinsicSize: "auto 1200px" }}` I added to Services and Portfolio reserves 1200px of layout space, but when the actual content is taller (Services with the matrix + CTA is closer to 1900px), scrolling jumps over real content. Result: large blank gaps on the page. Need to either remove containIntrinsicSize, raise it dramatically, or convert to plain `loading="lazy"` images + below-fold `contain-intrinsic-block-size: none`.
-2. **Hero lead paragraph fails WCAG AA on desktop**. `text-evergreen-foreground/75` on the evergreen radial = ~3.4:1 contrast. Must lift to /85 minimum and add a subtle shadow plate behind the text or pull color to `text-evergreen-foreground` (full opacity).
+This is *exactly* the drift the design system was built to prevent. A new contributor reading `src/lib/colors.ts` would think the system is enforced — when in reality the shipping pages bypass it. The result: when we tweak a token, four pages silently fall out of sync.
 
-### Style/system gaps
-3. **Curly-quote violation** in `src/components/Contact.tsx`: `"Let's Build Something Right."` — memory says strict curly. Must be `Let\u2019s`.
-4. **`SubPageHero` is the last hand-rolled hero** — 9 inline `style={{}}` blocks, raw `clip-reveal 1.2s cubic-bezier(...)` strings, hand-rolled breadcrumb, hand-rolled provenance row. Should compose from `BronzeRule`, use `EASING.smooth` + `DURATION.cinematic` from `motion.ts`, and use `BACKDROP.evergreenRadial` for the gradient overlay.
-5. **`/services`, `/work`, `/about`, `/contact` interiors** all still hand-roll: their own evergreen hero (5–7 inline styles each, duplicating SubPageHero), their own bronze-step math, their own grid math, their own service/project tile, their own FAQ accordion styles. Token coverage on these files = 0.
-6. **Three different breadcrumb implementations** — `SubPageHero`, `Services.tsx` page, `NarrativeBreadcrumb` component. Should be one `<Breadcrumb items />` primitive sourced from the tokens.
-7. **`StyleGuide.tsx`** never had a token sweep — it documents tokens but uses 6 inline styles itself. Eat its own dogfood.
-8. **`FeaturedProjects.tsx`** still uses raw classes; not in v4 sweep.
-9. **Mobile hero (390px)** doesn't show the floating stat card or the inline stat row in the photo-variant — only the no-media branch shows stats. Must always show them.
+This loop closes that gap and removes the legacy primitives that the new ones replaced.
 
-## Plan — six phases
+---
 
-### Phase 1 — Fix the two shipping bugs (must land first)
-- **Remove `containIntrinsicSize` overrides** on Services and Portfolio sections. Replace with `loading="lazy"` on below-fold images only. Keep `content-visibility: auto` only where the section is **always** offscreen on first paint AND we can prove the intrinsic estimate is a lower bound.
-- **Hero lead text contrast**: lift `text-evergreen-foreground/75` to `text-evergreen-foreground/90` and add `text-shadow: 0 1px 2px hsl(150 30% 6% / 0.6)` so it remains legible on the radial backdrop. Add a token `TEXT.onDark.legibleShadow` for reuse.
+## Phase 1 — Sub-page hero adoption (PageHero everywhere)
 
-### Phase 2 — New shared primitives (the missing layer for sub-pages)
-- **`<Breadcrumb items />`** in `src/components/ui/breadcrumb-trail.tsx` — replaces the 3 hand-rolled implementations. Default light variant + `onDark` variant for hero contexts.
-- **`<PageHero />`** in `src/components/ui/page-hero.tsx` — the canonical sub-page evergreen hero. Composes `BACKDROP.evergreenRadial`, `BronzeRule`, `Breadcrumb`, `HEADLINE.display`, `EASING.smooth`. Replaces the 4 hand-rolled hero blocks in `Services.tsx`/`Work.tsx`/`About.tsx`/`Contact.tsx` AND replaces `SubPageHero` (which is image-led) with a clearer split: `<PageHero variant="evergreen" />` vs `<PageHero variant="cinematic" image>`.
-- **`<ServiceTile />`** in `src/components/ui/service-tile.tsx` — the canonical service card used on `/`, `/services`, `/work`. One implementation, three callsites.
-- **`<FaqAccordion items />`** wrapping the existing `Accordion` UI with the bronze-step border treatment baked in.
+Replace the hand-rolled hero `<section>` blocks at the top of each sub-page with `<PageHero variant="evergreen" ...>`. This single change deletes ~22 lines of duplicate JSX per page and routes everything through `BACKDROP.evergreenRadial`, `BreadcrumbTrail`, `BronzeRule`, and `HEADLINE.display`.
 
-### Phase 3 — `SubPageHero` rebuild
-- Replace `SubPageHero.tsx` with a thin re-export of `<PageHero variant="cinematic">`. Internally:
-  - Inline-styled gradient strings → `BACKDROP.cinematicVignette` (new constant).
-  - `clip-reveal 1.2s cubic-bezier(0.16, 1, 0.3, 1)` → `EASING.smooth` + `DURATION.cinematic`.
-  - Hand-rolled breadcrumb → `<Breadcrumb items onDark />`.
-  - Hand-rolled provenance row → `<BronzeRule numeral label variant="onDark" />`.
-  - Inline animation strings → utility classes already in `index.css` (`reveal`, `clip-reveal`).
-- Net result: `SubPageHero` shrinks from ~160 lines / 9 inline styles to ~40 lines / 0 inline styles.
+### `src/pages/Services.tsx`
+- Remove lines 42–71 (hero `<section>`).
+- Replace with:
+  ```tsx
+  <PageHero
+    variant="evergreen"
+    breadcrumb={[{ label: "Home", to: "/" }, { label: "Services" }]}
+    numeral="I"
+    sectionLabel="EXTERIOR CONSTRUCTION"
+    title="Six things, done right."
+    subtitle="All residential. All exterior. All built to outlast Alberta winters."
+    skipToId="all-services-heading"
+  >
+    <CedarCTA>Request a Quote</CedarCTA>
+  </PageHero>
+  ```
 
-### Phase 4 — Sub-page interior sweeps
+### `src/pages/Work.tsx`
+- Remove lines 42–72.
+- Replace with `<PageHero variant="evergreen" breadcrumb={[…, { label: "Our Work" }]} numeral="I" sectionLabel="SELECTED PROJECTS" title="The work speaks first." subtitle="Selected recent projects across Calgary, Edmonton, and surrounding Alberta." />`.
+- Move the "Sister studios · B & P Saunas · Hickory & Rose" footnote into PageHero `children`.
 
-| Page | Currently | Becomes |
-|---|---|---|
-| `pages/Services.tsx` | own hero, own tile grid, own FAQ styling, hand-rolled breadcrumb (5 inline + duplicated bronze math) | `<PageHero variant="evergreen">`, grid of `<ServiceTile>`, `<FaqAccordion items={FAQS}>`. Inline-style count: 5 → 0. |
-| `pages/Work.tsx` | own hero, own card grid, hand-rolled hover/border bronze math (3 inline) | `<PageHero variant="cinematic">`, grid of `<ProjectTile>` (new primitive, derived from current Portfolio card). Inline → 0. |
-| `pages/About.tsx` | own hero, hand-rolled stat row, hand-rolled "founder" pull-quote (4 inline) | `<PageHero variant="evergreen">`, `<StatTrio variant="card">`, `QUOTE.pull` from typography tokens. Inline → 0. |
-| `pages/Contact.tsx` | own hero, two-column form/info card, hand-rolled gradients (7 inline) + curly-quote bug | `<PageHero variant="evergreen">`, tokenized two-column layout, `BACKDROP.evergreenPlate` for the right pane, `Let\u2019s` (curly). Inline → 1 (legitimate dynamic CSS var). |
-| `pages/StyleGuide.tsx` | own headers + 6 inline styles | uses `<BronzeRule>`, `HEADLINE.section`, `EYEBROW.default`. Inline → 0. |
-| `components/FeaturedProjects.tsx` | own grid, raw classes | uses `HEADLINE.section`, `BODY.small`, `<ServiceTile>` or new `<ProjectTile>`. |
+### `src/pages/About.tsx`
+- Remove lines 28–50.
+- Replace with `<PageHero variant="evergreen" breadcrumb={[…, { label: "About" }]} numeral="I" sectionLabel="OUR STORY" title="Built on the work itself." subtitle="Locally owned. Calgary and Edmonton. No gimmicks — just the craft." />`.
 
-### Phase 5 — Mobile hero parity + small craft fixes
-- **Stat row always visible**: in the photo-variant Hero, hoist the `StatTrio` outside the `lg:absolute` floating card so on mobile the stats render below the photo (not hidden until lg).
-- **Trust chip wrap**: at 320–360px the current `flex-wrap` on three chips with hairline dividers stacks into a vertical column with extra dividers — fix the divider so it hides when wrapped.
-- **Nav active state**: current cedar text is too quiet at 11px — add a 1px cedar underline (animated) on `:hover`/active so the active page is unmistakably marked.
-- **Single Source breadcrumb**: delete `NarrativeBreadcrumb.tsx` after migrating its consumers (it's referenced by older code).
+### `src/pages/Contact.tsx`
+- Remove lines 23–45.
+- Replace with `<PageHero variant="evergreen" breadcrumb={[…, { label: "Contact" }]} numeral="I" sectionLabel="GET IN TOUCH" title="Let's talk about your project." subtitle="Free quote. No high-pressure sales. Honest answers." />`.
+- Use the curly apostrophe (`Let's`) — currently shipping `Let's`.
 
-### Phase 6 — Validation
-- `tsc --noEmit` clean.
-- Screenshot at 1366×768, 1024×768, 390×844 and confirm:
-  - Hero lead text contrast ≥ 4.5:1 (manually inspect or use devtools Contrast Checker).
-  - No 1200px empty gaps between sections on `/`.
-  - Sub-pages all use the same `PageHero` shell.
-  - Curly quotes throughout.
-- `rg "from \"@/lib/(colors|typography|spacing|motion)\"" src/components src/pages | wc -l` should jump from 12 → 20+.
-- `rg "style=\{\{" src/pages | wc -l` should drop from 27 → < 5.
-- Update `mem://design/component-primitive-map` with the new `PageHero`, `Breadcrumb`, `ServiceTile`, `ProjectTile`, `FaqAccordion` primitives.
+**Outcome:** every sub-page hero is now a 7-line component invocation. ~120 lines of JSX deleted. Single tweak to `BACKDROP.evergreenRadial` updates four pages at once.
 
-## Out of scope (deferred deliberately)
+---
 
-- Real photography sourcing (content task, not a code task).
-- Quote modal interior re-skin (high custom, low ROI this pass).
-- A11y audit pass (separate dedicated loop once primitives are stable).
-- Any `/admin/*` interior changes (utility surface, separate priority).
+## Phase 2 — Card primitive adoption
 
-## Estimated impact
+### `src/pages/Services.tsx` — service grid
+- Replace the `SERVICES.map` block (lines 86–121) with:
+  ```tsx
+  <ServiceTile key={s.id} item={s} index={i} total={SERVICES.length} variant="compact" onClick={() => openModal([s.id])} />
+  ```
+- This deletes the inline `border-left-color`, the manual icon plate, the manual numeral, the `style={{}}` block. All of it now lives in the primitive.
 
-| Metric | Before | After |
-|---|---|---|
-| Token files imported by `src/pages` | 0 | 5+ |
-| Inline `style={{}}` in `src/pages` | 27 | < 5 |
-| Hand-rolled hero implementations | 5 (Hero + 4 sub-pages, all distinct) | 1 `<PageHero>` (with two variants) |
-| Hand-rolled breadcrumb implementations | 3 | 1 `<Breadcrumb>` |
-| Service-tile implementations | 3 | 1 `<ServiceTile>` |
-| Hero lead contrast | ~3.4:1 (fail) | ≥ 4.5:1 (AA) |
-| Phantom blank gaps on home | yes | no |
-| Curly-quote violations | 1 | 0 |
+### `src/pages/Services.tsx` — FAQ
+- Replace lines 138–164 with `<FaqAccordion items={FAQS} />` wrapped in `<ScrollRevealMotion delay={0.2}>`.
 
-After this lands, every route on the site composes from the same primitive set. The natural next loop becomes either real photography integration or the quote-modal re-skin.
+### `src/pages/Work.tsx` — placeholder grid
+- Replace `PLACEHOLDERS.map` (lines 137–178) with `<ProjectTile item={{ title, location, description, icon }} index={i} total={PLACEHOLDERS.length} onClick={() => openModal([w.service])} />`.
+
+### `src/pages/About.tsx` — process steps + city chips
+- Process steps (lines 96–115): the bronze-step border pattern is identical to what `bronzeStep()` produces. Replace inline `style={{ borderLeft: ... }}` with `style={{ borderLeft: \`2px solid hsl(var(--cedar) / ${bronzeStep(i, steps.length)})\` }}` so the math lives in `src/lib/colors.ts`, not the page.
+- City chips (lines 131–142): same — switch to `bronzeStep(i, CONTACT.cities.length)`. Better long-term: extract a `<CrescendoChip>` primitive in a follow-up loop.
+
+### `src/pages/Contact.tsx` — contact rows + CTA card
+- Contact rows (lines 60–121): four near-identical blocks. Replace each `style={{ borderLeft: ... }}` with `bronzeStep(i, 4)` from `src/lib/colors.ts` so the bronze crescendo is computed once. Keep the icon + label + value layout inline for now (extracting a `<ContactRow>` primitive is a v7 task — the visual only appears once on the site).
+- CTA card (lines 126–166): swap the inline `linear-gradient(...)` for `BACKDROP.evergreenCard` (we'll add this token to `src/lib/colors.ts` if it isn't there yet — currently the gradient is duplicated here and in `Hero.tsx`). Use the curly apostrophe in body copy.
+
+---
+
+## Phase 3 — Token additions
+
+Add to `src/lib/colors.ts` only what's actually duplicated across the codebase:
+- `BACKDROP.evergreenCard` — `linear-gradient(135deg, hsl(var(--evergreen)) 0%, hsl(150 25% 10%) 100%)` (used by Contact CTA and Hero photo card overlay)
+- Confirm `BACKDROP.evergreenRadial` exists; if not, add it as the canonical sub-page hero radial.
+
+No speculative tokens. Tokens earn their place by appearing 3+ times.
+
+---
+
+## Phase 4 — Delete orphaned files
+
+Once the new primitives are wired up everywhere, delete:
+- `src/components/SubPageHero.tsx` — replaced by `PageHero` variant="cinematic"
+- `src/components/NarrativeBreadcrumb.tsx` — replaced by `BreadcrumbTrail`
+
+Update `src/index.css` line 345 comment that still references `SubPageHero`.
+
+Verify with `rg -n "SubPageHero|NarrativeBreadcrumb" src/` returning zero matches before deleting.
+
+---
+
+## Phase 5 — Mobile + a11y polish
+
+While we're touching every sub-page:
+1. **Hero stat row on mobile**: in `src/components/Hero.tsx`, when there's no photo, the inline `STATS.map` block (lines 137–143) renders three columns that get crushed below 380px. Wrap in `flex-wrap gap-y-3` and bump tap targets to `min-h-[44px]`.
+2. **Curly quotes sweep**: the v5 pass missed the description copy on `/services` ("we're", "we'll"), `/work` ("we'd"), `/about` ("don't", "isn't", "we'd"), and `/contact` ("Let's"). One sed-style replace pass across the four pages — apostrophes only, never inside JSX attribute strings.
+3. **Active-state nav indicator**: in `src/components/Navigation.tsx`, add a 1px bronze underline that animates from 0 → 100% width when a route is active. Keyframe lives in `src/index.css`, NOT inline.
+
+---
+
+## Phase 6 — Memory & docs sync
+
+- Update `mem://design/component-primitive-map.md` to add the four sub-page consumers under each primitive (PageHero → Services/Work/About/Contact, etc.).
+- Update `mem://architecture/core-design-system.md` — replace `SubPageHero` references with `PageHero`.
+- Add a one-line entry to `STYLE_GUIDE.md`'s "Source of truth" callout reminding contributors that **sub-pages must consume primitives, never re-implement them**.
+
+---
+
+## Phase 7 — Validation
+
+- `tsc --noEmit` must pass.
+- Open `/services`, `/work`, `/about`, `/contact` at 1280×720 and 375×812 viewports. Confirm:
+  - Hero is visually identical (or better) — no regressions to the bronze crescendo
+  - Breadcrumb is consistent across all four pages
+  - Service tiles, FAQ, project tiles all reflect the same hover/focus pattern
+  - No `style={{ background: "radial-gradient..." }}` left in any sub-page (`rg -n "radial-gradient" src/pages` should return zero)
+- Re-run the inline-style audit: `rg -nl "style=\{\{" src/pages` should drop from 4 files to 0 (all remaining inline styles will live inside primitive components, which is correct — the page level is now declarative).
+
+---
+
+## What this loop deliberately does NOT do
+
+- **No new visual concepts.** This is a system-enforcement loop. New ideas (animated section dividers, hero video on /work, etc.) are v7+ work and need their own brief.
+- **No content rewrites.** Copy edits limited to apostrophe correctness.
+- **No primitive extraction beyond what's already used 3+ times.** `<ContactRow>`, `<CrescendoChip>` are tempting but only appear once each — extracting them now would be premature.
+
+---
+
+## Files touched
+
+- **Edit:** `src/pages/Services.tsx`, `src/pages/Work.tsx`, `src/pages/About.tsx`, `src/pages/Contact.tsx`, `src/components/Hero.tsx`, `src/components/Navigation.tsx`, `src/lib/colors.ts`, `src/index.css`, `STYLE_GUIDE.md`, `mem://design/component-primitive-map.md`, `mem://architecture/core-design-system.md`
+- **Delete:** `src/components/SubPageHero.tsx`, `src/components/NarrativeBreadcrumb.tsx`
+- **Create:** none — this loop is consolidation, not expansion
+
+Net code change: roughly **−400 lines** (duplicate JSX deleted) and **+80 lines** (primitive invocations + token additions). The system gets smaller and stronger.
