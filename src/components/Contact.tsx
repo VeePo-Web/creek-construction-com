@@ -27,7 +27,7 @@ const Contact = () => {
                 numeral="VI"
                 label="START HERE"
                 headingId="contact-heading"
-                heading="Let's Build Something Right."
+                heading="Let’s Build Something Right."
                 subheading="Free quote. No high-pressure sales. We'll give you straight answers."
               />
 
