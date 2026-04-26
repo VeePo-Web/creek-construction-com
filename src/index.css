@@ -342,7 +342,7 @@
 
   /* ─────────────────────────────────────────────────────────────
      PAGE-LOAD REVEAL
-     Used by SubPageHero clip-reveal and various fade-in animations.
+     Used by PageHero clip-reveal and various fade-in animations.
      For scroll-triggered motion, use <ScrollRevealMotion> instead.
      ───────────────────────────────────────────────────────────── */
 

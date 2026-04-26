@@ -55,7 +55,14 @@ const Navigation = ({ transparent: _transparent }: NavigationProps) => {
               <Link
                 key={item.path}
                 to={item.path}
-                className={cn(navLinkClass, active ? "text-cedar" : "text-foreground/70 hover:text-cedar")}
+                aria-current={active ? "page" : undefined}
+                className={cn(
+                  navLinkClass,
+                  "relative",
+                  active ? "text-cedar" : "text-foreground/70 hover:text-cedar",
+                  "after:absolute after:left-0 after:right-0 after:-bottom-1 after:mx-auto after:h-px after:bg-cedar after:transition-all after:duration-500",
+                  active ? "after:w-6" : "after:w-0 hover:after:w-6",
+                )}
               >
                 {item.label}
               </Link>

@@ -3,11 +3,13 @@ import Footer from "@/components/Footer";
 import CedarCTA from "@/components/CedarCTA";
 import ScrollRevealMotion from "@/components/ScrollRevealMotion";
 import SectionHeader from "@/components/SectionHeader";
+import PageHero from "@/components/ui/page-hero";
 import { useDocumentTitle } from "@/hooks/useDocumentTitle";
 import { Phone, Mail, Clock, MapPin } from "lucide-react";
-import { Link } from "react-router-dom";
 import { CONTACT } from "@/config/contact";
 import { useQuoteModal } from "@/components/quote/QuoteModalProvider";
+import { BACKDROP, bronzeStep } from "@/lib/colors";
+import { SECTION_PADDING, MAX_WIDTH } from "@/lib/spacing";
 
 const Contact = () => {
   const { openModal } = useQuoteModal();
@@ -16,37 +18,25 @@ const Contact = () => {
     `Get in touch with Creek Construction — call ${CONTACT.phone} or email ${CONTACT.email}. Free quotes across Calgary, Edmonton, and surrounding Alberta.`,
   );
 
+  // Four contact rows, sharing the bronze crescendo so the eye sweeps top-to-bottom.
+  const ROW_COUNT = 4;
+
   return (
     <main className="min-h-screen bg-background" aria-label="Contact — Creek Construction">
       <Navigation />
 
-      <section className="relative bg-evergreen text-evergreen-foreground py-24 md:py-32 overflow-hidden">
-        <div
-          className="absolute inset-0 opacity-90"
-          style={{
-            background:
-              "radial-gradient(ellipse at 70% 50%, hsl(150 30% 22%) 0%, hsl(150 25% 12%) 60%, hsl(150 30% 6%) 100%)",
-          }}
-        />
-        <div className="absolute inset-0 grain-overlay opacity-40 pointer-events-none" />
-        <div className="container mx-auto px-6 relative z-10">
-          <nav aria-label="Breadcrumb" className="flex items-center gap-2 mb-6 text-[10px] tracking-[0.2em] uppercase">
-            <Link to="/" className="text-evergreen-foreground/40 hover:text-cedar transition-colors">Home</Link>
-            <span className="text-evergreen-foreground/20">·</span>
-            <span className="text-cedar/80">Contact</span>
-          </nav>
-          <h1 className="font-serif text-evergreen-foreground mb-4" style={{ fontSize: "clamp(2.5rem, 5vw, 4rem)" }}>
-            Let's talk about your project.
-          </h1>
-          <p className="text-lg text-evergreen-foreground/70 italic font-serif max-w-xl">
-            Free quote. No high-pressure sales. Honest answers.
-          </p>
-        </div>
-      </section>
+      <PageHero
+        variant="evergreen"
+        breadcrumb={[{ label: "Home", to: "/" }, { label: "Contact" }]}
+        numeral="I"
+        sectionLabel="GET IN TOUCH"
+        title="Let’s talk about your project."
+        subtitle="Free quote. No high-pressure sales. Honest answers."
+      />
 
-      <section className="py-20 md:py-28 grain-overlay" aria-labelledby="contact-heading">
+      <section className={`${SECTION_PADDING.default} grain-overlay`} aria-labelledby="contact-heading">
         <div className="container mx-auto px-6">
-          <div className="max-w-7xl mx-auto grid md:grid-cols-2 gap-16 items-start">
+          <div className={`${MAX_WIDTH.wide} mx-auto grid md:grid-cols-2 gap-16 items-start`}>
             {/* Contact info */}
             <div>
               <SectionHeader
@@ -61,7 +51,7 @@ const Contact = () => {
                 <a
                   href={`tel:${CONTACT.phoneTel}`}
                   className="grain-texture flex items-center gap-4 px-5 py-5 rounded-sm shadow-contact border border-border/40 hover:border-cedar/40 hover:bg-cedar/[0.03] hover:shadow-elevated transition-all duration-500 group min-h-[44px] focus-visible:ring-2 focus-visible:ring-cedar focus-visible:ring-offset-2"
-                  style={{ borderLeft: "2px solid hsl(var(--cedar) / 0.4)" }}
+                  style={{ borderLeft: `2px solid hsl(var(--cedar) / ${bronzeStep(0, ROW_COUNT)})` }}
                 >
                   <div className="shrink-0 w-10 h-10 rounded-sm bg-cedar/10 flex items-center justify-center">
                     <Phone className="h-4 w-4 text-cedar" aria-hidden />
@@ -77,7 +67,7 @@ const Contact = () => {
                 <a
                   href={`mailto:${CONTACT.email}`}
                   className="grain-texture flex items-center gap-4 px-5 py-5 rounded-sm shadow-contact border border-border/40 hover:border-cedar/40 hover:bg-cedar/[0.03] hover:shadow-elevated transition-all duration-500 group min-h-[44px] focus-visible:ring-2 focus-visible:ring-cedar focus-visible:ring-offset-2"
-                  style={{ borderLeft: "2px solid hsl(var(--cedar) / 0.65)" }}
+                  style={{ borderLeft: `2px solid hsl(var(--cedar) / ${bronzeStep(1, ROW_COUNT)})` }}
                 >
                   <div className="shrink-0 w-10 h-10 rounded-sm bg-cedar/10 flex items-center justify-center">
                     <Mail className="h-4 w-4 text-cedar" aria-hidden />
@@ -92,7 +82,7 @@ const Contact = () => {
 
                 <div
                   className="grain-texture flex items-center gap-4 px-5 py-5 rounded-sm shadow-contact border border-border/40"
-                  style={{ borderLeft: "2px solid hsl(var(--cedar) / 0.85)" }}
+                  style={{ borderLeft: `2px solid hsl(var(--cedar) / ${bronzeStep(2, ROW_COUNT)})` }}
                 >
                   <div className="shrink-0 w-10 h-10 rounded-sm bg-cedar/10 flex items-center justify-center">
                     <Clock className="h-4 w-4 text-cedar" aria-hidden />
@@ -105,14 +95,14 @@ const Contact = () => {
 
                 <div
                   className="grain-texture flex items-start gap-4 px-5 py-5 rounded-sm shadow-contact border border-border/40"
-                  style={{ borderLeft: "2px solid hsl(var(--cedar) / 0.95)" }}
+                  style={{ borderLeft: `2px solid hsl(var(--cedar) / ${bronzeStep(3, ROW_COUNT)})` }}
                 >
                   <div className="shrink-0 w-10 h-10 rounded-sm bg-cedar/10 flex items-center justify-center">
                     <MapPin className="h-4 w-4 text-cedar" aria-hidden />
                   </div>
                   <div className="flex-1">
                     <p className="text-[10px] tracking-[0.2em] uppercase text-muted-foreground/60 mb-1">Service Areas</p>
-                    <p className="text-foreground font-medium">Calgary, Edmonton & surrounding Alberta</p>
+                    <p className="text-foreground font-medium">Calgary, Edmonton &amp; surrounding Alberta</p>
                     <p className="text-xs text-muted-foreground mt-1">
                       Including {CONTACT.cities.slice(0, 4).join(", ")} + more
                     </p>
@@ -126,8 +116,7 @@ const Contact = () => {
               <div
                 className="rounded-sm overflow-hidden relative grain-texture"
                 style={{
-                  background:
-                    "linear-gradient(135deg, hsl(var(--evergreen)) 0%, hsl(150 25% 10%) 100%)",
+                  background: BACKDROP.evergreenCard,
                   borderLeft: "3px solid hsl(var(--cedar))",
                 }}
               >
@@ -140,8 +129,8 @@ const Contact = () => {
                     Send us your project details.
                   </h2>
                   <p className="text-evergreen-foreground/70 leading-relaxed mb-8">
-                    A quick, three-step form. Tell us what you're building, where you're located,
-                    and how you'd like us to reach you. We'll be in touch within 24–48 hours.
+                    A quick, three-step form. Tell us what you’re building, where you’re located,
+                    and how you’d like us to reach you. We’ll be in touch within 24–48 hours.
                   </p>
 
                   <ul className="space-y-2 text-sm text-evergreen-foreground/60 mb-10">
