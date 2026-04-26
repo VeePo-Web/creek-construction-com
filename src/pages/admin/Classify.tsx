@@ -87,6 +87,8 @@ const Classify = () => {
   const [edits, setEdits] = useState<Partial<AssetRow>>({});
   const [classifying, setClassifying] = useState(false);
   const [classifyProgress, setClassifyProgress] = useState({ done: 0, total: 0 });
+  const [serverRunning, setServerRunning] = useState(false);
+  const [serverPolling, setServerPolling] = useState(false);
 
   // Title + noindex
   useEffect(() => {
@@ -436,6 +438,90 @@ const Classify = () => {
     await loadAssets();
   };
 
+  /**
+   * Server-side orchestrator. Fires the auto-classify-batch edge function,
+   * which classifies up to 25 images per invocation and self-recurses
+   * until the queue drains. The browser tab can be closed mid-run — work
+   * continues server-side. UI polls media_metadata every 5s for progress.
+   */
+  const handleServerSideClassifyAll = async () => {
+    if (counts.pending === 0) {
+      toast({ title: "Nothing to classify" });
+      return;
+    }
+    setServerRunning(true);
+    const startingPending = counts.pending;
+    toast({
+      title: `Starting server-side classifier`,
+      description: `Processing ${startingPending} pending images. You can close this tab — it'll keep running.`,
+    });
+
+    try {
+      const { data, error } = await supabase.functions.invoke(
+        "auto-classify-batch",
+        { body: { limit: 500 } },
+      );
+      if (error) throw error;
+      if (data?.success === false) throw new Error(data.error ?? "Unknown error");
+
+      toast({
+        title: `First chunk done · ${data.processed} processed, ${data.approved} approved`,
+        description:
+          (data.projectsCreated > 0
+            ? `Seeded ${data.projectsCreated} new projects. `
+            : "") +
+          (data.morePending
+            ? `${data.remainingPending} still queued — running in background.`
+            : "All done."),
+      });
+
+      // Begin polling so the operator sees the queue drain in real time
+      if (data.morePending) {
+        setServerPolling(true);
+        const startedAt = Date.now();
+        const poll = async () => {
+          await loadAssets();
+          const { count } = await supabase
+            .from("media_metadata")
+            .select("*", { count: "exact", head: true })
+            .eq("ai_review_status", "pending");
+          if ((count ?? 0) === 0) {
+            setServerPolling(false);
+            setServerRunning(false);
+            toast({
+              title: "Auto-classifier finished",
+              description: `Queue drained in ${Math.round((Date.now() - startedAt) / 1000)}s.`,
+            });
+            return;
+          }
+          // Cap polling at 15 minutes as a safety net
+          if (Date.now() - startedAt > 15 * 60 * 1000) {
+            setServerPolling(false);
+            setServerRunning(false);
+            toast({
+              title: "Polling stopped",
+              description: `Still ${count} pending. Refresh to check.`,
+              variant: "destructive",
+            });
+            return;
+          }
+          setTimeout(poll, 5000);
+        };
+        setTimeout(poll, 5000);
+      } else {
+        setServerRunning(false);
+        await loadAssets();
+      }
+    } catch (e) {
+      setServerRunning(false);
+      toast({
+        title: "Server-side classifier failed",
+        description: e instanceof Error ? e.message : "Unknown error",
+        variant: "destructive",
+      });
+    }
+  };
+
   const handleApprove = async () => {
     if (!selected) return;
     const updates = {
@@ -592,18 +678,37 @@ const Classify = () => {
             <Button
               size="sm"
               variant="default"
-              onClick={handleClassifyAndAutoApprove}
-              disabled={classifying || counts.pending === 0}
+              onClick={handleServerSideClassifyAll}
+              disabled={serverRunning || classifying || counts.pending === 0}
               className="bg-cedar text-cedar-foreground hover:bg-cedar/90"
+              title="Server-side: classifies everything in the background. Tab can be closed."
             >
-              {classifying ? (
+              {serverRunning ? (
                 <Loader2 className="h-4 w-4 animate-spin" />
               ) : (
                 <Zap className="h-4 w-4" />
               )}
+              {serverRunning
+                ? serverPolling
+                  ? `Working… ${counts.pending} left`
+                  : "Starting…"
+                : `Auto-classify all (${counts.pending})`}
+            </Button>
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={handleClassifyAndAutoApprove}
+              disabled={classifying || serverRunning || counts.pending === 0}
+              title="Classify in the browser (must keep tab open)"
+            >
+              {classifying ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <Sparkles className="h-4 w-4" />
+              )}
               {classifying
                 ? `${classifyProgress.done}/${classifyProgress.total}`
-                : `Classify & auto-approve (${counts.pending})`}
+                : "Classify in browser"}
             </Button>
             <Button
               size="sm"
