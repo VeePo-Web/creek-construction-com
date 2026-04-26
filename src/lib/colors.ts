@@ -119,6 +119,12 @@ export const BACKDROP = {
   /** Section bottom fade — into secondary surface. */
   fadeToSecondary:
     "linear-gradient(180deg, transparent 0%, hsl(var(--secondary)) 100%)",
+  /** Cinematic vignette — over a hero photograph. */
+  cinematicVignette:
+    "linear-gradient(180deg, hsl(20 10% 8% / 0.3) 0%, hsl(20 10% 8% / 0.12) 38%, hsl(20 10% 8% / 0.55) 72%, hsl(20 10% 8% / 0.85) 100%)",
+  /** Cinematic radial vignette — softer edge darken over photos. */
+  cinematicRadial:
+    "radial-gradient(ellipse at center, transparent 40%, hsl(20 10% 8% / 0.2) 100%)",
 } as const;
 
 // ─────────────────────────────────────────────────────────────────────
