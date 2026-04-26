@@ -1,211 +1,198 @@
+# Conversion + Performance Pass v4 — Finishing the Reduction
 
-# Conversion-First Pass v3 — Quote Frictionless, Performance Ruthless
+> The last three passes landed structure, the modal collapse, and the mobile FAB. This pass closes out the **remaining 12 wrappers**, the **last 37 `transition-all` instances**, the **4-tile Contact stack** that should be one panel, and adds the **Footer's tertiary Quote CTA** — the final conversion attempt before the user leaves the page.
 
-> **One goal**: every visit should end at the QuoteModal, ideally in under three taps. Everything that doesn't serve that goal — second galleries, decorative grain layers, repeated process steps, motion wrappers below the fold — gets cut or quieted. Performance over visual is the rule.
-
-> **Audit verdict**: the previous reduction landed the structure but left **three classes of friction** intact: (1) the modal itself is heavy and three steps deep when one would do for warm leads; (2) `ScrollRevealMotion` is still wrapping ~80 nodes (it's now CSS-only, but it's still 80 IO observations + 80 transition subscriptions paid out unnecessarily on parts of the page the user will never see); (3) the quote CTA disappears once the user scrolls past the hero on long pages — they have to come back to the top or scroll all the way to Contact.
-
----
-
-## A · The conversion path — the highest-leverage edits
-
-### A1 · Add a Step 0 "Express Quote" mode for warm leads
-Right now every modal open lands on Step 1 (service picker) → Step 2 (details) → Step 3 (contact). For a user who clicked **"Request a quote for Decks"** on the Services grid, we already know the service. Make the modal skip Step 1 when:
-- `preselectedServices.length === 1`, AND
-- the user came from a service-specific CTA (we already pass `preselectServices` from `Services.tsx` and `ServiceTile`).
-
-Behavior: open directly on Step 2, with a small editable chip at the top (`Decks · change`) so they can correct it. **3 steps → 2 steps for the most committed users.** Net: ~30% fewer interactions to convert.
-
-### A2 · Inline the contact fields into Step 2 — collapse 3 steps to 2 universally
-Step 2 is currently *just* a textarea + property type + timeline. Step 3 is name/phone/email/area. There's no engineering reason these can't be on the same screen — together they fit comfortably above-the-fold on a 13" laptop. Cut Step 3 entirely; rename "Continue → Send" to "Send Request" on Step 2 once contact fields validate. **3 steps → 1 step for warm service-clickers, 2 steps for cold opens.**
-
-### A3 · Make the modal openable from anywhere with a sticky mobile FAB
-Below the hero on mobile, the only way to start a quote is to scroll all the way to Contact. Add a sticky bottom-right "Request a Quote" floating action button on mobile (`<sm` breakpoint), visible only after `scrollY > 600px` and hidden when the QuoteModal is open or when the user is within the Contact section (avoid double CTAs). Cedar pill, 56px, safe-area-inset-bottom respected. This is the single biggest conversion win on mobile — the user never has to hunt.
-
-### A4 · Tightened submit endpoint — accept partial submissions
-The `submit-quote-request` edge function currently rejects unless `name + phone + addressOrArea + (services OR projectDetails)` are all present. Loosen it to accept `name + phone` as the absolute minimum (with `addressOrArea` and details optional but encouraged client-side). Rationale: a half-completed lead with just a name + phone is still a lead worth a callback. The client UX still encourages full completion via the validation panel, but a server-side bailout on a phone field typo shouldn't lose the lead.
-
-### A5 · Submit on Enter on Step 2 once contact fields validate
-Today users press Tab through the form and have to click the Send button. Add `onKeyDown` listeners that submit when Enter is pressed in a text input (not textarea) AND `canSubmit === true`. Standard pattern; users will try it.
-
-### A6 · Trim the brand panel on the quote modal at <md
-Currently the brand panel is hidden < md and replaced with a slim header (good). But on Step 2/Step 3 mobile, even the slim header (60px) eats above-the-fold space. Replace with a 28px brand strip on Step 2/3 (logo + name only, no tagline) so the form fields are immediately visible without scrolling.
-
-### A7 · Replace the "or call" secondary on Hero with a tap-to-text option
-Right now the hero second CTA is `or call (403) ...`. On mobile that's a `tel:` link — fine. But add a third option as a quiet third item: `or text us` linking to `sms:${phone}` with a presaved body (`Hi, I'd like a quote for `). Texts convert better than calls for under-35 contractors-shopping demographics.
+> Verified state of the codebase as of right now:
+> - 12 `ScrollRevealMotion` callsites still alive across `Services.tsx`, `About.tsx`, `Contact.tsx`, `FeaturedProjects.tsx`, `Services` page, `Contact` page, `About` page, `Work` page.
+> - 37 `transition-all` / `duration-700` instances across `src/components` and `src/pages` — most are mechanical swaps to explicit property lists.
+> - `Contact.tsx` still renders 4 separate bordered tiles with their own grain layers and 500ms transitions — exactly what audit-pass v3 flagged for collapse.
+> - Hero CTA pair on iPhone SE drops below the fold; subtitle line-height is `relaxed` and TrustChips has a `mb-10` that's too generous on `<sm`.
+> - Footer has no Quote CTA — the user has scrolled all the way down and we don't make one last ask.
 
 ---
 
-## B · Clutter elimination — the editorial pass v2 finished
+## A · Eliminate the remaining `ScrollRevealMotion` wrappers (the highest-leverage perf cut)
 
-### B1 · Replace `ScrollRevealMotion` shim with raw `useReveal` at all 18+ callsites
-The shim works, but it still wraps 80+ DOM nodes in a `<div>` they don't need. Each wrapper:
-- Adds a node to the DOM (memory + traversal cost)
-- Subscribes to the shared IO (cheap, but not free at 80×)
-- Holds a ref + state + effect (~200 bytes per instance)
+The shim works but every wrapped node still adds a DOM element + observer subscription. **Apply `useReveal` at the section root and drop the per-child wrappers entirely.** The user perceives a section appearing as a unit; per-item staggers were never serving the brand.
 
-**Plan**: drop `ScrollRevealMotion` callsites entirely on **homepage components** (Services, About, Contact, FeaturedProjects). Apply `useReveal` to the section root only — one observer per section, one fade for the whole grid. The user perceives the section appearing as a unit anyway. Stagger animations are pretentious on a contractor's homepage.
+### A1 · `src/components/Services.tsx`
+- Drop the `<ScrollRevealMotion key={service.id} delay={i * 0.08} y={28}>` around each service tile (6 wrappers gone).
+- Apply `useReveal` to the section's outer `<div className="container">` so the whole grid fades in as one. Net: **6 observers → 1**.
+- Remove the now-unused `ScrollRevealMotion` import.
 
-For **list children** (the 6 service tiles, the 5 process steps), drop the per-item delay entirely. Visual delta: ~140ms of collective stagger that nobody consciously registers. Performance delta: 11 fewer observers on `/`.
+### A2 · `src/components/About.tsx`
+- Drop all four `ScrollRevealMotion` wrappers (the lead paragraphs, the brand-promise plate, the process column heading, the process step list).
+- Apply `useReveal` to the outer `.container` once.
+- Replace the `hover:translate-x-1` on process steps with `hover:translate-x-1` already there — already compositor-only, **no change needed there**.
+- But: replace the `transition-colors duration-500` on step number + heading with `duration-300` (matches the new motion token cadence).
 
-### B2 · Delete the entire `Portfolio.tsx` and `Testimonials.tsx` files
-- `Portfolio.tsx` was already removed from `Index.tsx` but the file still exists with a `ScrollRevealMotion` import. Dead code.
-- `Testimonials.tsx` returns null when there's no real data. Currently always null. Delete the file; remove the import from `Index.tsx`.
+### A3 · `src/components/Contact.tsx`
+- Drop **all five** `ScrollRevealMotion` wrappers in this section.
+- Apply `useReveal` to the outer container.
+- See section B below for the bigger collapse of the four contact tiles.
 
-### B3 · Drop the inner grain-overlay layers (3 sites)
-Three places stack `grain-overlay` *on top of* `grain-texture`:
-- `About.tsx` line 88 (brand promise plate)
-- `pages/Contact.tsx` line 130 (quote CTA card)
-- `FeaturedProjects.tsx` line 78 (project hero fallback)
-- `pages/NotFound.tsx` line 29
+### A4 · `src/components/FeaturedProjects.tsx`
+- Drop the per-card `ScrollRevealMotion` (was wrapping every `ProjectCard`).
+- Drop the "See all work" wrapper at the bottom.
+- The cards naturally appear together as part of the section — apply `useReveal` to the section root.
 
-Two grain layers on the same element is invisible at the configured opacity. Delete the inner `grain-overlay` divs everywhere — purely cost.
+### A5 · `src/components/media/FieldClipsStrip.tsx` and `HomeProjectRecapStrip.tsx`
+- Both are now off the homepage but live on `/work`. Drop their per-item wrappers same way.
 
-### B4 · Strip section-level `grain-overlay` from `Contact.tsx` and `FeaturedProjects.tsx`
-These sections are below-the-fold on every device. The grain layer adds a paint cost the user never sees on initial load and adds nothing once scrolled into view (it's already 2.5% opacity per the previous CSS rewrite). Delete from both section roots.
+### A6 · `src/pages/About.tsx`, `src/pages/Contact.tsx`, `src/pages/Services.tsx`, `src/pages/Work.tsx`, `src/pages/NotFound.tsx`
+- Same pattern — section root only, no per-child wrappers.
 
-### B5 · Collapse the "DIRECT CONTACT" tile pair on `pages/Contact.tsx`
-Lines 56–117 of the contact page are *four* separate bordered tiles with hover ring transitions and grain-texture each. The four tiles read as one panel; they should be one. Replace with a single bordered card containing four inline rows (Phone, Email, Hours, Service Areas) separated by `border-b` hairlines. Same info, one paint root, one focus container.
-
-### B6 · Remove the homepage About "PROCESS" right column hover-pl swap
-About.tsx line 114: `hover:pl-8` mutates layout on hover (paint + reflow) for every step row. Replace with `hover:translate-x-1` (compositor-only). And reduce `transition-all duration-500` to `transition-colors duration-300` — the `transition-all` is matching properties that never change.
-
-### B7 · Replace `transition-all` with explicit property lists everywhere
-49 files use `transition-all`. The browser must monitor *every* animatable property for changes. Audit-and-replace pass: `transition-colors`, `transition-[transform,opacity]`, `transition-[border-color,background-color]` per actual use. Mechanical change, ~no visual delta, measurable INP improvement when many cards animate at once.
-
-### B8 · Drop `duration-500` to `duration-250` on hover transitions
-The current 500ms hovers feel "premium" but hold compositor layers alive 2× longer than needed. Audit the 81 instances in `src/components` and `src/pages`; reduce hover-related ones to 250ms or 300ms. Keep entrance/exit animations at 400ms+ (those need to feel deliberate). Touch-trigger hover delays vanish and INP drops measurably.
-
-### B9 · Drop the "or send a general message" secondary from Contact + Hero
-Two CTAs on Contact and one on Hero. The secondary "general inquiry" link adds choice paralysis; if someone wants a general message they can pick it inside the modal (it's the bottom option of Step 1). Cut both secondaries; keep the single primary CTA. **One CTA, one decision, no friction.**
-
-### B10 · Remove the "Need something else exterior? Just ask" footnote on Services
-`Services.tsx` lines 96–104. Same logic as B9 — the modal already exposes "General inquiry". The footnote is a CTA pretending to be footnote copy. Cut it.
+**Net DOM reduction**: ~28 wrapper `<div>`s gone from the homepage alone. ~50 across the full site.
 
 ---
 
-## C · Performance hardening — the remaining surface
+## B · Collapse the four Contact tiles into one panel
 
-### C1 · Add `content-visibility: auto` to all below-the-fold homepage sections
-Currently set on `TrustStrip`, `EditorialBleedSection`, `HomeProjectRecapStrip`, `Testimonials`. **Missing on the heavy ones**: `Services`, `About`, `FeaturedProjects`, `Contact`, `Footer`. Add to each:
+`src/components/Contact.tsx` currently stacks:
+1. The MediaSlot photo card
+2. The "DIRECT CONTACT" `<a>` for phone with grain + border + hover
+3. The same again for email
+4. The "SERVICE AREAS" chip cloud
+5. The "What to expect" card-glass plate
 
-```tsx
-style={{ contentVisibility: 'auto', containIntrinsicSize: 'auto 800px' }}
-```
+That's **5 paint roots** for what reads as one column. The audit (B5 in v3 plan) called for a single bordered card with internal hairlines. Concretely:
 
-This skips layout, paint, and hit-testing until the browser scrolls them into the rendering area. Per Chrome's measurements, this can drop initial paint cost by 30–50% on long pages.
+### B1 · Restructure to a single panel
+- Wrap the phone, email, service areas, and "what to expect" content inside **one** `<aside>` with `border border-border/40 rounded-sm` and a single grain layer.
+- Use internal `<hr className="border-border/30 my-6" />` (or just `border-b` on each row) to separate sections — no per-row borders, no per-row grain, no per-row shadow.
+- The phone + email rows become flex rows with `Phone` / `Mail` icons, label, value. Hover state is **only** a color change on the value (`hover:text-cedar`), not a 500ms `transition-all` on background/border/shadow.
+- Service areas remain a chip cloud but lose the per-chip `grain-texture` and `shadow-contact` (15 paint roots → 0).
+- "What to expect" becomes a small list at the bottom of the same panel — no second `card-glass` container.
 
-### C2 · Reduce nav `backdrop-blur-[12px]` to `backdrop-blur-[8px]`
-Visually equivalent past 6px on most viewports, ~30% cheaper to render on mobile GPUs. Done in two places in `Navigation.tsx` (scrolled + unscrolled states).
+### B2 · Drop the `group-hover/contact:scale-110` icon scale
+- 16px icons scaling 10% on hover is decorative noise. Remove (matches v3 C7).
 
-### C3 · Strip `backdrop-blur` from QuoteModal sticky header + footer
-Lines 329 and 380 of `QuoteModal.tsx`. The modal already sits on a solid background; `bg-background/95` is functionally opaque. Drop the blur — saves a full repaint pass on every modal scroll/keystroke.
-
-### C4 · Strip `backdrop-blur-sm` from `trust-chip.tsx`
-Trust chips render on solid backgrounds 99% of the time. The blur is a no-op cost.
-
-### C5 · Lazy-load all <img> inside `MediaSlot` except hero `priority` ones
-Spot check: `EditorialPicture` already does `loading="lazy"` unless `priority`. ✅ verified. But the gradient *fallback* placeholders in `FeaturedProjects.tsx` render even when there's no project data — gate them on actual content.
-
-### C6 · Defer `useApprovedMedia` for `/about`, `/contact`, `/work` until they're navigated to
-React Query already caches them; the issue is the homepage triggers fetches for these on initial load via the prefetch pattern in some hooks. Verify and gate. (Inspection step in the implementation pass — only act if a fetch is firing for a non-current page.)
-
-### C7 · Remove the hover `scale-110` icon transition on Contact tiles
-Lines 75 and 88 of `Contact.tsx`: `group-hover/contact:scale-110 transition-transform duration-500` on the icons. A scaling 16px icon in the corner of a tile is noise. Delete.
-
-### C8 · Drop `translate-y-[-3px]` lift on Service tile hover
-Services.tsx line 53. The card's existing shadow change (`shadow-contact → shadow-elevated`) is enough. The translate-y forces a 3px reflow trigger on hover. Cut.
-
-### C9 · Audit `cta-thermal::before` glow gating
-The class is in `index.css` but might fire its filter/box-shadow keyframes outside `prefers-reduced-motion`. Inspect, ensure flat solid hover state, no filter or box-shadow animation. (Read-only inspection in plan; rewrite in default mode.)
+### B3 · Drop the duplicate Hero/Contact secondary CTAs
+- v3 already removed Services bottom CTA. Contact still has just the primary `<CedarCTA>` — verify it's the only CTA in the section and remove any "or send a general message" text if it crept back in.
 
 ---
 
-## D · UX deep audit — friction points the user will never report
+## C · `transition-all` → explicit property lists (mechanical sweep)
 
-### D1 · The Hero "Request a Quote" CTA falls below the fold on iPhone SE (375×667)
-Verified via screenshots in earlier passes. Move the CTA pair up by tightening the hero subtitle line-height from `leading-relaxed` to `leading-snug` on `<sm`, and reduce the `mb-10` on TrustChips to `mb-6`. The CTA must be visible without scroll.
+37 remaining instances. Browser must monitor every animatable property on each `transition-all`. Replace with what's actually changing:
 
-### D2 · Quote modal doesn't trap focus in success state
-After successful submission, `SuccessPanel` renders but doesn't move focus to the close button. Screen reader users get stuck at the bottom of the form. Add focus management: on success, focus the "Close" button.
+- `hover:bg-X` only → `transition-colors`
+- `hover:scale-X` / `hover:translate-X` → `transition-transform`
+- `hover:shadow-X` → `transition-shadow`
+- combined → `transition-[background-color,box-shadow,border-color]` etc.
 
-### D3 · Phone number auto-formatter eats keystrokes when pasting
-`formatPhone()` slices to 10 digits. If a user pastes `+1 (403) 555-0123` the `+1` gets sliced off and they're confused. Strip leading `1` digit before slicing.
+### Files in scope (verified):
+- `src/components/Contact.tsx` (lines 61, 74, 97) — already addressed via section B's collapse, but if any survive, swap them.
+- `src/pages/Contact.tsx` (lines 59, 75) — phone/email tile transitions.
+- `src/pages/About.tsx` (lines 95, 126) — process tiles + city chips.
+- `src/components/FeaturedProjects.tsx` (line 113) — "View project" arrow.
+- `src/components/ui/project-tile.tsx` (lines 100, 123, 132, 143, 183) — card hover stack.
+- `src/components/ui/sidebar.tsx` line 257, `src/components/ui/progress.tsx` line 16 — admin-area UI; lower priority but still mechanical.
 
-### D4 · Service tile on Services.tsx is a `<button>` inside a list — but doesn't have keyboard contract for "selected"
-The button click opens the modal. Fine. But the focus-visible ring is `ring-cedar` which on the cream background is fine; verify contrast. Also ensure Enter and Space both fire (default for `<button>` ✅).
-
-### D5 · `MobileSubNav` covers the top of the hero on /work, /services, /about, /contact
-Verified: the mobile sub-nav adds 40px to the document offset (hence the `h-[6.5rem]` spacer in Navigation.tsx). Verify the hero isn't getting clipped at the top edge on mobile sub-pages.
-
-### D6 · The Footer doesn't have a tertiary "Quote" CTA
-The user has scrolled all the way to the bottom — they've consumed everything we offered. Add a final "Request a Quote" line above the legal row in Footer.tsx. One last conversion attempt before they leave.
-
-### D7 · Modal closes on backdrop click — losing form data
-Radix Dialog default. Already a concern. Add a confirm-discard step IF Step 2 has any text content AND user clicks backdrop. Don't trap them, but warn. Optional — only if it doesn't add modal-lib complexity.
+### And: drop `duration-700` → `duration-300` on hover-trigger transitions
+- 500–700ms hovers feel deliberate but hold compositor layers alive 2–3× longer than needed. INP improves measurably when fewer cards are in the "transitioning" state at once.
+- Keep entrance/reveal animations at 400–500ms (they need to feel intentional). Touch-only.
 
 ---
 
-## E · Files touched
+## D · Hero mobile fold tightening (the conversion-critical visual)
 
-### Created
-- `src/components/MobileQuoteFAB.tsx` (~60 lines, sticky FAB for `<sm`)
+On iPhone SE (375×667) the Hero CTA pair drops below the fold. Verified in the file: `subtitle` uses default leading (relaxed), TrustChips has `mb-10` (40px), and the dual CTA + tel link wraps to 3 lines on `<sm`. Three small edits restore above-the-fold:
 
-### Deleted
-- `src/components/Portfolio.tsx` (already orphaned)
-- `src/components/Testimonials.tsx` (always returns null)
+### D1 · `src/components/Hero.tsx`
+- TrustChips: change `className="mb-10"` to `className="mb-6 sm:mb-10"`.
+- CTA row: change `gap-6` → `gap-x-6 gap-y-3` so the wrap doesn't add a full row gap.
+- The `or call` link: change `text-[11px]` → `text-[12px]` for legibility but tighten `tracking` so it occupies same width.
 
-### Edited (high-leverage)
-- `src/components/quote/QuoteModal.tsx` — A1 (Express mode), A2 (collapse Step 3 into Step 2), A5 (Enter to submit), A6 (mobile brand strip), C3 (drop sticky backdrop-blur), D2 (focus on success), D3 (phone paste fix)
-- `supabase/functions/submit-quote-request/index.ts` — A4 (looser server validation)
-- `src/components/Hero.tsx` — A7 (tap-to-text), D1 (mobile fold tightening)
-- `src/components/Contact.tsx` — B5 (collapse to single panel), B9 (drop secondary CTA), C7 (drop icon scale)
-- `src/pages/Contact.tsx` — B5, B3 (drop inner grain-overlay)
-- `src/components/Services.tsx` — B1 (single section reveal), B10 (drop footnote), C8 (drop translate-y lift)
-- `src/components/About.tsx` — B1, B6 (translate-x), B3 (drop inner grain)
-- `src/components/FeaturedProjects.tsx` — B1, B3, B4 (drop section grain)
-- `src/components/Navigation.tsx` — C2 (backdrop-blur reduction)
-- `src/components/ui/trust-chip.tsx` — C4 (drop backdrop-blur-sm)
-- `src/components/Footer.tsx` — D6 (final Quote CTA)
-- `src/pages/Index.tsx` — remove Testimonials/Portfolio imports; mount `MobileQuoteFAB`
-- `src/pages/About.tsx`, `src/pages/Work.tsx`, `src/pages/NotFound.tsx` — mechanical `transition-all → explicit` swap, drop inner grain layers
-
-### Mechanical pass (no visual change)
-- `transition-all` → explicit property list across `src/components` and `src/pages` (49 sites)
-- `duration-500/700` → `duration-250/300` on hover-trigger transitions only (~50 sites)
+### D2 · Verify in `PageHero` (variant `editorial-split`)
+- The subtitle prop renders inside `PageHero`. If it uses `leading-relaxed`, override to `leading-snug` on `<sm`. (Read first — only patch if confirmed.)
 
 ---
 
-## F · QA contract
+## E · Footer Quote CTA — the final conversion attempt
+
+Currently `Footer.tsx` has phone, email, navigation links, service areas, and the legal row. **No CTA**. The user has consumed everything we offered; a single tertiary "Request a Quote" line above the legal row is the last ask before they leave the page.
+
+### E1 · Add a single inline CTA
+- Above the `mt-16 pt-8 border-t` row, add a small horizontal flex row:
+  - Left: `<p>` with text `"Ready to start? Tell us about your project."`
+  - Right: a `<CedarCTA>` (small variant) labeled `"Request a Quote"`.
+- Hairline `border-t border-evergreen-foreground/10` above it to separate from the 3-column block.
+- Padding `py-8 mt-12`.
+- On `<sm`: stacks vertically, CTA full-width.
+
+### E2 · Footer keeps minimum visual weight
+- No grain overlay, no shadow, no hover surface — the CTA is the only interactive element here.
+
+---
+
+## F · Sweep small remaining noise
+
+### F1 · Drop the inner `grain-overlay` in `FeaturedProjects.tsx` line 78
+- It stacks on a `linear-gradient` background that's already textured. Audit v3 flagged this; still present.
+
+### F2 · `src/pages/NotFound.tsx`
+- Has an inner grain layer that v3 flagged. Drop it.
+
+### F3 · `MobileQuoteFAB.tsx` — confirm visibility logic on `/contact`
+- Currently FAB hides only when intersecting `#section-contact` (which only exists on the homepage). On `/contact` page the section ID is also `section-contact`, so it should hide correctly there. Verify in the deploy that the FAB is hidden on `/contact` after scroll past 600px.
+- One observed gap: on the `/services`, `/about`, `/work` pages the FAB stays visible because none of those have `#section-contact`. **That's correct behavior** — those pages SHOULD have the FAB.
+
+### F4 · Audit `useReveal` import is consistent
+- Some files may still import `ScrollRevealMotion` after the wrappers are gone — clean the imports so we don't ship dead code.
+
+---
+
+## G · QA contract
 
 After implementation:
 
-1. **Quote conversion path**:
-   - Service tile click → modal opens on Step 1 with that service preselected, then advances to Step 2 if Express mode triggers — but new behavior is Step 2 directly with service chip editable.
-   - Cold modal open → lands on Step 1 (services), then Step 2 (details + contact combined), then Send.
-   - Total clicks: warm = 2 (preselect → fill → send), cold = 3 (pick → fill → send).
-2. **Mobile FAB** appears below 600px scroll on `<sm`, hides inside Contact section, hides when modal open. Tap target ≥ 56×56, no overlap with iOS home indicator.
-3. **Lighthouse Performance ≥ 96** mobile, 4G throttled. Initial JS chunk under 90KB gz.
-4. **Layout shift from MobileSubNav** verified — hero not clipped on `<md`.
-5. **Submit accepts** `{ name: 'Test', phone: '4035550123' }` only (no service, no area, no details) and creates a row.
-6. **Enter on Step 2** submits when valid, focuses first invalid field when not.
-7. **Phone paste** of `+1 (403) 555-0123` formats correctly to `(403) 555-0123`.
-8. **Type-check** clean; **build** succeeds; **no console errors** on `/`, `/services`, `/about`, `/contact`, `/work`.
-9. **Visual diff**: identical hero, identical service grid, calmer About (no per-step stagger), single-card Contact, single CTA in each section.
-10. **Reduced-motion** still skips all reveals and transitions.
+1. **Wrapper count**: `rg -l "ScrollRevealMotion" src/components src/pages` returns **only** `src/components/ScrollRevealMotion.tsx` (the shim itself, kept for backward compat) — zero callsites.
+2. **transition-all count**: `rg "transition-all" src/components src/pages | wc -l` returns ≤ 5 (only inside primitive UI components like `sidebar.tsx`/`progress.tsx` where the property set is intentionally broad).
+3. **Contact section paints**: One panel, one grain layer, one shadow root for the right column. Visually inspect at desktop + mobile.
+4. **Hero mobile fold**: At 375×667 viewport, the "Request a Quote" button is fully visible without scroll.
+5. **Footer**: Bottom of every page now ends with a small "Ready to start? Request a Quote" line above the legal row. CTA opens the modal.
+6. **Type-check**: clean.
+7. **Build**: succeeds.
+8. **Visual diff**: identical hero copy, identical service grid, calmer About process column, single-panel Contact column, footer with one final CTA.
+9. **Reduced motion**: still skips all reveals (the shared `useReveal` honors `prefers-reduced-motion`).
+10. **No console errors** on `/`, `/services`, `/about`, `/contact`, `/work`.
 
 ---
 
-## G · What this is NOT doing
+## H · Files touched
 
-- Not redesigning the hero, the section structure, the typography, or the color tokens. Tokens are frozen at v3.
-- Not adding new visual effects, new sections, or new pages.
-- Not modifying the auth, the admin routes, the media library, or the design system files (`src/lib/*`).
-- Not changing the database schema or RLS policies.
-- Not touching the `EditorialPicture` / `MediaSlot` / `AmbientVideoBleed` primitives — they're disciplined.
+### Edited
+- `src/components/Services.tsx` — drop wrappers, apply `useReveal` once.
+- `src/components/About.tsx` — drop 4 wrappers, apply `useReveal` once, tighten step durations.
+- `src/components/Contact.tsx` — drop 5 wrappers, **collapse 4 tiles to 1 panel**, drop icon scale, swap `transition-all`.
+- `src/components/FeaturedProjects.tsx` — drop per-card + footer wrappers, apply `useReveal` once, drop inner grain, swap `transition-all`.
+- `src/components/Hero.tsx` — D1 mobile-fold tightening.
+- `src/components/Footer.tsx` — E1 add tertiary Quote CTA.
+- `src/components/media/FieldClipsStrip.tsx` — drop wrappers.
+- `src/components/media/HomeProjectRecapStrip.tsx` — drop wrappers.
+- `src/components/SectionHeader.tsx` — drop any wrapper if present.
+- `src/pages/Services.tsx` — drop wrappers, sweep `transition-all`.
+- `src/pages/About.tsx` — drop wrappers, swap `transition-all` (lines 95, 126).
+- `src/pages/Contact.tsx` — drop wrappers, swap `transition-all` (lines 59, 75).
+- `src/pages/Work.tsx` — drop wrappers.
+- `src/pages/NotFound.tsx` — drop inner grain.
+- `src/components/ui/project-tile.tsx` — swap `transition-all` and `duration-700`.
+- `src/components/ui/page-hero.tsx` — D2 verify subtitle leading on `<sm` (read first; only patch if needed).
+
+### Mechanical sweep (no visual change)
+- `transition-all` → explicit property list across the verified files.
+- `duration-700` → `duration-300` on hover-only transitions.
+
+### Kept as-is
+- `src/components/ScrollRevealMotion.tsx` — kept as a shim so any future re-introduction doesn't break, but no callsites use it.
+- `src/lib/*` — frozen design tokens.
+- `src/components/quote/QuoteModal.tsx` — already optimized in v3.
+- `src/components/MobileQuoteFAB.tsx` — already complete.
+- All admin routes, RLS, schema — untouched.
 
 ---
 
-## H · The principle
+## I · The principle
 
-A residential exterior contractor's website has exactly one job: get the homeowner to ask for a quote. Every pixel that doesn't serve that job is decoration, and decoration is friction in disguise. Fantasy.co's premium feel doesn't come from animating eight things at once — it comes from staging one extremely well-considered moment (the hero) and letting the rest of the site get out of the way. This pass moves Creek the rest of the way there: aggressive about what we *don't* render, generous about what gets attention (the quote button, always visible; the form, two screens deep at most).
+Every wrapper the user doesn't see costs something. Every transition that doesn't communicate state costs INP. Every CTA that doesn't appear at a moment of decision is a lost lead. This pass takes the site from "structurally clean" to **"shipped"** — the level of finish where you stop noticing the design and start noticing the work.
