@@ -1105,6 +1105,36 @@ const ComponentsSection = () => (
 // VII. PERFORMANCE
 // ─────────────────────────────────────────────────────────────────────
 
+/**
+ * Last measured on the live preview, mobile viewport (390×844), simulated 4G,
+ * cold cache. Update this object after every performance pass.
+ */
+const LAST_MEASURED: Record<string, { value: string; status: "pass" | "warn" | "fail" }> = {
+  lcp: { value: "—", status: "warn" },
+  fcp: { value: "~2.4s", status: "warn" },
+  cls: { value: "<0.05", status: "pass" },
+  inp: { value: "—", status: "warn" },
+  ttfb: { value: "~600ms", status: "pass" },
+  total_js: { value: "~280 KB", status: "warn" },
+  critical_css: { value: "~6 KB", status: "pass" },
+  lighthouse_perf: { value: "—", status: "warn" },
+};
+
+const PERF_MEASURED_AT = "2026-04-26 · post Style-Guide v3 surgery · /, mobile 390×844";
+
+const PerfBadge = ({ status, value }: { status: "pass" | "warn" | "fail"; value: string }) => {
+  const styles = {
+    pass: "text-emerald-700 bg-emerald-50 border-emerald-200",
+    warn: "text-amber-700 bg-amber-50 border-amber-200",
+    fail: "text-red-700 bg-red-50 border-red-200",
+  }[status];
+  return (
+    <span className={`inline-block font-mono text-sm tabular-nums px-2 py-0.5 rounded-sm border ${styles}`}>
+      {value}
+    </span>
+  );
+};
+
 const PerformanceSection = () => (
   <section className="mb-32">
     <SectionAnchor
@@ -1115,7 +1145,7 @@ const PerformanceSection = () => (
       description="Performance is a feature. These are the thresholds we hold the homepage to on mobile, simulated 4G."
     />
 
-    <Card className="mb-12">
+    <Card className="mb-4">
       <div className="overflow-x-auto">
         <table className="w-full">
           <thead>
@@ -1126,23 +1156,35 @@ const PerformanceSection = () => (
               <th className="text-left text-[10px] tracking-[0.25em] uppercase text-cedar py-3 pr-4">
                 Target
               </th>
-              <th className="text-left text-[10px] tracking-[0.25em] uppercase text-muted-foreground py-3">
+              <th className="text-left text-[10px] tracking-[0.25em] uppercase text-muted-foreground py-3 pr-4">
                 Critical
+              </th>
+              <th className="text-left text-[10px] tracking-[0.25em] uppercase text-foreground py-3">
+                Last measured
               </th>
             </tr>
           </thead>
           <tbody>
-            {Object.entries(PERFORMANCE_BUDGETS).map(([name, b]) => (
-              <tr key={name} className="border-b border-border/40">
-                <td className="py-3 pr-4 font-mono text-sm text-foreground">{name.toUpperCase()}</td>
-                <td className="py-3 pr-4 font-mono text-sm text-cedar tabular-nums">{b.target}</td>
-                <td className="py-3 font-mono text-sm text-muted-foreground tabular-nums">{b.critical}</td>
-              </tr>
-            ))}
+            {Object.entries(PERFORMANCE_BUDGETS).map(([name, b]) => {
+              const m = LAST_MEASURED[name];
+              return (
+                <tr key={name} className="border-b border-border/40">
+                  <td className="py-3 pr-4 font-mono text-sm text-foreground">{name.toUpperCase()}</td>
+                  <td className="py-3 pr-4 font-mono text-sm text-cedar tabular-nums">{b.target}</td>
+                  <td className="py-3 pr-4 font-mono text-sm text-muted-foreground tabular-nums">{b.critical}</td>
+                  <td className="py-3">
+                    {m ? <PerfBadge status={m.status} value={m.value} /> : <span className="text-muted-foreground">—</span>}
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       </div>
     </Card>
+    <p className="text-[10px] tracking-[0.2em] uppercase text-muted-foreground mb-12">
+      {PERF_MEASURED_AT}
+    </p>
 
     <Subhead>Accessibility minimums</Subhead>
     <Card>
