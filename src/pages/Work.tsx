@@ -21,26 +21,26 @@ interface PlaceholderItem {
   icon: LucideIcon;
 }
 
-/** Service categories that don\u2019t yet have a real photographed project \u2014 render as icon placeholders. */
+/** Service categories that don’t yet have a real photographed project — render as icon placeholders. */
 const PLACEHOLDERS: PlaceholderItem[] = [
   { title: "Two-Tier Cedar Deck", location: "Calgary NW", service: "decks", icon: Hammer, description: "Cedar deck on a sloped lot with a built-in bench and integrated planter boxes." },
   { title: "Cedar Privacy Fence", location: "Sherwood Park", service: "fencing", icon: Fence, description: "Six-foot fence with horizontal slats and a custom side gate." },
   { title: "Full Exterior Repaint", location: "Calgary SW", service: "painting", icon: Paintbrush, description: "Two coats over proper prep, all trim and fascia repainted, hand-cut lines." },
   { title: "Soffit & Fascia Replace", location: "Edmonton", service: "siding", icon: Home, description: "Old aluminum stripped, water damage repaired, new pre-finished metal install." },
-  { title: "Cedar Pergola", location: "Okotoks", service: "pergolas", icon: Trees, description: "12\u00d714 pergola over an existing patio with stained cedar and powder-coated brackets." },
+  { title: "Cedar Pergola", location: "Okotoks", service: "pergolas", icon: Trees, description: "12×14 pergola over an existing patio with stained cedar and powder-coated brackets." },
 ];
 
 const Work = () => {
   useDocumentTitle(
     "Our Work",
-    "Recent residential exterior projects across Calgary, Edmonton, and surrounding Alberta \u2014 decks, fencing, sheds, painting, siding, pergolas.",
+    "Recent residential exterior projects across Calgary, Edmonton, and surrounding Alberta — decks, fencing, sheds, painting, siding, pergolas.",
   );
   const { openModal } = useQuoteModal();
 
   const totalCount = PROJECTS.length + PLACEHOLDERS.length;
 
   return (
-    <main className="min-h-screen bg-background" aria-label="Our Work \u2014 Creek Construction">
+    <main className="min-h-screen bg-background" aria-label="Our Work — Creek Construction">
       <ProjectsJsonLd />
       <Navigation />
 
@@ -52,16 +52,16 @@ const Work = () => {
         title="The work speaks first."
         subtitle="Selected recent projects across Calgary, Edmonton, and surrounding Alberta."
       >
-        {/* Sister studios \u2014 quiet editorial footnote */}
+        {/* Sister studios — quiet editorial footnote */}
         <div className="flex items-center gap-3 text-evergreen-foreground/30">
           <div className="w-8 h-px bg-evergreen-foreground/20" />
           <span className="text-[10px] tracking-[0.25em] uppercase">
-            Sister studios \u00b7 B &amp; P Saunas \u00b7 Hickory &amp; Rose
+            Sister studios · B &amp; P Saunas · Hickory &amp; Rose
           </span>
         </div>
       </PageHero>
 
-      {/* Featured editorial galleries \u2014 real photographed projects */}
+      {/* Featured editorial galleries — real photographed projects */}
       {PROJECTS.length > 0 && (
         <section className={`${SECTION_PADDING.default} grain-overlay`} aria-labelledby="featured-heading">
           <div className="container mx-auto px-6">
@@ -72,7 +72,7 @@ const Work = () => {
                 headingId="featured-heading"
                 heading={PROJECTS[0].title + "."}
                 subheading={PROJECTS[0].summary}
-                badge={`${PROJECTS[0].location} \u00b7 ${formatStatus(PROJECTS[0].status)}`}
+                badge={`${PROJECTS[0].location} · ${formatStatus(PROJECTS[0].status)}`}
               />
 
               <div className="mt-12 space-y-20">
@@ -88,7 +88,7 @@ const Work = () => {
                             {project.title}
                           </h2>
                           <p className="text-[10px] tracking-[0.2em] uppercase text-cedar/80">
-                            {project.location} \u00b7 {formatStatus(project.status)} \u00b7 {project.year}
+                            {project.location} · {formatStatus(project.status)} · {project.year}
                           </p>
                         </header>
                       )}
@@ -99,7 +99,7 @@ const Work = () => {
                         className="mt-6 text-[11px] tracking-[0.2em] uppercase text-cedar hover:text-cedar-hover transition-colors min-h-[44px] inline-flex items-center gap-2"
                       >
                         Quote a similar build
-                        <span aria-hidden>\u2192</span>
+                        <span aria-hidden>→</span>
                       </button>
                     </article>
                   </ScrollRevealMotion>
@@ -110,7 +110,7 @@ const Work = () => {
         </section>
       )}
 
-      {/* Service-category placeholder grid \u2014 replaced as real photos arrive */}
+      {/* Service-category placeholder grid — replaced as real photos arrive */}
       <section className={`${SECTION_PADDING.default} bg-muted grain-overlay`} aria-labelledby="gallery-heading">
         <div className="container mx-auto px-6">
           <div className={`${MAX_WIDTH.wide} mx-auto`}>

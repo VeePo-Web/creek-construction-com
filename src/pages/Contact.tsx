@@ -15,14 +15,14 @@ const Contact = () => {
   const { openModal } = useQuoteModal();
   useDocumentTitle(
     "Contact",
-    `Get in touch with Creek Construction \u2014 call ${CONTACT.phone} or email ${CONTACT.email}. Free quotes across Calgary, Edmonton, and surrounding Alberta.`,
+    `Get in touch with Creek Construction — call ${CONTACT.phone} or email ${CONTACT.email}. Free quotes across Calgary, Edmonton, and surrounding Alberta.`,
   );
 
   // Four contact rows, sharing the bronze crescendo so the eye sweeps top-to-bottom.
   const ROW_COUNT = 4;
 
   return (
-    <main className="min-h-screen bg-background" aria-label="Contact \u2014 Creek Construction">
+    <main className="min-h-screen bg-background" aria-label="Contact — Creek Construction">
       <Navigation />
 
       <PageHero
@@ -30,7 +30,7 @@ const Contact = () => {
         breadcrumb={[{ label: "Home", to: "/" }, { label: "Contact" }]}
         numeral="I"
         sectionLabel="GET IN TOUCH"
-        title="Let\u2019s talk about your project."
+        title="Let’s talk about your project."
         subtitle="Free quote. No high-pressure sales. Honest answers."
       />
 
@@ -89,7 +89,7 @@ const Contact = () => {
                   </div>
                   <div className="flex-1">
                     <p className="text-[10px] tracking-[0.2em] uppercase text-muted-foreground/60">Response Time</p>
-                    <p className="text-foreground font-medium">Within 24\u201348 hours</p>
+                    <p className="text-foreground font-medium">Within 24–48 hours</p>
                   </div>
                 </div>
 
@@ -129,14 +129,14 @@ const Contact = () => {
                     Send us your project details.
                   </h2>
                   <p className="text-evergreen-foreground/70 leading-relaxed mb-8">
-                    A quick, three-step form. Tell us what you\u2019re building, where you\u2019re located,
-                    and how you\u2019d like us to reach you. We\u2019ll be in touch within 24\u201348 hours.
+                    A quick, three-step form. Tell us what you’re building, where you’re located,
+                    and how you’d like us to reach you. We’ll be in touch within 24–48 hours.
                   </p>
 
                   <ul className="space-y-2 text-sm text-evergreen-foreground/60 mb-10">
-                    <li className="flex gap-3"><span className="text-cedar">\u00b7</span>Free, no-obligation quote</li>
-                    <li className="flex gap-3"><span className="text-cedar">\u00b7</span>On-site visit at your convenience</li>
-                    <li className="flex gap-3"><span className="text-cedar">\u00b7</span>Clear scope and price in writing</li>
+                    <li className="flex gap-3"><span className="text-cedar">·</span>Free, no-obligation quote</li>
+                    <li className="flex gap-3"><span className="text-cedar">·</span>On-site visit at your convenience</li>
+                    <li className="flex gap-3"><span className="text-cedar">·</span>Clear scope and price in writing</li>
                   </ul>
 
                   <div className="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6">

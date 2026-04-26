@@ -14,31 +14,31 @@ import { SECTION_PADDING, MAX_WIDTH, GRID_GAP } from "@/lib/spacing";
 const FAQS: FaqItem[] = [
   {
     q: "How long does a typical project take?",
-    a: "Decks and fences usually run 3\u20137 build days once we\u2019re on-site, depending on size and weather. Painting and siding scale with square footage. We give you a real timeline in writing with your quote \u2014 not a vague window.",
+    a: "Decks and fences usually run 3–7 build days once we’re on-site, depending on size and weather. Painting and siding scale with square footage. We give you a real timeline in writing with your quote — not a vague window.",
   },
   {
     q: "Do you offer a warranty?",
-    a: "Yes. We warranty our workmanship \u2014 if something we built fails because of how we built it, we come back and fix it. Manufacturer warranties on materials are passed through to you.",
+    a: "Yes. We warranty our workmanship — if something we built fails because of how we built it, we come back and fix it. Manufacturer warranties on materials are passed through to you.",
   },
   {
     q: "How does payment work?",
-    a: "Most projects are split into milestones \u2014 a deposit on scheduling, a progress payment partway through, and the balance on final walkthrough. No payment is due before you\u2019ve signed off on the quote.",
+    a: "Most projects are split into milestones — a deposit on scheduling, a progress payment partway through, and the balance on final walkthrough. No payment is due before you’ve signed off on the quote.",
   },
   {
     q: "What about permits?",
-    a: "If your municipality requires a permit for the work, we handle pulling it and include it in the quote. We\u2019ll tell you upfront whether one is needed.",
+    a: "If your municipality requires a permit for the work, we handle pulling it and include it in the quote. We’ll tell you upfront whether one is needed.",
   },
 ];
 
 const Services = () => {
   useDocumentTitle(
     "Services",
-    "Decks, fencing, sheds, painting, siding, pergolas \u2014 full residential exterior construction in Calgary, Edmonton, and surrounding Alberta.",
+    "Decks, fencing, sheds, painting, siding, pergolas — full residential exterior construction in Calgary, Edmonton, and surrounding Alberta.",
   );
   const { openModal } = useQuoteModal();
 
   return (
-    <main className="min-h-screen bg-background" aria-label="Services \u2014 Creek Construction">
+    <main className="min-h-screen bg-background" aria-label="Services — Creek Construction">
       <Navigation />
 
       <PageHero
@@ -91,7 +91,7 @@ const Services = () => {
               label="COMMON QUESTIONS"
               headingId="faq-heading"
               heading="Straight answers."
-              subheading="If we don\u2019t address yours, ask on the call."
+              subheading="If we don’t address yours, ask on the call."
             />
             <ScrollRevealMotion delay={0.2}>
               <FaqAccordion items={FAQS} className="mt-10" />

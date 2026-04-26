@@ -11,21 +11,21 @@ import { SECTION_PADDING, MAX_WIDTH } from "@/lib/spacing";
 import { BODY } from "@/lib/typography";
 
 const STEPS = [
-  { title: "Request", desc: "Tell us what you\u2019re building. Online form, a call, or a text \u2014 whatever\u2019s easiest." },
-  { title: "Site Visit & Quote", desc: "We come look in person. Honest scope, fair price, in writing \u2014 usually within 48 hours." },
+  { title: "Request", desc: "Tell us what you’re building. Online form, a call, or a text — whatever’s easiest." },
+  { title: "Site Visit & Quote", desc: "We come look in person. Honest scope, fair price, in writing — usually within 48 hours." },
   { title: "Schedule", desc: "We lock in a start date and a realistic finish date. No vague windows." },
   { title: "Build", desc: "Our crew, on-site. We protect your property, clean up daily, and stay in touch." },
-  { title: "Walkthrough & Warranty", desc: "We walk it together at the end. If something isn\u2019t right, we make it right." },
+  { title: "Walkthrough & Warranty", desc: "We walk it together at the end. If something isn’t right, we make it right." },
 ];
 
 const About = () => {
   useDocumentTitle(
     "About",
-    "Creek Construction \u2014 locally owned residential exterior contractor serving Calgary, Edmonton, and surrounding Alberta.",
+    "Creek Construction — locally owned residential exterior contractor serving Calgary, Edmonton, and surrounding Alberta.",
   );
 
   return (
-    <main className="min-h-screen bg-background" aria-label="About \u2014 Creek Construction">
+    <main className="min-h-screen bg-background" aria-label="About — Creek Construction">
       <Navigation />
 
       <PageHero
@@ -34,7 +34,7 @@ const About = () => {
         numeral="I"
         sectionLabel="OUR STORY"
         title="Built on the work itself."
-        subtitle="Locally owned. Calgary and Edmonton. No gimmicks \u2014 just the craft."
+        subtitle="Locally owned. Calgary and Edmonton. No gimmicks — just the craft."
       />
 
       <section className={`${SECTION_PADDING.default} grain-overlay`} aria-labelledby="story-heading">
@@ -50,17 +50,17 @@ const About = () => {
               <div className="space-y-6 mt-8">
                 <p className={BODY.lead}>
                   Creek Construction is a locally owned, residential-exterior contractor working
-                  across the Calgary and Edmonton metros. We build decks, fences, sheds, pergolas \u2014
+                  across the Calgary and Edmonton metros. We build decks, fences, sheds, pergolas —
                   and we paint, side, and repair the parts of your home that face the weather.
                 </p>
                 <p className={BODY.lead}>
-                  We don\u2019t subcontract the build. The crew you meet at the quote is the crew on-site
-                  doing the work. That\u2019s how we keep quality consistent, and it\u2019s why we\u2019d rather do
+                  We don’t subcontract the build. The crew you meet at the quote is the crew on-site
+                  doing the work. That’s how we keep quality consistent, and it’s why we’d rather do
                   fewer projects exceptionally well than chase volume.
                 </p>
                 <p className={BODY.lead}>
-                  Our marketing is the work itself. If a job doesn\u2019t earn the next referral, we
-                  treat that as a failure on our end. That\u2019s the standard.
+                  Our marketing is the work itself. If a job doesn’t earn the next referral, we
+                  treat that as a failure on our end. That’s the standard.
                 </p>
               </div>
             </ScrollRevealMotion>
@@ -124,7 +124,7 @@ const About = () => {
               ))}
             </div>
             <p className="text-sm text-muted-foreground/70 mt-6 italic">
-              Not on the list? Ask anyway \u2014 we\u2019ll let you know if we can travel.
+              Not on the list? Ask anyway — we’ll let you know if we can travel.
             </p>
 
             <div className="mt-12">
