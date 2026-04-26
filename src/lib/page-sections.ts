@@ -13,6 +13,12 @@
  *     under 1024px; long labels would wrap.
  *   - Pages with fewer than two sections return an empty array; the
  *     rail then renders nothing (no half-built UI).
+ *   - n == 2 is a *first-class* layout: SectionRail switches to a
+ *     left-anchored "ON THIS PAGE → A | B" sub-bar, not the centered
+ *     editorial rail. Don't add 2-anchor pages expecting the centered
+ *     treatment — design specifies they read differently on purpose.
+ *   - n >= 3 renders the centered editorial rail (≥ lg) and the
+ *     md-tier compact rail (md → lg) with overflow into GlobalMenu.
  *
  * Cross-references:
  *   - Consumed by:    src/hooks/useActiveSection.ts

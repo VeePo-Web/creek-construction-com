@@ -9,6 +9,8 @@ import { BUTTON } from "@/lib/colors";
 
 import BrandMark from "@/components/navigation/BrandMark";
 import SectionRail from "@/components/navigation/SectionRail";
+import SectionRailCompact from "@/components/navigation/SectionRailCompact";
+import HeaderBreadcrumb from "@/components/navigation/HeaderBreadcrumb";
 import MenuTrigger from "@/components/navigation/MenuTrigger";
 import GlobalMenu from "@/components/navigation/GlobalMenu";
 import { getPageSections } from "@/lib/page-sections";
@@ -25,23 +27,20 @@ const MENU_ID = "global-menu";
 /**
  * Navigation — Creek's two-tier site header.
  *
- *   [BrandMark]  ·  [SectionRail (per-page anchors)]  ·  [Phone] [Quote] [☰]
+ *   [BrandMark]  ·  [SectionRail | HeaderBreadcrumb]  ·  [phone] [Quote] [☰ MENU]
  *
- * The header is a thin shell; the heavy lifting lives in:
- *   - src/components/navigation/BrandMark.tsx     (logo + locale)
- *   - src/components/navigation/SectionRail.tsx   (per-page section anchors)
- *   - src/components/navigation/MenuTrigger.tsx   (animated hamburger)
- *   - src/components/navigation/GlobalMenu.tsx    (fullscreen Tier-2 menu)
- *   - src/lib/page-sections.ts                    (route → sections registry)
- *   - src/hooks/useActiveSection.ts               (IO-driven active state)
- *   - src/hooks/useScrollChrome.ts                (scroll/footer chrome state)
+ * Chrome philosophy: always-opaque cream surface with a real cedar edge.
+ * Above the fold, the surface is a touch lighter; once the user scrolls
+ * past 32px the bottom border deepens and a 1px shadow appears, so the
+ * threshold is *felt* without a color flash.
  *
- * Behaviour:
- *   - Above the fold: transparent header with subtle hairline.
- *   - After scrolling 32px: blurred cream surface with stronger border.
- *   - When the footer enters view: section rail + tel link fade out so the
- *     footer's own conversion moment can breathe.
- *   - The hamburger is always visible (desktop + mobile) — opens GlobalMenu.
+ * Footer fade: only the section rail dims as the footer enters view.
+ * The phone, Quote CTA, and MENU stay at full opacity all the way down
+ * — they are conversion surfaces and must never look disabled.
+ *
+ * The hamburger is always visible (mobile, tablet, desktop) — opens
+ * GlobalMenu (Tier 2). On md+ it carries a "MENU" label so its role
+ * is unmistakable.
  */
 const Navigation = ({ transparent: _transparent }: NavigationProps) => {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -51,7 +50,17 @@ const Navigation = ({ transparent: _transparent }: NavigationProps) => {
   const sections = getPageSections(location.pathname);
   const { isScrolled, isAtFooter } = useScrollChrome();
 
-  const navCta = cn(
+  // Compact mobile Quote pill — distinct from the full desktop CTA.
+  const mobileCta = cn(
+    BUTTON.primary.base,
+    "px-3 py-2 text-[10px] gap-1.5 leading-none",
+    BUTTON.primary.hover,
+    BUTTON.primary.focus,
+    BUTTON.primary.transition,
+  );
+
+  // Full desktop Quote CTA.
+  const desktopCta = cn(
     BUTTON.primary.base,
     "px-5 py-2.5 text-[10px] gap-2",
     BUTTON.primary.hover,
@@ -59,9 +68,10 @@ const Navigation = ({ transparent: _transparent }: NavigationProps) => {
     BUTTON.primary.transition,
   );
 
+  // Always-opaque chrome with a felt scroll threshold.
   const headerSurface = isScrolled
-    ? "bg-background/90 backdrop-blur border-b border-border/50 shadow-sm"
-    : "bg-background/0 border-b border-transparent";
+    ? "bg-background/95 backdrop-blur-[12px] border-b border-cedar/25 shadow-[0_1px_0_0_rgba(0,0,0,0.04)]"
+    : "bg-background/92 backdrop-blur-[10px] border-b border-cedar/12";
 
   return (
     <>
@@ -73,38 +83,90 @@ const Navigation = ({ transparent: _transparent }: NavigationProps) => {
         )}
         role="banner"
       >
-        <div className="container mx-auto px-4 md:px-6 h-16 md:h-20 flex items-center justify-between gap-4">
+        {/* Top hairline — a tiny editorial cap that signals "brand frame". */}
+        <span
+          aria-hidden
+          className="block h-px w-full bg-gradient-to-r from-transparent via-cedar/40 to-transparent"
+        />
+
+        <div className="container mx-auto px-3 sm:px-4 md:px-6 h-16 md:h-20 flex items-center justify-between gap-2 md:gap-4">
           {/* Left — brand */}
-          <BrandMark />
+          <BrandMark className="shrink-0" />
 
-          {/* Center — per-page section rail */}
-          <SectionRail sections={sections} faded={isAtFooter} className="mx-auto" />
+          {/* Center — wayfinding. Three states, mutually exclusive at any breakpoint:
+              - Desktop (lg+): centered editorial section rail (n>=3) OR n=2 sub-bar
+              - Tablet (md to lg): SectionRailCompact with overflow into the menu
+              - All breakpoints, sub-pages: HeaderBreadcrumb chip */}
+          <div className="flex-1 flex items-center justify-center gap-3 min-w-0">
+            <HeaderBreadcrumb />
+            <SectionRailCompact
+              sections={sections}
+              onOverflow={() => setMenuOpen(true)}
+              faded={isAtFooter}
+            />
+            <SectionRail sections={sections} faded={isAtFooter} />
+          </div>
 
-          {/* Right cluster */}
-          <div
-            className={cn(
-              "flex items-center gap-1 md:gap-2 transition-opacity duration-500",
-              isAtFooter ? "opacity-40" : "opacity-100",
-            )}
-          >
+          {/* Right cluster — never fades, never hides on mobile.
+              Mobile: [📞] [Quote-pill] [☰]
+              Tablet/Desktop: [phone link] [Quote CTA] [☰ MENU] */}
+          <div className="flex items-center gap-1 md:gap-2 shrink-0">
+            {/* Mobile-only phone icon button (44x44) */}
             <a
               href={`tel:${CONTACT.phoneTel}`}
-              className="hidden md:inline-flex items-center gap-2 text-[11px] tracking-[0.15em] uppercase text-foreground/70 hover:text-cedar transition-colors min-h-[44px] px-2"
+              className={cn(
+                "md:hidden inline-flex items-center justify-center w-11 h-11 rounded-sm",
+                "border border-cedar/20 hover:border-cedar/50 hover:bg-cedar/5",
+                "text-cedar transition-colors duration-300",
+                "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cedar focus-visible:ring-offset-2",
+              )}
               aria-label={`Call ${CONTACT.phone}`}
             >
-              <Phone className="h-3.5 w-3.5" aria-hidden /> {CONTACT.phone}
+              <Phone className="h-4 w-4" aria-hidden />
             </a>
+
+            {/* Tablet/desktop phone link */}
+            <a
+              href={`tel:${CONTACT.phoneTel}`}
+              className="hidden md:inline-flex items-center gap-2 text-[11px] tracking-[0.18em] uppercase text-foreground/75 hover:text-cedar transition-colors min-h-[44px] px-2"
+              aria-label={`Call ${CONTACT.phone}`}
+            >
+              <span aria-hidden className="block w-1 h-1 rounded-full bg-cedar/60" />
+              {CONTACT.phone}
+            </a>
+
+            {/* Mobile compact Quote pill — restores the in-chrome conversion
+                CTA that v2 hid below the sm: breakpoint. */}
             <button
               type="button"
               onClick={() => openModal()}
-              className={cn(navCta, "hidden sm:inline-flex")}
+              className={cn(mobileCta, "sm:hidden")}
+            >
+              Quote
+            </button>
+
+            {/* Tablet/desktop full Quote CTA */}
+            <button
+              type="button"
+              onClick={() => openModal()}
+              className={cn(desktopCta, "hidden sm:inline-flex")}
             >
               Request a Quote
             </button>
+
             <MenuTrigger
               isOpen={menuOpen}
               onClick={() => setMenuOpen((v) => !v)}
               controlsId={MENU_ID}
+              withLabel={isScrolled}
+              className="hidden md:flex"
+            />
+            {/* Mobile menu trigger (no label, square 48x48) */}
+            <MenuTrigger
+              isOpen={menuOpen}
+              onClick={() => setMenuOpen((v) => !v)}
+              controlsId={MENU_ID}
+              className="md:hidden"
             />
           </div>
         </div>

@@ -5,30 +5,33 @@ import { cn } from "@/lib/utils";
 interface BrandMarkProps {
   /** Use light treatment when sitting over dark surfaces. */
   onDark?: boolean;
-  /** Hide the wordmark stack on very small screens (saves the 64px row). */
-  compact?: boolean;
   className?: string;
 }
 
 /**
- * BrandMark — the canonical Creek logo + locale stack used in the header.
+ * BrandMark — the canonical Creek logo + eyebrow stack used in the header.
  *
  * Always wraps the logo in a real <Link to="/"> with a 44px touch target.
- * Keeps the wordmark stack hidden on `<sm` so the mobile header never
- * crowds the hamburger.
+ * The wordmark is *always* visible (even on mobile) — the brand name is
+ * non-negotiable. The italic eyebrow says what the company *is* rather
+ * than where it works (cities live in the GlobalMenu instead, so we
+ * don't duplicate the hero eyebrow).
  */
-const BrandMark = ({ onDark = false, compact = false, className }: BrandMarkProps) => {
+const BrandMark = ({ onDark = false, className }: BrandMarkProps) => {
   const titleClass = onDark
     ? "text-evergreen-foreground"
     : "text-evergreen";
-  const localeClass = onDark
-    ? "text-evergreen-foreground/60"
-    : "text-muted-foreground";
+  const eyebrowClass = onDark
+    ? "text-evergreen-foreground/55"
+    : "text-cedar/70";
 
   return (
     <Link
       to="/"
-      className={cn("flex items-center gap-3 min-h-[44px]", className)}
+      className={cn(
+        "flex items-center gap-2.5 sm:gap-3 min-h-[44px] group/brand",
+        className,
+      )}
       aria-label="Creek Construction — home"
     >
       <img
@@ -36,18 +39,31 @@ const BrandMark = ({ onDark = false, compact = false, className }: BrandMarkProp
         alt=""
         width={44}
         height={44}
-        className="h-9 w-9 md:h-11 md:w-11 object-contain"
+        className="h-9 w-9 md:h-11 md:w-11 object-contain transition-transform duration-500 group-hover/brand:scale-[1.03]"
       />
-      {!compact && (
-        <div className="hidden sm:block">
-          <p className={cn("font-serif text-base md:text-lg leading-none", titleClass)}>
-            Creek Construction
-          </p>
-          <p className={cn("text-[10px] tracking-[0.2em] uppercase mt-1", localeClass)}>
-            Calgary · Edmonton
-          </p>
-        </div>
-      )}
+      <div className="block">
+        <p
+          className={cn(
+            "font-serif leading-none whitespace-nowrap",
+            "text-[15px] sm:text-base md:text-lg",
+            titleClass,
+          )}
+        >
+          Creek Construction
+        </p>
+        <p
+          className={cn(
+            "font-serif italic mt-1 leading-none whitespace-nowrap",
+            "text-[10px] sm:text-[11px] md:text-xs",
+            // Hide the eyebrow in the cramped md→lg band so the section
+            // rail and right cluster have room. Returns at lg+.
+            "hidden sm:block md:hidden lg:block",
+            eyebrowClass,
+          )}
+        >
+          Exterior Construction · est. 2019
+        </p>
+      </div>
     </Link>
   );
 };
