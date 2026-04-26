@@ -11,6 +11,7 @@ import Contact from "@/components/Contact";
 import Footer from "@/components/Footer";
 import { LocalBusinessJsonLd } from "@/components/JsonLd";
 import EditorialBleedSection from "@/components/media/EditorialBleedSection";
+import FieldClipsStrip from "@/components/media/FieldClipsStrip";
 
 const Index = () => {
   useDocumentTitle(
@@ -60,6 +61,11 @@ const Index = () => {
       <FeaturedProjects />
 
       <Portfolio />
+
+      {/* Field clips — silent build-process recordings. Renders nothing
+          when no approved videos exist, so the page is never broken. */}
+      <FieldClipsStrip />
+
       <Contact />
       <Footer />
     </main>
