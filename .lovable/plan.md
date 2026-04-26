@@ -1,128 +1,157 @@
-# Plan — Use every image and video on the live site
 
-## Current state (audited just now)
+# Plan — Fantasy.co-grade Hero System for every page
 
-| Bucket | Count |
-|---|---|
-| pending (all images, no videos left) | 61 |
-| suggested (classified but not approved — mostly `quality:reference` or service `other`) | 37 |
-| approved | 14 |
-| rejected — silently skipped videos | 7 |
-| Projects rows seeded | **0** |
+## Why this matters now
 
-Why nothing is on the live site yet:
-1. **Videos were treated as garbage.** The orchestrator marks every `.mov/.mp4` as `rejected` with `ai_notes: 'video — auto-classifier skipped'`. The user explicitly wants videos used.
-2. **Projects table is empty.** `FeaturedProjects` requires ≥3 featured projects to render. The clustering rule needs ≥3 photos sharing a `project_guess`, but the AI invented a unique slug for almost every photo (`edmonton-shed-build`, `calgary-osb-shed`, `urban-shed-build`, `urban_shed_calgary`, …) so no cluster reaches 3.
-3. **37 suggested rows are stranded.** They have valid `service` + alt text but `quality:reference` or `service:other`, which the strict gate rejects. They're publishable as portfolio fill, just not as heroes.
-4. **The remaining 61 pending images haven't been touched** — the orchestrator likely halted on a 429 from the AI gateway and the recursion didn't restart.
+I audited every hero on the site. Three structural problems are blocking world-class work:
+
+1. **Homepage Hero photo is invisible.** `Hero.tsx` queries `min_quality: "hero"` but the database has zero `hero`-tier images — only `portfolio` and `reference`. The two-column layout silently collapses to type-only on every load.
+2. **Every sub-page (Services, Work, About, Contact) renders the flat `evergreen` PageHero variant** — same radial gradient, same paragraph. No photography, no motion, no service-specific texture. This is the *opposite* of Fantasy.co's "every screen earns its frame" principle.
+3. **The `cinematic` PageHero variant exists but is dead code** — it takes a single static `image` prop (not a database query), has no video support, no foreground composition, no sequenced reveal.
+
+We have 24 portfolio-grade photos and 7 approved videos sitting unused. This plan turns the hero layer into the brand's strongest weapon.
 
 ---
 
-## Step 1 — Teach the orchestrator to ingest videos *(supabase/functions/auto-classify-batch/index.ts)*
+## What "Fantasy.co quality" means here
 
-Today: any `.mov|.mp4|.webm|.m4v` is marked `rejected` and never seen again. Replace that branch with a real video pipeline:
+Filtering through your three values:
 
-- **Probe a still frame.** Use the existing public URL + the `?t=2` time-fragment hint (Supabase Storage serves the first frame for many `.mov`s, but unreliable). Fallback: synthesize a poster client-side later. For classification, we hand the AI gateway the *poster* (when the file already has one in `poster_path`) or skip vision and infer from filename/folder.
-- **Vision-free heuristic for videos.** Set:
-  - `service` = best guess from sibling photos taken within ±10 min (using `created_at`), else `other`.
-  - `shot_type = "process"` (every Creek video on file is a build-progress clip).
-  - `ai_quality = "portfolio"` so it's eligible for ambient bleeds.
-  - `alt = "Project build process clip from {service} job in Calgary or Edmonton, Alberta."` (12+ words, geographic, no marketing).
-  - `ai_review_status = 'suggested'` (humans still confirm before going live, but it's no longer dead).
-- **Convert .mov → .mp4 path hint.** Browsers can't autoplay `.mov` reliably outside Safari. Add a `mime_warning` ai_note flagging the seven `.mov` files so the admin UI can show "needs transcode" without breaking the gallery.
-- **Move videos out of `uncategorized/`** into `video-process/` so the gallery selector finds them.
-
-Deliverable: `processed_videos` count returned in the API response.
+- **Elevate the human experience** → heroes load fast, never CLS, respect `prefers-reduced-motion`, surface a single clear CTA, work flawlessly on a 360px phone.
+- **Embody brand truth** → every hero photograph is an actual Creek build (zero stock), warmth comes from cedar tones, type is DM Serif Display with hanging punctuation.
+- **Innovate responsibly** → motion serves comprehension (Ken Burns ≤ 1.06× scale, clip-reveal ≤ 700ms), video is decorative-only with a still poster fallback, no autoplay sound — ever.
 
 ---
 
-## Step 2 — Smarter project clustering *(same Edge Function)*
+## Architecture — one canonical hero, four expressive variants
 
-Today: a project row is created only when a `project_guess` slug appears 3+ times. Almost no slug repeats, so clustering never fires.
+Rebuild `src/components/ui/page-hero.tsx` so a single component drives every hero on the site, choosing layout intelligently from props + live media:
 
-Replace the strict ≥3 rule with a **two-pass hierarchical merge**:
+| Variant | Used on | Composition |
+|---|---|---|
+| `editorial-split` | **Homepage** (replaces current `Hero.tsx`) | Two-column: typographic stack left, full-bleed photo + floating stat card right. Photo + stats both adapt based on what's actually in the library. |
+| `cinematic-bleed` | **/work** | Full-viewport photo OR looping muted video, reveal-clip headline staggered in 3 lines, bronze rule as a horizon, scroll-bound parallax (≤6%). |
+| `service-portrait` | **/services**, future per-service detail | Right-side portrait photo of an actual deck/fence/shed, left-side service-aware kicker that swaps based on most-photographed service in DB. |
+| `evergreen-typographic` | **/about**, **/contact** | Current type-only treatment, but with bronze numeral set in a wider grid, animated underline on first paint, optional grain texture intensity slider. |
 
-1. **Normalize slugs** — lowercase, replace `_` with `-`, strip dupes (`urban-shed-build` and `urban_shed_calgary` collapse to `urban-shed-calgary`).
-2. **Sibling-pair merge** — group by `(service, taken_at_bucket=±15min)` and merge any singletons into the closest cluster. So a lone "calgary-osb-shed" photo joins the active "edmonton-shed-build" cluster if they were shot the same afternoon.
-3. **Lower the project threshold to ≥2 photos** when service is `sheds`/`fencing`/`decks` (we've only got ~50 shots total — waiting for 3 is unrealistic). Hero project still needs ≥3.
-4. **Fallback service-bucket projects.** If after merging we still have <3 projects, auto-seed three "service portfolios" (`portfolio-decks-2025`, `portfolio-sheds-2025`, `portfolio-fencing-2025`) using the best approved hero per service. These guarantee `FeaturedProjects` always renders.
-
-Deliverable: ≥3 rows in `projects`, each with `featured=true` and a real `hero_path`.
-
----
-
-## Step 3 — Loosen the auto-approve gate, then promote stranded "suggested" rows
-
-The 37 suggested images all have valid alt text + a service tag — they're just `quality:reference`. Reference shots are perfect for the secondary `Portfolio` strip and `HomeProjectRecapStrip`, just not for the homepage hero.
-
-- Add a **second tier**: any `suggested` row with `service ∈ {decks, fencing, sheds, painting, siding, pergolas}` and alt ≥12 chars gets auto-promoted to `approved` with `ai_quality:'reference'` preserved (so the existing `min_quality:'hero'` queries still skip them, but the unfiltered service galleries pick them up).
-- Tighten the public-media query layer (`src/lib/api/public-media.ts`) so `min_quality:'reference'` (or omitted) returns *everything*, while `min_quality:'hero'` stays restrictive. Audit the call sites to confirm: `Hero.tsx` and `EditorialBleedSection` already gate on `min_quality:'hero'` ✓.
-- Keep `service:'other'` rows as `suggested` — those need human eyes.
-
-Deliverable: ~50 approved photos, distributed across services.
+All four share: BreadcrumbTrail → BronzeRule → headline → subtitle → description → children CTA stack. The *only* thing that changes is the background layer and the column geometry. This keeps the system honest.
 
 ---
 
-## Step 4 — Wire the `Portfolio.tsx` strip to pull live media
+## Step 1 — Promote real photography to `hero` tier
 
-`Portfolio.tsx` currently renders hard-coded service tiles. Refactor it to use `<MediaStrip>` keyed off `service`, so the freshly-approved `reference` shots actually appear:
+The library has 9 strong `portfolio` elevations. Pick the 5 most editorial (deck framing, charcoal shed, horizontal-slat fence, cedar storage shed, wood-deck rail) and promote them to `ai_quality = 'hero'` so the existing query starts returning data. This is a one-line SQL migration — instant fix for the invisible homepage photo.
 
-```tsx
-<MediaStrip
-  query={{ service: 'sheds', limit: 4 }}
-  count={4}
-  renderItem={(m) => <EditorialPicture src={m.url} alt={m.alt} ... />}
-  fallback={() => <ServicePlaceholder service="sheds" />}
-/>
+I'll also relax the homepage hero query to `min_quality: 'portfolio'` as a safety net so this never silently fails again.
+
+## Step 2 — Add a `cinematic-bleed` `PageHero` variant that takes a query
+
+Rewrite `PageHero` so the `cinematic` variant accepts either:
+- `image: string` (static, current behavior), **or**
+- `query: MediaQuery` (live database lookup), **or**
+- `videoQuery: MediaQuery` (looping muted background video, with poster fallback)
+
+When `videoQuery` resolves to an approved `.mp4`/`.webm`, render `<video autoplay muted loop playsinline preload="metadata" poster={firstFramePoster}>`. When it resolves to `.mov` or nothing, fall back to the still hero. Fully `prefers-reduced-motion` aware: motion-reduced users get the still poster only.
+
+## Step 3 — Cinematic motion choreography
+
+Add a sequenced reveal director on hero mount, using the existing `reveal-clip` keyframe + a new `hero-stagger` orchestrator:
+
+1. **0ms** — image/video crossfades in from `opacity 0 → 1` over 600ms, easing `cubic-bezier(.2,.8,.2,1)`.
+2. **180ms** — bronze rule scales `scaleX(0) → scaleX(1)` from left, 500ms.
+3. **300ms** — headline lines clip-reveal in sequence (each 80ms behind the previous). Three-line max.
+4. **560ms** — subtitle fades + lifts `translateY(8px) → 0`, 500ms.
+5. **720ms** — CTA + tel link fade in, 400ms.
+
+Total choreography under 1.2s — enough to feel intentional, fast enough to not block interaction. Reduced-motion users get all of it instantly with `opacity` only.
+
+## Step 4 — Per-page hero programming
+
+| Page | Variant | Media query | Headline copy (kept) |
+|---|---|---|---|
+| `/` (Index) | `editorial-split` | `shot_type: ['hero','elevation','wide']`, `min_quality: 'portfolio'` | "Excellence in the Work." |
+| `/work` | `cinematic-bleed` | `videoQuery` first (any approved video), fallback to `shot_type: 'wide'` portfolio image | "The work speaks first." |
+| `/services` | `service-portrait` | Top-photographed service's best `elevation` shot | "Built right. Built once." (NEW — replaces flat) |
+| `/about` | `evergreen-typographic` (enhanced) | none — keep typographic | "Local crews. Real work." |
+| `/contact` | `evergreen-typographic` (enhanced) | none — keep typographic | "Tell us about the project." |
+
+## Step 5 — Headline kinetic typography
+
+Today the `<h1>` is a single block. Upgrade to a `<KineticHeadline>` primitive that splits the title at sentence boundaries and animates each line independently:
+
+```
+<span class="reveal-clip" style="--delay: 0ms">Excellence in the Work.</span>
+<span class="reveal-clip italic text-cedar" style="--delay: 80ms">Pride in every detail.</span>
 ```
 
-One strip per active service. Keep the placeholder for empty services.
+The italic accent line uses the cedar accent at `0.62em` (already tokenized) but now lifts in a beat *after* the main statement — exactly the Pentagram cadence.
+
+## Step 6 — Foreground depth — the floating provenance card
+
+Add a `HeroProvenanceCard` that floats over the bottom-left of cinematic heroes:
+- `Numeral · location · year · service` in micro-uppercase
+- One-sentence narrative caption pulled from `media_metadata.alt`
+- Subtle backdrop-blur on a 95%-opaque cedar-tinted surface
+
+This is what gives Fantasy heroes their "this is real, here's the receipt" feel. It also doubles as ProvenanceCaption for SEO.
+
+## Step 7 — Mobile-first behaviour
+
+- Heroes drop from `min-h-screen` → `min-h-[78vh]` on `<sm` and `<md` to prevent thumb fatigue.
+- Two-column layouts collapse to *photo first, type second* on `<lg` — the photo is the hook.
+- Video heroes never autoplay over cellular: detect `navigator.connection.saveData` / `effectiveType === '2g' | '3g'` and fall back to poster.
+- Floating cards re-flow inline (not absolute) below `lg`.
+
+## Step 8 — Performance contract
+
+Hard budgets for every hero:
+- LCP image ≤ 180KB after `?width=1920&quality=82` Supabase transform; preloaded with `<link rel="preload" as="image" fetchpriority="high">` injected by a new `useHeroPreload(query)` hook so we hit LCP before the React tree mounts.
+- `content-visibility: auto` on every section *below* the hero.
+- `contain: layout style paint` on the hero section itself (already there for cinematic — extend to all variants).
+- Video poster generated server-side at upload time (already wired in `auto-classify-batch`); we just consume the `poster_path` column.
+
+## Step 9 — Accessibility contract
+
+- `<h1>` is exactly one per page, lives inside `<section aria-label>`.
+- All hero photographs use the database `alt` text — already authored.
+- Skip-to-content link already implemented; verify focus ring is `focus-visible:ring-cedar` on both light and dark hero backgrounds (currently inconsistent on `/about` evergreen).
+- All animations respect `@media (prefers-reduced-motion: reduce)` via the existing global override in `index.css`.
+- Color contrast: validate every headline against its hero photo's bottom-third luminance. Apply `TEXT.onDark.legibleShadow` automatically on `cinematic-bleed`.
+
+## Step 10 — Documentation + governance
+
+- Update `mem://design/component-primitive-map` with the four hero variants and which pages use which.
+- Add a `/style-guide#heroes` section that renders all four variants live with annotated overlays — so the next contributor cannot drift.
+- Add JSDoc on `PageHero` listing the four variants, motion timing constants, and the performance budget so it appears on hover in IDE.
 
 ---
 
-## Step 5 — Add an ambient video bleed to the homepage
+## Files this will touch
 
-`AmbientVideoBleed` exists and `MediaSlot variant="bleed"` already routes videos through it. Add one bleed between `<About>` and `<Testimonials>` on `Index.tsx`:
+**Edit**
+- `src/components/ui/page-hero.tsx` — add `editorial-split`, `service-portrait` variants, query support, video support, sequenced reveal
+- `src/components/Hero.tsx` — refactor to delegate to `<PageHero variant="editorial-split">`, eliminating duplicated layout logic
+- `src/pages/Work.tsx` — switch to `cinematic-bleed` with videoQuery
+- `src/pages/Services.tsx` — switch to `service-portrait`
+- `src/pages/About.tsx`, `src/pages/Contact.tsx` — adopt enhanced `evergreen-typographic`
+- `src/index.css` — add `hero-stagger` keyframes + delay variables
+- `src/lib/motion.ts` — add `HERO_TIMINGS` constants (one source of truth)
+- `src/pages/StyleGuide.tsx` — new "Heroes" section
 
-```tsx
-<EditorialBleedSection
-  query={{ kind: 'video', min_quality: 'portfolio' }}
-  asVideo
-  aspect="cinema"
-  hideIfEmpty
-/>
-```
+**Create**
+- `src/components/ui/kinetic-headline.tsx` — line-split + per-line clip-reveal
+- `src/components/ui/hero-provenance-card.tsx` — floating bottom-left receipt
+- `src/hooks/useHeroPreload.ts` — injects `<link rel=preload>` for LCP image
+- `supabase/migrations/<ts>_promote_hero_quality.sql` — promote 5 best portfolio elevations to `hero`
 
-`hideIfEmpty` means: if no video is approved yet, the section silently disappears — no broken layout. Once Step 1 promotes the 7 `.mov` clips to `suggested → approved`, the bleed lights up automatically.
-
----
-
-## Step 6 — Restart the orchestrator and drain the 61 pending images
-
-Re-invoke `auto-classify-batch` with `limit:500`. With the loosened gate (Step 3) and video pipeline (Step 1), the result should be:
-
-- 61 pending images → ~50 approved + ~11 suggested (true rejects: blurry / debris)
-- 7 `.mov` videos → 7 suggested with portfolio quality
-- 37 stranded suggested → ~30 promoted to approved
-
-End-state target: **~95 approved assets, ≥6 projects rows, every homepage section populated with real photography, plus one ambient video bleed.**
+**Memory**
+- Update `mem://design/component-primitive-map`
+- New `mem://features/hero-system-v7` documenting the four variants, timings, query patterns
 
 ---
 
-## Step 7 — Verification (non-destructive, in default mode)
+## What "done" looks like
 
-- `psql` count check: `approved ≥ 90`, `projects ≥ 6`, `pending = 0`.
-- Browser screenshot of `/` at 1440px and 390px confirms: hero photo loads, FeaturedProjects renders 6 cards, Portfolio strips show real shots, video bleed plays.
-- Browser screenshot of `/work` confirms project galleries fan out per service.
-- Re-run `tsc --noEmit` to make sure the `MediaStrip` refactor compiles.
+Open every page in turn. Every hero feels *inevitable* — like it could not have been designed any other way. Photography on the homepage is real Calgary work, animated in with the discipline of a Pentagram opener. `/work` opens with a video of a deck being built, headline clip-revealing line by line. `/services` lands on a portrait of a finished cedar fence. `/about` and `/contact` stay typographic but feel intentional, not empty. Nothing janks. LCP under 2.0s on a throttled 4G connection. Reduced-motion users get the same composition, instantly.
 
----
-
-## Files touched
-
-- `supabase/functions/auto-classify-batch/index.ts` — video pipeline + smarter clustering + tier-2 approval (rewrite of ~120 lines)
-- `src/lib/api/public-media.ts` — formalize `min_quality` tiers (small edit)
-- `src/components/Portfolio.tsx` — swap hard-coded tiles for `<MediaStrip>` (rewrite ~80 lines)
-- `src/pages/Index.tsx` — insert one `EditorialBleedSection` for video (3 lines)
-
-No schema changes, no new tables. All work is incremental on top of v6.
+That is Fantasy.co quality.
