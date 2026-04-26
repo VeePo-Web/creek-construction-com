@@ -107,7 +107,25 @@ export const BACKDROP = {
   /** Hero / dark-section radial — evergreen with a warm core. */
   evergreenRadial:
     "radial-gradient(ellipse at 25% 25%, hsl(150 30% 22%) 0%, hsl(150 25% 12%) 60%, hsl(150 30% 6%) 100%)",
-  /** Card-fallback plate — diagonal evergreen, deeper. */
+  /**
+   * Card / hero-area fallback when no photograph is approved yet.
+   * Warm cream-stone diagonal — reads as designed editorial paper, never as
+   * a "missing image" hole. THIS IS THE DEFAULT FALLBACK SURFACE for any
+   * card or photo slot that may not yet have approved media.
+   */
+  stonePlate:
+    "linear-gradient(135deg, hsl(38 28% 95%) 0%, hsl(38 22% 88%) 50%, hsl(35 18% 82%) 100%)",
+  /**
+   * Soft cedar-into-stone wash — for hero-card fallbacks that should still
+   * feel warm and brand-tinted (About left column, GlobalMenu media slot).
+   */
+  cedarPlate:
+    "linear-gradient(135deg, hsl(28 40% 88%) 0%, hsl(38 22% 90%) 60%, hsl(28 30% 78%) 100%)",
+  /**
+   * @deprecated as a "missing photo" fallback.
+   * Use ONLY for deliberate dark editorial surfaces (e.g. About brand-promise
+   * card). Never paint this under a MediaSlot — use BACKDROP.stonePlate.
+   */
   evergreenPlate:
     "linear-gradient(135deg, hsl(150 25% 18%) 0%, hsl(150 30% 8%) 100%)",
   /** Card surface — diagonal evergreen, mid-tone. Used by Contact CTA card,
