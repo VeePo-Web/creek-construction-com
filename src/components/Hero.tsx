@@ -39,9 +39,14 @@ const Hero = () => {
       subtitle="Decks, fencing, sheds, painting and siding — built to last across Alberta. Our crew owns the work from quote to final nail."
       query={{
         shot_type: ["hero", "elevation", "wide"],
-        min_quality: "hero",
+        min_quality: "reference",
         kind: "image",
       }}
+      triptychQueries={[
+        { service: "decks", shot_type: ["hero", "elevation"], min_quality: "reference", kind: "image" },
+        { shot_type: ["detail", "process"], min_quality: "reference", kind: "image" },
+        { service: "sheds", shot_type: ["wide", "hero", "elevation"], min_quality: "reference", kind: "image" },
+      ]}
       provenance={{
         eyebrow: "Built on the work",
         children: <StatTrio items={STATS} variant="inline" />,
