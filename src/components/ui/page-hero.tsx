@@ -133,9 +133,16 @@ function SkipLink({ skipToId }: { skipToId?: string }) {
 
 // ─────────────────────────────────────────────────────────────────────
 // Variant: evergreen-typographic
-// Type-led, evergreen radial + grain. Optional ambient field clip top-right.
+// Type-led hero with a 3-column photographic triptych backdrop and a
+// left-anchored scrim guaranteeing AAA contrast on the headline.
 // Used on /about, /contact, /services (when no portrait queries supplied).
 // ─────────────────────────────────────────────────────────────────────
+
+const DEFAULT_TRIPTYCH: [MediaQuery, MediaQuery, MediaQuery] = [
+  { shot_type: ["hero", "elevation"], min_quality: "reference", kind: "image" },
+  { shot_type: ["detail", "process"], min_quality: "reference", kind: "image" },
+  { shot_type: ["wide", "interior"], min_quality: "reference", kind: "image" },
+];
 
 const EvergreenTypographic = (props: EvergreenTypographicProps) => {
   const lines = toLines(props.title);
@@ -144,21 +151,33 @@ const EvergreenTypographic = (props: EvergreenTypographicProps) => {
   );
   const showAmbient = Boolean(props.ambientClipQuery && ambient.item?.is_video);
 
+  const queries = props.triptychQueries ?? DEFAULT_TRIPTYCH;
+
   return (
     <section
       className={cn(
-        "relative overflow-hidden bg-evergreen text-evergreen-foreground py-24 md:py-32",
+        "relative overflow-hidden text-evergreen-foreground py-24 md:py-32 min-h-[72vh] md:min-h-[78vh] flex items-center",
         props.className,
       )}
       aria-label={lines.join(" ")}
     >
-      <div className="absolute inset-0 opacity-90" style={{ background: BACKDROP.evergreenRadial }} />
-      <div className="absolute inset-0 grain-overlay opacity-40 pointer-events-none" />
+      {/* Photographic triptych backdrop — replaces the old green plate */}
+      <HeroTriptych
+        queries={queries}
+        rhythm="equal"
+        scrim="left"
+        priority
+        fallbackCaptions={[
+          "Photographing this season",
+          "On the boards",
+          "Across Alberta",
+        ]}
+      />
 
       {/* Spine — left vertical bronze hairline */}
       <div
         aria-hidden
-        className="hidden md:block absolute left-6 top-1/2 -translate-y-1/2 w-px bg-cedar/30"
+        className="hidden md:block absolute left-6 top-1/2 -translate-y-1/2 w-px bg-cedar/30 z-[5]"
         style={{ height: "calc(100% - 8rem)" }}
       />
 
@@ -166,11 +185,10 @@ const EvergreenTypographic = (props: EvergreenTypographicProps) => {
       {showAmbient && ambient.item && (
         <div
           aria-hidden
-          className="hidden lg:block absolute top-10 right-10 w-[280px] aspect-[4/3] rounded-[8px] overflow-hidden"
+          className="hidden lg:block absolute top-10 right-10 w-[260px] aspect-[4/3] rounded-[8px] overflow-hidden z-[6]"
           style={{
-            border: "1px solid hsl(var(--cedar) / 0.18)",
-            opacity: 0.32,
-            mixBlendMode: "screen",
+            border: "1px solid hsl(var(--cedar) / 0.25)",
+            opacity: 0.4,
           }}
         >
           <video
@@ -185,7 +203,7 @@ const EvergreenTypographic = (props: EvergreenTypographicProps) => {
       )}
 
       <div className="container mx-auto px-6 relative z-10">
-        <div className="max-w-4xl">
+        <div className="max-w-2xl">
           <BreadcrumbTrail items={props.breadcrumb} onDark className="mb-6" />
 
           <BronzeRule
@@ -206,7 +224,7 @@ const EvergreenTypographic = (props: EvergreenTypographicProps) => {
             <p
               className={cn(
                 "mt-6 text-lg italic font-serif max-w-xl",
-                "text-evergreen-foreground/85",
+                "text-evergreen-foreground/95",
                 TEXT.onDark.legibleShadow,
               )}
             >
@@ -218,7 +236,7 @@ const EvergreenTypographic = (props: EvergreenTypographicProps) => {
             <p
               className={cn(
                 "mt-4 max-w-2xl text-sm leading-relaxed",
-                "text-evergreen-foreground/70",
+                "text-evergreen-foreground/80",
                 TEXT.onDark.legibleShadow,
               )}
             >
@@ -232,6 +250,7 @@ const EvergreenTypographic = (props: EvergreenTypographicProps) => {
     </section>
   );
 };
+
 
 // ─────────────────────────────────────────────────────────────────────
 // Variant: editorial-split
