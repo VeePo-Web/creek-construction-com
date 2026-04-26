@@ -142,43 +142,20 @@ const HeroTriptych = ({
         ))}
       </div>
 
-      {/* Mobile-only stacked variant (sm–md): three short slabs */}
-      <div className="md:hidden absolute inset-0 grid grid-rows-[40vh_30vh_30vh] sm:grid-rows-[1fr]">
-        {/* On <sm screens, only render column A as a single image. */}
-        <div className="relative h-full">
-          <TriptychColumn
-            column={0}
-            media={a.item}
-            icon={fallbackIcons?.[0]}
-            caption={fallbackCaptions?.[0]}
-            delayMs={0}
-            priority={priority}
-            guttersDrawn={guttersDrawn}
-            className="h-full"
-          />
-        </div>
-        <div className="relative h-full hidden sm:block max-md:block">
-          <TriptychColumn
-            column={1}
-            media={b.item}
-            icon={fallbackIcons?.[1]}
-            caption={fallbackCaptions?.[1]}
-            delayMs={600}
-            guttersDrawn={guttersDrawn}
-            className="h-full"
-          />
-        </div>
-        <div className="relative h-full hidden sm:block max-md:block">
-          <TriptychColumn
-            column={2}
-            media={c.item}
-            icon={fallbackIcons?.[2]}
-            caption={fallbackCaptions?.[2]}
-            delayMs={1200}
-            guttersDrawn={guttersDrawn}
-            className="h-full"
-          />
-        </div>
+      {/* Mobile-only single-image variant (< md): one editorial frame.
+          Replaces the prior 3-slab vertical stack which created a
+          ~110vh wall on phones and pushed all CTAs below the fold. */}
+      <div className="md:hidden absolute inset-0">
+        <TriptychColumn
+          column={0}
+          media={a.item}
+          icon={fallbackIcons?.[0]}
+          caption={fallbackCaptions?.[0]}
+          delayMs={0}
+          priority={priority}
+          guttersDrawn={guttersDrawn}
+          className="h-full"
+        />
       </div>
 
       {/* ─── Scrims (always last so they win the stack) ─── */}
