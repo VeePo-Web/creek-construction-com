@@ -490,10 +490,20 @@
     }
 
     .hero-image-entrance,
-    .reveal {
+    .reveal,
+    .kinetic-line,
+    .kinetic-italic,
+    .hero-provenance-enter,
+    .hero-rule-draw,
+    .hero-kenburns {
       animation: none !important;
       opacity: 1 !important;
       transform: none !important;
+      clip-path: none !important;
+    }
+    .kinetic-italic::after {
+      transform: scaleX(1) !important;
+      animation: none !important;
     }
 
     .grain-overlay::before,
