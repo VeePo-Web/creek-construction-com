@@ -1,12 +1,23 @@
-import ScrollRevealMotion from "@/components/ScrollRevealMotion";
 import SectionHeader from "@/components/SectionHeader";
 import CedarCTA from "@/components/CedarCTA";
 import { Phone, Mail } from "lucide-react";
 import { CONTACT } from "@/config/contact";
 import MediaSlot from "@/components/media/MediaSlot";
 import { MEDIA_SIZES } from "@/lib/media-sizes";
+import { useReveal } from "@/hooks/useReveal";
 
+/**
+ * Contact — homepage closer.
+ *
+ * One section reveal at the container root (single IntersectionObserver
+ * for the whole block). Right column is now ONE bordered panel with
+ * internal hairline rows instead of 4 separate tiles, each with their
+ * own grain + shadow + hover transition. Same information, ~5× fewer
+ * paint roots, no per-tile hover noise.
+ */
 const Contact = () => {
+  const { ref, cls, style } = useReveal();
+
   return (
     <section
       id="section-contact"
@@ -15,7 +26,7 @@ const Contact = () => {
       style={{ contentVisibility: "auto", containIntrinsicSize: "auto 900px" }}
     >
       <div className="container mx-auto px-6">
-        <div className="max-w-7xl mx-auto">
+        <div ref={ref} className={`max-w-7xl mx-auto ${cls}`} style={style}>
           <div className="grid md:grid-cols-2 gap-20 items-start">
             <div>
               <SectionHeader
@@ -26,100 +37,95 @@ const Contact = () => {
                 subheading="Free quote. No high-pressure sales. We'll give you straight answers."
               />
 
-              <ScrollRevealMotion delay={0.2}>
-                <p className="text-lg text-muted-foreground leading-relaxed mt-4 mb-10">
-                  Tell us about your project — size, timing, materials you're considering. We'll come look,
-                  give you an honest scope and a fair price in writing, and let you take it from there.
-                </p>
-              </ScrollRevealMotion>
+              <p className="text-lg text-muted-foreground leading-relaxed mt-4 mb-10">
+                Tell us about your project — size, timing, materials you're considering. We'll come look,
+                give you an honest scope and a fair price in writing, and let you take it from there.
+              </p>
 
-              <ScrollRevealMotion delay={0.4}>
-                <CedarCTA>Request a Quote</CedarCTA>
-              </ScrollRevealMotion>
+              <CedarCTA>Request a Quote</CedarCTA>
             </div>
 
             <div>
-              <ScrollRevealMotion delay={0.15}>
-                <MediaSlot
-                  query={{
-                    shot_type: ["wide", "hero", "elevation"],
-                    kind: "image",
-                    min_quality: "portfolio",
-                  }}
-                  sizes={MEDIA_SIZES.HALF}
-                  wrapperClassName="aspect-detail w-full rounded-sm mb-8"
-                  cedarHover
-                  fallback={null}
-                />
-              </ScrollRevealMotion>
+              <MediaSlot
+                query={{
+                  shot_type: ["wide", "hero", "elevation"],
+                  kind: "image",
+                  min_quality: "portfolio",
+                }}
+                sizes={MEDIA_SIZES.HALF}
+                wrapperClassName="aspect-detail w-full rounded-sm mb-8"
+                cedarHover
+                fallback={null}
+              />
 
-              <ScrollRevealMotion delay={0.2}>
-                <h3 className="text-minimal text-muted-foreground mb-6">DIRECT CONTACT</h3>
-                <div className="space-y-3 mb-10">
-                  <a
-                    href={`tel:${CONTACT.phoneTel}`}
-                    className="grain-texture flex items-center gap-4 px-5 py-4 rounded-sm shadow-contact border border-border/40 hover:border-cedar/40 hover:bg-cedar/[0.03] hover:shadow-elevated transition-all duration-500 group/contact min-h-[44px] focus-visible:ring-2 focus-visible:ring-cedar focus-visible:ring-offset-2"
-                    style={{ borderLeft: "2px solid hsl(var(--cedar) / 0.5)" }}
-                  >
-                    <Phone className="h-4 w-4 text-cedar group-hover/contact:scale-110 transition-transform duration-500" aria-hidden />
-                    <div>
-                      <p className="text-[10px] tracking-[0.2em] uppercase text-muted-foreground/60">Call or Text</p>
-                      <p className="text-foreground font-medium group-hover/contact:text-cedar transition-colors duration-500">
-                        {CONTACT.phone}
-                      </p>
-                    </div>
-                  </a>
-                  <a
-                    href={`mailto:${CONTACT.email}`}
-                    className="grain-texture flex items-center gap-4 px-5 py-4 rounded-sm shadow-contact border border-border/40 hover:border-cedar/40 hover:bg-cedar/[0.03] hover:shadow-elevated transition-all duration-500 group/contact min-h-[44px] focus-visible:ring-2 focus-visible:ring-cedar focus-visible:ring-offset-2"
-                    style={{ borderLeft: "2px solid hsl(var(--cedar) / 0.8)" }}
-                  >
-                    <Mail className="h-4 w-4 text-cedar group-hover/contact:scale-110 transition-transform duration-500 shrink-0" aria-hidden />
-                    <div className="min-w-0">
-                      <p className="text-[10px] tracking-[0.2em] uppercase text-muted-foreground/60">Email</p>
-                      <p className="text-foreground font-medium group-hover/contact:text-cedar transition-colors duration-500 truncate">
-                        {CONTACT.email}
-                      </p>
-                    </div>
-                  </a>
-                </div>
-              </ScrollRevealMotion>
+              {/* Single panel — phone / email / areas / expectations.
+                  One border, one grain layer, internal hairlines between rows. */}
+              <aside
+                className="rounded-sm border border-border/40 grain-texture shadow-contact overflow-hidden"
+                style={{ borderLeft: "2px solid hsl(var(--cedar) / 0.5)" }}
+                aria-label="Direct contact and service information"
+              >
+                <a
+                  href={`tel:${CONTACT.phoneTel}`}
+                  className="flex items-center gap-4 px-5 py-4 min-h-[44px] hover:bg-cedar/[0.03] transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cedar focus-visible:ring-inset group/row"
+                >
+                  <Phone className="h-4 w-4 text-cedar shrink-0" aria-hidden />
+                  <div className="min-w-0">
+                    <p className="text-[10px] tracking-[0.2em] uppercase text-muted-foreground/60">Call or Text</p>
+                    <p className="text-foreground font-medium group-hover/row:text-cedar transition-colors duration-200">
+                      {CONTACT.phone}
+                    </p>
+                  </div>
+                </a>
 
-              <ScrollRevealMotion delay={0.3}>
-                <h3 className="text-minimal text-muted-foreground mb-6">SERVICE AREAS</h3>
-                <div className="flex flex-wrap gap-2 mb-10" role="list" aria-label="Service areas">
-                  {CONTACT.cities.map((city, i) => {
-                    const baseOpacity = 0.15 + (i / (CONTACT.cities.length - 1)) * 0.55;
-                    return (
+                <div className="border-t border-border/30" aria-hidden />
+
+                <a
+                  href={`mailto:${CONTACT.email}`}
+                  className="flex items-center gap-4 px-5 py-4 min-h-[44px] hover:bg-cedar/[0.03] transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cedar focus-visible:ring-inset group/row"
+                >
+                  <Mail className="h-4 w-4 text-cedar shrink-0" aria-hidden />
+                  <div className="min-w-0">
+                    <p className="text-[10px] tracking-[0.2em] uppercase text-muted-foreground/60">Email</p>
+                    <p className="text-foreground font-medium group-hover/row:text-cedar transition-colors duration-200 truncate">
+                      {CONTACT.email}
+                    </p>
+                  </div>
+                </a>
+
+                <div className="border-t border-border/30" aria-hidden />
+
+                <div className="px-5 py-4">
+                  <p className="text-[10px] tracking-[0.2em] uppercase text-muted-foreground/60 mb-3">
+                    Service Areas
+                  </p>
+                  <div className="flex flex-wrap gap-1.5" role="list" aria-label="Service areas">
+                    {CONTACT.cities.map((city) => (
                       <span
                         key={city}
                         role="listitem"
-                        className="text-sm text-muted-foreground border rounded-sm px-3 py-2 min-h-[40px] flex items-center transition-all duration-500 cursor-default hover:text-foreground hover:bg-cedar/[0.04] hover:border-cedar/60 grain-texture shadow-contact"
-                        style={{ borderColor: `hsl(var(--cedar) / ${baseOpacity})` }}
+                        className="text-xs text-muted-foreground/80 px-2 py-1 border border-border/40 rounded-sm"
                       >
                         {city}
                       </span>
-                    );
-                  })}
-                </div>
-              </ScrollRevealMotion>
-
-              <ScrollRevealMotion delay={0.45}>
-                <div className="card-glass grain-texture shadow-contact border border-border/40 p-8 rounded-sm">
-                  <div className="flex items-center gap-3 mb-6">
-                    <div className="w-8 h-px bg-cedar/20" />
-                    <span className="text-[10px] tracking-[0.25em] text-muted-foreground/50 uppercase">
-                      What to expect
-                    </span>
+                    ))}
                   </div>
-                  <ul className="space-y-3 text-sm text-muted-foreground">
-                    <li className="flex gap-3"><span className="text-cedar">·</span>Reply within 24–48 hours</li>
-                    <li className="flex gap-3"><span className="text-cedar">·</span>On-site visit at your convenience</li>
-                    <li className="flex gap-3"><span className="text-cedar">·</span>Written quote — clear scope, clear price</li>
-                    <li className="flex gap-3"><span className="text-cedar">·</span>No deposit required to receive your quote</li>
+                </div>
+
+                <div className="border-t border-border/30" aria-hidden />
+
+                <div className="px-5 py-4">
+                  <p className="text-[10px] tracking-[0.2em] uppercase text-muted-foreground/60 mb-3">
+                    What to expect
+                  </p>
+                  <ul className="space-y-1.5 text-sm text-muted-foreground">
+                    <li className="flex gap-2"><span className="text-cedar shrink-0">·</span>Reply within 24–48 hours</li>
+                    <li className="flex gap-2"><span className="text-cedar shrink-0">·</span>On-site visit at your convenience</li>
+                    <li className="flex gap-2"><span className="text-cedar shrink-0">·</span>Written quote — clear scope, clear price</li>
+                    <li className="flex gap-2"><span className="text-cedar shrink-0">·</span>No deposit required to receive your quote</li>
                   </ul>
                 </div>
-              </ScrollRevealMotion>
+              </aside>
             </div>
           </div>
         </div>
