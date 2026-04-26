@@ -189,17 +189,28 @@ const HeroTriptych = ({
         style={{ background: SCRIM.topNav }}
       />
 
-      {/* Direction scrim — desktop. On mobile we always use the bottom scrim
-           because the headline overlays the top stacked slab. */}
+      {/* Direction scrim — desktop. */}
       {scrim !== "none" && (
         <>
           <div
             className="absolute inset-0 pointer-events-none hidden md:block"
-            style={{ background: scrim === "left" ? SCRIM.left : SCRIM.bottom }}
+            style={{
+              background:
+                scrim === "leftWide"
+                  ? SCRIM.leftWide
+                  : scrim === "left"
+                    ? SCRIM.left
+                    : SCRIM.bottom,
+            }}
           />
+          {/* Mobile scrim — covers slab A's top so the headline column
+              is always legible regardless of which photo loaded. */}
           <div
             className="absolute inset-0 pointer-events-none md:hidden"
-            style={{ background: SCRIM.bottom }}
+            style={{
+              background:
+                scrim === "bottom" ? SCRIM.bottom : SCRIM.mobileTop,
+            }}
           />
         </>
       )}
