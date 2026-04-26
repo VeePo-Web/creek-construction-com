@@ -483,11 +483,12 @@ const CinematicBleed = (props: CinematicBleedProps) => {
       {/* Cinematic vignette stack */}
       <div className="absolute inset-0" style={{ background: BACKDROP.cinematicVignette }} aria-hidden />
       <div className="absolute inset-0 pointer-events-none" style={{ background: BACKDROP.cinematicRadial }} aria-hidden />
-      {/* Two-stop top scrim — covers eyebrow → headline → subtitle band so
-          the body copy can never fall outside legible coverage (v3.1). */}
+      {/* Bottom-anchored scrim — content lives at the bottom (flex items-end),
+          so the heavy black needs to live there too. Covers the eyebrow →
+          headline → subtitle → provenance band in ≥45% black. */}
       <div
-        className="absolute inset-x-0 top-0 h-[58%] pointer-events-none"
-        style={{ background: SCRIM.cinematicTop }}
+        className="absolute inset-x-0 bottom-0 h-[68%] pointer-events-none"
+        style={{ background: SCRIM.bottom }}
         aria-hidden
       />
 
