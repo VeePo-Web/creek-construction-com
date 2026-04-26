@@ -262,7 +262,17 @@ const EditorialSplit = (props: EditorialSplitProps) => {
   const lines = toLines(props.title);
   const { item, loading } = useFirstApprovedMedia(props.query);
 
-  // Preload the LCP candidate as soon as we resolve a URL.
+  // Default backdrop triptych built from the focal `query` so we always get
+  // a coherent narrative when no explicit triptychQueries are supplied.
+  const defaultTriptych = useMemo<[MediaQuery, MediaQuery, MediaQuery]>(() => [
+    { ...props.query, shot_type: ["hero", "elevation"] },
+    { shot_type: ["detail", "process"], min_quality: "reference", kind: "image" },
+    { shot_type: ["wide", "interior", "elevation"], min_quality: "reference", kind: "image" },
+  ], [props.query]);
+
+  const triptychQueries = props.triptychQueries ?? defaultTriptych;
+
+  // Preload the floating provenance image (LCP after the triptych A column).
   useHeroPreload(item?.url, MEDIA_SIZES.PORTRAIT_HALF);
 
   const hasMedia = !loading && Boolean(item);
@@ -272,17 +282,22 @@ const EditorialSplit = (props: EditorialSplitProps) => {
     <section
       id="section-hero"
       className={cn(
-        "relative min-h-[88vh] md:min-h-screen flex items-center overflow-hidden",
+        "relative min-h-[88vh] md:min-h-screen flex items-center overflow-hidden text-evergreen-foreground",
         props.className,
       )}
       aria-label={lines.join(" ")}
     >
-      <div className="absolute inset-0 bg-evergreen" />
-      <div className="absolute inset-0 opacity-90" style={{ background: BACKDROP.evergreenRadial }} />
-      <div className="absolute inset-0 grain-overlay opacity-40 pointer-events-none" />
-      <div
-        className="absolute inset-x-0 bottom-0 h-32 pointer-events-none"
-        style={{ background: "linear-gradient(180deg, transparent, hsl(var(--secondary)) 100%)" }}
+      {/* Photographic triptych backdrop — replaces the old solid evergreen */}
+      <HeroTriptych
+        queries={triptychQueries}
+        rhythm="asymmetric"
+        scrim="left"
+        priority
+        fallbackCaptions={[
+          "Decks · Calgary",
+          "Cedar · detail",
+          "Across Alberta",
+        ]}
       />
 
       <div className="container mx-auto px-6 relative z-10 py-20 md:py-28 lg:py-32">
