@@ -62,7 +62,6 @@ const Services = () => {
       <PageHero
         variant="service-portrait"
         breadcrumb={[{ label: "Home", to: "/" }, { label: "Services" }]}
-        numeral="I"
         sectionLabel="EXTERIOR CONSTRUCTION"
         title={["Built outside.", "Built to last."]}
         italic="Six services. One crew."
@@ -77,12 +76,17 @@ const Services = () => {
         <CedarCTA>Request a Quote</CedarCTA>
       </PageHero>
 
-      {/* Full service list */}
-      <section id="section-catalogue" className={`${SECTION_PADDING.default} grain-overlay`} aria-labelledby="all-services-heading">
+      {/* Catalogue */}
+      <section
+        id="section-catalogue"
+        className={`${SECTION_PADDING.default}`}
+        aria-labelledby="all-services-heading"
+        style={{ contentVisibility: "auto", containIntrinsicSize: "auto 1200px" }}
+      >
         <div className="container mx-auto px-6">
           <div className={`${MAX_WIDTH.content} mx-auto`}>
             <SectionHeader
-              numeral="II"
+              variant="quiet"
               label="EVERY SERVICE"
               headingId="all-services-heading"
               heading="What we build."
@@ -106,12 +110,106 @@ const Services = () => {
         </div>
       </section>
 
+      {/* Responsibility matrix — moved here from the homepage. Lives where
+          users with intent already are; sets expectations before the quote. */}
+      <section
+        id="section-contract"
+        className={`${SECTION_PADDING.default} bg-secondary`}
+        aria-labelledby="contract-heading"
+        style={{ contentVisibility: "auto", containIntrinsicSize: "auto 800px" }}
+      >
+        <div className="container mx-auto px-6">
+          <div className={`${MAX_WIDTH.content} mx-auto`}>
+            <SectionHeader
+              variant="quiet"
+              label="HOW WE SPLIT THE WORK"
+              headingId="contract-heading"
+              heading="What we handle. What you handle."
+              subheading="Clear from the start — no scope drift, no surprises."
+            />
+
+            <div className="mt-12 grid md:grid-cols-2 gap-0">
+              {/* WE HANDLE */}
+              <ScrollRevealMotion>
+                <div
+                  aria-label="What we handle"
+                  className="p-10 md:p-12 border border-cedar/20 rounded-sm h-full shadow-elevated"
+                  style={{ background: BACKDROP.bronzeWash }}
+                >
+                  <div className="flex items-baseline justify-between mb-8">
+                    <h3 className="text-minimal text-cedar">WE HANDLE</h3>
+                    <span className="text-[11px] tracking-[0.2em] text-cedar/50 tabular-nums">
+                      {String(WE_HANDLE.length).padStart(2, "0")} ITEMS
+                    </span>
+                  </div>
+                  <div className="space-y-3" role="list">
+                    {WE_HANDLE.map((item, i) => (
+                      <div
+                        key={i}
+                        role="listitem"
+                        className="flex items-start gap-3 py-2.5 pl-3 rounded-sm transition-colors duration-300 hover:bg-cedar/[0.05]"
+                        style={{ borderLeft: `2px solid hsl(var(--cedar) / ${bronzeStep(i, WE_HANDLE.length)})` }}
+                      >
+                        <Check
+                          className="h-3.5 w-3.5 text-cedar/70 mt-0.5 flex-shrink-0"
+                          aria-hidden
+                        />
+                        <p className="text-foreground text-sm">{item}</p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </ScrollRevealMotion>
+
+              {/* YOU HANDLE */}
+              <ScrollRevealMotion delay={0.12}>
+                <div
+                  aria-label="What you handle"
+                  className="p-10 md:p-12 border border-border/60 rounded-sm h-full shadow-contact bg-background"
+                >
+                  <div className="flex items-baseline justify-between mb-8">
+                    <h3 className="text-minimal text-muted-foreground">YOU HANDLE</h3>
+                    <span className="text-[11px] tracking-[0.2em] text-muted-foreground/40 tabular-nums">
+                      {String(YOU_HANDLE.length).padStart(2, "0")} ITEMS
+                    </span>
+                  </div>
+                  <div className="space-y-3" role="list">
+                    {YOU_HANDLE.map((item, i) => (
+                      <div
+                        key={i}
+                        role="listitem"
+                        className="flex items-start gap-3 py-2.5 pl-3 rounded-sm transition-colors duration-300 hover:bg-cedar/[0.03]"
+                        style={{ borderLeft: "2px solid hsl(35 15% 86% / 0.5)" }}
+                      >
+                        <Minus
+                          className="h-3.5 w-3.5 text-muted-foreground/40 mt-0.5 flex-shrink-0"
+                          aria-hidden
+                        />
+                        <div>
+                          <p className="text-foreground text-sm">{item.task}</p>
+                          <p className="text-xs text-muted-foreground mt-1">{item.note}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </ScrollRevealMotion>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* FAQ */}
-      <section id="section-faq" className={`${SECTION_PADDING.default} bg-secondary grain-overlay`} aria-labelledby="faq-heading">
+      <section
+        id="section-faq"
+        className={`${SECTION_PADDING.default} bg-background`}
+        aria-labelledby="faq-heading"
+        style={{ contentVisibility: "auto", containIntrinsicSize: "auto 700px" }}
+      >
         <div className="container mx-auto px-6">
           <div className="max-w-3xl mx-auto">
             <SectionHeader
-              numeral="III"
+              variant="quiet"
               label="COMMON QUESTIONS"
               headingId="faq-heading"
               heading="Straight answers."

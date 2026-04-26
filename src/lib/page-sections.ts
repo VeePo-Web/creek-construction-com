@@ -42,6 +42,7 @@ const PAGE_SECTIONS: Record<string, PageSection[]> = {
   ],
   "/services": [
     { name: "Catalogue", anchor: "section-catalogue" },
+    { name: "Contract", anchor: "section-contract" },
     { name: "FAQ", anchor: "section-faq" },
   ],
   "/work": [

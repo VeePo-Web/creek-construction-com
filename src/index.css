@@ -319,35 +319,41 @@
      Subtle SVG-noise overlay used on hero / footer / dark sections.
      ───────────────────────────────────────────────────────────── */
 
-  .grain-overlay {
-    position: relative;
-  }
+  /* Grain — perf-pass rewrite.
+   *
+   * Both .grain-overlay and .grain-texture used to set `mix-blend-mode:
+   * overlay`, which forces a stacking-context promotion AND triggers full
+   * rect repaints whenever something underneath them animates (hover,
+   * scroll, intersect). On a long page that meant ~7 blended layers
+   * stacking on top of each other.
+   *
+   * Now: plain composited noise at low opacity. Visually equivalent past
+   * the first ~3% opacity stop; ~5× cheaper to paint. Still gated by
+   * prefers-reduced-motion below.
+   */
+  .grain-overlay { position: relative; }
   .grain-overlay::before {
     content: '';
     position: absolute;
     inset: 0;
     pointer-events: none;
-    opacity: 0.035;
+    opacity: 0.025;
     z-index: 1;
     background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
     background-repeat: repeat;
     background-size: 256px 256px;
-    mix-blend-mode: overlay;
   }
 
-  .grain-texture {
-    position: relative;
-  }
+  .grain-texture { position: relative; }
   .grain-texture::before {
     content: '';
     position: absolute;
     inset: 0;
     pointer-events: none;
-    opacity: 0.015;
+    opacity: 0.02;
     background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='grainNoise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.2' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23grainNoise)' opacity='0.5'/%3E%3C/svg%3E");
     background-repeat: repeat;
     background-size: 200px 200px;
-    mix-blend-mode: overlay;
     border-radius: inherit;
   }
 
