@@ -1,7 +1,6 @@
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import CedarCTA from "@/components/CedarCTA";
-import ScrollRevealMotion from "@/components/ScrollRevealMotion";
 import SectionHeader from "@/components/SectionHeader";
 import PageHero from "@/components/ui/page-hero";
 import { useDocumentTitle } from "@/hooks/useDocumentTitle";
@@ -53,24 +52,22 @@ const About = () => {
               headingId="story-heading"
               heading="A small crew that takes the work seriously."
             />
-            <ScrollRevealMotion delay={0.2}>
-              <div className="space-y-6 mt-8">
-                <p className={BODY.lead}>
-                  Creek Construction is a locally owned, residential-exterior contractor working
-                  across the Calgary and Edmonton metros. We build decks, fences, sheds, pergolas —
-                  and we paint, side, and repair the parts of your home that face the weather.
-                </p>
-                <p className={BODY.lead}>
-                  We don’t subcontract the build. The crew you meet at the quote is the crew on-site
-                  doing the work. That’s how we keep quality consistent, and it’s why we’d rather do
-                  fewer projects exceptionally well than chase volume.
-                </p>
-                <p className={BODY.lead}>
-                  Our marketing is the work itself. If a job doesn’t earn the next referral, we
-                  treat that as a failure on our end. That’s the standard.
-                </p>
-              </div>
-            </ScrollRevealMotion>
+            <div className="space-y-6 mt-8">
+              <p className={BODY.lead}>
+                Creek Construction is a locally owned, residential-exterior contractor working
+                across the Calgary and Edmonton metros. We build decks, fences, sheds, pergolas —
+                and we paint, side, and repair the parts of your home that face the weather.
+              </p>
+              <p className={BODY.lead}>
+                We don't subcontract the build. The crew you meet at the quote is the crew on-site
+                doing the work. That's how we keep quality consistent, and it's why we'd rather do
+                fewer projects exceptionally well than chase volume.
+              </p>
+              <p className={BODY.lead}>
+                Our marketing is the work itself. If a job doesn't earn the next referral, we
+                treat that as a failure on our end. That's the standard.
+              </p>
+            </div>
           </div>
         </div>
       </section>
@@ -89,21 +86,20 @@ const About = () => {
 
             <div className="space-y-4 mt-12" role="list">
               {STEPS.map((s, i) => (
-                <ScrollRevealMotion key={i} delay={i * 0.08}>
-                  <div
-                    role="listitem"
-                    className="flex items-start gap-5 pl-6 py-5 rounded-sm transition-all duration-500 hover:bg-cedar/[0.03] hover:pl-8 hover:shadow-elevated grain-texture shadow-contact border border-border/40 bg-background"
-                    style={{ borderLeft: `2px solid hsl(var(--cedar) / ${bronzeStep(i, STEPS.length)})` }}
-                  >
-                    <span className="text-cedar/30 text-xs tabular-nums mt-1.5 font-medium">
-                      {String(i + 1).padStart(2, "0")}
-                    </span>
-                    <div>
-                      <h4 className="text-lg font-medium text-foreground mb-1.5">{s.title}</h4>
-                      <p className="text-muted-foreground text-sm leading-relaxed">{s.desc}</p>
-                    </div>
+                <div
+                  key={i}
+                  role="listitem"
+                  className="flex items-start gap-5 pl-6 py-5 rounded-sm transition-[background-color,transform,box-shadow] duration-300 hover:bg-cedar/[0.03] hover:translate-x-1 hover:shadow-elevated grain-texture shadow-contact border border-border/40 bg-background"
+                  style={{ borderLeft: `2px solid hsl(var(--cedar) / ${bronzeStep(i, STEPS.length)})` }}
+                >
+                  <span className="text-cedar/30 text-xs tabular-nums mt-1.5 font-medium">
+                    {String(i + 1).padStart(2, "0")}
+                  </span>
+                  <div>
+                    <h4 className="text-lg font-medium text-foreground mb-1.5">{s.title}</h4>
+                    <p className="text-muted-foreground text-sm leading-relaxed">{s.desc}</p>
                   </div>
-                </ScrollRevealMotion>
+                </div>
               ))}
             </div>
           </div>
@@ -123,7 +119,7 @@ const About = () => {
               {CONTACT.cities.map((city, i) => (
                 <span
                   key={city}
-                  className="text-sm text-muted-foreground border rounded-sm px-3 py-2 hover:text-foreground hover:bg-cedar/[0.04] hover:border-cedar/60 transition-all duration-500 grain-texture shadow-contact"
+                  className="text-sm text-muted-foreground border rounded-sm px-3 py-2 hover:text-foreground hover:bg-cedar/[0.04] hover:border-cedar/60 transition-[color,background-color,border-color] duration-300 grain-texture shadow-contact"
                   style={{ borderColor: `hsl(var(--cedar) / ${bronzeStep(i, CONTACT.cities.length)})` }}
                 >
                   {city}

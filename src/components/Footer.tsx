@@ -5,6 +5,7 @@ import logo from "@/assets/creek-logo-nav-md.png";
 import { SECTION_PADDING } from "@/lib/spacing";
 import { EYEBROW } from "@/lib/typography";
 import { TEXT } from "@/lib/colors";
+import CedarCTA from "@/components/CedarCTA";
 
 const Footer = () => {
   return (
@@ -84,7 +85,15 @@ const Footer = () => {
           </div>
         </div>
 
-        <div className="mt-16 pt-8 border-t border-evergreen-foreground/10 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 max-w-7xl mx-auto">
+        {/* Tertiary Quote CTA — the final ask before the user leaves */}
+        <div className="mt-12 pt-8 border-t border-evergreen-foreground/10 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-5 max-w-7xl mx-auto">
+          <p className={`${TEXT.onDark.secondary} text-sm font-serif italic`}>
+            Ready to start? Tell us about your project.
+          </p>
+          <CedarCTA>Request a Quote</CedarCTA>
+        </div>
+
+        <div className="mt-12 pt-8 border-t border-evergreen-foreground/10 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 max-w-7xl mx-auto">
           <p className={`${TEXT.onDark.tertiary} text-xs`}>
             © {new Date().getFullYear()} Creek Construction. All rights reserved.
           </p>

@@ -3,7 +3,6 @@ import { useEffect } from "react";
 import Navigation from "@/components/Navigation";
 import CedarCTA from "@/components/CedarCTA";
 import Footer from "@/components/Footer";
-import ScrollRevealMotion from "@/components/ScrollRevealMotion";
 import { useDocumentTitle } from "@/hooks/useDocumentTitle";
 
 const NotFound = () => {
@@ -26,37 +25,28 @@ const NotFound = () => {
               "radial-gradient(ellipse at center, hsl(150 30% 22%) 0%, hsl(150 25% 12%) 60%, hsl(150 30% 6%) 100%)",
           }}
         />
-        <div className="absolute inset-0 grain-overlay opacity-40 pointer-events-none" />
 
         <div className="relative z-10 text-center max-w-2xl mx-auto px-6">
-          <ScrollRevealMotion>
-            <div className="flex items-center justify-center gap-4 mb-10">
-              <div className="w-12 h-px bg-evergreen-foreground/15" />
-              <span className="text-[11px] tracking-[0.25em] text-evergreen-foreground/40 tabular-nums">404</span>
-              <div className="w-8 h-px bg-cedar/40" />
-              <span className="text-[10px] tracking-[0.25em] uppercase text-evergreen-foreground/40">Off the map</span>
-              <div className="w-12 h-px bg-evergreen-foreground/15" />
-            </div>
-          </ScrollRevealMotion>
+          <div className="flex items-center justify-center gap-4 mb-10">
+            <div className="w-12 h-px bg-evergreen-foreground/15" />
+            <span className="text-[11px] tracking-[0.25em] text-evergreen-foreground/40 tabular-nums">404</span>
+            <div className="w-8 h-px bg-cedar/40" />
+            <span className="text-[10px] tracking-[0.25em] uppercase text-evergreen-foreground/40">Off the map</span>
+            <div className="w-12 h-px bg-evergreen-foreground/15" />
+          </div>
 
-          <ScrollRevealMotion delay={0.1}>
-            <h1 className="font-serif text-evergreen-foreground mb-6" style={{ fontSize: "clamp(2.5rem, 5vw, 4rem)" }}>
-              Nothing here.
-            </h1>
-          </ScrollRevealMotion>
+          <h1 className="font-serif text-evergreen-foreground mb-6" style={{ fontSize: "clamp(2.5rem, 5vw, 4rem)" }}>
+            Nothing here.
+          </h1>
 
-          <ScrollRevealMotion delay={0.2}>
-            <p className="text-lg text-evergreen-foreground/60 italic font-serif mb-10">
-              That page doesn't exist — but the work does.
-            </p>
-          </ScrollRevealMotion>
+          <p className="text-lg text-evergreen-foreground/60 italic font-serif mb-10">
+            That page doesn't exist — but the work does.
+          </p>
 
-          <ScrollRevealMotion delay={0.3}>
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
-              <CedarCTA to="/">Back to Home</CedarCTA>
-              <CedarCTA to="/services" variant="secondary">Browse Services</CedarCTA>
-            </div>
-          </ScrollRevealMotion>
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
+            <CedarCTA to="/">Back to Home</CedarCTA>
+            <CedarCTA to="/services" variant="secondary">Browse Services</CedarCTA>
+          </div>
         </div>
       </section>
 

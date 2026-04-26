@@ -2,11 +2,11 @@ import { Link } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
 import { useProjects } from "@/hooks/useApprovedMedia";
 import EditorialPicture from "@/components/media/EditorialPicture";
-import ScrollRevealMotion from "@/components/ScrollRevealMotion";
 import SectionHeader from "@/components/SectionHeader";
 import { MEDIA_SIZES } from "@/lib/media-sizes";
 import { supabase } from "@/integrations/supabase/client";
 import type { DBProject } from "@/lib/api/public-media";
+import { useReveal } from "@/hooks/useReveal";
 
 /**
  * FeaturedProjects — editorial gallery of `featured = true` projects from
@@ -48,8 +48,7 @@ const ProjectCard = ({ project, variant, index }: ProjectCardProps) => {
     variant === "lead" ? "text-2xl md:text-3xl" : "text-xl md:text-2xl";
 
   return (
-    <ScrollRevealMotion delay={index * 0.08} y={28} className="h-full">
-      <article className="group h-full flex flex-col">
+    <article className="group h-full flex flex-col">
         <Link
           to={`/work#${project.slug}`}
           className="block focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cedar focus-visible:ring-offset-2 rounded-sm"
@@ -75,7 +74,6 @@ const ProjectCard = ({ project, variant, index }: ProjectCardProps) => {
                   "linear-gradient(135deg, hsl(150 25% 14%) 0%, hsl(150 25% 8%) 100%)",
               }}
             >
-              <div className="absolute inset-0 grain-overlay opacity-50 pointer-events-none" />
               <span className="absolute inset-0 flex items-center justify-center font-serif text-evergreen-foreground/20 text-5xl select-none">
                 {String(index + 1).padStart(2, "0")}
               </span>
@@ -99,7 +97,7 @@ const ProjectCard = ({ project, variant, index }: ProjectCardProps) => {
           </div>
 
           <h3
-            className={`font-serif ${headingSize} text-foreground mt-2 leading-tight group-hover:text-cedar transition-colors duration-500`}
+            className={`font-serif ${headingSize} text-foreground mt-2 leading-tight group-hover:text-cedar transition-colors duration-300`}
           >
             {project.title}
           </h3>
@@ -110,21 +108,21 @@ const ProjectCard = ({ project, variant, index }: ProjectCardProps) => {
             </p>
           )}
 
-          <span className="mt-4 inline-flex items-center gap-2 text-[10px] tracking-[0.18em] uppercase text-cedar/70 group-hover:text-cedar transition-all duration-500">
+          <span className="mt-4 inline-flex items-center gap-2 text-[10px] tracking-[0.18em] uppercase text-cedar/70 group-hover:text-cedar transition-colors duration-300">
             View project
             <ArrowRight
-              className="h-3 w-3 group-hover:translate-x-1 transition-transform duration-500"
+              className="h-3 w-3 group-hover:translate-x-1 transition-transform duration-300"
               aria-hidden
             />
           </span>
         </Link>
       </article>
-    </ScrollRevealMotion>
-  );
+    );
 };
 
 const FeaturedProjects = () => {
   const { projects, loading } = useProjects({ featured: true, limit: 6 });
+  const { ref, cls, style } = useReveal();
 
   // Quietly hide the section if we don't have at least 3 featured projects.
   if (loading) return null;
@@ -158,7 +156,7 @@ const FeaturedProjects = () => {
       style={{ contentVisibility: "auto", containIntrinsicSize: "auto 1200px" }}
     >
       <div className="container mx-auto px-6">
-        <div className="max-w-7xl mx-auto">
+        <div ref={ref} className={`max-w-7xl mx-auto ${cls}`} style={style}>
           <div className="mb-16">
             <SectionHeader
               numeral="V"
@@ -215,18 +213,18 @@ const FeaturedProjects = () => {
             </div>
           )}
 
-          <ScrollRevealMotion delay={0.2} className="mt-16 flex justify-center">
+          <div className="mt-16 flex justify-center">
             <Link
               to="/work"
-              className="text-minimal text-cedar hover:text-cedar-hover transition-all duration-500 group/link inline-flex items-center gap-3 min-h-[44px] py-2 px-3 rounded-sm hover:bg-cedar/[0.04]"
+              className="text-minimal text-cedar hover:text-cedar-hover transition-colors duration-300 group/link inline-flex items-center gap-3 min-h-[44px] py-2 px-3 rounded-sm hover:bg-cedar/[0.04]"
             >
               <span>See all work</span>
               <ArrowRight
-                className="h-3.5 w-3.5 group-hover/link:translate-x-1 transition-transform duration-500"
+                className="h-3.5 w-3.5 group-hover/link:translate-x-1 transition-transform duration-300"
                 aria-hidden
               />
             </Link>
-          </ScrollRevealMotion>
+          </div>
         </div>
       </div>
     </section>
