@@ -1274,6 +1274,8 @@ const StyleGuide = () => {
       </div>
     </footer>
   </main>
-);
+  );
+};
+
 
 export default StyleGuide;
