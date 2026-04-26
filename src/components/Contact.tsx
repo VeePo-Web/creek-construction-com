@@ -15,41 +15,23 @@ const Contact = () => {
       className="py-24 md:py-32 bg-background relative overflow-hidden grain-overlay"
       aria-labelledby="contact-heading"
     >
-      <div
-        className="absolute top-0 inset-x-0 h-40 pointer-events-none"
-        style={{ background: "linear-gradient(180deg, hsl(var(--evergreen) / 0.06) 0%, transparent 100%)" }}
-      />
       <div className="container mx-auto px-6">
         <div className="max-w-7xl mx-auto">
           <div className="grid md:grid-cols-2 gap-20 items-start">
             <div>
               <SectionHeader
-                numeral="VI"
-                label="START HERE"
+                variant="quiet"
+                label="THE NEXT STEP IS A CONVERSATION"
                 headingId="contact-heading"
-                heading="Let’s Build Something Right."
+                heading="Let's build something right."
                 subheading="Free quote. No high-pressure sales. We'll give you straight answers."
               />
 
               <ScrollRevealMotion delay={0.2}>
-                <p className="text-lg text-muted-foreground leading-relaxed mt-4">
+                <p className="text-lg text-muted-foreground leading-relaxed mt-4 mb-10">
                   Tell us about your project — size, timing, materials you're considering. We'll come look,
                   give you an honest scope and a fair price in writing, and let you take it from there.
                 </p>
-              </ScrollRevealMotion>
-
-              <ScrollRevealMotion delay={0.3}>
-                <div
-                  className="relative pl-8 py-5 my-10"
-                  style={{ borderLeft: "2px solid hsl(var(--cedar) / 0.3)", marginLeft: "-0.15em" }}
-                >
-                  <span className="quote-mark-float absolute -top-3 -left-1" aria-hidden>
-                    {"\u201C"}
-                  </span>
-                  <p className="text-xl font-serif italic text-foreground/55 leading-snug pt-6">
-                    Excellence in the work. Pride in every detail.
-                  </p>
-                </div>
               </ScrollRevealMotion>
 
               <ScrollRevealMotion delay={0.4}>

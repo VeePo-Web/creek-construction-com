@@ -4,15 +4,26 @@ import Hero from "@/components/Hero";
 import TrustStrip from "@/components/TrustStrip";
 import Services from "@/components/Services";
 import About from "@/components/About";
-import Testimonials from "@/components/Testimonials";
-import Portfolio from "@/components/Portfolio";
 import FeaturedProjects from "@/components/FeaturedProjects";
 import Contact from "@/components/Contact";
 import Footer from "@/components/Footer";
 import { LocalBusinessJsonLd } from "@/components/JsonLd";
 import EditorialBleedSection from "@/components/media/EditorialBleedSection";
-import FieldClipsStrip from "@/components/media/FieldClipsStrip";
 
+/**
+ * Homepage rhythm (post-reduction):
+ *
+ *   Hero → TrustStrip (hairline byline) → Bleed → Services → About →
+ *   FeaturedProjects → Contact → Footer
+ *
+ * Removed from the homepage during the editorial reduction pass:
+ *   - Testimonials  (gated behind real reviews; placeholder bylines retired)
+ *   - Portfolio     (lives on /work; was duplicating FeaturedProjects)
+ *   - FieldClipsStrip (lives on /work; was a third gallery layer here)
+ *
+ * Discipline: every section says one thing. The hero owns trust chips
+ * and stats; subsequent sections do not repeat them.
+ */
 const Index = () => {
   useDocumentTitle(
     "Excellence in the Work",
@@ -35,8 +46,7 @@ const Index = () => {
 
       <Hero />
 
-      {/* Slim trust band — sits directly under the hero, replaces the previous
-          jarring section gradient with a calm full-width signal row. */}
+      {/* Hairline byline beneath the hero. No icons, no boxes — just type. */}
       <TrustStrip />
 
       {/* One editorial bleed between trust and services. Discipline: never two
@@ -54,17 +64,10 @@ const Index = () => {
 
       <Services />
       <About />
-      <Testimonials />
 
       {/* Featured projects gallery — pulls from the `projects` table.
           Renders nothing until at least 3 featured projects exist. */}
       <FeaturedProjects />
-
-      <Portfolio />
-
-      {/* Field clips — silent build-process recordings. Renders nothing
-          when no approved videos exist, so the page is never broken. */}
-      <FieldClipsStrip />
 
       <Contact />
       <Footer />

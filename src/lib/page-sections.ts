@@ -37,7 +37,6 @@ const PAGE_SECTIONS: Record<string, PageSection[]> = {
   "/": [
     { name: "Services", anchor: "section-services" },
     { name: "About", anchor: "section-about" },
-    { name: "Reviews", anchor: "section-testimonials" },
     { name: "Work", anchor: "section-featured" },
     { name: "Contact", anchor: "section-contact" },
   ],

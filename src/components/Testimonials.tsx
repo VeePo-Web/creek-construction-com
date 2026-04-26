@@ -8,37 +8,30 @@ import type { ServiceCategory } from "@/lib/api/public-media";
 import { SECTION_PADDING, MAX_WIDTH, GRID_GAP } from "@/lib/spacing";
 import { QUOTE } from "@/lib/typography";
 
-// PLACEHOLDER TESTIMONIALS — replace with real customer quotes when available.
+interface Testimonial {
+  quote: string;
+  name: string;
+  location: string;
+  type: string;
+  service: ServiceCategory;
+  rating: number;
+}
+
+/**
+ * Testimonials — gated behind real customer reviews.
+ *
+ * The placeholder array (Mark T., Sarah & James R., Dave K.) was removed
+ * during the editorial reduction pass — shipping fabricated bylines on a
+ * production site is an ethics violation per the boundaries doc. This
+ * section silently disappears until real, attributable quotes exist.
+ *
+ * To re-enable: populate `testimonials` with verified entries and the
+ * section will mount automatically.
+ */
 const Testimonials = () => {
-  const testimonials = [
-    {
-      quote:
-        "They quoted what they'd build, then built exactly that. No surprise charges, no half-finished trim. The deck looks better than the photos we showed them.",
-      name: "Mark T.",
-      location: "Calgary NW",
-      type: "DECK",
-      service: "decks" as ServiceCategory,
-      rating: 5,
-    },
-    {
-      quote:
-        "Honest crew. Showed up when they said, cleaned up every day, and the fence is dead straight. We've already booked them for our shed.",
-      name: "Sarah & James R.",
-      location: "Sherwood Park",
-      type: "FENCE",
-      service: "fencing" as ServiceCategory,
-      rating: 5,
-    },
-    {
-      quote:
-        "Repainted the whole exterior plus all the trim. Two years in and it still looks fresh. You can tell the prep work was done properly.",
-      name: "Dave K.",
-      location: "Cochrane",
-      type: "PAINTING",
-      service: "painting" as ServiceCategory,
-      rating: 5,
-    },
-  ];
+  const testimonials: Testimonial[] = [];
+
+  if (testimonials.length === 0) return null;
 
   return (
     <section

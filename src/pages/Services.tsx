@@ -6,9 +6,11 @@ import SectionHeader from "@/components/SectionHeader";
 import PageHero from "@/components/ui/page-hero";
 import ServiceTile from "@/components/ui/service-tile";
 import FaqAccordion, { type FaqItem } from "@/components/ui/faq-accordion";
+import { Check, Minus } from "lucide-react";
 import { useDocumentTitle } from "@/hooks/useDocumentTitle";
 import { SERVICES } from "@/config/services";
 import { useQuoteModal } from "@/components/quote/QuoteModalProvider";
+import { BACKDROP, bronzeStep } from "@/lib/colors";
 import { SECTION_PADDING, MAX_WIDTH, GRID_GAP } from "@/lib/spacing";
 
 const FAQS: FaqItem[] = [
@@ -28,6 +30,22 @@ const FAQS: FaqItem[] = [
     q: "What about permits?",
     a: "If your municipality requires a permit for the work, we handle pulling it and include it in the quote. We’ll tell you upfront whether one is needed.",
   },
+];
+
+const WE_HANDLE = [
+  "Site assessment and accurate quote",
+  "Materials sourcing — quality first, price second",
+  "Permits where required",
+  "The actual build, by our crew (not subbed out)",
+  "Daily cleanup and a clean site at handover",
+  "Final walkthrough + warranty on our workmanship",
+];
+
+const YOU_HANDLE = [
+  { task: "Property access on build days", note: "We coordinate the schedule with you" },
+  { task: "HOA or strata approvals if applicable", note: "We'll provide drawings or specs you can submit" },
+  { task: "Color and material preferences", note: "We'll show you options that fit your budget" },
+  { task: "Paying invoices on agreed milestones", note: "Clear, written, no surprises" },
 ];
 
 const Services = () => {
