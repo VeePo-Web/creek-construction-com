@@ -49,12 +49,22 @@ interface EvergreenTypographicProps extends BaseProps {
   variant?: "evergreen-typographic" | "evergreen";
   /** Optional ambient field clip query (rendered top-right at low opacity). */
   ambientClipQuery?: MediaQuery;
+  /**
+   * Three queries that compose the photographic triptych behind the headline.
+   * When omitted, the variant draws stone-plate fallbacks (still no green).
+   */
+  triptychQueries?: [MediaQuery, MediaQuery, MediaQuery];
 }
 
 interface EditorialSplitProps extends BaseProps {
   variant: "editorial-split";
-  /** Photo query for the right column. */
+  /** Photo query for the floating provenance card on the right. */
   query: MediaQuery;
+  /**
+   * Three queries for the photographic triptych BACKDROP. Defaults to a
+   * narrative built around the `query` if omitted.
+   */
+  triptychQueries?: [MediaQuery, MediaQuery, MediaQuery];
   /** Optional provenance card content. */
   provenance?: {
     eyebrow?: string;
