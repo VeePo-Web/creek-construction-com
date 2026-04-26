@@ -13,6 +13,7 @@ import {
   Mail,
   MessageCircleQuestion,
   MessageSquare,
+  Pencil,
   Phone,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
@@ -22,7 +23,20 @@ import { SERVICES } from "@/config/services";
 import { useQuoteModal } from "./QuoteModalProvider";
 import logo from "@/assets/creek-logo-nav-sm.png";
 
-type Step = 1 | 2 | 3;
+/**
+ * QuoteModal — two-step conversion form.
+ *
+ *   Step 1: pick service(s) — skipped entirely when caller preselects one.
+ *   Step 2: project details + contact (collapsed from former 3-step flow).
+ *
+ * Express mode: when `preselectedServices.length === 1`, the modal opens
+ * directly on Step 2 with an editable service chip at the top.
+ *
+ * Submission: Enter inside any text input (not textarea) submits when
+ * the form is valid; Cmd/Ctrl+Enter still works as a power-user shortcut.
+ */
+
+type Step = 1 | 2;
 type Mode = "quote" | "inquiry";
 
 const GENERAL_ID = "general";
@@ -53,11 +67,14 @@ const INITIAL: FormState = {
 
 const TIMELINES_QUOTE = ["ASAP", "Within 1 month", "1–3 months", "Just exploring"];
 const TIMELINES_INQUIRY = ["Today if possible", "Within a few days", "No rush"];
-
 const PROPERTY_TYPES = ["Residential", "Acreage", "Other"];
 
 function formatPhone(input: string): string {
-  const d = input.replace(/\D/g, "").slice(0, 10);
+  // Strip non-digits, then drop a leading "1" (NANP country code) so paste
+  // of "+1 (403) 555-0123" formats to "(403) 555-0123" cleanly.
+  let d = input.replace(/\D/g, "");
+  if (d.length === 11 && d.startsWith("1")) d = d.slice(1);
+  d = d.slice(0, 10);
   if (d.length > 6) return `(${d.slice(0, 3)}) ${d.slice(3, 6)}-${d.slice(6)}`;
   if (d.length > 3) return `(${d.slice(0, 3)}) ${d.slice(3)}`;
   if (d.length > 0) return `(${d}`;
@@ -74,35 +91,46 @@ const QuoteModal = () => {
 
   const mode: Mode = form.services.includes(GENERAL_ID) ? "inquiry" : "quote";
 
-  // Refs for autofocus on step transitions.
+  // Refs for autofocus + post-success focus management.
   const detailsRef = useRef<HTMLTextAreaElement | null>(null);
   const nameRef = useRef<HTMLInputElement | null>(null);
   const firstTileRef = useRef<HTMLButtonElement | null>(null);
+  const doneBtnRef = useRef<HTMLButtonElement | null>(null);
 
-  // Reset / preselect each time the modal opens.
+  // Reset / preselect each time the modal opens. Express mode (single
+  // preselection) jumps the user straight to Step 2.
   useEffect(() => {
     if (open) {
-      setStep(1);
       setSuccess(false);
       setTouched({});
-      // If caller pre-selected `general`, normalize to GENERAL_ID.
       const pre = preselectedServices.includes(GENERAL_ID)
         ? [GENERAL_ID]
         : preselectedServices;
       setForm({ ...INITIAL, services: pre });
+      // Express: single non-general service preselected → skip to Step 2.
+      const express =
+        pre.length === 1 && pre[0] !== GENERAL_ID;
+      setStep(express ? 2 : 1);
     }
   }, [open, preselectedServices]);
 
-  // Auto-focus on step transitions (with a small tick so Radix finishes mounting).
+  // Autofocus on step transitions (small tick for Radix mount).
   useEffect(() => {
-    if (!open || success) return;
+    if (!open) return;
+    if (success) {
+      const t = setTimeout(() => doneBtnRef.current?.focus(), 60);
+      return () => clearTimeout(t);
+    }
     const t = setTimeout(() => {
       if (step === 1) firstTileRef.current?.focus();
-      if (step === 2) detailsRef.current?.focus();
-      if (step === 3) nameRef.current?.focus();
+      if (step === 2) {
+        // Focus the first empty required field; otherwise project details.
+        if (!form.name) nameRef.current?.focus();
+        else detailsRef.current?.focus();
+      }
     }, 60);
     return () => clearTimeout(t);
-  }, [step, open, success]);
+  }, [step, open, success, form.name]);
 
   const update = <K extends keyof FormState>(key: K, value: FormState[K]) =>
     setForm((prev) => ({ ...prev, [key]: value }));
@@ -112,7 +140,6 @@ const QuoteModal = () => {
 
   const toggleService = (id: string) =>
     setForm((prev) => {
-      // Mutual exclusion with the general-inquiry sentinel.
       if (id === GENERAL_ID) {
         return prev.services.includes(GENERAL_ID)
           ? { ...prev, services: [] }
@@ -129,33 +156,34 @@ const QuoteModal = () => {
 
   const canContinueStep1 = form.services.length > 0;
 
-  // Per-field validity for inline messages.
+  // Validation.
   const phoneDigits = form.phone.replace(/\D/g, "").length;
   const emailValid =
     !form.email || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email);
   const nameValid = form.name.trim().length > 1;
   const phoneValid = phoneDigits === 10;
-  const areaValid = form.addressOrArea.trim().length > 1;
+  // Area is now optional client-side (server also accepts without it) —
+  // we only ask name + phone as truly required, matching the friction goal.
+  const areaValid = true;
 
   const canSubmit = useMemo(
-    () => nameValid && phoneValid && areaValid && emailValid,
-    [nameValid, phoneValid, areaValid, emailValid],
+    () => nameValid && phoneValid && emailValid,
+    [nameValid, phoneValid, emailValid],
   );
 
   const submitDisabledReason = !nameValid
     ? "Add your name to send."
     : !phoneValid
       ? "Add a 10-digit phone number to send."
-      : !areaValid
-        ? "Add your city or service area to send."
-        : !emailValid
-          ? "That email doesn't look right."
-          : "";
+      : !emailValid
+        ? "That email doesn't look right."
+        : "";
 
   const handleSubmit = async () => {
     if (!canSubmit) {
-      // Surface all field errors at once.
-      setTouched({ name: true, phone: true, email: true, addressOrArea: true });
+      setTouched({ name: true, phone: true, email: true });
+      // Move focus to the first invalid field.
+      if (!nameValid) nameRef.current?.focus();
       return;
     }
     setSubmitting(true);
@@ -177,7 +205,7 @@ const QuoteModal = () => {
           name: form.name.trim(),
           phone: form.phone.trim(),
           email: form.email.trim() || undefined,
-          addressOrArea: form.addressOrArea.trim(),
+          addressOrArea: form.addressOrArea.trim() || undefined,
           services: serviceTitles,
           projectDetails,
           propertyType: isInquiry ? undefined : form.propertyType,
@@ -204,16 +232,20 @@ const QuoteModal = () => {
     }
   };
 
-  // Cmd/Ctrl + Enter to advance.
+  // Cmd/Ctrl+Enter advances; Enter inside a text input (not textarea) submits.
   const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    const isTextarea =
+      (e.target as HTMLElement)?.tagName?.toLowerCase() === "textarea";
     if ((e.metaKey || e.ctrlKey) && e.key === "Enter") {
       e.preventDefault();
-      if (step < 3) {
-        if (step === 1 && !canContinueStep1) return;
-        setStep((s) => ((s + 1) as Step));
+      if (step === 1) {
+        if (canContinueStep1) setStep(2);
       } else if (canSubmit && !submitting) {
         handleSubmit();
       }
+    } else if (e.key === "Enter" && !isTextarea && step === 2 && canSubmit && !submitting) {
+      e.preventDefault();
+      handleSubmit();
     }
   };
 
@@ -229,11 +261,18 @@ const QuoteModal = () => {
       ? mode === "inquiry"
         ? "How can we help?"
         : "What are we building?"
-      : step === 2
-        ? mode === "inquiry"
-          ? "Tell us a bit more (optional)"
-          : "Tell us about the project"
-        : "How can we reach you?";
+      : mode === "inquiry"
+        ? "Send your message"
+        : "Your project & contact";
+
+  // Selected service titles, used for the editable chip on Step 2.
+  const selectedServiceTitles = useMemo(
+    () =>
+      mode === "inquiry"
+        ? ["General inquiry"]
+        : SERVICES.filter((s) => form.services.includes(s.id)).map((s) => s.title),
+    [form.services, mode],
+  );
 
   return (
     <Dialog
@@ -243,7 +282,7 @@ const QuoteModal = () => {
       }}
     >
       <DialogContent
-        className="max-w-5xl w-[95vw] p-0 gap-0 overflow-hidden border-evergreen/20 bg-background sm:rounded-lg max-h-[92vh] grid-cols-1 md:grid-cols-[280px_1fr] md:grid"
+        className="max-w-5xl w-[95vw] p-0 gap-0 overflow-hidden border-evergreen/20 bg-background sm:rounded-lg max-h-[92vh] grid-cols-1 md:grid-cols-[260px_1fr] md:grid"
       >
         <DialogTitle className="sr-only">
           {mode === "inquiry"
@@ -256,25 +295,24 @@ const QuoteModal = () => {
             : "Tell us about your exterior project and we'll be in touch within 24 hours."}
         </DialogDescription>
 
-        {/* LEFT — brand identity stack (collapses to slim header on mobile) */}
+        {/* LEFT — desktop brand panel */}
         <aside
-          className="hidden md:flex flex-col justify-between bg-evergreen text-evergreen-foreground p-8 relative overflow-hidden"
+          className="hidden md:flex flex-col justify-between bg-evergreen text-evergreen-foreground p-7 relative overflow-hidden"
           aria-label="Creek Construction brand panel"
         >
-          <div className="absolute inset-0 grain-overlay opacity-40 pointer-events-none" />
           <div className="relative z-10">
             <img
               src={logo}
               alt="Creek Construction"
               width={200}
               height={200}
-              className="h-32 w-auto object-contain mb-8 drop-shadow-[0_4px_24px_hsl(0_0%_0%/0.3)]"
+              className="h-24 w-auto object-contain mb-6 drop-shadow-[0_4px_24px_hsl(0_0%_0%/0.3)]"
               loading="eager"
             />
             <p className="text-[10px] tracking-[0.25em] uppercase text-cedar/80 mb-3">
               Creek Construction
             </p>
-            <h2 className="font-serif text-2xl leading-tight mb-4">
+            <h2 className="font-serif text-xl leading-tight mb-3">
               Excellence in the Work.
             </h2>
             <p className="text-sm text-evergreen-foreground/70 leading-relaxed">
@@ -282,8 +320,8 @@ const QuoteModal = () => {
             </p>
           </div>
 
-          <div className="relative z-10 mt-8 space-y-3 text-sm">
-            <div className="w-12 h-px bg-cedar/40 mb-5" />
+          <div className="relative z-10 mt-6 space-y-2 text-sm">
+            <div className="w-12 h-px bg-cedar/40 mb-4" />
             <a
               href={`tel:${CONTACT.phoneTel}`}
               className="flex items-center gap-3 text-evergreen-foreground/80 hover:text-cedar transition-colors min-h-[44px]"
@@ -298,19 +336,16 @@ const QuoteModal = () => {
               <Mail className="h-3.5 w-3.5 shrink-0" aria-hidden />
               <span className="truncate">{CONTACT.email}</span>
             </a>
-            <p className="text-[10px] tracking-[0.2em] uppercase text-evergreen-foreground/40 pt-4">
-              Locally owned · Calgary & Edmonton
-            </p>
           </div>
         </aside>
 
-        {/* Mobile slim header */}
-        <div className="md:hidden bg-evergreen text-evergreen-foreground px-6 py-4 flex items-center gap-3">
-          <img src={logo} alt="" width={40} height={40} className="h-10 w-10 object-contain" />
-          <div>
-            <p className="text-[9px] tracking-[0.25em] uppercase text-cedar/80">Creek Construction</p>
-            <p className="font-serif text-base leading-tight">Excellence in the Work.</p>
-          </div>
+        {/* Slim mobile brand strip — 40px so form fields land above-the-fold */}
+        <div className="md:hidden bg-evergreen text-evergreen-foreground px-5 py-2.5 flex items-center gap-2.5">
+          <img src={logo} alt="" width={28} height={28} className="h-7 w-7 object-contain" />
+          <p className="font-serif text-sm leading-none">Creek Construction</p>
+          <span className="ml-auto text-[9px] tracking-[0.25em] uppercase text-cedar/80">
+            Quote
+          </span>
         </div>
 
         {/* RIGHT — step content */}
@@ -323,28 +358,50 @@ const QuoteModal = () => {
               mode={mode}
               onClose={closeModal}
               onSendAnother={resetForAnother}
+              doneBtnRef={doneBtnRef}
             />
           ) : (
             <>
-              <header className="sticky top-0 z-10 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80 px-6 md:px-10 pt-8 pb-6 border-b border-border/40">
-                <div className="flex items-center justify-between mb-4">
+              <header className="sticky top-0 z-10 bg-background border-b border-border/40 px-6 md:px-8 pt-6 md:pt-7 pb-5">
+                <div className="flex items-center justify-between mb-3">
                   <p className="text-[10px] tracking-[0.25em] uppercase text-muted-foreground">
                     {mode === "inquiry" ? "Send us a Message" : "Request a Quote"}
                   </p>
                   <p className="text-[10px] tracking-[0.2em] uppercase text-cedar tabular-nums">
-                    Step {step} / 3
+                    Step {step} / 2
                   </p>
                 </div>
                 <ProgressBar step={step} />
                 <h3
-                  className="font-serif text-2xl md:text-3xl mt-5 text-foreground"
+                  className="font-serif text-2xl md:text-[28px] mt-4 text-foreground leading-tight"
                   aria-live="polite"
                 >
                   {stepHeading}
                 </h3>
+
+                {/* Editable service chip on Step 2 — Express-mode breadcrumb */}
+                {step === 2 && mode === "quote" && selectedServiceTitles.length > 0 && (
+                  <div className="mt-3 flex flex-wrap items-center gap-2">
+                    {selectedServiceTitles.map((title) => (
+                      <span
+                        key={title}
+                        className="inline-flex items-center gap-1.5 text-[11px] tracking-wide px-2.5 py-1 rounded-sm bg-cedar/[0.06] border border-cedar/30 text-foreground"
+                      >
+                        {title}
+                      </span>
+                    ))}
+                    <button
+                      type="button"
+                      onClick={() => setStep(1)}
+                      className="inline-flex items-center gap-1 text-[11px] tracking-wide text-muted-foreground hover:text-cedar transition-colors px-1.5 py-1 rounded-sm focus-visible:ring-2 focus-visible:ring-cedar focus-visible:ring-offset-1"
+                    >
+                      <Pencil className="h-3 w-3" aria-hidden /> change
+                    </button>
+                  </div>
+                )}
               </header>
 
-              <div className="px-6 md:px-10 py-6 flex-1">
+              <div className="px-6 md:px-8 py-6 flex-1">
                 {step === 1 && (
                   <Step1
                     selected={form.services}
@@ -353,36 +410,28 @@ const QuoteModal = () => {
                   />
                 )}
                 {step === 2 && (
-                  <Step2
+                  <Step2Combined
                     form={form}
                     mode={mode}
                     onUpdate={update}
                     detailsRef={detailsRef}
-                  />
-                )}
-                {step === 3 && (
-                  <Step3
-                    form={form}
-                    mode={mode}
-                    onUpdate={update}
                     nameRef={nameRef}
                     touched={touched}
                     markTouched={markTouched}
                     nameValid={nameValid}
                     phoneValid={phoneValid}
                     emailValid={emailValid}
-                    areaValid={areaValid}
                   />
                 )}
               </div>
 
               <footer
-                className="sticky bottom-0 z-10 bg-muted/85 backdrop-blur supports-[backdrop-filter]:bg-muted/70 px-6 md:px-10 py-5 border-t border-border/40 flex items-center justify-between gap-3"
-                style={{ paddingBottom: "max(1.25rem, env(safe-area-inset-bottom))" }}
+                className="sticky bottom-0 z-10 bg-muted px-6 md:px-8 py-4 border-t border-border/40 flex items-center justify-between gap-3"
+                style={{ paddingBottom: "max(1rem, env(safe-area-inset-bottom))" }}
               >
                 <button
                   type="button"
-                  onClick={() => setStep((s) => (s > 1 ? ((s - 1) as Step) : s))}
+                  onClick={() => setStep(1)}
                   className={`flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors min-h-[44px] px-2 rounded-sm ${
                     step === 1 ? "invisible" : ""
                   }`}
@@ -390,8 +439,7 @@ const QuoteModal = () => {
                   <ArrowLeft className="h-3.5 w-3.5" aria-hidden /> Back
                 </button>
 
-                {/* Live region for the disabled-Send reason */}
-                {step === 3 && submitDisabledReason && (
+                {step === 2 && submitDisabledReason && (
                   <p
                     role="status"
                     className="hidden sm:block text-xs text-muted-foreground/70 flex-1 text-right pr-3"
@@ -400,17 +448,17 @@ const QuoteModal = () => {
                   </p>
                 )}
 
-                {step < 3 ? (
+                {step === 1 ? (
                   <button
                     type="button"
-                    onClick={() => setStep((s) => ((s + 1) as Step))}
-                    disabled={step === 1 && !canContinueStep1}
+                    onClick={() => setStep(2)}
+                    disabled={!canContinueStep1}
                     aria-label={
-                      step === 1 && !canContinueStep1
+                      !canContinueStep1
                         ? "Pick a service or 'General inquiry' to continue"
                         : undefined
                     }
-                    className="inline-flex items-center gap-2 bg-evergreen text-evergreen-foreground px-6 py-3 rounded-sm text-[11px] tracking-[0.18em] uppercase font-medium hover:bg-evergreen/90 disabled:opacity-40 disabled:cursor-not-allowed transition-all min-h-[44px]"
+                    className="inline-flex items-center gap-2 bg-evergreen text-evergreen-foreground px-6 py-3 rounded-sm text-[11px] tracking-[0.18em] uppercase font-medium hover:bg-evergreen/90 disabled:opacity-40 disabled:cursor-not-allowed transition-colors min-h-[44px]"
                   >
                     Continue <ArrowRight className="h-3.5 w-3.5" aria-hidden />
                   </button>
@@ -420,7 +468,7 @@ const QuoteModal = () => {
                     onClick={handleSubmit}
                     disabled={!canSubmit || submitting}
                     aria-label={submitDisabledReason || undefined}
-                    className="inline-flex items-center gap-2 bg-cedar text-cedar-foreground px-6 py-3 rounded-sm text-[11px] tracking-[0.18em] uppercase font-medium hover:bg-cedar-hover disabled:opacity-40 disabled:cursor-not-allowed transition-all min-h-[44px]"
+                    className="inline-flex items-center gap-2 bg-cedar text-cedar-foreground px-6 py-3 rounded-sm text-[11px] tracking-[0.18em] uppercase font-medium hover:bg-cedar-hover disabled:opacity-40 disabled:cursor-not-allowed transition-colors min-h-[44px]"
                   >
                     {submitting ? (
                       <>
@@ -445,10 +493,10 @@ const QuoteModal = () => {
 
 const ProgressBar = ({ step }: { step: Step }) => (
   <div className="flex items-center gap-1.5" aria-hidden>
-    {[1, 2, 3].map((i) => (
+    {[1, 2].map((i) => (
       <div
         key={i}
-        className={`h-[3px] flex-1 rounded-full transition-colors duration-500 ${
+        className={`h-[3px] flex-1 rounded-full transition-colors duration-300 ${
           i <= step ? "bg-cedar" : "bg-border"
         }`}
       />
@@ -482,15 +530,15 @@ const Step1 = ({
               type="button"
               onClick={() => onToggle(s.id)}
               aria-pressed={isSelected}
-              className={`text-left p-4 rounded-sm border transition-all duration-300 group flex items-start gap-3 min-h-[44px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cedar focus-visible:ring-offset-2 ${
+              className={`text-left p-4 rounded-sm border transition-colors duration-200 group flex items-start gap-3 min-h-[44px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cedar focus-visible:ring-offset-2 ${
                 isSelected
-                  ? "border-cedar bg-cedar/[0.06] shadow-elevated"
+                  ? "border-cedar bg-cedar/[0.06]"
                   : "border-border hover:border-cedar/50 hover:bg-cedar/[0.02]"
               }`}
               style={{ borderLeft: `2px solid hsl(var(--cedar) / ${s.intensity})` }}
             >
               <Icon
-                className={`h-5 w-5 mt-0.5 shrink-0 transition-colors ${
+                className={`h-5 w-5 mt-0.5 shrink-0 ${
                   isSelected ? "text-cedar" : "text-muted-foreground group-hover:text-cedar/80"
                 }`}
                 aria-hidden
@@ -506,20 +554,19 @@ const Step1 = ({
           );
         })}
 
-        {/* General Inquiry / Something else — full row on desktop */}
         <button
           type="button"
           onClick={() => onToggle(GENERAL_ID)}
           aria-pressed={generalSelected}
-          className={`sm:col-span-2 text-left p-4 rounded-sm border transition-all duration-300 group flex items-start gap-3 min-h-[44px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cedar focus-visible:ring-offset-2 ${
+          className={`sm:col-span-2 text-left p-4 rounded-sm border transition-colors duration-200 group flex items-start gap-3 min-h-[44px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cedar focus-visible:ring-offset-2 ${
             generalSelected
-              ? "border-cedar bg-cedar/[0.06] shadow-elevated"
+              ? "border-cedar bg-cedar/[0.06]"
               : "border-dashed border-border hover:border-cedar/50 hover:bg-cedar/[0.02]"
           }`}
           style={{ borderLeftWidth: 2, borderLeftStyle: "solid", borderLeftColor: "hsl(var(--cedar))" }}
         >
           <MessageCircleQuestion
-            className={`h-5 w-5 mt-0.5 shrink-0 transition-colors ${
+            className={`h-5 w-5 mt-0.5 shrink-0 ${
               generalSelected ? "text-cedar" : "text-muted-foreground group-hover:text-cedar/80"
             }`}
             aria-hidden
@@ -539,93 +586,46 @@ const Step1 = ({
   );
 };
 
-const Step2 = ({
+/**
+ * Step 2 (combined) — project details + contact in one screen. Replaces
+ * the former Step 2 (details) and Step 3 (contact) for a 2-step flow.
+ */
+const Step2Combined = ({
   form,
   mode,
   onUpdate,
   detailsRef,
-}: {
-  form: FormState;
-  mode: Mode;
-  onUpdate: <K extends keyof FormState>(k: K, v: FormState[K]) => void;
-  detailsRef: React.RefObject<HTMLTextAreaElement>;
-}) => {
-  const isInquiry = mode === "inquiry";
-  const detailsLabel = isInquiry ? "How can we help? (optional)" : "Project details";
-  const detailsPlaceholder = isInquiry
-    ? "e.g. Wondering about pricing for a 200 ft fence in Cochrane, or whether you do small repair jobs."
-    : "e.g. 14x20 cedar deck, replacing a worn pressure-treated one. Want built-in benches if budget allows.";
-  const detailsHint = isInquiry
-    ? "A line or two is plenty — we'll follow up with anything we need."
-    : "Size, materials, timing — anything that helps us scope it.";
-  const timelineLabel = isInquiry ? "When do you need a reply?" : "Timeline";
-  const timelineOptions = isInquiry ? TIMELINES_INQUIRY : TIMELINES_QUOTE;
-
-  return (
-    <div className="space-y-6">
-      <Field label={detailsLabel} htmlFor="qm-details" hint={detailsHint}>
-        <textarea
-          ref={detailsRef}
-          id="qm-details"
-          value={form.projectDetails}
-          onChange={(e) => onUpdate("projectDetails", e.target.value)}
-          rows={4}
-          maxLength={2000}
-          placeholder={detailsPlaceholder}
-          className="w-full rounded-sm border border-border bg-background px-3 py-2.5 text-sm focus:outline-none focus:border-cedar focus:ring-1 focus:ring-cedar/30 transition-colors resize-none"
-        />
-      </Field>
-
-      <div className={`grid gap-4 ${isInquiry ? "sm:grid-cols-1" : "sm:grid-cols-2"}`}>
-        {!isInquiry && (
-          <Field label="Property type" htmlFor="qm-property">
-            <Select
-              id="qm-property"
-              value={form.propertyType}
-              options={PROPERTY_TYPES}
-              onChange={(v) => onUpdate("propertyType", v)}
-            />
-          </Field>
-        )}
-        <Field label={timelineLabel} htmlFor="qm-timeline">
-          <Select
-            id="qm-timeline"
-            value={isInquiry && !TIMELINES_INQUIRY.includes(form.timeline) ? TIMELINES_INQUIRY[1] : form.timeline}
-            options={timelineOptions}
-            onChange={(v) => onUpdate("timeline", v)}
-          />
-        </Field>
-      </div>
-    </div>
-  );
-};
-
-const Step3 = ({
-  form,
-  mode,
-  onUpdate,
   nameRef,
   touched,
   markTouched,
   nameValid,
   phoneValid,
   emailValid,
-  areaValid,
 }: {
   form: FormState;
   mode: Mode;
   onUpdate: <K extends keyof FormState>(k: K, v: FormState[K]) => void;
+  detailsRef: React.RefObject<HTMLTextAreaElement>;
   nameRef: React.RefObject<HTMLInputElement>;
   touched: Record<string, boolean>;
   markTouched: (field: string) => void;
   nameValid: boolean;
   phoneValid: boolean;
   emailValid: boolean;
-  areaValid: boolean;
 }) => {
+  const isInquiry = mode === "inquiry";
+  const detailsLabel = isInquiry ? "How can we help? (optional)" : "Project details (optional)";
+  const detailsPlaceholder = isInquiry
+    ? "e.g. Wondering about pricing for a 200 ft fence in Cochrane."
+    : "e.g. 14x20 cedar deck, replacing a worn pressure-treated one. Built-in benches if budget allows.";
+  const timelineLabel = isInquiry ? "When do you need a reply?" : "Timeline";
+  const timelineOptions = isInquiry ? TIMELINES_INQUIRY : TIMELINES_QUOTE;
   const phoneDigits = form.phone.replace(/\D/g, "").length;
+
   return (
     <div className="space-y-5">
+      {/* Contact block FIRST — it's the only required info. Details below
+          encourage but never block submission. */}
       <div className="grid sm:grid-cols-2 gap-4">
         <Field
           label="Your name"
@@ -687,59 +687,81 @@ const Step3 = ({
             invalid={touched.email && !emailValid}
           />
         </Field>
-        <Field
-          label="City or service area"
-          htmlFor="qm-area"
-          required
-          error={touched.addressOrArea && !areaValid ? "Please enter your city or service area." : undefined}
-        >
+        <Field label="City or area (optional)" htmlFor="qm-area">
           <Input
             id="qm-area"
             value={form.addressOrArea}
             onChange={(v) => onUpdate("addressOrArea", v)}
-            onBlur={() => markTouched("addressOrArea")}
-            placeholder="e.g. Calgary NW, Sherwood Park"
+            placeholder="e.g. Calgary NW"
             maxLength={255}
             autoComplete="address-level2"
-            invalid={touched.addressOrArea && !areaValid}
           />
         </Field>
       </div>
 
-      <Field label="Preferred contact method" htmlFor="qm-pref">
-        <div className="grid grid-cols-3 gap-2" role="radiogroup">
-          {(
-            [
-              { v: "call", label: "Call", icon: Phone },
-              { v: "text", label: "Text", icon: MessageSquare },
-              { v: "email", label: "Email", icon: Mail },
-            ] as const
-          ).map(({ v, label, icon: Icon }) => {
-            const active = form.contactPreference === v;
-            return (
-              <button
-                key={v}
-                type="button"
-                role="radio"
-                aria-checked={active}
-                onClick={() => onUpdate("contactPreference", v)}
-                className={`flex items-center justify-center gap-2 px-3 py-2.5 rounded-sm border text-sm transition-all min-h-[44px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cedar focus-visible:ring-offset-2 ${
-                  active
-                    ? "border-cedar bg-cedar/[0.08] text-foreground"
-                    : "border-border text-muted-foreground hover:border-cedar/50 hover:text-foreground"
-                }`}
-              >
-                <Icon className="h-3.5 w-3.5" aria-hidden /> {label}
-              </button>
-            );
-          })}
-        </div>
+      {/* Project details — optional but encouraged */}
+      <Field label={detailsLabel} htmlFor="qm-details">
+        <textarea
+          ref={detailsRef}
+          id="qm-details"
+          value={form.projectDetails}
+          onChange={(e) => onUpdate("projectDetails", e.target.value)}
+          rows={3}
+          maxLength={2000}
+          placeholder={detailsPlaceholder}
+          className="w-full rounded-sm border border-border bg-background px-3 py-2.5 text-sm focus:outline-none focus:border-cedar focus:ring-1 focus:ring-cedar/30 transition-colors resize-none"
+        />
       </Field>
 
-      <p className="text-[11px] text-muted-foreground/60 pt-2">
-        Tip: press <kbd className="px-1.5 py-0.5 rounded border border-border text-[10px]">⌘ Enter</kbd> /{" "}
-        <kbd className="px-1.5 py-0.5 rounded border border-border text-[10px]">Ctrl Enter</kbd> to send.
-      </p>
+      <div className={`grid gap-4 ${isInquiry ? "sm:grid-cols-2" : "sm:grid-cols-3"}`}>
+        {!isInquiry && (
+          <Field label="Property" htmlFor="qm-property">
+            <Select
+              id="qm-property"
+              value={form.propertyType}
+              options={PROPERTY_TYPES}
+              onChange={(v) => onUpdate("propertyType", v)}
+            />
+          </Field>
+        )}
+        <Field label={timelineLabel} htmlFor="qm-timeline">
+          <Select
+            id="qm-timeline"
+            value={isInquiry && !TIMELINES_INQUIRY.includes(form.timeline) ? TIMELINES_INQUIRY[1] : form.timeline}
+            options={timelineOptions}
+            onChange={(v) => onUpdate("timeline", v)}
+          />
+        </Field>
+        <Field label="Reach me by" htmlFor="qm-pref">
+          <div className="grid grid-cols-3 gap-1.5" role="radiogroup">
+            {(
+              [
+                { v: "call", label: "Call", icon: Phone },
+                { v: "text", label: "Text", icon: MessageSquare },
+                { v: "email", label: "Email", icon: Mail },
+              ] as const
+            ).map(({ v, label, icon: Icon }) => {
+              const active = form.contactPreference === v;
+              return (
+                <button
+                  key={v}
+                  type="button"
+                  role="radio"
+                  aria-checked={active}
+                  onClick={() => onUpdate("contactPreference", v)}
+                  className={`flex items-center justify-center gap-1.5 px-2 py-2 rounded-sm border text-xs transition-colors min-h-[44px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cedar focus-visible:ring-offset-2 ${
+                    active
+                      ? "border-cedar bg-cedar/[0.08] text-foreground"
+                      : "border-border text-muted-foreground hover:border-cedar/50"
+                  }`}
+                >
+                  <Icon className="h-3 w-3" aria-hidden /> {label}
+                </button>
+              );
+            })}
+          </div>
+        </Field>
+      </div>
     </div>
   );
 };
@@ -833,10 +855,12 @@ const SuccessPanel = ({
   mode,
   onClose,
   onSendAnother,
+  doneBtnRef,
 }: {
   mode: Mode;
   onClose: () => void;
   onSendAnother: () => void;
+  doneBtnRef: React.RefObject<HTMLButtonElement>;
 }) => (
   <div className="px-6 md:px-12 py-12 md:py-16 text-center flex-1 flex flex-col items-center justify-center">
     <div className="w-16 h-16 rounded-full bg-cedar/10 border-2 border-cedar/30 flex items-center justify-center mb-6">
@@ -860,8 +884,9 @@ const SuccessPanel = ({
     <div className="flex items-center gap-6">
       <button
         type="button"
+        ref={doneBtnRef}
         onClick={onClose}
-        className="bg-evergreen text-evergreen-foreground px-6 py-3 rounded-sm text-[11px] tracking-[0.18em] uppercase font-medium hover:bg-evergreen/90 transition-all min-h-[44px]"
+        className="bg-evergreen text-evergreen-foreground px-6 py-3 rounded-sm text-[11px] tracking-[0.18em] uppercase font-medium hover:bg-evergreen/90 transition-colors min-h-[44px]"
       >
         Done
       </button>
