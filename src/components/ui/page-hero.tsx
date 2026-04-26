@@ -284,7 +284,7 @@ const EditorialSplit = (props: EditorialSplitProps) => {
     <section
       id="section-hero"
       className={cn(
-        "relative min-h-[82vh] md:min-h-screen flex items-center overflow-hidden text-evergreen-foreground",
+        "relative min-h-[78vh] md:min-h-screen flex items-center overflow-hidden text-evergreen-foreground",
         props.className,
       )}
       aria-label={lines.join(" ")}
