@@ -1,7 +1,6 @@
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import CedarCTA from "@/components/CedarCTA";
-import ScrollRevealMotion from "@/components/ScrollRevealMotion";
 import SectionHeader from "@/components/SectionHeader";
 import PageHero from "@/components/ui/page-hero";
 import ProjectTile from "@/components/ui/project-tile";
@@ -83,32 +82,30 @@ const Work = () => {
 
               <div className="mt-12 space-y-20">
                 {PROJECTS.map((project, idx) => (
-                  <ScrollRevealMotion key={project.slug} delay={0.05} y={24}>
-                    <article aria-labelledby={`project-${project.slug}-heading`}>
-                      {idx > 0 && (
-                        <header className="mb-6 flex items-baseline justify-between gap-6 flex-wrap">
-                          <h2
-                            id={`project-${project.slug}-heading`}
-                            className="font-serif text-3xl md:text-4xl text-foreground"
-                          >
-                            {project.title}
-                          </h2>
-                          <p className="text-[10px] tracking-[0.2em] uppercase text-cedar/80">
-                            {project.location} · {formatStatus(project.status)} · {project.year}
-                          </p>
-                        </header>
-                      )}
-                      <ProjectGallery project={project} priority={idx === 0} />
-                      <button
-                        type="button"
-                        onClick={() => openModal([project.service])}
-                        className="mt-6 text-[11px] tracking-[0.2em] uppercase text-cedar hover:text-cedar-hover transition-colors min-h-[44px] inline-flex items-center gap-2"
-                      >
-                        Quote a similar build
-                        <span aria-hidden>→</span>
-                      </button>
-                    </article>
-                  </ScrollRevealMotion>
+                  <article key={project.slug} aria-labelledby={`project-${project.slug}-heading`}>
+                    {idx > 0 && (
+                      <header className="mb-6 flex items-baseline justify-between gap-6 flex-wrap">
+                        <h2
+                          id={`project-${project.slug}-heading`}
+                          className="font-serif text-3xl md:text-4xl text-foreground"
+                        >
+                          {project.title}
+                        </h2>
+                        <p className="text-[10px] tracking-[0.2em] uppercase text-cedar/80">
+                          {project.location} · {formatStatus(project.status)} · {project.year}
+                        </p>
+                      </header>
+                    )}
+                    <ProjectGallery project={project} priority={idx === 0} />
+                    <button
+                      type="button"
+                      onClick={() => openModal([project.service])}
+                      className="mt-6 text-[11px] tracking-[0.2em] uppercase text-cedar hover:text-cedar-hover transition-colors min-h-[44px] inline-flex items-center gap-2"
+                    >
+                      Quote a similar build
+                      <span aria-hidden>→</span>
+                    </button>
+                  </article>
                 ))}
               </div>
             </div>
@@ -131,29 +128,28 @@ const Work = () => {
 
             <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-12" role="list">
               {PLACEHOLDERS.map((w, i) => (
-                <ScrollRevealMotion key={i} delay={i * 0.06} y={28}>
-                  <ProjectTile
-                    item={{
-                      title: w.title,
-                      location: w.location,
-                      description: w.description,
-                      icon: w.icon,
-                      service: w.service as import("@/lib/api/public-media").ServiceCategory,
-                    }}
-                    index={i}
-                    total={PLACEHOLDERS.length}
-                    onClick={() => openModal([w.service])}
-                  />
-                </ScrollRevealMotion>
+                <ProjectTile
+                  key={i}
+                  item={{
+                    title: w.title,
+                    location: w.location,
+                    description: w.description,
+                    icon: w.icon,
+                    service: w.service as import("@/lib/api/public-media").ServiceCategory,
+                  }}
+                  index={i}
+                  total={PLACEHOLDERS.length}
+                  onClick={() => openModal([w.service])}
+                />
               ))}
             </div>
 
-            <ScrollRevealMotion delay={0.2} className="mt-20 text-center">
+            <div className="mt-20 text-center">
               <p className="text-sm text-muted-foreground italic mb-6">
                 More projects added each month.
               </p>
               <CedarCTA>Request a Quote</CedarCTA>
-            </ScrollRevealMotion>
+            </div>
           </div>
         </div>
       </section>

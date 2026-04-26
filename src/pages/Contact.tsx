@@ -1,7 +1,6 @@
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import CedarCTA from "@/components/CedarCTA";
-import ScrollRevealMotion from "@/components/ScrollRevealMotion";
 import SectionHeader from "@/components/SectionHeader";
 import PageHero from "@/components/ui/page-hero";
 import { useDocumentTitle } from "@/hooks/useDocumentTitle";
@@ -30,7 +29,7 @@ const Contact = () => {
         breadcrumb={[{ label: "Home", to: "/" }, { label: "Contact" }]}
         numeral="I"
         sectionLabel="GET IN TOUCH"
-        title={["Let’s talk about", "your project."]}
+        title={["Let's talk about", "your project."]}
         italic="Free quote. Honest answers."
         subtitle="No high-pressure sales. We respond within 24–48 hours."
         triptychQueries={[
@@ -43,7 +42,7 @@ const Contact = () => {
       <section id="section-contact" className={`${SECTION_PADDING.default}`} aria-labelledby="contact-heading">
         <div className="container mx-auto px-6">
           <div className={`${MAX_WIDTH.wide} mx-auto grid md:grid-cols-2 gap-16 items-start`}>
-            {/* Contact info */}
+            {/* Contact info — single panel with hairline rows */}
             <div>
               <SectionHeader
                 numeral="II"
@@ -53,43 +52,46 @@ const Contact = () => {
                 subheading="The fastest way is the phone."
               />
 
-              <div className="space-y-3 mt-10">
+              <aside
+                className="mt-10 rounded-sm border border-border/40 grain-texture shadow-contact overflow-hidden"
+                style={{ borderLeft: `2px solid hsl(var(--cedar) / ${bronzeStep(0, ROW_COUNT)})` }}
+                aria-label="Direct contact details"
+              >
                 <a
                   href={`tel:${CONTACT.phoneTel}`}
-                  className="grain-texture flex items-center gap-4 px-5 py-5 rounded-sm shadow-contact border border-border/40 hover:border-cedar/40 hover:bg-cedar/[0.03] hover:shadow-elevated transition-all duration-500 group min-h-[44px] focus-visible:ring-2 focus-visible:ring-cedar focus-visible:ring-offset-2"
-                  style={{ borderLeft: `2px solid hsl(var(--cedar) / ${bronzeStep(0, ROW_COUNT)})` }}
+                  className="flex items-center gap-4 px-5 py-5 min-h-[44px] hover:bg-cedar/[0.03] transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cedar focus-visible:ring-inset group/row"
                 >
                   <div className="shrink-0 w-10 h-10 rounded-sm bg-cedar/10 flex items-center justify-center">
                     <Phone className="h-4 w-4 text-cedar" aria-hidden />
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="text-[10px] tracking-[0.2em] uppercase text-muted-foreground/60">Call or Text</p>
-                    <p className="text-foreground font-medium group-hover:text-cedar transition-colors duration-500">
+                    <p className="text-foreground font-medium group-hover/row:text-cedar transition-colors duration-200">
                       {CONTACT.phone}
                     </p>
                   </div>
                 </a>
 
+                <div className="border-t border-border/30" aria-hidden />
+
                 <a
                   href={`mailto:${CONTACT.email}`}
-                  className="grain-texture flex items-center gap-4 px-5 py-5 rounded-sm shadow-contact border border-border/40 hover:border-cedar/40 hover:bg-cedar/[0.03] hover:shadow-elevated transition-all duration-500 group min-h-[44px] focus-visible:ring-2 focus-visible:ring-cedar focus-visible:ring-offset-2"
-                  style={{ borderLeft: `2px solid hsl(var(--cedar) / ${bronzeStep(1, ROW_COUNT)})` }}
+                  className="flex items-center gap-4 px-5 py-5 min-h-[44px] hover:bg-cedar/[0.03] transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cedar focus-visible:ring-inset group/row"
                 >
                   <div className="shrink-0 w-10 h-10 rounded-sm bg-cedar/10 flex items-center justify-center">
                     <Mail className="h-4 w-4 text-cedar" aria-hidden />
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="text-[10px] tracking-[0.2em] uppercase text-muted-foreground/60">Email</p>
-                    <p className="text-foreground font-medium group-hover:text-cedar transition-colors duration-500 truncate">
+                    <p className="text-foreground font-medium group-hover/row:text-cedar transition-colors duration-200 truncate">
                       {CONTACT.email}
                     </p>
                   </div>
                 </a>
 
-                <div
-                  className="grain-texture flex items-center gap-4 px-5 py-5 rounded-sm shadow-contact border border-border/40"
-                  style={{ borderLeft: `2px solid hsl(var(--cedar) / ${bronzeStep(2, ROW_COUNT)})` }}
-                >
+                <div className="border-t border-border/30" aria-hidden />
+
+                <div className="flex items-center gap-4 px-5 py-5">
                   <div className="shrink-0 w-10 h-10 rounded-sm bg-cedar/10 flex items-center justify-center">
                     <Clock className="h-4 w-4 text-cedar" aria-hidden />
                   </div>
@@ -99,10 +101,9 @@ const Contact = () => {
                   </div>
                 </div>
 
-                <div
-                  className="grain-texture flex items-start gap-4 px-5 py-5 rounded-sm shadow-contact border border-border/40"
-                  style={{ borderLeft: `2px solid hsl(var(--cedar) / ${bronzeStep(3, ROW_COUNT)})` }}
-                >
+                <div className="border-t border-border/30" aria-hidden />
+
+                <div className="flex items-start gap-4 px-5 py-5">
                   <div className="shrink-0 w-10 h-10 rounded-sm bg-cedar/10 flex items-center justify-center">
                     <MapPin className="h-4 w-4 text-cedar" aria-hidden />
                   </div>
@@ -114,53 +115,40 @@ const Contact = () => {
                     </p>
                   </div>
                 </div>
-              </div>
+              </aside>
             </div>
 
-            {/* Quote CTA card */}
-            <ScrollRevealMotion delay={0.2}>
-              <div id="section-contact-next" className="scroll-mt-24">
-                <div
-                  className="rounded-sm overflow-hidden relative grain-texture"
-                  style={{
-                    background: BACKDROP.evergreenCard,
-                    borderLeft: "3px solid hsl(var(--cedar))",
-                  }}
-                >
-                  
-                  <div className="relative z-10 p-10 md:p-12">
-                    <p className="text-[10px] tracking-[0.25em] uppercase text-cedar/80 mb-4">
-                      What&rsquo;s next
-                    </p>
-                    <h2 className="font-serif text-evergreen-foreground text-3xl md:text-4xl leading-tight mb-5">
-                      Send us your project details.
-                    </h2>
-                    <p className="text-evergreen-foreground/70 leading-relaxed mb-8">
-                      A quick, three-step form. Tell us what you&rsquo;re building, where you&rsquo;re located,
-                      and how you&rsquo;d like us to reach you. We&rsquo;ll be in touch within 24&ndash;48 hours.
-                    </p>
+            {/* Quote CTA card — primary CTA, no secondary */}
+            <div id="section-contact-next" className="scroll-mt-24">
+              <div
+                className="rounded-sm overflow-hidden relative grain-texture"
+                style={{
+                  background: BACKDROP.evergreenCard,
+                  borderLeft: "3px solid hsl(var(--cedar))",
+                }}
+              >
+                <div className="relative z-10 p-10 md:p-12">
+                  <p className="text-[10px] tracking-[0.25em] uppercase text-cedar/80 mb-4">
+                    What&rsquo;s next
+                  </p>
+                  <h2 className="font-serif text-evergreen-foreground text-3xl md:text-4xl leading-tight mb-5">
+                    Send us your project details.
+                  </h2>
+                  <p className="text-evergreen-foreground/70 leading-relaxed mb-8">
+                    A two-step form — only your name and phone are required. Tell us what
+                    you&rsquo;re building and we&rsquo;ll be in touch within 24&ndash;48 hours.
+                  </p>
 
-                    <ul className="space-y-2 text-sm text-evergreen-foreground/60 mb-10">
-                      <li className="flex gap-3"><span className="text-cedar">·</span>Free, no-obligation quote</li>
-                      <li className="flex gap-3"><span className="text-cedar">·</span>On-site visit at your convenience</li>
-                      <li className="flex gap-3"><span className="text-cedar">·</span>Clear scope and price in writing</li>
-                    </ul>
+                  <ul className="space-y-2 text-sm text-evergreen-foreground/60 mb-10">
+                    <li className="flex gap-3"><span className="text-cedar">·</span>Free, no-obligation quote</li>
+                    <li className="flex gap-3"><span className="text-cedar">·</span>On-site visit at your convenience</li>
+                    <li className="flex gap-3"><span className="text-cedar">·</span>Clear scope and price in writing</li>
+                  </ul>
 
-                    <div className="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6">
-                      <CedarCTA>Request a Quote</CedarCTA>
-                      <button
-                        type="button"
-                        onClick={() => openModal(["general"])}
-                        className="text-[11px] tracking-[0.18em] uppercase text-evergreen-foreground/70 hover:text-cedar transition-colors duration-500 inline-flex items-center gap-2 min-h-[44px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cedar focus-visible:ring-offset-2 rounded-sm px-1"
-                      >
-                        or send a general message
-                        <span className="inline-block w-4 h-px bg-cedar/60" aria-hidden />
-                      </button>
-                    </div>
-                  </div>
+                  <CedarCTA>Request a Quote</CedarCTA>
                 </div>
               </div>
-            </ScrollRevealMotion>
+            </div>
           </div>
         </div>
       </section>
