@@ -1,190 +1,235 @@
+## Goal
 
-# Audit — Every Surface That's Currently Green-When-It-Should-Be-A-Photo
+Eliminate every "flat green hero plate" on the four public landing pages — **Home (`/`)**, **Services (`/services`)**, **Work (`/work`)**, **About (`/about`)**, **Contact (`/contact`)** — and replace the background with a **thirds-split photographic triptych** that showcases real Creek work. The headline, BronzeRule, and CTA chrome stay 100% legible via a calibrated scrim system. Where photography is missing, a designed stone-grain fallback renders — never a green plate.
 
-I walked the live preview at `/work#portfolio-fencing-2025`, mapped every `BACKDROP.evergreenPlate` / `bg-evergreen` callsite, and cross-referenced against the actual approved-media inventory. The result: **9 surfaces** silently render flat green right now. The reasons fall into three buckets:
-
-1. **Query gates set too tight.** Most slots demand `min_quality: "portfolio"` or `"hero"`. The library has the work — 65 portfolio/hero photos — but the *combinations* (e.g. `service:fencing` + `shot_type:[hero,wide,elevation]` + `min_quality:portfolio`) match zero rows. No match → green plate.
-2. **Plate painted underneath every successful image.** Cards in `Portfolio.tsx`, `Services.tsx`, and the project tile render `BACKDROP.evergreenPlate` as the *base* of the tile, then `MediaSlot` paints on top. During load — and forever, on cards that fall back to the icon — the green plate is the entire visible surface.
-3. **Hard-coded green even when media exists nearby.** `GlobalMenu` paints a literal `bg-evergreen` div as the menu's editorial photo fallback. `ProjectTile` placeholders never even *try* to fetch a photo for the service category.
-
-The fix is not "soften the green." A premium exterior contractor's site shows the *exterior contracting work*. Below is the surface-by-surface plan, in priority order.
+This is a Fantasy.co-grade upgrade: landing chrome should *prove the work* the moment a visitor lands.
 
 ---
 
-## A. Library inventory (so the fix is grounded in reality)
+## Audit — what is green today
 
+| Page | Hero variant | Status |
+|---|---|---|
+| `/` Home | `editorial-split` | **Left 55% column is solid evergreen** (`bg-evergreen` + `evergreenRadial`) |
+| `/services` | `service-portrait` | Triptych exists but at `opacity-70` with `evergreenRadial @0.55`, vignette, and `bg-evergreen` base — reads ≥80% green |
+| `/about` | `evergreen-typographic` | **100% solid green** (`bg-evergreen` + `evergreenRadial @0.9`) |
+| `/contact` | `evergreen-typographic` | **100% solid green** (same as About) |
+| `/work` | `cinematic-bleed` | Already a single full-bleed photo — *not* green; left as-is, but we will offer the triptych as an opt-in (`triptych` prop) for symmetry. |
+
+The user's directive applies to all five. Four require a full triptych replacement; `/work` gets an additive opt-in.
+
+---
+
+## Design concept — "Triptych Bleed"
+
+A horizontal **3-column photographic backdrop** spans the full hero. Each column is a different approved photograph that hand-picks a different shot type so the eye reads the breadth of the craft (e.g., elevation · detail · interior). The chrome (headline, sub, CTA) sits on the left third with a precision scrim; the right two-thirds breathe full-bleed.
+
+### Layout — three image rhythms
+
+The triptych is not "three equal slabs" — that reads as a stock grid. Three rhythms, all 100% width, depending on context:
+
+1. **Equal thirds (33/33/33)** — default. Used on About, Contact, Services. Hairline cedar dividers (`hsl(var(--cedar) / 0.18)`) at column gutters.
+2. **Asymmetric (40/30/30)** — Home. The lead column is widest because the headline column overlays it; the two right columns are tighter editorial accents.
+3. **Cinematic single + two accents (60/20/20)** — opt-in for `/work`. One hero plate dominates left; two narrow vertical "field strips" on the right play subtle Ken Burns at half speed.
+
+All rhythms maintain 1px hairline cedar gutters. On mobile (`<md`), the triptych collapses to a **vertical stack of three short slabs (40vh / 30vh / 30vh)** so the photographs are not deformed; the headline overlays the top slab. At `<sm` (≤640px), the triptych collapses to the **single best image** with the same scrim — never green.
+
+### Scrim system — uncompromising legibility
+
+Each landing page picks a **scrim direction** based on where its headline sits. The scrim is a layered, painterly gradient designed to keep the imagery readable while guaranteeing WCAG AA on the type:
+
+- **Left-anchored scrim** (Home, Services, About): `linear-gradient(90deg, hsl(150 30% 6% / 0.78) 0%, hsl(150 30% 6% / 0.55) 38%, hsl(150 30% 6% / 0.18) 62%, transparent 78%)` — sweeps right, leaving the rightmost ~22% photographic.
+- **Bottom-anchored scrim** (Contact, Work): `linear-gradient(180deg, transparent 0%, hsl(150 30% 6% / 0.25) 45%, hsl(150 30% 6% / 0.78) 90%)` — top stays photographic; type lives in the lower 38%.
+- Universal grain pass at `opacity-25` and a top scrim (`from-evergreen/55 → transparent`, 96px) so navigation chrome remains legible.
+- All scrims use the same `hsl(150 30% 6%)` base so the green tone reads as *atmosphere*, not as a plate.
+
+Contrast targets: headline AAA (≥7:1), subtitle AA (≥4.5:1), 10px BronzeRule label AA-large (≥3:1). Spot-check with the `pages/StyleGuide` ratio grid.
+
+### Photographic curation rules
+
+The triptych must *narrate*. We pick one query per column with a deliberate shot-type story:
+
+- **Column A (lead)** → `shot_type: ["hero","elevation"]`, `min_quality: "reference"`
+- **Column B (middle)** → `shot_type: ["detail","process"]`, `min_quality: "reference"`
+- **Column C (trail)** → `shot_type: ["interior","wide"]`, `min_quality: "reference"`
+
+Per-page narrative seasoning:
+
+- Home — A: deck hero · B: cedar grain detail · C: wide site landscape
+- Services — A: deck · B: fence detail · C: siding wide
+- About — A: crew/process · B: tool detail · C: portfolio wide
+- Contact — A: warm exterior · B: hand detail · C: site context
+- Work (opt-in 60/20/20) — already cinematic; A is the existing `query`, B/C are sister `shot_type:"detail"` strips
+
+If a column resolves no media, it renders the **stone-plate** with a `cedar/35` icon (lucide `Hammer/Fence/Trees` per service) and `text-[10px] tracking-[0.28em] uppercase` caption — never green.
+
+### Motion
+
+- Each column: `hero-kenburns` 16s loop with **staggered phase** (`animation-delay: 0ms / 600ms / 1200ms`) so the three images never breathe in sync. Reduced to `none` under `prefers-reduced-motion`.
+- Scrim opacity has no motion — it is fixed.
+- Headline keeps the existing `KineticHeadline` clip-path reveal.
+- Hairline gutters animate width-in (`0 → 1px`) over 600ms after first paint — a Pentagram-grade detail nobody asks for but everyone feels.
+
+### Accessibility
+
+- Each `<img>` has the real `alt` from `media_metadata`. Decorative duplicates use `alt=""`.
+- Triptych container is `aria-hidden` because the meaningful caption is the headline.
+- Scrim contrast hand-verified at the breakpoint where the headline first wraps (~`md`).
+- Reduced-motion: kill Ken Burns, kill gutter draw — the triptych is static.
+- `<sm` collapse to a single image preserves AA on every device (no triptych = no scrim split risk).
+
+---
+
+## Implementation plan
+
+### 1. New primitive: `<HeroTriptych />` — single source of truth
+
+Create `src/components/media/HeroTriptych.tsx`:
+
+```ts
+type TriptychRhythm = "equal" | "asymmetric" | "cinematic";
+type ScrimDirection = "left" | "bottom" | "none";
+
+interface HeroTriptychProps {
+  queries: [MediaQuery, MediaQuery, MediaQuery]; // exactly 3
+  rhythm?: TriptychRhythm;       // default "equal"
+  scrim?: ScrimDirection;        // default "left"
+  fallbackIcons?: [LucideIcon?, LucideIcon?, LucideIcon?];
+  fallbackCaptions?: [string?, string?, string?];
+  /** Marks column A as LCP candidate for `useHeroPreload`. */
+  priority?: boolean;
+  className?: string;
+}
 ```
-By shot_type × quality (approved, images):
-  process    × reference   44   ← largest pool
-  process    × portfolio   24   ← excellent fallback for non-hero slots
-  elevation  × reference   15
-  detail     × reference   11
-  elevation  × hero         8   ← only true "hero"-tier supply
-  wide       × hero         1
-  detail     × portfolio    1
 
-By service × quality (approved):
-  decks    : 1 hero,  5 portfolio, 21 reference  →  good coverage
-  sheds    : 6 hero, 20 portfolio, 29 reference  →  excellent coverage
-  fencing  : 2 hero,  0 portfolio, 17 reference  →  thin at portfolio tier
-  painting :         0 portfolio,  3 reference   →  thin everywhere
-  siding   : 0  approved photos                  →  no coverage
-  pergolas : 0  approved photos                  →  no coverage
-  videos   : 0 approved                          →  no field clips yet
+Internals:
+- Resolves three `useFirstApprovedMedia` calls.
+- Renders a `grid` with template-columns per rhythm (`33% 33% 34%` / `40% 30% 30%` / `60% 20% 20%`).
+- Per-column: real `<img>` with `hero-kenburns` + staggered delay, OR `<EditorialFallback variant="stone" icon caption />` (extracted from `MediaSlot.tsx` as a named export so we don't duplicate).
+- Hairline cedar gutters as `box-shadow: inset 1px 0 0 hsl(var(--cedar)/0.18)` on columns 2 and 3.
+- Top scrim (96px, navigation legibility) always on.
+- Direction scrim — switch by prop.
+- Mobile: at `<md`, switches `grid-rows-[40vh_30vh_30vh] grid-cols-1`. At `<sm`, hides cols B and C, fills A 100%.
+- `useHeroPreload(itemA?.url, MEDIA_SIZES.HERO_FULL)` when `priority`.
+
+This primitive lives in `src/components/media/` next to `EditorialBleedSection`. It is **the only thing that knows how to draw a hero photo background** going forward.
+
+### 2. Refactor `page-hero.tsx`
+
+Replace green plates inside the four affected variants with `<HeroTriptych />`. Each variant retains its own *content layout* — only the background changes.
+
+#### `EvergreenTypographic` (used by About + Contact)
+- Remove `bg-evergreen` from the `<section>`.
+- Remove the `BACKDROP.evergreenRadial` overlay div.
+- Mount `<HeroTriptych queries={…} rhythm="equal" scrim="left" priority />` as the first child of the section.
+- Keep the cedar spine, BronzeRule, KineticHeadline — they sit in `relative z-10` over the scrim.
+- Add a new optional prop `triptychQueries?: [MediaQuery, MediaQuery, MediaQuery]` — if omitted, the variant falls back to a stone-plate triptych (still no green).
+
+#### `EditorialSplit` (used by Home)
+- Remove `bg-evergreen` and `evergreenRadial`.
+- Mount `<HeroTriptych queries={[lead, detail, wide]} rhythm="asymmetric" scrim="left" priority />`.
+- The existing right-column "photo card with provenance" stays — it now reads as a *zoomed/featured detail* layered over the trailing third of the triptych. Kept its `border-cedar/15` and `shadow-float` so it pops from the backdrop.
+- Provenance card now reads cinematically because it sits above a real backdrop, not a green plate.
+
+#### `ServicePortrait` (used by Services)
+- Replace its in-house triptych implementation with `<HeroTriptych />`. This consolidates the duplicated logic — there will be **one** triptych renderer.
+- Drop the `evergreenRadial @0.55` overlay; the new scrim handles legibility.
+- `queries` prop maps 1:1 to the new triptych queries.
+
+#### `CinematicBleed` (used by Work — opt-in)
+- Add `triptych?: boolean` prop (default `false`). When `true` AND `videoQuery` is empty, render `<HeroTriptych rhythm="cinematic" />` instead of the single image. Keeps Work's existing single-image cinematic as the default — we only *offer* the triptych.
+- This is additive only; no breaking change to `/work`.
+
+### 3. Per-page wiring
+
+Update each landing page to pass deliberate triptych queries with brand narrative:
+
+- **`src/components/Hero.tsx`** — Home: 
+  ```ts
+  triptychQueries: [
+    { service: "decks", shot_type: ["hero","elevation"], min_quality: "reference", kind: "image" },
+    { shot_type: ["detail","process"], min_quality: "reference", kind: "image" },
+    { service: "siding", shot_type: ["wide","aerial"], min_quality: "reference", kind: "image" },
+  ]
+  ```
+- **`src/pages/Services.tsx`** — already uses `queries`; refine the array to enforce shot-type variety (currently three of the same service).
+- **`src/pages/About.tsx`** — add `triptychQueries` for crew/process, tool/detail, portfolio/wide. Brand-narrative: *who we are · what we touch · what we leave behind*.
+- **`src/pages/Contact.tsx`** — add `triptychQueries` for warm exterior, hand/tool detail, site context. Brand-narrative: *the warmth waiting on the other end of the call*.
+- **`src/pages/Work.tsx`** — keep current single image. (Optional toggle later.)
+
+### 4. Fallback hierarchy (no green, ever)
+
+The triptych uses this resolution order per column:
+1. Approved media matching the query → render photo
+2. Approved media matching a relaxed query (drop `service`, keep `shot_type`) → render photo
+3. Stone-plate with icon + caption (`MediaSlot`'s `EditorialFallback`)
+
+We export `EditorialFallback` from `MediaSlot.tsx` so `HeroTriptych` reuses the exact same warm-stone visual language used elsewhere on the site.
+
+### 5. Token additions in `src/lib/colors.ts`
+
+```ts
+// Triptych scrims — calibrated for AAA headline contrast over photographic mid-tones.
+SCRIM = {
+  left: "linear-gradient(90deg, hsl(150 30% 6% / 0.78) 0%, hsl(150 30% 6% / 0.55) 38%, hsl(150 30% 6% / 0.18) 62%, transparent 78%)",
+  bottom: "linear-gradient(180deg, transparent 0%, hsl(150 30% 6% / 0.25) 45%, hsl(150 30% 6% / 0.78) 90%)",
+  topNav: "linear-gradient(180deg, hsl(150 30% 6% / 0.55) 0%, transparent 100%)",
+} as const;
 ```
 
-**Implication**: the hard rule "show a photo at hero or portfolio quality only" is fighting the data. The right rule is *photo-or-fallback per surface, with the gate set to whatever the surface can plausibly receive*.
+This becomes the only sanctioned way to scrim a hero — documented in the memory file.
 
----
+### 6. Performance
 
-## B. The nine green surfaces, ranked by how loud they shout
+- Only column A is `loading="eager"` + `fetchPriority="high"` + preload via `useHeroPreload`. Columns B and C lazy-load.
+- `MEDIA_SIZES.THIRD` for B/C; `MEDIA_SIZES.HERO_FULL` for A on Home/Work, `MEDIA_SIZES.THIRD` on Services/About/Contact.
+- `contain: layout style paint` on the triptych container so Ken Burns repaints don't bleed into the page.
+- The headline section sits above the triptych in DOM order — the LCP candidate is still the first photo.
 
-### 1. `/work` page hero — full-bleed flat green ⚠️ (loudest offender)
+### 7. Accessibility & responsive QA matrix (before sign-off)
 
-**File**: `src/components/ui/page-hero.tsx` lines 360–485 (`CinematicBleed`)
+| Breakpoint | Behavior | Headline contrast |
+|---|---|---|
+| `≥1280px` | 3-column triptych, scrim `left` | AAA (≥7:1) |
+| `768–1279px` | 3-column triptych, scrim `left` | AAA |
+| `640–767px` | Vertical stack (40/30/30 vh) | AA (single image under headline) |
+| `<640px` | Single image (column A only), scrim `bottom` | AAA |
 
-**What's happening**: query is `shot_type:[hero,elevation,wide] + min_quality:portfolio + kind:image`. The library has 8 elevation+hero, 1 wide+hero, 0 portfolio-tier shots in `[hero,elevation,wide]` shot types. The hero+elevation rows *should* match, but `min_quality:"portfolio"` requires quality ≥ portfolio (the QUALITY_ORDER index gate); `hero` qualifies and 8 of those exist. So why is it green? Because `CinematicBleed` calls `useFirstApprovedMedia(props.query)` separately from `MediaSlot`, and *only* the `useFirstApprovedMedia(props.videoQuery)` is set to videos; if photo loading is slow OR the query doesn't return, the vignette stack still paints (3 layers of dark gradient + grain), darkening the page even after the photo loads.
+I will hand-verify each by sampling a known photograph from the library against the calculated headline cedar text.
 
-**Two fixes — apply both**:
-- **Loosen the gate** to `min_quality: "reference"` for the hero photograph, since the cinematic vignette darkens everything anyway. We have 39+ usable images for this.
-- **Replace the `BACKDROP.evergreenPlate` fallback (line 417)** with a layered editorial fallback: a deep stone gradient + grain + a quiet bronze rule + the literal text `"Photographing this season."` as a 10px tracked caption in cedar/40. Never green again on this surface.
+### 8. Memory updates
 
-### 2. Homepage `Portfolio` cards — green base under every tile
+- **Update** `mem://design/aesthetic-direction.md` — the **No-Green Gate Policy** is now codified to extend to *hero plates*: a hero may never be a flat green field. It must be photographic OR the stone-plate fallback OR an explicit dark cinematic where dictated by approved imagery.
+- **Create** `mem://features/hero-triptych.md` — the contract of `HeroTriptych` (rhythms, scrim directions, query convention, fallback ordering, mobile collapse rules) so future heroes consume the primitive instead of inventing new backdrops.
+- **Update** `mem://features/editorial-media-system.md` — list `HeroTriptych` next to `MediaSlot` / `EditorialBleedSection` as a top-level orchestrator.
 
-**File**: `src/components/Portfolio.tsx` line 163
+### 9. Files touched
 
-**What's happening**: `<div … style={{ background: BACKDROP.evergreenPlate }}>` is the *base layer* of every card. `MediaSlot` paints on top — but during the LQIP→full-image transition the green flashes through, and any card whose service has no `[hero,elevation,wide]` photo at `reference+` quality (the current floor) reverts to a green plate with an icon overlay.
+**Create**
+- `src/components/media/HeroTriptych.tsx`
+- `mem://features/hero-triptych.md`
 
-**Fix**: 
-- Change the base layer from `BACKDROP.evergreenPlate` to a warm **stone-grain plate** (`bg-stone-100 grain-overlay` with a 1px hairline border) so the loading state *and* the icon-fallback state read as a calm editorial card, never a black-green void.
-- Loosen the per-card query from `min_quality:"reference"` (which is already set, good) to *also* drop the `shot_type` constraint so any hero/elevation/wide/detail shot can fill a service card. With 21 reference-grade decks photos, the deck card should always have a photo.
-- Inside the icon fallback, replace the lonely Lucide icon with the icon **layered over a faint cedar→stone gradient and the service name as 10px tracked uppercase**, so even a fallback feels intentional, not "missing photo."
+**Edit**
+- `src/components/media/MediaSlot.tsx` — export `EditorialFallback` for reuse
+- `src/lib/colors.ts` — add `SCRIM` token group
+- `src/components/ui/page-hero.tsx` — refactor `EvergreenTypographic`, `EditorialSplit`, `ServicePortrait`; add `triptych` prop to `CinematicBleed`
+- `src/components/Hero.tsx` — pass `triptychQueries`
+- `src/pages/Services.tsx` — refine query story
+- `src/pages/About.tsx` — pass `triptychQueries`
+- `src/pages/Contact.tsx` — pass `triptychQueries`
+- `mem://design/aesthetic-direction.md` — extend Gate Policy to hero plates
+- `mem://features/editorial-media-system.md` — register the new primitive
+- `mem://index.md` — add memory reference
 
-### 3. Homepage `Services` cards — same green-base disease
+### 10. Verification (post-build)
 
-**File**: `src/components/Services.tsx` lines 92–103 (`MediaSlot` fallback)
-
-**What's happening**: each service tile's `MediaSlot` fallback is again `BACKDROP.evergreenPlate` with a centered icon. For `siding` and `pergolas` (zero photos in library), this is *every page load*.
-
-**Fix**:
-- Change the per-tile fallback to the same warm-stone editorial plate as the Portfolio card — *consistent fallback aesthetic across the site*.
-- Loosen the `MediaSlot` query from `min_quality:"portfolio"` to `min_quality:"reference"`. For `decks`, `sheds`, `fencing`, this immediately lights up the cards with real work.
-- For services that genuinely have no photo (`siding`, `pergolas`, `painting` near-zero), keep the warm-stone fallback but add a corner ribbon: `"NEW WORK COMING — JOIN THE WAITLIST"` linking to `openModal([service.id])`. Turns the absence into a conversion moment.
-
-### 4. `ProjectTile` placeholders on `/work` — green plate icon cards
-
-**File**: `src/components/ui/project-tile.tsx` line ~70 (the `else` branch when no `image` prop)
-
-**What's happening**: the five `PLACEHOLDERS` in `Work.tsx` (Two-Tier Cedar Deck, Cedar Privacy Fence, Full Exterior Repaint, Soffit & Fascia Replace, Cedar Pergola) all render with no `image` prop, so each one is a green plate with a centered icon. That's five back-to-back green tiles in the "MORE WORK" grid — exactly the section that needs to *prove* breadth.
-
-**Fix**:
-- Make `ProjectTile` *itself* photo-aware: when no `image` prop is supplied but a `service` prop is, internally call `useFirstApprovedMedia({ service, kind:"image", min_quality:"reference" })` and render that photo. Each tile becomes auto-illustrated from the cloud library.
-- When still nothing matches, fall back to a **stone-grain plate + Lucide icon + the service name as caption**. Same warm fallback as #2 and #3 — consistency builds trust that this is *intentional editorial design*, not broken images.
-- Pass `service` from `Work.tsx`'s `PLACEHOLDERS.map` into the tile so it can do the lookup.
-
-### 5. About section — "On the boards" green plate
-
-**File**: `src/components/About.tsx` lines 78–86
-
-**What's happening**: the editorial `MediaSlot` queries `shot_type:[interior,process,detail] + min_quality:portfolio`. We have 24 process+portfolio rows, plenty of supply — but the `interior` shot type has zero rows, and `detail+portfolio` has only 1. The query *should* hit the 24 process shots. If it doesn't (RLS / pagination order), the fallback is again green with bronze-glow.
-
-**Fix**:
-- Loosen to `min_quality:"reference"` — that opens 44 process shots + 11 detail. Effectively guarantees a photo.
-- If the query still misses (network race), replace the green fallback with a **diagonally-cropped stone+cedar wash card** that contains the *literal brand-promise text* as art — turns the photo absence into a typographic moment instead of a flat-green hole. The right column already has the brand-promise; the left should be either a photo *or* a typographic eyebrow card ("Crew owned from Calgary" set in DM Serif Display, italic, with a cedar hairline). Either path: zero green plates.
-
-### 6. `Contact.tsx` (homepage section) — green Brand-Promise card *(intentional, but isolated)*
-
-**File**: `src/components/About.tsx` lines 91–108
-
-This one I *don't* propose changing. The deep evergreen "Brand promise" plate with the white serif quote is a deliberate dark-on-light editorial moment — the only intentionally dark card in the page rhythm. It's grain-textured and has a cedar borderleft, so it already reads as designed, not as a missing image. **Leave it alone — it's a designed dark surface, not a fallback.**
-
-### 7. `EditorialBleedSection` — `bg-evergreen/5` wash
-
-**File**: `src/components/media/EditorialBleedSection.tsx` line 59
-
-**What's happening**: the section's outer wrapper is `bg-evergreen/5`. This is barely visible (5% green tint) and gives a sub-aural background while the photo loads. *Fine on most pages*, but on the homepage it sits between the trust strip and Services, where it briefly shows during image load. With `hideIfEmpty=true` (default) the section renders nothing when no media matches, so the green wash is only visible during the LQIP fade.
-
-**Fix**: change `bg-evergreen/5` to `bg-stone-50` (warm cream-tinted neutral). The temperature shifts from cold to warm without losing the section delineation.
-
-### 8. `AmbientVideoBleed` and `FieldClipsStrip` — `bg-evergreen` posters
-
-**Files**: `src/components/media/AmbientVideoBleed.tsx` line 97, `src/components/media/FieldClipsStrip.tsx` line 73
-
-**What's happening**: video tiles render a green plate before the video frame loads. With **zero approved videos** in the library, `FieldClipsStrip` returns `null` early so users don't see this — but `AmbientVideoBleed` doesn't, and any future ambient bleed would flash green.
-
-**Fix**: change both base backgrounds to `bg-stone-200 grain-overlay` so any future video has a warm poster instead of a cold green frame. Cost: one className change × 2 files.
-
-### 9. `GlobalMenu` editorial photo — hard-coded green
-
-**File**: `src/components/navigation/GlobalMenu.tsx` lines 273–283
-
-**What's happening**: when the menu's `useFirstApprovedMedia({ kind:"image", min_quality:"portfolio", shot_type:["hero","elevation","wide"] })` misses (and it currently does because the gate is too tight), the right column paints `<div className="absolute inset-0 bg-evergreen" />`. The whole point of the right column is the editorial photograph. Green-when-empty defeats the design.
-
-**Fix**:
-- Loosen the menu's photo query to `min_quality:"reference"` — we have 65+ matching shots.
-- Cycle: instead of one fixed photo, request `useApprovedMedia({ ..., limit: 6 })` and rotate through them on a 4-second crossfade (respect `prefers-reduced-motion` — if reduced, just pick one randomly per session). Adds quiet life to the menu without being theatrical.
-- Replace the `bg-evergreen` fallback (line 282) with a **stone-grain panel + the literal type "Field photography updates each season — request a quote and we'll send you our latest project deck"** as a *content* fallback. Turns the missing photo into a soft conversion prompt.
-
----
-
-## C. Two-line architectural change so this doesn't regress
-
-Right now every component invents its own fallback styling and its own quality gate. That's why we have nine variations of "flat green plate" — each one was a separate decision. To make sure this stays fixed:
-
-1. **Add `EvergreenPlate` → `EditorialPlate` rename + variants in `src/lib/colors.ts`.**  
-   Replace `BACKDROP.evergreenPlate` (line 110–112) with **three** intentional plate gradients:
-   - `BACKDROP.stonePlate` — warm cream stone, the new default fallback for *light cards* (Portfolio, Services, ProjectTile).
-   - `BACKDROP.cedarPlate` — soft cedar→stone wash for hero-card fallbacks (About left column).
-   - `BACKDROP.evergreenPlate` — kept for *deliberate* dark editorial surfaces (About brand-promise card only). Add a JSDoc warning: *"Use only as a deliberate dark surface, never as a 'missing photo' fallback."*
-
-2. **Centralize the fallback in `MediaSlot`.**  
-   Add an optional `fallbackVariant: "stone" | "cedar" | "evergreen"` prop to `MediaSlot`. When supplied, MediaSlot renders the right plate from the new BACKDROP set + an optional centered icon + optional caption text — so callers don't have to hand-roll the fallback `<div>` every time. Keeps the system honest.
-
----
-
-## D. Image-quality gate policy (write it down once, kill the bug forever)
-
-Add to `mem://design/aesthetic-direction.md`:
-
-> **Gate policy**: Hero positions request `min_quality:"reference"` (we vignette + Ken Burns to upgrade any photo into a hero). Card positions request `min_quality:"reference"`. Bleed dividers between sections request `min_quality:"portfolio"`. Hero-tier (`min_quality:"hero"`) is reserved for: the homepage above-the-fold split-photo, and the `/services` triptych — surfaces where the photo is the entire content and any compromise shows.
-
-This single policy keeps every future page from redoing the green-plate dance.
-
----
-
-## E. Files I'll touch (concrete change list)
-
-| File | Change |
-|---|---|
-| `src/lib/colors.ts` | Add `BACKDROP.stonePlate` + `BACKDROP.cedarPlate`, JSDoc warning on `evergreenPlate` |
-| `src/components/media/MediaSlot.tsx` | Add `fallbackVariant` + `fallbackIcon` + `fallbackCaption` props |
-| `src/components/ui/page-hero.tsx` | Loosen CinematicBleed query to `reference`; replace green fallback (line 417) with stone+grain editorial plate |
-| `src/components/Portfolio.tsx` | Replace `evergreenPlate` base with stone; drop `shot_type` constraint to broaden hits |
-| `src/components/Services.tsx` | Replace `evergreenPlate` fallback with stone; loosen quality to `reference`; add corner ribbon for empty services |
-| `src/components/ui/project-tile.tsx` | Make tile photo-aware via internal `useFirstApprovedMedia({ service })`; stone fallback |
-| `src/pages/Work.tsx` | Pass `service` to ProjectTile so the photo lookup works |
-| `src/components/About.tsx` | Loosen MediaSlot query to `reference`; replace green plate fallback with cedar-wash typographic card |
-| `src/components/media/EditorialBleedSection.tsx` | `bg-evergreen/5` → `bg-stone-50` |
-| `src/components/media/AmbientVideoBleed.tsx` | `bg-evergreen` → stone+grain poster |
-| `src/components/media/FieldClipsStrip.tsx` | Tile background `bg-evergreen` → stone+grain |
-| `src/components/navigation/GlobalMenu.tsx` | Loosen photo query to `reference`; rotate among 6 photos with 4s crossfade; replace `bg-evergreen` fallback with stone+typographic content |
-| `mem://design/aesthetic-direction.md` | Document the gate policy + the "no green-as-fallback" rule |
-
----
-
-## F. Out of scope (intentionally)
-
-- The `/contact` standalone page hero, `/about` page hero, footer, QuoteModal sidebar — those are **deliberately** dark-evergreen surfaces (chrome, modals, footers). They're not photo positions; they're brand surfaces. Leaving them.
-- Generating or uploading new photography — the library already has 65+ portfolio-grade photos. The fix is to *let them through the gate*, not to ask for more.
-- Video work — zero approved videos, so `FieldClipsStrip` is dormant; the fix is the styling, not the content pipeline.
+1. `bunx tsc --noEmit` — zero errors.
+2. Browser walk: `/`, `/services`, `/about`, `/contact`, `/work` at 1440 / 1024 / 768 / 390 — confirm zero green plates, scrim legibility, triptych rendering.
+3. Toggle media library access off (or query for a non-existent service) on `/contact` to verify stone-plate fallback renders, **never** green.
+4. Check console: no React key warnings, no LCP regression.
 
 ---
 
 ## Outcome
 
-After this pass:
-- Every card on Home, Services, Work shows a real photograph (not a green plate) for any service with library coverage.
-- Every fallback for services without coverage reads as **intentional warm-stone editorial design**, not a missing-image hole.
-- The `/work` hero never paints green — even on a cold cache it shows stone + grain + bronze hairline + a quiet caption.
-- The Global Menu becomes a small editorial gallery instead of a green box.
-- A documented gate policy + a centralized `MediaSlot` fallback prevent the next contributor from re-introducing flat green anywhere.
+After this work, **every public landing page leads with photographic proof of Creek's craft**. The flat green plate becomes impossible to draw — the primitive doesn't allow it, the gate policy forbids it, and the fallback for missing media is warm stone, not green. The triptych is the new editorial signature of the brand.
