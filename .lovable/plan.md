@@ -1,189 +1,197 @@
 
-## UX Audit — what's failing right now
+# Navigation v3 — Path-of-Least-Resistance Audit & Upgrade
 
-I traced every nav touchpoint on Creek and compared it to the RoyalMechanical reference (which uses a clean two-tier system: per-page section anchors in the header, and a fullscreen hamburger panel for global navigation). Here is what is creating friction today:
+I shipped v2 (registry + section rail + GlobalMenu) and then drove the live preview at four viewports and through the menu panel. **The architecture is right; the execution has 20 distinct friction points** that stop it from feeling Fantasy.co-grade. They cluster into four themes:
 
-| # | Friction point | Why it hurts | Evidence |
-|---|---|---|---|
-| 1 | **No section wayfinding.** Home has 8 scrollable sections; nav only shows 5 page links. | Visitor scrolls 4,000 px without ever knowing how far they are or how to jump back. Violates IDEO's "where am I" heuristic. | `src/pages/Index.tsx` renders Hero → TrustStrip → EditorialBleed → Services → About → Testimonials → FeaturedProjects → Portfolio → FieldClips → Contact, but `Navigation.tsx` is route-only. |
-| 2 | **Sub-pages have no jump targets.** `/services` has FAQ at the bottom; `/work` has Gallery; users must scroll the entire page. | Highest-intent users (FAQ, Gallery) get punished. | `Services.tsx` lines 63 & 92 — sections exist but no anchor in the header. |
-| 3 | **Inconsistent section IDs.** Home sections use `id="section-services"`. Sub-pages use `aria-labelledby` with no scrollable ID. | An anchor rail can't latch on. | `About.tsx` lines 42/73/108, `Services.tsx` lines 63/92, `Work.tsx` lines 72/120, `Contact.tsx` line 38. |
-| 4 | **Mobile menu is a flat list.** Just 5 links + a CTA. No services catalog, no service-area cities, no proof. | Royal's fullscreen menu surfaces 5 services × 7 cities × 5 company pages in one tap. Creek surfaces 5. | `Navigation.tsx` lines 100–134. |
-| 5 | **Cramped tablet (768–1023 px).** Logo + 5 links + phone + CTA + hamburger contend for one 64 px row. | Below `lg` the desktop nav hides (good), but phone + CTA + brand stack still wrap at 820 px. | `Navigation.tsx` `hidden lg:flex` — there is no md-tier compromise. |
-| 6 | **Subtle active state.** `after:w-6` is a 24 px underline — invisible during peripheral scan. | Royal uses a full-width `scale-x-100` line that draws clearly on hover/active. | `Navigation.tsx` line 64. |
-| 7 | **No "scroll progress" awareness.** Header is opaque from frame 1; never reacts to where the user is. | Royal fades chrome away near the footer to give the gold CTA room. | `Navigation.tsx` line 41 — `bg-background/85` is static. |
+> 1. Header chrome reads as a pasted billboard, not as part of the brand surface
+> 2. Wayfinding signals collide instead of layering (brand mark vs. section rail)
+> 3. Mobile loses the conversion CTAs it most desperately needs
+> 4. The GlobalMenu is hollow — a left-stack of links with empty space, not an editorial moment
+
+This plan fixes every one of the 20 issues against named files and named pixels, in that priority order.
 
 ---
 
-## Design — Creek's two-tier nav, world-class build
+## The 20 audited issues, with evidence
 
-The pattern: the **header becomes a per-page section rail** (like Royal), and a **fullscreen panel behind a hamburger** holds the full global IA. The brand mark and the conversion CTA stay constant. Everything else adapts to context.
+| # | Where | What the user sees | Why it's wrong |
+|---|---|---|---|
+| 1 | Home, hero | Opaque cream header floats over a deep evergreen hero | Looks like a billboard pasted on top, not chrome belonging to the page |
+| 2 | All pages, header | Brand mark + section rail share weight, color, tracking | "Where I am" and "what this is" compete for the same eye |
+| 3 | Home, scrolled | Right cluster (phone + Quote) fades to 40% near footer | Primary CTA looks disabled exactly when conversion intent is highest |
+| 4 | All pages, header | Border too soft (`border-border/50`) on cream surface | The chrome has no edge — it bleeds into the page below |
+| 5 | All pages, header | Hamburger looks visually identical to a section anchor | Tier-2 entry point has no special affordance |
+| 6 | GlobalMenu | Primary stack left-aligned, right 60% empty | Not "editorial three-column" — just a list with whitespace |
+| 7 | GlobalMenu | No hero element, no logo, no warmth | Reads like an OS sheet, not a brand panel |
+| 8 | GlobalMenu | "Services" appears in the primary stack AND as a column heading | Redundant — which one do I tap? |
+| 9 | GlobalMenu | Service Areas is a flat 11-item list with no hierarchy | No "Calgary metro vs. Edmonton metro" grouping; no map cue |
+| 10 | GlobalMenu | No active route indicator | User on `/` has no signal that "Home" is current |
+| 11 | GlobalMenu | Phone in CTA bar has no padding/affordance | Reads as caption text, not a tappable phone link |
+| 12 | GlobalMenu | Bronze rule under primary stack is ~80px wide, hugs left | Pretends to "underline" a column that isn't there |
+| 13 | iPad 820px | Phone + brand stack + CTA + hamburger fight one row | Cramping the v1 audit already flagged |
+| 14 | iPad 820px | Section rail hidden, no replacement | Tier-1 wayfinding evaporates between 768–1024px |
+| 15 | Mobile 390px | Wordmark stack hidden by `compact` mode | First-time mobile visitor sees only logo crest, no brand name |
+| 16 | Mobile 390px | Quote button is `hidden sm:inline-flex` (>640px only) | Mobile users have no in-chrome conversion CTA — measurable loss |
+| 17 | Mobile 390px | Phone is `hidden md:inline-flex` (>768px only) | The device most likely to call has no tappable phone in chrome |
+| 18 | /services, header | "CATALOGUE · FAQ" — two-item rail looks broken | Rail design was never meant for n=2; it looks unfinished |
+| 19 | /services, hero | "HOME › SERVICES" breadcrumb hugs photo edge | Chrome and hero don't speak; breadcrumb is barely readable |
+| 20 | All pages, brand | "CALGARY · EDMONTON" subtext duplicates hero eyebrow | Brand mark should say what the company *is*, not where it works |
 
-### Tier 1 — Sticky header (always visible, 64–80 px)
+---
 
-Layout, left → right:
+## The fix — Nav v3
+
+### A. Header chrome — commit to one philosophy (#1, #4)
+
+**Decision: always-opaque cream chrome with a real edge,** not transparent-over-hero.
+Reasoning: Creek's whole identity is editorial cream. Transparent chrome over the deep hero would cost us legibility and force a second light/dark color logic. We instead make the cream chrome *intentional* and architectural.
+
+Concrete changes in `src/components/Navigation.tsx`:
+- Default surface (above fold): `bg-background/95 backdrop-blur-[12px]` — strong but not flat.
+- Scrolled state: same surface, but the bottom border deepens from `border-cedar/10` → `border-cedar/30` and a 1px shadow `shadow-[0_1px_0_0_rgba(0,0,0,0.04)]` appears underneath. So the user *feels* the threshold without a color flash.
+- Replace `border-border/50` with `border-cedar/15` so the edge is always visible against cream.
+- Add a 1px hairline at the *top* of the header in cedar — a tiny editorial cap that signals "this is the brand frame," same trick Royal uses with its gold rule.
+
+### B. Wayfinding hierarchy — brand vs. rail vs. CTA (#2, #5, #20)
+
+The three header zones get **distinct typographic identities** so the eye reads them in the right order:
+1. **Brand mark (left)** — DM Serif Display "Creek Construction" at 18px, locale subtext replaced with a single italic eyebrow: *"Exterior Construction · est. 2019"*. Removes the city duplication (#20). Locale moves to the GlobalMenu where it belongs.
+2. **Section rail (center)** — uppercase 10px tracked label switches from neutral gray to **cedar at 70% opacity** so it reads as "links" not "labels." Active state stays full cedar with the underline.
+3. **Right cluster** — phone gets a 1px cedar dot before the digits (`· (780)…`); Quote CTA stays solid cedar; **hamburger gets a thin cedar border + label "MENU"** at 10px tracked text under the lines on `md+`. That gives Tier-2 a clear affordance distinct from anchors (#5).
+
+### C. Footer fade — fix the disabled-CTA problem (#3)
+
+Today: the entire right cluster fades to 40% near the footer.
+**New behavior:** *only the section rail* fades. The phone, Quote CTA, and hamburger stay at 100% opacity all the way to the footer — they are conversion surfaces and must never look disabled. In `Navigation.tsx`, drop the `opacity-40` wrapper around the right cluster; keep `faded={isAtFooter}` only on `<SectionRail>`.
+
+### D. Responsive — don't punish mobile (#13, #14, #15, #16, #17)
+
+Three concrete breakpoint changes in `Navigation.tsx`:
+- **Mobile (`<sm`)**: Show a compact "Quote" pill (`px-3 py-2 text-[10px]`) and a tap-to-call phone icon button (44x44, just the icon, no text) *before* the hamburger. So mobile chrome is: `[logo]   [📞] [Quote] [☰]`. Restores both conversion paths (#16, #17).
+- **Mobile**: Bring back the wordmark — drop `compact` on `BrandMark`, just shrink it to `text-sm` on small screens. Visitors must always see the company name (#15).
+- **Tablet (768–1023px)**: Introduce a **`md`-tier section rail** that shows up to 3 anchors as tight 11px tracked text, hidden behind a chevron disclosure if more. So /services (2 anchors) and /about (3 anchors) fit, /home (5 anchors) shows the first 3 + "more →" that opens the GlobalMenu pre-scrolled to a Sections section. Closes the wayfinding gap (#14) without cramming (#13).
+
+### E. Two-anchor rail — treat n=2 with intention (#18)
+
+Today: `SectionRail` renders any list ≥ 2. On `/services` that's "CATALOGUE · FAQ" — looks abandoned.
+
+**Fix:** in `src/components/navigation/SectionRail.tsx`, when `sections.length === 2`, render a different layout: a small **left-anchored sub-route bar** below the main header with a leading "ON THIS PAGE →" eyebrow. Same anchors, same active logic, but visually framed as "this page has two stops" instead of pretending to be a 5-anchor rail. So:
+- `n < 2` → renders nothing (current)
+- `n == 2` → "ON THIS PAGE → CATALOGUE | FAQ" (left-anchored, lighter)
+- `n >= 3` → centered editorial rail (current)
+
+### F. Breadcrumb integration on sub-page heroes (#19)
+
+The breadcrumb shouldn't be a separate floating layer over the hero photo. In `src/components/ui/page-hero.tsx` (the `cinematic-bleed` and `service-portrait` variants), move the breadcrumb up into the **header itself** as a left-anchored chip on routes that have one, sitting in the empty space the section rail would normally use when `n < 2`. So on `/services` the header center reads:
+`[← Services] [section rail or "ON THIS PAGE → …"]`
+The breadcrumb becomes part of the chrome, not the hero. Hero photo stays uncluttered.
+
+### G. GlobalMenu redesign — make it an editorial moment (#6, #7, #8, #9, #10, #11, #12)
+
+This is the largest change. Rebuild `src/components/navigation/GlobalMenu.tsx` as a **two-column editorial panel** instead of a full-width left stack.
 
 ```
-┌─────────────────────────────────────────────────────────────────────────────┐
-│ [▣ Creek Construction]   Services · About · Reviews · Work · Contact   ☎  Quote  ☰ │
-│   ↑ logo + locale         ↑ section rail (changes per page)        ↑ persistent │
-└─────────────────────────────────────────────────────────────────────────────┘
+┌───────────────────────────────────────────────────────────────────────┐
+│  [✕ MENU]                                                              │
+│                                                                        │
+│  ┌─────────────────────────────────┬────────────────────────────────┐  │
+│  │  PRIMARY ROUTES                 │  EDITORIAL HERO                │  │
+│  │                                 │                                │  │
+│  │  Home          ·  current       │  ┌──────────────────────────┐  │  │
+│  │  Services                       │  │                          │  │  │
+│  │  Our Work                       │  │   real project photo     │  │  │
+│  │  About                          │  │   (random hero from db)  │  │  │
+│  │  Contact                        │  │                          │  │  │
+│  │                                 │  └──────────────────────────┘  │  │
+│  │  ─── BRONZE RULE                │  "Calgary · 2025 · Cedar deck" │  │
+│  │                                 │                                │  │
+│  │  SERVICES                       │  ┌──────────────────────────┐  │  │
+│  │  Decks · Fencing · Sheds · …    │  │  WHERE WE BUILD          │  │  │
+│  │  (chips, not a list — opens     │  │                          │  │  │
+│  │   QuoteModal pre-filtered)      │  │  CALGARY METRO           │  │  │
+│  │                                 │  │  • Calgary  · home base  │  │  │
+│  │                                 │  │  • Airdrie               │  │  │
+│  │                                 │  │  • Cochrane · Okotoks    │  │  │
+│  │                                 │  │                          │  │  │
+│  │                                 │  │  EDMONTON METRO          │  │  │
+│  │                                 │  │  • Edmonton              │  │  │
+│  │                                 │  │  • St. Albert · Sherwood │  │  │
+│  │                                 │  │    Park · Spruce Grove   │  │  │
+│  │                                 │  └──────────────────────────┘  │  │
+│  └─────────────────────────────────┴────────────────────────────────┘  │
+│                                                                        │
+│  ┌──────────────────────────────────────────────────────────────────┐  │
+│  │  ✓ WCB · Insured · Locally owned    📞 (780) …    [Request Quote]│  │
+│  └──────────────────────────────────────────────────────────────────┘  │
+└───────────────────────────────────────────────────────────────────────┘
 ```
 
-- **Brand mark (left).** Same logo + "Calgary · Edmonton" subtext. Always links to `/`. Min-height 44 px touch target preserved.
-- **Section rail (center).** New. Renders the in-page section anchors for the current route, pulled from a single registry. Active section gets a full-width cedar underline that scales in (`scale-x-100 origin-left transition-transform duration-500`). Hover scales the same line in from `scale-x-0`. Hidden below `lg`.
-- **Right cluster.** Phone number (md+), "Request a Quote" CTA (sm+), hamburger (always visible — even on desktop, mirroring Royal's pattern). The hamburger is what unlocks the global menu, even when the section rail is busy.
-- **Scroll-reactive chrome.** Above the fold the header is `bg-background/0`; after `scrollY > 32` it transitions to `bg-background/85 backdrop-blur` with a hairline border. Smooth `transition: background-color 400ms`.
-- **Footer fade.** When the footer enters view (`IntersectionObserver` on `#siteFooter`), the section rail and phone link fade to `opacity: 0` to give the footer's own conversion moment full focus. Same trick Royal uses.
+Specifically:
+- **Active route badge** on the matching primary link (`· current` in 10px cedar tracked text) — fixes #10.
+- **Services** removed from the primary stack and moved to a chip cluster below the bronze rule — chips are visually distinct from routes, so no "which one do I tap?" confusion (#8).
+- **Bronze rule** spans the column it lives in (full width inside the left column), no longer 80px orphan (#12).
+- **Right column** holds the editorial hero: a real `MediaSlot` query for `shot_type: ['hero','wide']`, randomized per open. Reuses the `hero-provenance-card` pattern below it ("Calgary · 2025 · Cedar deck"). Solves #6, #7 in one move.
+- **Service areas grouped** into Calgary Metro and Edmonton Metro, with Calgary tagged "home base" — gives a mental map (#9).
+- **Bottom CTA bar redesigned**: trust strip on left, a real `<a href="tel:">` with phone icon and 44px hit area in the middle, cedar Quote button on the right. The phone is now obviously tappable (#11).
+- Mobile (`<md`): the editorial right column collapses below the primary stack, and the service-areas grouping becomes a 2-column compact list. Trust bar wraps gracefully.
 
-### Tier 2 — Fullscreen menu (behind ☰)
+### H. Motion & accessibility polish
 
-A modal `dialog` that takes the full viewport with `bg-background backdrop-blur-xl`. Editorial three-column grid on `md+`, single column with disclosure groups on mobile. Composition top-down:
-
-1. **Top bar** — close button (animated hamburger ↔ X), top-right, 48 × 48 px.
-2. **Primary route** — "Home" rendered as a 56 px DM Serif Display oversized link, italic cedar underline draws on focus/hover. (Royal uses this single primary anchor at the top of the panel.)
-3. **Hairline cedar divider** at `bg-cedar/15`.
-4. **Three columns** (md+):
-   - **Services** — Decks · Fencing · Sheds · Painting · Siding · Pergolas (drawn from `src/config/services.ts`, each link opens the QuoteModal pre-filtered to that service via `openModal([service.id])` for a one-tap conversion path).
-   - **Service Areas** — Calgary · Edmonton · Airdrie · Cochrane · Okotoks · Red Deer · "Other Alberta" (drawn from `CONTACT.cities` in `src/config/contact.ts`). Calgary gets a "Home Base" badge.
-   - **Company** — Our Work · About · Style Guide (admin only) · Contact · FAQ.
-5. **Footer of panel** — left: WCB / Insured trust chip + "Established 2019". Right: "Request a Quote" cedar CTA + tel link. `padding-bottom: max(2rem, env(safe-area-inset-bottom))` for iPhone notch safety.
-6. **Stagger reveal** — each row uses `animation-delay: 100ms + index * 30ms` for a calm 600 ms cascade. Respects `prefers-reduced-motion: reduce`.
-
-### Information architecture (the section registry)
-
-A single `src/lib/page-sections.ts` file becomes the source of truth — the same pattern Royal uses in `src/lib/navigation.ts`:
-
-```ts
-// Per-route section anchors. Add a route, you get a rail.
-export const PAGE_SECTIONS: Record<string, PageSection[]> = {
-  '/': [
-    { name: 'Services',  anchor: 'section-services' },
-    { name: 'About',     anchor: 'section-about' },
-    { name: 'Reviews',   anchor: 'section-testimonials' },
-    { name: 'Work',      anchor: 'section-featured' },
-    { name: 'Contact',   anchor: 'section-contact' },
-  ],
-  '/services': [
-    { name: 'Catalogue', anchor: 'section-catalogue' },
-    { name: 'Process',   anchor: 'section-process' },
-    { name: 'FAQ',       anchor: 'section-faq' },
-  ],
-  '/work': [
-    { name: 'Featured',  anchor: 'section-featured' },
-    { name: 'Gallery',   anchor: 'section-gallery' },
-    { name: 'Recap',     anchor: 'section-recap' },
-  ],
-  '/about': [
-    { name: 'Story',     anchor: 'section-story' },
-    { name: 'Process',   anchor: 'section-process' },
-    { name: 'Areas',     anchor: 'section-areas' },
-  ],
-  '/contact': [
-    { name: 'Form',      anchor: 'section-contact' },
-    { name: 'Visit',     anchor: 'section-visit' },
-  ],
-};
-```
-
-Pages with fewer than 2 anchors return `[]` and the header center collapses gracefully (logo + CTA still anchor the layout).
+- The new "MENU" label fades in only after `isScrolled` so the header has *one extra signal* you've left the hero — subtle but premium.
+- Chip cluster in the menu uses `--kinetic-delay` so the existing stagger orchestration applies.
+- Active-route badge uses `aria-current="page"` (was missing).
+- Footer fade now applies `aria-hidden="true"` to the rail when fully faded so screen readers don't read invisible links.
+- The new `md`-tier rail respects `prefers-reduced-motion` (no chevron animation).
 
 ---
 
 ## File plan
 
-### New files
-- **`src/lib/page-sections.ts`** — registry above + `getPageSections(pathname)` helper.
-- **`src/hooks/useActiveSection.ts`** — `IntersectionObserver` (threshold 0.3, rootMargin `-72px 0 0 0`) returning the topmost visible anchor. Mirrors Royal's hook but tuned for Creek's 80 px desktop header.
-- **`src/hooks/useScrollChrome.ts`** — returns `{ isScrolled, isAtFooter }`. `isScrolled` flips at `scrollY > 32`, throttled with `requestAnimationFrame`. `isAtFooter` watches `#siteFooter` via IO.
-- **`src/components/navigation/SectionRail.tsx`** — desktop center rail. Renders `PageSection[]`, smooth-scrolls on click with `-72px` offset, sets `aria-current="location"` on active.
-- **`src/components/navigation/GlobalMenu.tsx`** — fullscreen dialog. Three-column editorial layout, focus trap via existing focus-management pattern, ESC + backdrop close, body-scroll lock.
-- **`src/components/navigation/MenuTrigger.tsx`** — animated hamburger ↔ X, 48 × 48 px touch target, `aria-expanded` + `aria-controls`.
-- **`src/components/navigation/BrandMark.tsx`** — extracted from current `Navigation.tsx` so the header stays declarative.
+### Edited
+- `src/components/Navigation.tsx` — chrome philosophy (A), wayfinding hierarchy (B), footer fade scope (C), full responsive cluster rebuild (D), top hairline + bottom border treatment.
+- `src/components/navigation/BrandMark.tsx` — replace city subtext with eyebrow (#20), keep wordmark on mobile (#15), remove `compact` prop usage in chrome.
+- `src/components/navigation/SectionRail.tsx` — split renderer into n=2 vs n≥3 layouts (#18); add `md`-tier compact mode (#14); add `aria-hidden` when fully faded.
+- `src/components/navigation/MenuTrigger.tsx` — add optional "MENU" label slot (#5), border treatment, a tiny cedar dot indicator that pulses 1× when a new GlobalMenu opens for the first time per session.
+- `src/components/navigation/GlobalMenu.tsx` — full rewrite per section G; uses `MediaSlot` for the editorial hero, groups service areas, renders Services as chips, marks active route.
+- `src/components/ui/page-hero.tsx` — move breadcrumb out of hero photo, into chrome (F). The `cinematic-bleed` and `service-portrait` variants drop their inline `BreadcrumbTrail`.
+- `src/lib/page-sections.ts` — no schema change; just a comment documenting the n=2 vs n≥3 contract so future contributors don't add 2-anchor pages thinking they'll get the centered rail.
+- `src/index.css` — top hairline `body::before` with cedar/40 1px line (or done in the header itself).
 
-### Edited files
-- **`src/components/Navigation.tsx`** — rewritten as a thin shell: `<header><BrandMark /><SectionRail /><RightCluster /></header><GlobalMenu />`. Drops the inline mobile drawer (replaced by `GlobalMenu`).
-- **`src/components/Services.tsx`** — already has `id="section-services"`; verify offset works.
-- **`src/components/About.tsx`, `Testimonials.tsx`, `FeaturedProjects.tsx`, `Contact.tsx`** — already have `id="section-*"`. No change.
-- **`src/pages/Services.tsx`** — wrap the catalogue, process strip, and FAQ blocks with `id="section-catalogue"`, `id="section-process"`, `id="section-faq"` on the existing `<section>` elements (lines 63, 92, plus a new process anchor).
-- **`src/pages/Work.tsx`** — add `id="section-featured"`, `id="section-gallery"`, `id="section-recap"` to the existing sections (lines 72, 120, plus recap strip).
-- **`src/pages/About.tsx`** — add `id="section-story"`, `id="section-process"`, `id="section-areas"` (lines 42, 73, 108).
-- **`src/pages/Contact.tsx`** — add `id="section-contact"` and `id="section-visit"` to existing blocks.
-- **`src/index.css`** — add `scroll-margin-top: 80px` to all `[id^="section-"]` so anchor jumps land below the sticky header. Add `@media (max-width: 640px) { scroll-margin-top: 64px; }`.
+### New
+- `src/components/navigation/HeaderBreadcrumb.tsx` — small chip-style breadcrumb that lives inside the header for routes that have one, drawn from React Router location.
+- `src/components/navigation/SectionRailCompact.tsx` — the n=2 / md-tier compact variant. Kept separate from the editorial rail to avoid a god-component.
 
-### Memory updates
-- **`mem://design/navigation-architecture.md`** (new) — documents the two-tier system, the registry contract, the offset math, and "do not add a third nav layer" constraint.
-- **`mem://index.md`** — add core line: "Two-tier nav — section rail per page + fullscreen global menu. Section IDs follow `section-*` and live in `src/lib/page-sections.ts`."
+### Memory
+- Update `mem://features/navigation-architecture.md` with the n=2 vs n≥3 contract, the "footer fade scope = rail only" rule, and the chrome-philosophy decision (always-opaque cream).
+- Update `mem://index.md` core line to mention always-opaque chrome and mobile CTA persistence (the two rules with the highest blast radius).
 
 ---
 
-## Motion & interaction spec
+## QA matrix (pre-merge)
 
-| Element | Trigger | Animation | Duration / easing |
-|---|---|---|---|
-| Header background | `scrollY > 32` | bg `0%` → `85%`, `backdrop-blur 0 → 8px` | 400 ms `ease-out` |
-| Section rail underline | hover / active | `scale-x: 0 → 1`, origin-left | 500 ms `cubic-bezier(0.16, 1, 0.3, 1)` |
-| Hamburger ↔ X | click | three lines morph (rotate + translate) | 350 ms `ease-out` |
-| Global menu open | click hamburger | backdrop fade-in (200 ms) → panel scale-in (`scale 0.98 → 1`, opacity 0 → 1) (350 ms) | staged |
-| Menu rows | open | stagger 30 ms, `translateY 8 → 0`, `opacity 0 → 1` | 300 ms each |
-| Section rail at footer | `#siteFooter` IO ratio > 0.3 | `opacity 1 → 0`, `pointer-events: none` | 500 ms ease |
-| All animations | `prefers-reduced-motion: reduce` | clamped to 50 ms or removed | n/a |
-
----
-
-## Accessibility contract
-
-- **Touch targets** — every interactive element ≥ 44 × 44 px (WCAG 2.5.8). Hamburger and close are 48 × 48 px.
-- **Focus management** — opening menu moves focus to close button. Closing returns focus to hamburger. Focus trapped inside menu via existing pattern.
-- **Keyboard** — `Esc` closes menu; `Tab` cycles inside; section rail anchors are real `<a href="#…">` so `Enter` works.
-- **ARIA** — section rail is `<nav aria-label="Page sections">` with `aria-current="location"` on active. Menu is `role="dialog" aria-modal="true" aria-label="Site navigation"`.
-- **Contrast** — section labels at `text-foreground/70` resolve to ≥ 4.5:1 on `bg-background`; active state at `text-cedar` ≥ 4.5:1.
-- **Reduced motion** — every animation listed above gates on `prefers-reduced-motion`. The chrome fade and stagger become instant.
-- **Screen reader** — hamburger reads "Open site menu, 5 sections available". Active section announced as "Current section: About".
+| Viewport | Page | What I'll verify |
+|---|---|---|
+| 1920 | / | Centered 5-anchor rail; brand eyebrow shows; cedar hairline visible; hamburger has MENU label after scroll |
+| 1920 | /services | "ON THIS PAGE →" left-anchored 2-stop bar; breadcrumb chip in header center area |
+| 1366 | /about | 3-anchor centered rail still fits; no truncation |
+| 820 (iPad) | / | 3-anchor compact rail with "more →"; phone + Quote + hamburger don't fight |
+| 820 | /services | n=2 compact bar; everything has breathing room |
+| 414 / 390 | / | `[logo+name]  [📞] [Quote] [☰]` — all four visible, all 44x44 |
+| 390 | menu open | Two-column collapses to single column; service-areas grouped into 2-column compact list; trust bar wraps clean; bottom CTA full-width sticky |
+| Reduced motion | all | No chevron, no stagger, no Ken Burns; instant chrome transitions |
+| Keyboard only | all | Tab through chrome, Enter on hamburger opens menu, Tab cycles inside, Esc closes, focus returns to hamburger |
+| Screen reader | menu open | "Site menu, dialog. Home — current page" reads correctly; faded rail does not announce stale links |
+| Footer fade | all | Section rail fades; phone + CTA + hamburger stay at 100% opacity |
 
 ---
 
-## Performance contract
+## Rollout sequence
 
-- **JS budget** — new code ≈ 6 KB gzipped (registry + 2 hooks + 4 components). Within `< 200 KB JS` budget.
-- **No layout shift** — header reserves 80 px desktop / 64 px mobile from frame 1 (already true, preserved).
-- **Throttled scroll** — `useScrollChrome` uses one `requestAnimationFrame` loop, not a per-frame React re-render. `useActiveSection` uses IO (no scroll listener).
-- **Lazy menu content** — `GlobalMenu` renders nothing when closed (`if (!isOpen) return null`) so the staggered children never mount until needed.
-- **Body-scroll lock** — uses a refcounted helper so the QuoteModal and the menu can coexist without stranding `overflow: hidden`.
+1. Header chrome (A, B, C) — invisible architectural foundation
+2. Responsive cluster (D) — restores mobile CTAs immediately
+3. Section rail variants (E) — n=2 layout + md-tier compact
+4. Breadcrumb relocation (F) — single PageHero edit
+5. GlobalMenu rewrite (G) — the largest visual upgrade
+6. Memory + QA pass
 
----
-
-## QA matrix (pre-launch)
-
-| Viewport | Check |
-|---|---|
-| 1920 × 1080 | Section rail centers; underline animates; phone + CTA + hamburger all visible. |
-| 1366 × 768 | Section rail still fits without truncation. |
-| 1024 × 768 | Section rail still shown (lg breakpoint). |
-| 820 × 1180 (iPad) | Section rail collapses; hamburger + CTA only; no overlap. |
-| 414 × 896 (iPhone XR) | Header 64 px; hamburger 48 × 48; menu fills viewport; safe-area respected. |
-| 360 × 800 (Android) | Same as above; tap-target spacing verified. |
-| Reduced motion | All animations clamped. |
-| Keyboard only | Tab order: skip-link → logo → section rail → phone → CTA → hamburger. ESC closes menu. |
-| Screen reader (VO + NVDA) | Active section announced; menu trap announced. |
-
----
-
-## Out of scope (intentionally not in this pass)
-
-- A QuickNav slash-launcher (existing `QuickNav.tsx` is dead code; flag for removal in a separate cleanup pass).
-- Mega-menu hover panels on desktop (Royal pattern is hamburger-only and we want to preserve the editorial hush).
-- Breadcrumbs in the header (already handled inside hero variants by `BreadcrumbTrail`).
-
----
-
-## Rollout sequence (single approval, multiple commits)
-
-1. Land the registry + hooks + section IDs (no UI change yet — invisible foundation).
-2. Land `BrandMark`, `MenuTrigger`, `SectionRail`, `GlobalMenu` components.
-3. Rewrite `Navigation.tsx` to compose them. Remove the inline mobile drawer.
-4. Add `scroll-margin-top` to `index.css`.
-5. Update memory files.
-6. Manual QA against the matrix above; verify every existing route still navigates.
-
-After approval I will execute these in order in default mode.
+After approval I execute these in order in default mode and re-run the live audit at the same four viewports to verify each issue is closed.
