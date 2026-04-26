@@ -51,9 +51,9 @@ const Services = () => {
         subtitle="All residential. All exterior. All built to outlast Alberta winters."
         skipToId="all-services-heading"
         queries={[
-          { service: "decks", shot_type: ["hero", "elevation", "wide"], min_quality: "portfolio", kind: "image" },
-          { service: "sheds", shot_type: ["hero", "elevation", "wide"], min_quality: "portfolio", kind: "image" },
-          { service: "fencing", shot_type: ["hero", "elevation", "wide"], min_quality: "portfolio", kind: "image" },
+          { service: "decks", shot_type: ["hero", "elevation", "wide"], min_quality: "reference", kind: "image" },
+          { service: "fencing", shot_type: ["detail", "process", "elevation"], min_quality: "reference", kind: "image" },
+          { service: "sheds", shot_type: ["wide", "hero", "interior"], min_quality: "reference", kind: "image" },
         ]}
       >
         <CedarCTA>Request a Quote</CedarCTA>

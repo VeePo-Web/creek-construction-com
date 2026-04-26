@@ -37,6 +37,11 @@ const About = () => {
         italic="Locally owned. No gimmicks."
         subtitle="Calgary and Edmonton. The crew you meet is the crew on-site."
         ambientClipQuery={{ kind: "video", min_quality: "portfolio" }}
+        triptychQueries={[
+          { shot_type: ["process", "detail"], min_quality: "reference", kind: "image" },
+          { shot_type: ["detail", "interior"], min_quality: "reference", kind: "image" },
+          { shot_type: ["wide", "elevation", "hero"], min_quality: "reference", kind: "image" },
+        ]}
       />
 
       <section id="section-story" className={`${SECTION_PADDING.default} grain-overlay`} aria-labelledby="story-heading">
