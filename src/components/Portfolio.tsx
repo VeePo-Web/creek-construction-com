@@ -159,27 +159,21 @@ const Portfolio = () => {
                       aria-label={`Request a quote like ${project.title}`}
                     >
                       <div
-                        className="relative aspect-[4/5] rounded-sm overflow-hidden transition-all duration-700 group-hover:shadow-elevated"
-                        style={{ background: BACKDROP.evergreenPlate }}
+                        className="relative aspect-[4/5] rounded-sm overflow-hidden transition-all duration-700 group-hover:shadow-elevated border border-border/40"
+                        style={{ background: BACKDROP.stonePlate }}
                       >
                         <MediaSlot
                           query={{
                             service: project.service,
-                            shot_type: ["hero", "elevation", "wide"],
                             kind: "image",
                             min_quality: "reference",
                           }}
                           sizes="(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw"
                           wrapperClassName="absolute inset-0 w-full h-full"
                           className="transition-transform duration-[1.2s] group-hover:scale-105"
-                          fallback={
-                            <div className="absolute inset-0 flex items-center justify-center">
-                              <Icon
-                                className="h-20 w-20 text-cedar/30 group-hover:text-cedar/50 transition-all duration-700 group-hover:scale-110"
-                                aria-hidden
-                              />
-                            </div>
-                          }
+                          fallbackVariant="stone"
+                          fallbackIcon={Icon}
+                          fallbackCaption={`${project.title} · photographed soon`}
                         />
 
                         <div

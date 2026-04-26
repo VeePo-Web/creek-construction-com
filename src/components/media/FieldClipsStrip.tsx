@@ -70,7 +70,7 @@ const FieldClipsStrip = () => {
                   <button
                     type="button"
                     onClick={() => setActiveIdx(isActive ? null : i)}
-                    className="group relative block w-full aspect-[4/5] overflow-hidden rounded-sm bg-evergreen shadow-elegant focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cedar focus-visible:ring-offset-2 focus-visible:ring-offset-secondary"
+                    className="group relative block w-full aspect-[4/5] overflow-hidden rounded-sm bg-stone-200 grain-overlay shadow-elegant focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cedar focus-visible:ring-offset-2 focus-visible:ring-offset-secondary"
                     aria-label={isActive ? `Pause clip ${i + 1}` : `Play clip ${i + 1}: ${clip.alt}`}
                   >
                     <video

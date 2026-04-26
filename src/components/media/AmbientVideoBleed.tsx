@@ -94,7 +94,7 @@ const AmbientVideoBleed = ({
   return (
     <div
       ref={containerRef}
-      className={cn("relative overflow-hidden bg-evergreen", className)}
+      className={cn("relative overflow-hidden bg-stone-200 grain-overlay", className)}
       style={{
         aspectRatio: height ? undefined : aspectRatio,
         height,

@@ -52,7 +52,7 @@ const Work = () => {
         title={["The work", "speaks first."]}
         italic="Alberta-built. Crew-owned."
         subtitle="Selected projects across Calgary, Edmonton, and the towns in between."
-        query={{ shot_type: ["hero", "elevation", "wide"], min_quality: "portfolio", kind: "image" }}
+        query={{ shot_type: ["hero", "elevation", "wide"], min_quality: "reference", kind: "image" }}
         videoQuery={{ kind: "video", min_quality: "portfolio" }}
         caption={{ service: "Mixed services", location: "Alberta", year: new Date().getFullYear() }}
         height="84vh"
@@ -138,6 +138,7 @@ const Work = () => {
                       location: w.location,
                       description: w.description,
                       icon: w.icon,
+                      service: w.service as import("@/lib/api/public-media").ServiceCategory,
                     }}
                     index={i}
                     total={PLACEHOLDERS.length}

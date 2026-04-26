@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Phone, ShieldCheck, Mail } from "lucide-react";
 
@@ -8,7 +8,8 @@ import { SERVICES } from "@/config/services";
 import { useQuoteModal } from "@/components/quote/QuoteModalProvider";
 import CedarCTA from "@/components/CedarCTA";
 import BronzeRule from "@/components/ui/bronze-rule";
-import { useFirstApprovedMedia } from "@/hooks/useApprovedMedia";
+import { useApprovedMedia } from "@/hooks/useApprovedMedia";
+import { BACKDROP } from "@/lib/colors";
 import type { MediaQuery } from "@/lib/api/public-media";
 
 interface GlobalMenuProps {
@@ -69,14 +70,38 @@ const GlobalMenu = ({ isOpen, onClose, id = "global-menu" }: GlobalMenuProps) =>
   const { openModal } = useQuoteModal();
   const location = useLocation();
 
-  // Editorial hero in the right column — pulled fresh from the approved
-  // photography library each open. Falls back to evergreen if nothing
-  // matches yet (the panel still looks intentional).
+  // Editorial gallery in the right column — pull a small set of approved
+  // photographs and crossfade among them while the menu is open. Falls back
+  // to a stone editorial plate (NEVER green) when nothing matches.
   const heroQuery = useMemo<MediaQuery>(
-    () => ({ shot_type: ["hero", "wide"], min_quality: "hero", kind: "image" }),
+    () => ({
+      shot_type: ["hero", "elevation", "wide", "detail"],
+      min_quality: "reference",
+      kind: "image",
+      limit: 6,
+    }),
     [],
   );
-  const heroPhoto = useFirstApprovedMedia(heroQuery);
+  const heroGallery = useApprovedMedia(heroQuery);
+  const [galleryIdx, setGalleryIdx] = useState(0);
+
+  // Crossfade through the gallery every 4s while the menu is open. Honor
+  // prefers-reduced-motion: if reduced, pick a single shot per session.
+  useEffect(() => {
+    if (!isOpen || heroGallery.items.length <= 1) return;
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (reducedMotion) {
+      setGalleryIdx(Math.floor(Math.random() * heroGallery.items.length));
+      return;
+    }
+    const id = window.setInterval(
+      () => setGalleryIdx((i) => (i + 1) % heroGallery.items.length),
+      4000,
+    );
+    return () => window.clearInterval(id);
+  }, [isOpen, heroGallery.items.length]);
+
+  const heroPhoto = { item: heroGallery.items[galleryIdx] ?? heroGallery.items[0] ?? null };
 
   // Esc to close
   useEffect(() => {
@@ -271,15 +296,37 @@ const GlobalMenu = ({ isOpen, onClose, id = "global-menu" }: GlobalMenuProps) =>
                   }}
                 >
                   {heroPhoto.item ? (
-                    <img
-                      src={heroPhoto.item.url}
-                      alt={heroPhoto.item.alt}
-                      className="absolute inset-0 w-full h-full object-cover hero-kenburns"
-                      loading="lazy"
-                      decoding="async"
-                    />
+                    heroGallery.items.map((p, i) => (
+                      <img
+                        key={p.storage_path}
+                        src={p.url}
+                        alt={i === galleryIdx ? p.alt : ""}
+                        className={cn(
+                          "absolute inset-0 w-full h-full object-cover hero-kenburns transition-opacity duration-[1200ms] ease-out",
+                          i === galleryIdx ? "opacity-100" : "opacity-0",
+                        )}
+                        loading={i === 0 ? "eager" : "lazy"}
+                        decoding="async"
+                        aria-hidden={i === galleryIdx ? undefined : true}
+                      />
+                    ))
                   ) : (
-                    <div className="absolute inset-0 bg-evergreen" />
+                    <div
+                      className="absolute inset-0 overflow-hidden"
+                      style={{ background: BACKDROP.cedarPlate }}
+                    >
+                      <div className="absolute inset-0 grain-overlay opacity-40 pointer-events-none" />
+                      <div
+                        className="absolute top-6 left-6 h-px"
+                        style={{
+                          width: "80px",
+                          background: "linear-gradient(90deg, hsl(var(--cedar) / 0.7), transparent)",
+                        }}
+                      />
+                      <p className="absolute bottom-6 left-6 right-6 text-[10px] tracking-[0.25em] uppercase text-cedar/80 font-medium">
+                        Field photography updates each season — request a quote and we'll send our latest project deck.
+                      </p>
+                    </div>
                   )}
                   <div
                     aria-hidden

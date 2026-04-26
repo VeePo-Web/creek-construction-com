@@ -82,25 +82,15 @@ const Services = () => {
                     <MediaSlot
                       query={{
                         service: service.id as ServiceCategory,
-                        shot_type: ["hero", "detail", "wide"],
                         kind: "image",
-                        min_quality: "portfolio",
+                        min_quality: "reference",
                       }}
                       sizes={MEDIA_SIZES.THIRD}
-                      wrapperClassName="w-full aspect-hero relative"
+                      wrapperClassName="w-full aspect-hero relative overflow-hidden"
                       className="transition-transform duration-[1.2s] group-hover:scale-[1.04]"
-                      fallback={
-                        <div
-                          className="w-full aspect-hero relative overflow-hidden"
-                          style={{ background: BACKDROP.evergreenPlate }}
-                        >
-                          <Icon
-                            className="absolute inset-0 m-auto h-12 w-12 text-cedar/40 transition-all duration-700 group-hover:text-cedar/70 group-hover:scale-110"
-                            aria-hidden
-                            strokeWidth={1.4}
-                          />
-                        </div>
-                      }
+                      fallbackVariant="stone"
+                      fallbackIcon={Icon}
+                      fallbackCaption={`${service.title} · new work coming`}
                     />
 
                     <div className="p-6 flex flex-col flex-1">
