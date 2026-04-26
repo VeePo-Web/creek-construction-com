@@ -550,60 +550,34 @@ const CinematicBleed = (props: CinematicBleedProps) => {
 const ServicePortrait = (props: ServicePortraitProps) => {
   const lines = toLines(props.title);
 
-  // Resolve up to 3 photographs, one per query.
-  const a = useFirstApprovedMedia(props.queries[0] ?? {});
-  const b = useFirstApprovedMedia(props.queries[1] ?? {});
-  const c = useFirstApprovedMedia(props.queries[2] ?? {});
-  const tiles = [a.item, b.item, c.item].filter(Boolean);
-
-  useHeroPreload(a.item?.url, MEDIA_SIZES.THIRD);
-
-  const hasAny = tiles.length > 0;
+  // Coerce the queries[] tuple into HeroTriptych's [a,b,c] shape; if the
+  // caller supplied fewer than 3, pad with a sensible default.
+  const triptychQueries = useMemo<[MediaQuery, MediaQuery, MediaQuery]>(() => [
+    props.queries[0] ?? { shot_type: ["hero", "elevation"], min_quality: "reference", kind: "image" },
+    props.queries[1] ?? { shot_type: ["detail", "process"], min_quality: "reference", kind: "image" },
+    props.queries[2] ?? { shot_type: ["wide", "interior"], min_quality: "reference", kind: "image" },
+  ], [props.queries]);
 
   return (
     <section
       className={cn(
-        "relative overflow-hidden bg-evergreen text-evergreen-foreground",
+        "relative overflow-hidden text-evergreen-foreground",
         "min-h-[78vh] md:min-h-[82vh] flex items-end",
         props.className,
       )}
       aria-label={lines.join(" ")}
     >
-      {/* Triptych background */}
-      {hasAny && (
-        <div
-          aria-hidden
-          className="absolute inset-0 grid grid-cols-1 md:grid-cols-3 gap-1 opacity-70"
-        >
-          {tiles.map((m, i) => (
-            <div
-              key={m!.storage_path + i}
-              className={cn(
-                "relative overflow-hidden",
-                i === 1 ? "hidden md:block" : "",
-                i === 2 ? "hidden md:block" : "",
-              )}
-            >
-              <img
-                src={m!.url}
-                alt=""
-                className="absolute inset-0 w-full h-full object-cover hero-kenburns"
-                style={{
-                  animationDelay: `${i * 600}ms`,
-                  animationDuration: "16s",
-                }}
-                loading={i === 0 ? "eager" : "lazy"}
-                fetchPriority={i === 0 ? "high" : undefined}
-                decoding={i === 0 ? "sync" : "async"}
-              />
-            </div>
-          ))}
-        </div>
-      )}
-
-      <div className="absolute inset-0" style={{ background: BACKDROP.cinematicVignette }} aria-hidden />
-      <div className="absolute inset-0 pointer-events-none" style={{ background: BACKDROP.evergreenRadial, opacity: 0.55 }} aria-hidden />
-      <div className="absolute inset-0 grain-overlay opacity-30 pointer-events-none" />
+      <HeroTriptych
+        queries={triptychQueries}
+        rhythm="equal"
+        scrim="left"
+        priority
+        fallbackCaptions={[
+          "Decks · Calgary",
+          "Sheds · Edmonton",
+          "Fences · Alberta",
+        ]}
+      />
 
       <div className="container mx-auto px-6 relative z-10 pb-20 md:pb-24 pt-32">
         <div className="max-w-3xl">
