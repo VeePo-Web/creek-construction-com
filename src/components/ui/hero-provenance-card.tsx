@@ -59,7 +59,7 @@ const HeroProvenanceCard = ({
     .filter(Boolean)
     .join(" · ");
 
-  const surfaceStyle =
+  const surfaceStyle: React.CSSProperties =
     surface === "glass"
       ? {
           background: "hsl(var(--surface-card) / 0.96)",
