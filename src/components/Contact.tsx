@@ -1,19 +1,18 @@
 import ScrollRevealMotion from "@/components/ScrollRevealMotion";
 import SectionHeader from "@/components/SectionHeader";
 import CedarCTA from "@/components/CedarCTA";
-import { useQuoteModal } from "@/components/quote/QuoteModalProvider";
 import { Phone, Mail } from "lucide-react";
 import { CONTACT } from "@/config/contact";
 import MediaSlot from "@/components/media/MediaSlot";
 import { MEDIA_SIZES } from "@/lib/media-sizes";
 
 const Contact = () => {
-  const { openModal } = useQuoteModal();
   return (
     <section
       id="section-contact"
-      className="py-24 md:py-32 bg-background relative overflow-hidden grain-overlay"
+      className="py-24 md:py-32 bg-background relative overflow-hidden"
       aria-labelledby="contact-heading"
+      style={{ contentVisibility: "auto", containIntrinsicSize: "auto 900px" }}
     >
       <div className="container mx-auto px-6">
         <div className="max-w-7xl mx-auto">
@@ -35,17 +34,7 @@ const Contact = () => {
               </ScrollRevealMotion>
 
               <ScrollRevealMotion delay={0.4}>
-                <div className="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6">
-                  <CedarCTA>Request a Quote</CedarCTA>
-                  <button
-                    type="button"
-                    onClick={() => openModal(["general"])}
-                    className="text-[11px] tracking-[0.18em] uppercase text-muted-foreground hover:text-cedar transition-colors duration-500 inline-flex items-center gap-2 min-h-[44px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cedar focus-visible:ring-offset-2 rounded-sm px-1"
-                  >
-                    or send a general message
-                    <span className="inline-block w-4 h-px bg-cedar/60" aria-hidden />
-                  </button>
-                </div>
+                <CedarCTA>Request a Quote</CedarCTA>
               </ScrollRevealMotion>
             </div>
 

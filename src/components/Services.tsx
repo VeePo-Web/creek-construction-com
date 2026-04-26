@@ -25,6 +25,7 @@ const Services = () => {
       id="section-services"
       className={`${SECTION_PADDING.default} bg-background`}
       aria-labelledby="services-heading"
+      style={{ contentVisibility: "auto", containIntrinsicSize: "auto 1100px" }}
     >
       <div className="container mx-auto px-6">
         <div className={`${MAX_WIDTH.wide} mx-auto`}>
@@ -50,7 +51,7 @@ const Services = () => {
                     onClick={() => openModal([service.id])}
                     role="listitem"
                     aria-label={`Request a quote for ${service.title}`}
-                    className="group w-full text-left flex flex-col items-stretch overflow-hidden rounded-sm transition-all duration-500 shadow-contact hover:shadow-elevated hover:bg-cedar/[0.03] hover:translate-y-[-3px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cedar focus-visible:ring-offset-2 cursor-pointer min-h-[320px] border border-border/60"
+                    className="group w-full text-left flex flex-col items-stretch overflow-hidden rounded-sm transition-[box-shadow,background-color] duration-300 shadow-contact hover:shadow-elevated hover:bg-cedar/[0.03] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cedar focus-visible:ring-offset-2 cursor-pointer min-h-[320px] border border-border/60"
                     style={{
                       borderLeftWidth: "3px",
                       borderLeftColor: `hsl(var(--cedar) / ${opacity})`,
@@ -93,15 +94,6 @@ const Services = () => {
             })}
           </div>
 
-          <ScrollRevealMotion delay={0.1} className="mt-10 text-center">
-            <p className="text-sm text-muted-foreground italic">
-              Need something else exterior?{" "}
-              <button onClick={() => openModal()} className="text-cedar hover:underline">
-                Just ask
-              </button>
-              .
-            </p>
-          </ScrollRevealMotion>
         </div>
       </div>
     </section>

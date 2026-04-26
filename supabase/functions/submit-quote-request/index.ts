@@ -60,14 +60,14 @@ Deno.serve(async (req) => {
           .slice(0, 20)
       : [];
 
-    // Either a service must be selected OR a message body is required.
-    // (The client sends ['General inquiry'] for the inquiry path so this also
-    // passes — this gate is defensive against future client variations.)
-    if (!name || !phone || !addressOrArea || (services.length === 0 && !projectDetails)) {
+    // Bare minimum: name + phone. Everything else is optional — a half-typed
+    // lead with just a phone number is still a lead worth a callback. The
+    // client UX still encourages full completion, but we don't want a typo
+    // in the area field to lose us the conversion.
+    if (!name || !phone) {
       return new Response(
         JSON.stringify({
-          error:
-            "Missing required fields: name, phone, addressOrArea, and either a service or a message.",
+          error: "Missing required fields: name and phone.",
         }),
         {
           status: 400,
@@ -96,7 +96,7 @@ Deno.serve(async (req) => {
         name,
         phone,
         email: email || null,
-        address_or_area: addressOrArea,
+        address_or_area: addressOrArea || "(not provided)",
         services,
         project_details: projectDetails || null,
         property_type: propertyType || null,

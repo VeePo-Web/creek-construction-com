@@ -127,7 +127,7 @@ const Contact = () => {
                     borderLeft: "3px solid hsl(var(--cedar))",
                   }}
                 >
-                  <div className="absolute inset-0 grain-overlay opacity-40 pointer-events-none" />
+                  
                   <div className="relative z-10 p-10 md:p-12">
                     <p className="text-[10px] tracking-[0.25em] uppercase text-cedar/80 mb-4">
                       What&rsquo;s next
