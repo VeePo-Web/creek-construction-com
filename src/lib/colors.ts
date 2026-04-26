@@ -150,6 +150,27 @@ export const BACKDROP = {
 } as const;
 
 // ─────────────────────────────────────────────────────────────────────
+// SCRIM — calibrated overlay gradients for hero photography.
+// AAA contrast on the headline column; the photographic 22-30% breathes.
+// Use with HeroTriptych; never paint your own scrim.
+// ─────────────────────────────────────────────────────────────────────
+
+export const SCRIM = {
+  /** Sweeps left→right. Headline lives in the dark left third (Home, Services, About). */
+  left:
+    "linear-gradient(90deg, hsl(150 30% 6% / 0.82) 0%, hsl(150 30% 6% / 0.62) 36%, hsl(150 30% 6% / 0.22) 62%, hsl(150 30% 6% / 0.05) 78%, transparent 92%)",
+  /** Sweeps top→bottom. Headline lives in the lower 38% (Contact, Work). */
+  bottom:
+    "linear-gradient(180deg, transparent 0%, hsl(150 30% 6% / 0.12) 38%, hsl(150 30% 6% / 0.55) 70%, hsl(150 30% 6% / 0.85) 95%)",
+  /** Universal nav legibility band — first 96px from the top. */
+  topNav:
+    "linear-gradient(180deg, hsl(150 30% 6% / 0.55) 0%, transparent 100%)",
+  /** Hairline bottom fade into the next section's cream. */
+  bottomFade:
+    "linear-gradient(180deg, transparent 0%, hsl(var(--secondary)) 100%)",
+} as const;
+
+// ─────────────────────────────────────────────────────────────────────
 // SEMANTIC SURFACES
 // Background tokens by purpose, not color.
 // ─────────────────────────────────────────────────────────────────────
