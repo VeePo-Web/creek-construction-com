@@ -483,10 +483,11 @@ const CinematicBleed = (props: CinematicBleedProps) => {
       {/* Cinematic vignette stack */}
       <div className="absolute inset-0" style={{ background: BACKDROP.cinematicVignette }} aria-hidden />
       <div className="absolute inset-0 pointer-events-none" style={{ background: BACKDROP.cinematicRadial }} aria-hidden />
-      {/* Top scrim so navigation stays legible */}
+      {/* Two-stop top scrim — covers eyebrow → headline → subtitle band so
+          the body copy can never fall outside legible coverage (v3.1). */}
       <div
-        className="absolute inset-x-0 top-0 h-32 pointer-events-none"
-        style={{ background: "linear-gradient(180deg, hsl(20 10% 6% / 0.55) 0%, transparent 100%)" }}
+        className="absolute inset-x-0 top-0 h-[58%] pointer-events-none"
+        style={{ background: SCRIM.cinematicTop }}
         aria-hidden
       />
 
