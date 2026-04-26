@@ -1,7 +1,12 @@
 import { useCallback } from "react";
+import { useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { useActiveSection } from "@/hooks/useActiveSection";
 import type { PageSection } from "@/lib/page-sections";
+
+/** Routes where HeaderBreadcrumb is already labeling context — skip the
+ *  redundant "On this page" eyebrow on the n=2 sub-bar (v3.1). */
+const ROUTES_WITH_HEADER_BREADCRUMB = new Set(["/services", "/work", "/about", "/contact"]);
 
 interface SectionRailProps {
   sections: PageSection[];
