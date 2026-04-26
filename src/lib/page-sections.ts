@@ -52,10 +52,11 @@ const PAGE_SECTIONS: Record<string, PageSection[]> = {
   "/about": [
     { name: "Story", anchor: "section-story" },
     { name: "Process", anchor: "section-process" },
-    { name: "Areas", anchor: "section-areas" },
+    { name: "Service Areas", anchor: "section-areas" },
   ],
   "/contact": [
     { name: "Reach Us", anchor: "section-contact" },
+    { name: "What's Next", anchor: "section-contact-next" },
   ],
 };
 

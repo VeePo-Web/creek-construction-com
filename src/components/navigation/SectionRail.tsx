@@ -1,7 +1,12 @@
 import { useCallback } from "react";
+import { useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { useActiveSection } from "@/hooks/useActiveSection";
 import type { PageSection } from "@/lib/page-sections";
+
+/** Routes where HeaderBreadcrumb is already labeling context — skip the
+ *  redundant "On this page" eyebrow on the n=2 sub-bar (v3.1). */
+const ROUTES_WITH_HEADER_BREADCRUMB = new Set(["/services", "/work", "/about", "/contact"]);
 
 interface SectionRailProps {
   sections: PageSection[];
@@ -41,6 +46,8 @@ export function scrollToAnchor(anchor: string) {
  */
 const SectionRail = ({ sections, faded = false, className }: SectionRailProps) => {
   const active = useActiveSection(sections);
+  const { pathname } = useLocation();
+  const breadcrumbOwnsContext = ROUTES_WITH_HEADER_BREADCRUMB.has(pathname);
 
   const handleClick = useCallback(
     (e: React.MouseEvent<HTMLAnchorElement>, anchor: string) => {
@@ -59,21 +66,22 @@ const SectionRail = ({ sections, faded = false, className }: SectionRailProps) =
         aria-label="Page sections"
         aria-hidden={faded ? true : undefined}
         className={cn(
-          "hidden lg:flex items-center gap-3 transition-opacity duration-500",
+          "hidden md:flex items-center gap-3 transition-opacity duration-500",
           faded ? "opacity-0 pointer-events-none" : "opacity-100",
           className,
         )}
       >
-        <span
-          className="text-[10px] tracking-[0.22em] uppercase text-cedar/55 font-medium select-none"
-          aria-hidden
-        >
-          On this page
-        </span>
-        <span
-          aria-hidden
-          className="block w-6 h-px bg-cedar/30"
-        />
+        {!breadcrumbOwnsContext && (
+          <>
+            <span
+              className="text-[10px] tracking-[0.22em] uppercase text-cedar/55 font-medium select-none"
+              aria-hidden
+            >
+              On this page
+            </span>
+            <span aria-hidden className="block w-6 h-px bg-cedar/30" />
+          </>
+        )}
         <div className="flex items-center">
           {sections.map((section, i) => {
             const isActive = active === section.anchor;

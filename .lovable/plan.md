@@ -1,235 +1,94 @@
-## Goal
+## Audit findings (what's actually broken right now)
 
-Eliminate every "flat green hero plate" on the four public landing pages — **Home (`/`)**, **Services (`/services`)**, **Work (`/work`)**, **About (`/about`)**, **Contact (`/contact`)** — and replace the background with a **thirds-split photographic triptych** that showcases real Creek work. The headline, BronzeRule, and CTA chrome stay 100% legible via a calibrated scrim system. Where photography is missing, a designed stone-grain fallback renders — never a green plate.
+I walked every page at three breakpoints and inspected the underlying source. The "very complicated" feeling the user is reacting to is real — and it traces to ~10 specific defects in the hero/nav system that compound visually. They are NOT random; they share two roots: **(a) the headline column overlaps the photographic triptych because the scrim doesn't span far enough, and (b) the breadcrumb is being rendered twice (once in chrome, once in hero).** Fixing those two roots removes ~70% of the chaos.
 
-This is a Fantasy.co-grade upgrade: landing chrome should *prove the work* the moment a visitor lands.
+### A. Hero / page-hero.tsx defects (highest-impact, user sees these first)
 
----
+1. **Duplicate breadcrumb on every sub-page.** `HeaderBreadcrumb` renders "Home / Services" in the chrome, and `EvergreenTypographic` *also* renders `<BreadcrumbTrail items={breadcrumb}>` inside the hero ("HOME · ABOUT" floating above the headline on /about and /contact). `EditorialSplit` (Home) renders its own breadcrumb too, but it's mis-cast — "Calgary · Edmonton · Alberta" is a tagline, not a breadcrumb, yet it renders inside the breadcrumb chip on the hero.
+2. **Headline overlaps photo on /services and /about** (1366+ and 1536+). The headline column is `max-w-3xl`/`max-w-2xl` but the SCRIM.left gradient fades to transparent at 92% from the LEFT edge of the *section*, not from the END of the headline column. Because the headline starts inside the container (px-6) and runs to ~840px, it visually punches into the middle column of the triptych where the scrim is already at 22% opacity. Result: white serif headline collides with a white shed/cedar plank photo → unreadable.
+3. **Home (/) shows a giant dark left half** because `EditorialSplit` uses `rhythm="asymmetric"` (40/30/30) AND `scrim="left"` AND a left-anchored headline column AND a floating provenance card on the right that further darkens. The 40% column gets ~82% black scrim baked over it, killing the photograph it's supposed to show.
+4. **/work hero subtitle is illegible.** "Selected projects across Calgary, Edmonton..." renders as `text-evergreen-foreground/85` over a brown cedar wall photo with `SCRIM.bottom` (only kicks in at 38% from top). The subtitle sits ABOVE that scrim's effective range → dark-on-dark.
+5. **Mobile (375px) text-photo collision.** `HeroTriptych` mobile branch stacks 3 slabs (40/30/30 vh) but the headline is positioned over slab A with `SCRIM.bottom` only — and slab A's photo is still bright at the top where "Calgary · Edmonton · Alberta" + "EXTERIOR CONSTRUCTION" eyebrow render. Both lines collide with the deck planks photo.
+6. **/services and /work pad the eyebrow into the scrim's bright zone.** `pt-32` + `pb-20/24` + `flex items-end` push the BronzeRule eyebrow into the middle of the photograph where there's no scrim coverage.
 
-## Audit — what is green today
+### B. Navigation / wayfinding defects
 
-| Page | Hero variant | Status |
-|---|---|---|
-| `/` Home | `editorial-split` | **Left 55% column is solid evergreen** (`bg-evergreen` + `evergreenRadial`) |
-| `/services` | `service-portrait` | Triptych exists but at `opacity-70` with `evergreenRadial @0.55`, vignette, and `bg-evergreen` base — reads ≥80% green |
-| `/about` | `evergreen-typographic` | **100% solid green** (`bg-evergreen` + `evergreenRadial @0.9`) |
-| `/contact` | `evergreen-typographic` | **100% solid green** (same as About) |
-| `/work` | `cinematic-bleed` | Already a single full-bleed photo — *not* green; left as-is, but we will offer the triptych as an opt-in (`triptych` prop) for symmetry. |
+7. **/contact has no section rail at all** — only one anchor in `page-sections.ts`. The header looks broken/empty between the brand and the CTA cluster — this is the source of the "feels half-built" sense on Contact.
+8. **/services and /work (n=2) sub-bar is hidden < lg.** Tablets (768–1023px) show nothing — `SectionRail` returns the n=2 sub-bar wrapped in `hidden lg:flex`. So on iPad the user has no in-page nav at all on Services or Work.
+9. **Eyebrow label "ON THIS PAGE →" reads like instruction copy, not navigation.** It also competes with "HOME / SERVICES" breadcrumb sitting right next to it. Two label rails next to each other = visual stutter (visible on the /services screenshot).
+10. **"Areas" rail item on /about** is a single 5-letter word — feels orphaned next to "Story" and "Process". This is a copy issue, not a logic issue, but it's part of the "feels off" complaint.
+11. **GlobalMenu has no "you are here" indication when opened from a sub-page** beyond a small `· current` badge — easy to miss.
 
-The user's directive applies to all five. Four require a full triptych replacement; `/work` gets an additive opt-in.
+### C. Mobile chrome defects
 
----
-
-## Design concept — "Triptych Bleed"
-
-A horizontal **3-column photographic backdrop** spans the full hero. Each column is a different approved photograph that hand-picks a different shot type so the eye reads the breadth of the craft (e.g., elevation · detail · interior). The chrome (headline, sub, CTA) sits on the left third with a precision scrim; the right two-thirds breathe full-bleed.
-
-### Layout — three image rhythms
-
-The triptych is not "three equal slabs" — that reads as a stock grid. Three rhythms, all 100% width, depending on context:
-
-1. **Equal thirds (33/33/33)** — default. Used on About, Contact, Services. Hairline cedar dividers (`hsl(var(--cedar) / 0.18)`) at column gutters.
-2. **Asymmetric (40/30/30)** — Home. The lead column is widest because the headline column overlays it; the two right columns are tighter editorial accents.
-3. **Cinematic single + two accents (60/20/20)** — opt-in for `/work`. One hero plate dominates left; two narrow vertical "field strips" on the right play subtle Ken Burns at half speed.
-
-All rhythms maintain 1px hairline cedar gutters. On mobile (`<md`), the triptych collapses to a **vertical stack of three short slabs (40vh / 30vh / 30vh)** so the photographs are not deformed; the headline overlays the top slab. At `<sm` (≤640px), the triptych collapses to the **single best image** with the same scrim — never green.
-
-### Scrim system — uncompromising legibility
-
-Each landing page picks a **scrim direction** based on where its headline sits. The scrim is a layered, painterly gradient designed to keep the imagery readable while guaranteeing WCAG AA on the type:
-
-- **Left-anchored scrim** (Home, Services, About): `linear-gradient(90deg, hsl(150 30% 6% / 0.78) 0%, hsl(150 30% 6% / 0.55) 38%, hsl(150 30% 6% / 0.18) 62%, transparent 78%)` — sweeps right, leaving the rightmost ~22% photographic.
-- **Bottom-anchored scrim** (Contact, Work): `linear-gradient(180deg, transparent 0%, hsl(150 30% 6% / 0.25) 45%, hsl(150 30% 6% / 0.78) 90%)` — top stays photographic; type lives in the lower 38%.
-- Universal grain pass at `opacity-25` and a top scrim (`from-evergreen/55 → transparent`, 96px) so navigation chrome remains legible.
-- All scrims use the same `hsl(150 30% 6%)` base so the green tone reads as *atmosphere*, not as a plate.
-
-Contrast targets: headline AAA (≥7:1), subtitle AA (≥4.5:1), 10px BronzeRule label AA-large (≥3:1). Spot-check with the `pages/StyleGuide` ratio grid.
-
-### Photographic curation rules
-
-The triptych must *narrate*. We pick one query per column with a deliberate shot-type story:
-
-- **Column A (lead)** → `shot_type: ["hero","elevation"]`, `min_quality: "reference"`
-- **Column B (middle)** → `shot_type: ["detail","process"]`, `min_quality: "reference"`
-- **Column C (trail)** → `shot_type: ["interior","wide"]`, `min_quality: "reference"`
-
-Per-page narrative seasoning:
-
-- Home — A: deck hero · B: cedar grain detail · C: wide site landscape
-- Services — A: deck · B: fence detail · C: siding wide
-- About — A: crew/process · B: tool detail · C: portfolio wide
-- Contact — A: warm exterior · B: hand detail · C: site context
-- Work (opt-in 60/20/20) — already cinematic; A is the existing `query`, B/C are sister `shot_type:"detail"` strips
-
-If a column resolves no media, it renders the **stone-plate** with a `cedar/35` icon (lucide `Hammer/Fence/Trees` per service) and `text-[10px] tracking-[0.28em] uppercase` caption — never green.
-
-### Motion
-
-- Each column: `hero-kenburns` 16s loop with **staggered phase** (`animation-delay: 0ms / 600ms / 1200ms`) so the three images never breathe in sync. Reduced to `none` under `prefers-reduced-motion`.
-- Scrim opacity has no motion — it is fixed.
-- Headline keeps the existing `KineticHeadline` clip-path reveal.
-- Hairline gutters animate width-in (`0 → 1px`) over 600ms after first paint — a Pentagram-grade detail nobody asks for but everyone feels.
-
-### Accessibility
-
-- Each `<img>` has the real `alt` from `media_metadata`. Decorative duplicates use `alt=""`.
-- Triptych container is `aria-hidden` because the meaningful caption is the headline.
-- Scrim contrast hand-verified at the breakpoint where the headline first wraps (~`md`).
-- Reduced-motion: kill Ken Burns, kill gutter draw — the triptych is static.
-- `<sm` collapse to a single image preserves AA on every device (no triptych = no scrim split risk).
+12. **Mobile "Quote" pill** is `text-[10px]` and lives between the phone icon and hamburger — at 375px the three controls + brand wordmark crowd the 16px-padded header. Brand wordmark wraps awkwardly behind the phone icon at 360px.
 
 ---
 
-## Implementation plan
+## Plan — Nav v3.1 + Hero Legibility Pass
 
-### 1. New primitive: `<HeroTriptych />` — single source of truth
+Eight ordered, atomic edits. No new primitives required (HeroTriptych and HeaderBreadcrumb already exist — we just stop double-rendering and we tighten the scrims).
 
-Create `src/components/media/HeroTriptych.tsx`:
+### 1. Kill duplicate breadcrumbs in hero variants
+- In `src/components/ui/page-hero.tsx`, remove `<BreadcrumbTrail items={props.breadcrumb} onDark .../>` from `EvergreenTypographic` (line ~207) and `EditorialSplit` (line ~313). Keep the `breadcrumb` prop in the type for back-compat (used elsewhere) but stop rendering it.
+- `HeaderBreadcrumb` becomes the single source of truth for sub-page wayfinding. `CinematicBleed` and `ServicePortrait` already omit it correctly — we're just bringing the other two variants in line.
 
-```ts
-type TriptychRhythm = "equal" | "asymmetric" | "cinematic";
-type ScrimDirection = "left" | "bottom" | "none";
+### 2. Tighten SCRIM.left so the headline always lives in dark coverage
+- In `src/lib/colors.ts`, change `SCRIM.left` to fade transparent at ~58% rather than 92%, AND add a new `SCRIM.leftWide` for the asymmetric Home variant that holds 70% black through the 50% mark:
+  - `left`: `linear-gradient(90deg, hsl(150 30% 6% / 0.85) 0%, hsl(150 30% 6% / 0.72) 32%, hsl(150 30% 6% / 0.42) 50%, hsl(150 30% 6% / 0.15) 62%, transparent 78%)` — guarantees the `max-w-3xl` headline column (~768px) sits in ≥42% black on a 1440 viewport.
+  - `leftWide`: `linear-gradient(90deg, hsl(150 30% 6% / 0.88) 0%, hsl(150 30% 6% / 0.78) 42%, hsl(150 30% 6% / 0.55) 56%, hsl(150 30% 6% / 0.18) 70%, transparent 86%)` — for `EditorialSplit` (Home), preserves photo legibility on the right column.
+- In `HeroTriptych.tsx`, accept a new `"leftWide"` value in `ScrimDirection` and route it.
 
-interface HeroTriptychProps {
-  queries: [MediaQuery, MediaQuery, MediaQuery]; // exactly 3
-  rhythm?: TriptychRhythm;       // default "equal"
-  scrim?: ScrimDirection;        // default "left"
-  fallbackIcons?: [LucideIcon?, LucideIcon?, LucideIcon?];
-  fallbackCaptions?: [string?, string?, string?];
-  /** Marks column A as LCP candidate for `useHeroPreload`. */
-  priority?: boolean;
-  className?: string;
-}
-```
+### 3. Fix /work hero subtitle contrast
+- In `CinematicBleed`, raise the existing top scrim from `h-32` `0.55→0` to a calibrated **two-stop scrim** that covers the eyebrow + headline + subtitle band (top 0–55%): `linear-gradient(180deg, hsl(20 10% 6% / 0.72) 0%, hsl(20 10% 6% / 0.45) 28%, hsl(20 10% 6% / 0.20) 55%, transparent 75%)`.
+- Switch `CinematicBleed` from `flex items-end` + `pb-16` to `flex items-end pb-20` and add an explicit `bg-gradient` band behind the headline block (`max-w-3xl`) so the subtitle/byline never falls outside the scrim.
 
-Internals:
-- Resolves three `useFirstApprovedMedia` calls.
-- Renders a `grid` with template-columns per rhythm (`33% 33% 34%` / `40% 30% 30%` / `60% 20% 20%`).
-- Per-column: real `<img>` with `hero-kenburns` + staggered delay, OR `<EditorialFallback variant="stone" icon caption />` (extracted from `MediaSlot.tsx` as a named export so we don't duplicate).
-- Hairline cedar gutters as `box-shadow: inset 1px 0 0 hsl(var(--cedar)/0.18)` on columns 2 and 3.
-- Top scrim (96px, navigation legibility) always on.
-- Direction scrim — switch by prop.
-- Mobile: at `<md`, switches `grid-rows-[40vh_30vh_30vh] grid-cols-1`. At `<sm`, hides cols B and C, fills A 100%.
-- `useHeroPreload(itemA?.url, MEDIA_SIZES.HERO_FULL)` when `priority`.
+### 4. Fix mobile (≤md) text-on-photo collision
+- In `HeroTriptych.tsx` mobile branch, add a dedicated mobile scrim that covers slab A from top to ~70%: `linear-gradient(180deg, hsl(150 30% 6% / 0.78) 0%, hsl(150 30% 6% / 0.55) 35%, hsl(150 30% 6% / 0.20) 65%, transparent 85%)`.
+- In `EvergreenTypographic` and `EditorialSplit`, reduce mobile `min-h-[72vh]` to `min-h-[68vh]` and compress headline `mt-6` to `mt-5` so the headline column fits inside slab A on iPhone XS (812px tall) without the subtitle pushing into slab B.
+- On `< sm` (only column A renders), change `aspect` so the photo crops to 4:5 portrait — currently it stretches.
 
-This primitive lives in `src/components/media/` next to `EditorialBleedSection`. It is **the only thing that knows how to draw a hero photo background** going forward.
+### 5. Add a section rail to /contact AND fix the n=2 tablet gap
+- In `src/lib/page-sections.ts`, expand `/contact` to two anchors so the chrome rail appears: `[{ name: "Reach Us", anchor: "section-contact" }, { name: "FAQ", anchor: "section-contact-faq" }]`. Add a small `<section id="section-contact-faq">` to `Contact.tsx` (the "What to expect" / response-time block we already have can be retitled as the second anchor — no new content required).
+- In `src/components/navigation/SectionRail.tsx`, change the n=2 branch from `hidden lg:flex` to `hidden md:flex` so iPads get a real wayfinding rail on /services and /work. The compact rail (already n≥3 only) does not collide because n=2 is the only branch we're widening.
 
-### 2. Refactor `page-hero.tsx`
+### 6. Drop the redundant "ON THIS PAGE →" eyebrow when HeaderBreadcrumb is already showing
+- In `SectionRail` n=2 branch, hide the "On this page" eyebrow + cedar dash when `pathname` is in `ROUTE_BREADCRUMB` (i.e., HeaderBreadcrumb is already labeling context). Keep the divider/labels themselves; just drop the redundant eyebrow text. Removes the visual stutter on /services and /work.
 
-Replace green plates inside the four affected variants with `<HeroTriptych />`. Each variant retains its own *content layout* — only the background changes.
+### 7. Rename "Areas" → "Service Areas" on /about
+- One-line copy edit in `page-sections.ts`. Three two-word labels (Story / Process / Service Areas) read as a balanced editorial set.
 
-#### `EvergreenTypographic` (used by About + Contact)
-- Remove `bg-evergreen` from the `<section>`.
-- Remove the `BACKDROP.evergreenRadial` overlay div.
-- Mount `<HeroTriptych queries={…} rhythm="equal" scrim="left" priority />` as the first child of the section.
-- Keep the cedar spine, BronzeRule, KineticHeadline — they sit in `relative z-10` over the scrim.
-- Add a new optional prop `triptychQueries?: [MediaQuery, MediaQuery, MediaQuery]` — if omitted, the variant falls back to a stone-plate triptych (still no green).
+### 8. Mobile chrome density fix
+- In `Navigation.tsx` mobile branch, hide the "Quote" pill when viewport < 360px (only phone icon + hamburger remain; both lead to conversion). On 375–767px, increase the Quote pill min-width to 64px and add `mx-1` so the cluster has consistent rhythm.
+- Make the brand eyebrow ("Exterior Construction · est. 2019") `hidden sm:block` to prevent the wordmark wrap on 360px Android devices (already partially done in `BrandMark` — verify and tighten).
 
-#### `EditorialSplit` (used by Home)
-- Remove `bg-evergreen` and `evergreenRadial`.
-- Mount `<HeroTriptych queries={[lead, detail, wide]} rhythm="asymmetric" scrim="left" priority />`.
-- The existing right-column "photo card with provenance" stays — it now reads as a *zoomed/featured detail* layered over the trailing third of the triptych. Kept its `border-cedar/15` and `shadow-float` so it pops from the backdrop.
-- Provenance card now reads cinematically because it sits above a real backdrop, not a green plate.
-
-#### `ServicePortrait` (used by Services)
-- Replace its in-house triptych implementation with `<HeroTriptych />`. This consolidates the duplicated logic — there will be **one** triptych renderer.
-- Drop the `evergreenRadial @0.55` overlay; the new scrim handles legibility.
-- `queries` prop maps 1:1 to the new triptych queries.
-
-#### `CinematicBleed` (used by Work — opt-in)
-- Add `triptych?: boolean` prop (default `false`). When `true` AND `videoQuery` is empty, render `<HeroTriptych rhythm="cinematic" />` instead of the single image. Keeps Work's existing single-image cinematic as the default — we only *offer* the triptych.
-- This is additive only; no breaking change to `/work`.
-
-### 3. Per-page wiring
-
-Update each landing page to pass deliberate triptych queries with brand narrative:
-
-- **`src/components/Hero.tsx`** — Home: 
-  ```ts
-  triptychQueries: [
-    { service: "decks", shot_type: ["hero","elevation"], min_quality: "reference", kind: "image" },
-    { shot_type: ["detail","process"], min_quality: "reference", kind: "image" },
-    { service: "siding", shot_type: ["wide","aerial"], min_quality: "reference", kind: "image" },
-  ]
-  ```
-- **`src/pages/Services.tsx`** — already uses `queries`; refine the array to enforce shot-type variety (currently three of the same service).
-- **`src/pages/About.tsx`** — add `triptychQueries` for crew/process, tool/detail, portfolio/wide. Brand-narrative: *who we are · what we touch · what we leave behind*.
-- **`src/pages/Contact.tsx`** — add `triptychQueries` for warm exterior, hand/tool detail, site context. Brand-narrative: *the warmth waiting on the other end of the call*.
-- **`src/pages/Work.tsx`** — keep current single image. (Optional toggle later.)
-
-### 4. Fallback hierarchy (no green, ever)
-
-The triptych uses this resolution order per column:
-1. Approved media matching the query → render photo
-2. Approved media matching a relaxed query (drop `service`, keep `shot_type`) → render photo
-3. Stone-plate with icon + caption (`MediaSlot`'s `EditorialFallback`)
-
-We export `EditorialFallback` from `MediaSlot.tsx` so `HeroTriptych` reuses the exact same warm-stone visual language used elsewhere on the site.
-
-### 5. Token additions in `src/lib/colors.ts`
-
-```ts
-// Triptych scrims — calibrated for AAA headline contrast over photographic mid-tones.
-SCRIM = {
-  left: "linear-gradient(90deg, hsl(150 30% 6% / 0.78) 0%, hsl(150 30% 6% / 0.55) 38%, hsl(150 30% 6% / 0.18) 62%, transparent 78%)",
-  bottom: "linear-gradient(180deg, transparent 0%, hsl(150 30% 6% / 0.25) 45%, hsl(150 30% 6% / 0.78) 90%)",
-  topNav: "linear-gradient(180deg, hsl(150 30% 6% / 0.55) 0%, transparent 100%)",
-} as const;
-```
-
-This becomes the only sanctioned way to scrim a hero — documented in the memory file.
-
-### 6. Performance
-
-- Only column A is `loading="eager"` + `fetchPriority="high"` + preload via `useHeroPreload`. Columns B and C lazy-load.
-- `MEDIA_SIZES.THIRD` for B/C; `MEDIA_SIZES.HERO_FULL` for A on Home/Work, `MEDIA_SIZES.THIRD` on Services/About/Contact.
-- `contain: layout style paint` on the triptych container so Ken Burns repaints don't bleed into the page.
-- The headline section sits above the triptych in DOM order — the LCP candidate is still the first photo.
-
-### 7. Accessibility & responsive QA matrix (before sign-off)
-
-| Breakpoint | Behavior | Headline contrast |
-|---|---|---|
-| `≥1280px` | 3-column triptych, scrim `left` | AAA (≥7:1) |
-| `768–1279px` | 3-column triptych, scrim `left` | AAA |
-| `640–767px` | Vertical stack (40/30/30 vh) | AA (single image under headline) |
-| `<640px` | Single image (column A only), scrim `bottom` | AAA |
-
-I will hand-verify each by sampling a known photograph from the library against the calculated headline cedar text.
-
-### 8. Memory updates
-
-- **Update** `mem://design/aesthetic-direction.md` — the **No-Green Gate Policy** is now codified to extend to *hero plates*: a hero may never be a flat green field. It must be photographic OR the stone-plate fallback OR an explicit dark cinematic where dictated by approved imagery.
-- **Create** `mem://features/hero-triptych.md` — the contract of `HeroTriptych` (rhythms, scrim directions, query convention, fallback ordering, mobile collapse rules) so future heroes consume the primitive instead of inventing new backdrops.
-- **Update** `mem://features/editorial-media-system.md` — list `HeroTriptych` next to `MediaSlot` / `EditorialBleedSection` as a top-level orchestrator.
-
-### 9. Files touched
-
-**Create**
-- `src/components/media/HeroTriptych.tsx`
-- `mem://features/hero-triptych.md`
-
-**Edit**
-- `src/components/media/MediaSlot.tsx` — export `EditorialFallback` for reuse
-- `src/lib/colors.ts` — add `SCRIM` token group
-- `src/components/ui/page-hero.tsx` — refactor `EvergreenTypographic`, `EditorialSplit`, `ServicePortrait`; add `triptych` prop to `CinematicBleed`
-- `src/components/Hero.tsx` — pass `triptychQueries`
-- `src/pages/Services.tsx` — refine query story
-- `src/pages/About.tsx` — pass `triptychQueries`
-- `src/pages/Contact.tsx` — pass `triptychQueries`
-- `mem://design/aesthetic-direction.md` — extend Gate Policy to hero plates
-- `mem://features/editorial-media-system.md` — register the new primitive
-- `mem://index.md` — add memory reference
-
-### 10. Verification (post-build)
-
-1. `bunx tsc --noEmit` — zero errors.
-2. Browser walk: `/`, `/services`, `/about`, `/contact`, `/work` at 1440 / 1024 / 768 / 390 — confirm zero green plates, scrim legibility, triptych rendering.
-3. Toggle media library access off (or query for a non-existent service) on `/contact` to verify stone-plate fallback renders, **never** green.
-4. Check console: no React key warnings, no LCP regression.
+### 9. GlobalMenu — explicit "current page" treatment
+- In `GlobalMenu.tsx` primary route stack, the active route gets a left cedar bar (4px wide, full height of the row) + the route label switches to italic serif. The `· current` badge becomes redundant and is removed. Stronger cue, less micro-copy.
 
 ---
 
-## Outcome
+## Acceptance criteria (visual QA after implementation)
 
-After this work, **every public landing page leads with photographic proof of Creek's craft**. The flat green plate becomes impossible to draw — the primitive doesn't allow it, the gate policy forbids it, and the fallback for missing media is warm stone, not green. The triptych is the new editorial signature of the brand.
+I will reload `/`, `/services`, `/work`, `/about`, `/contact` at **375px, 768px, 1366px, and 1536px** and confirm:
+- No headline ever overlaps a bright photo region (SCRIM coverage holds ≥45% black under the entire headline column at every breakpoint).
+- No page renders two breadcrumbs (one in chrome, one in hero).
+- Every sub-page shows a usable section rail at md and up.
+- /work subtitle "Selected projects across..." passes WCAG AA against the photo behind it.
+- Mobile header at 375px fits brand + phone icon + Quote + hamburger without wrapping or overlap.
+- GlobalMenu "current page" is unmistakable from across the room.
+
+## Files that will change (no new files)
+- `src/lib/colors.ts` — SCRIM.left tightened, SCRIM.leftWide added
+- `src/components/ui/page-hero.tsx` — drop duplicate breadcrumbs in 2 variants, route leftWide on Home, raise top scrim on CinematicBleed
+- `src/components/media/HeroTriptych.tsx` — accept "leftWide", add mobile scrim, fix < sm crop ratio
+- `src/components/navigation/SectionRail.tsx` — n=2 visible at md+, drop redundant eyebrow when HeaderBreadcrumb owns context
+- `src/components/navigation/GlobalMenu.tsx` — current-route cedar bar + italic
+- `src/components/Navigation.tsx` + `src/components/navigation/BrandMark.tsx` — mobile chrome density
+- `src/lib/page-sections.ts` — /contact gains a 2nd anchor, /about "Areas" → "Service Areas"
+- `src/pages/Contact.tsx` — add the second `section-` id wrapper around existing content (no new content)
+
+## Memory updates
+- Update `mem://features/navigation-architecture.md` — n=2 rail is now md+ (not lg+); HeaderBreadcrumb is the single source of truth for sub-page wayfinding (page-hero variants no longer render their own breadcrumb).
+- Update `mem://design/aesthetic-direction.md` Gate Policy — add "Hero scrim must hold ≥45% opacity under the full headline column at every breakpoint."
+
+This plan addresses every visible defect from the audit without introducing new primitives or breaking the existing v3 contract.

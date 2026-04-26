@@ -1,7 +1,7 @@
 import { useMemo, type ReactNode } from "react";
 
 import { cn } from "@/lib/utils";
-import { BACKDROP, TEXT } from "@/lib/colors";
+import { BACKDROP, SCRIM, TEXT } from "@/lib/colors";
 import BreadcrumbTrail, { type BreadcrumbItem } from "@/components/ui/breadcrumb-trail";
 import BronzeRule from "@/components/ui/bronze-rule";
 import KineticHeadline, { type KineticSize } from "@/components/ui/kinetic-headline";
@@ -156,7 +156,7 @@ const EvergreenTypographic = (props: EvergreenTypographicProps) => {
   return (
     <section
       className={cn(
-        "relative overflow-hidden text-evergreen-foreground py-24 md:py-32 min-h-[72vh] md:min-h-[78vh] flex items-center",
+        "relative overflow-hidden text-evergreen-foreground py-24 md:py-32 min-h-[68vh] md:min-h-[78vh] flex items-center",
         props.className,
       )}
       aria-label={lines.join(" ")}
@@ -204,7 +204,9 @@ const EvergreenTypographic = (props: EvergreenTypographicProps) => {
 
       <div className="container mx-auto px-6 relative z-10">
         <div className="max-w-2xl">
-          <BreadcrumbTrail items={props.breadcrumb} onDark className="mb-6" />
+          {/* Breadcrumb intentionally omitted — HeaderBreadcrumb in the chrome
+              owns sub-page wayfinding (v3.1). The `breadcrumb` prop is still
+              accepted for back-compat but no longer renders here. */}
 
           <BronzeRule
             numeral={props.numeral ?? "I"}
@@ -223,7 +225,7 @@ const EvergreenTypographic = (props: EvergreenTypographicProps) => {
           {props.subtitle && (
             <p
               className={cn(
-                "mt-6 text-lg italic font-serif max-w-xl",
+                "mt-5 md:mt-6 text-lg italic font-serif max-w-xl",
                 "text-evergreen-foreground/95",
                 TEXT.onDark.legibleShadow,
               )}
@@ -282,16 +284,18 @@ const EditorialSplit = (props: EditorialSplitProps) => {
     <section
       id="section-hero"
       className={cn(
-        "relative min-h-[88vh] md:min-h-screen flex items-center overflow-hidden text-evergreen-foreground",
+        "relative min-h-[82vh] md:min-h-screen flex items-center overflow-hidden text-evergreen-foreground",
         props.className,
       )}
       aria-label={lines.join(" ")}
     >
-      {/* Photographic triptych backdrop — replaces the old solid evergreen */}
+      {/* Photographic triptych backdrop — replaces the old solid evergreen.
+          leftWide scrim holds heavier black through 56% so the headline column
+          AND the floating provenance card both stay legible. */}
       <HeroTriptych
         queries={triptychQueries}
         rhythm="asymmetric"
-        scrim="left"
+        scrim="leftWide"
         priority
         fallbackCaptions={[
           "Decks · Calgary",
@@ -310,7 +314,9 @@ const EditorialSplit = (props: EditorialSplitProps) => {
         >
           {/* ─── Left column ─── */}
           <div className={hasMedia ? "lg:col-span-7 max-w-2xl" : ""}>
-            <BreadcrumbTrail items={props.breadcrumb} onDark className="mb-6" />
+            {/* Breadcrumb intentionally omitted — HeaderBreadcrumb in the chrome
+                owns wayfinding (v3.1). On Home there's no sub-page context, so
+                the eyebrow comes from BronzeRule's sectionLabel only. */}
 
             <BronzeRule
               numeral={props.numeral}
@@ -329,7 +335,7 @@ const EditorialSplit = (props: EditorialSplitProps) => {
             {props.subtitle && (
               <p
                 className={cn(
-                  "mt-6 text-lg md:text-xl text-evergreen-foreground/90",
+                  "mt-5 md:mt-6 text-lg md:text-xl text-evergreen-foreground/90",
                   TEXT.onDark.legibleShadow,
                   hasMedia ? "max-w-xl" : "max-w-2xl",
                 )}
@@ -477,10 +483,11 @@ const CinematicBleed = (props: CinematicBleedProps) => {
       {/* Cinematic vignette stack */}
       <div className="absolute inset-0" style={{ background: BACKDROP.cinematicVignette }} aria-hidden />
       <div className="absolute inset-0 pointer-events-none" style={{ background: BACKDROP.cinematicRadial }} aria-hidden />
-      {/* Top scrim so navigation stays legible */}
+      {/* Two-stop top scrim — covers eyebrow → headline → subtitle band so
+          the body copy can never fall outside legible coverage (v3.1). */}
       <div
-        className="absolute inset-x-0 top-0 h-32 pointer-events-none"
-        style={{ background: "linear-gradient(180deg, hsl(20 10% 6% / 0.55) 0%, transparent 100%)" }}
+        className="absolute inset-x-0 top-0 h-[58%] pointer-events-none"
+        style={{ background: SCRIM.cinematicTop }}
         aria-hidden
       />
 

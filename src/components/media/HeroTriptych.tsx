@@ -19,11 +19,12 @@ export type TriptychRhythm = "equal" | "asymmetric" | "cinematic";
 
 /**
  * Scrim direction. Pick by where the headline column lives:
- *   left   — Home, Services, About (headline left-anchored)
- *   bottom — Contact, Work (headline bottom-anchored)
- *   none   — for places that own their own scrim (rare)
+ *   left      — Services, About (headline in left ~50%)
+ *   leftWide  — Home (asymmetric — headline + provenance card on the left half)
+ *   bottom    — Contact, Work (headline bottom-anchored)
+ *   none      — for places that own their own scrim (rare)
  */
-export type ScrimDirection = "left" | "bottom" | "none";
+export type ScrimDirection = "left" | "leftWide" | "bottom" | "none";
 
 interface HeroTriptychProps {
   /** Exactly three queries — one per column. */
@@ -188,17 +189,28 @@ const HeroTriptych = ({
         style={{ background: SCRIM.topNav }}
       />
 
-      {/* Direction scrim — desktop. On mobile we always use the bottom scrim
-           because the headline overlays the top stacked slab. */}
+      {/* Direction scrim — desktop. */}
       {scrim !== "none" && (
         <>
           <div
             className="absolute inset-0 pointer-events-none hidden md:block"
-            style={{ background: scrim === "left" ? SCRIM.left : SCRIM.bottom }}
+            style={{
+              background:
+                scrim === "leftWide"
+                  ? SCRIM.leftWide
+                  : scrim === "left"
+                    ? SCRIM.left
+                    : SCRIM.bottom,
+            }}
           />
+          {/* Mobile scrim — covers slab A's top so the headline column
+              is always legible regardless of which photo loaded. */}
           <div
             className="absolute inset-0 pointer-events-none md:hidden"
-            style={{ background: SCRIM.bottom }}
+            style={{
+              background:
+                scrim === "bottom" ? SCRIM.bottom : SCRIM.mobileTop,
+            }}
           />
         </>
       )}
