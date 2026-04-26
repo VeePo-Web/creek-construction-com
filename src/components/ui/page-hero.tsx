@@ -1,7 +1,7 @@
 import { useMemo, type ReactNode } from "react";
 
 import { cn } from "@/lib/utils";
-import { BACKDROP, TEXT } from "@/lib/colors";
+import { BACKDROP, SCRIM, TEXT } from "@/lib/colors";
 import BreadcrumbTrail, { type BreadcrumbItem } from "@/components/ui/breadcrumb-trail";
 import BronzeRule from "@/components/ui/bronze-rule";
 import KineticHeadline, { type KineticSize } from "@/components/ui/kinetic-headline";
