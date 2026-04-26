@@ -61,12 +61,12 @@ const HeroProvenanceCard = ({
 
   const surfaceStyle: React.CSSProperties =
     surface === "glass"
-      ? {
+      ? ({
           background: "hsl(var(--surface-card) / 0.96)",
           border: "1px solid hsl(var(--surface-card-border))",
           backdropFilter: "blur(14px) saturate(1.15)",
           WebkitBackdropFilter: "blur(14px) saturate(1.15)",
-        }
+        } as React.CSSProperties)
       : {
           background: "hsl(var(--surface-card))",
           border: "1px solid hsl(var(--surface-card-border))",
