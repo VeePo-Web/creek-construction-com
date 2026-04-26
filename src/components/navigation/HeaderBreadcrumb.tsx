@@ -1,18 +1,7 @@
 import { Link, useLocation } from "react-router-dom";
 import { ChevronLeft } from "lucide-react";
 import { cn } from "@/lib/utils";
-
-/**
- * Map of routes that get an in-header breadcrumb chip and the parent
- * label they descend from. Sub-pages of `/` only — the home page itself
- * never shows a breadcrumb in the chrome.
- */
-const ROUTE_BREADCRUMB: Record<string, { label: string; parent: string }> = {
-  "/services": { label: "Services", parent: "Home" },
-  "/work": { label: "Our Work", parent: "Home" },
-  "/about": { label: "About", parent: "Home" },
-  "/contact": { label: "Contact", parent: "Home" },
-};
+import { getRouteBreadcrumb } from "@/lib/route-meta";
 
 interface HeaderBreadcrumbProps {
   className?: string;
