@@ -79,8 +79,19 @@ const PLATE_CAPTION_COLOR: Record<MediaFallbackVariant, string> = {
 /**
  * Editorial auto-fallback. Renders a warm plate (stone/cedar) with optional
  * icon and caption — consistent across every photo position site-wide.
+ *
+ * Exported so HeroTriptych and any other media primitive can render the
+ * exact same warm-stone fallback. Don't reinvent the green plate.
  */
-function EditorialFallback({
+export function EditorialFallback({
+  variant = "stone",
+  icon: Icon,
+  caption,
+}: {
+  variant?: MediaFallbackVariant;
+  icon?: LucideIcon;
+  caption?: string;
+}) {
   variant = "stone",
   icon: Icon,
   caption,
