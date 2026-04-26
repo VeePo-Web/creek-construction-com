@@ -60,7 +60,7 @@ const Services = () => {
       </PageHero>
 
       {/* Full service list */}
-      <section className={`${SECTION_PADDING.default} grain-overlay`} aria-labelledby="all-services-heading">
+      <section id="section-catalogue" className={`${SECTION_PADDING.default} grain-overlay`} aria-labelledby="all-services-heading">
         <div className="container mx-auto px-6">
           <div className={`${MAX_WIDTH.content} mx-auto`}>
             <SectionHeader
@@ -89,7 +89,7 @@ const Services = () => {
       </section>
 
       {/* FAQ */}
-      <section className={`${SECTION_PADDING.default} bg-secondary grain-overlay`} aria-labelledby="faq-heading">
+      <section id="section-faq" className={`${SECTION_PADDING.default} bg-secondary grain-overlay`} aria-labelledby="faq-heading">
         <div className="container mx-auto px-6">
           <div className="max-w-3xl mx-auto">
             <SectionHeader
