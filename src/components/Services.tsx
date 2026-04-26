@@ -43,7 +43,6 @@ const Services = () => {
       id="section-services"
       className={`${SECTION_PADDING.default} bg-background relative`}
       aria-labelledby="services-heading"
-      style={{ contentVisibility: "auto", containIntrinsicSize: "auto 1200px" }}
     >
       <div
         className="absolute bottom-0 inset-x-0 h-32 pointer-events-none"

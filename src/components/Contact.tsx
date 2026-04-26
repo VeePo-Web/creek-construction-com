@@ -14,7 +14,6 @@ const Contact = () => {
       id="section-contact"
       className="py-24 md:py-32 bg-background relative overflow-hidden grain-overlay"
       aria-labelledby="contact-heading"
-      style={{ contentVisibility: "auto", containIntrinsicSize: "auto 700px" }}
     >
       <div
         className="absolute top-0 inset-x-0 h-40 pointer-events-none"
