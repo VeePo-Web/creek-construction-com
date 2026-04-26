@@ -8,9 +8,9 @@
  * smaller token surface (5 brand colors, 2 fonts, 4 shadows).
  */
 
-import { useState } from "react";
-import { Helmet } from "react-helmet-async";
+import { useEffect, useState } from "react";
 import { Check, Copy } from "lucide-react";
+import { useDocumentTitle } from "@/hooks/useDocumentTitle";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   BRAND,
