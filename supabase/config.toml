@@ -11,3 +11,6 @@ verify_jwt = true
 
 [functions.backfill-lqip]
 verify_jwt = true
+
+[functions.auto-classify-batch]
+verify_jwt = false
