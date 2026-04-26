@@ -1,61 +1,113 @@
 import ScrollRevealMotion from "@/components/ScrollRevealMotion";
 import SectionHeader from "@/components/SectionHeader";
-import { Hammer, Fence, Paintbrush, type LucideIcon } from "lucide-react";
+import { Hammer, Fence, Paintbrush, Home, type LucideIcon } from "lucide-react";
 import { useQuoteModal } from "@/components/quote/QuoteModalProvider";
 import CedarCTA from "@/components/CedarCTA";
-import { getProjectsByService, type Project } from "@/data/projects";
 import MediaSlot from "@/components/media/MediaSlot";
 import type { ServiceCategory } from "@/lib/api/public-media";
+import { useApprovedMedia } from "@/hooks/useApprovedMedia";
 import { BACKDROP, bronzeStep } from "@/lib/colors";
 import { SECTION_PADDING, MAX_WIDTH } from "@/lib/spacing";
+import { useMemo } from "react";
 
 interface PortfolioCard {
   title: string;
   location: string;
   description: string;
-  service: string;
+  service: ServiceCategory;
   icon: LucideIcon;
-  realProject?: Project;
 }
 
+/** Catalogue of every service we *can* surface here. We pick the top
+ *  three that actually have approved cloud media so the strip is always
+ *  filled with real work. */
+const ALL_CARDS: Record<ServiceCategory, PortfolioCard> = {
+  decks: {
+    title: "Custom Decks",
+    location: "Calgary & Edmonton",
+    description: "Cedar, pressure-treated and composite decks — built level, fastened tight, finished to last.",
+    service: "decks",
+    icon: Hammer,
+  },
+  sheds: {
+    title: "Backyard Sheds & Studios",
+    location: "Calgary & Edmonton",
+    description: "Custom storage, workshops and studio sheds, framed and finished on-site.",
+    service: "sheds",
+    icon: Home,
+  },
+  fencing: {
+    title: "Cedar & Privacy Fencing",
+    location: "Calgary & Edmonton",
+    description: "Horizontal slats, board-on-board, lattice tops — set straight and plumb on every panel.",
+    service: "fencing",
+    icon: Fence,
+  },
+  painting: {
+    title: "Exterior Painting",
+    location: "Calgary & Edmonton",
+    description: "Full prep, two coats, hand-cut lines at every transition. Trim, fascia, soffits — every edge.",
+    service: "painting",
+    icon: Paintbrush,
+  },
+  siding: {
+    title: "Siding & Cladding",
+    location: "Calgary & Edmonton",
+    description: "Replacement siding and re-clad — vinyl, fibre cement, board-and-batten.",
+    service: "siding",
+    icon: Home,
+  },
+  pergolas: { title: "Pergolas", location: "Calgary & Edmonton", description: "Timber pergolas built to anchor a deck or patio.", service: "pergolas", icon: Hammer },
+  interiors: { title: "Interiors", location: "Calgary & Edmonton", description: "Selected interior renovation work.", service: "interiors", icon: Home },
+  exterior: { title: "Exterior Renovations", location: "Calgary & Edmonton", description: "Whole-property exterior renovations.", service: "exterior", icon: Home },
+  other: { title: "Custom Carpentry", location: "Calgary & Edmonton", description: "One-off custom carpentry projects.", service: "other", icon: Hammer },
+};
+
+/** The display priority when multiple services have media. */
+const SERVICE_PRIORITY: ServiceCategory[] = [
+  "decks", "sheds", "fencing", "painting", "siding", "pergolas",
+];
+
 /**
- * Portfolio — cinematic horizontal scroll-snap strip (deliberately distinct
- * from FeaturedProjects' tabular grid). On md+ it lays out as a 3-up grid
- * with deeper portrait cards; on mobile it's a swipeable snap-x rail.
- *
- * Tokenized: SECTION_PADDING.default, MAX_WIDTH.wide, bronzeStep(),
- * BACKDROP.evergreenPlate. NO grain on the section root — this section is
- * cinematic / photo-led, the photos carry the texture.
+ * Portfolio — cinematic horizontal scroll-snap strip. Picks the top three
+ * services that actually have approved cloud media so the strip is always
+ * filled with real work. Falls back to decks/sheds/fencing when nothing
+ * is loaded yet.
  */
 const Portfolio = () => {
   const { openModal } = useQuoteModal();
 
-  const realShed = getProjectsByService("sheds").find((p) => p.featured);
+  // Pull every approved photo so we can detect which services have stock.
+  const { items, loading } = useApprovedMedia({
+    kind: "image",
+    min_quality: "reference",
+    limit: 200,
+  });
 
-  const projects: PortfolioCard[] = [
-    {
-      title: "Custom Cedar Deck",
-      location: "Calgary NW",
-      description: "Two-tier cedar deck with built-in bench seating and a privacy screen along the property line.",
-      service: "decks",
-      icon: Hammer,
-    },
-    {
-      title: realShed?.title ?? "Backyard Studio Shed",
-      location: realShed?.location ?? "Edmonton",
-      description: realShed?.summary ?? "Custom backyard structures, framed and finished to last.",
-      service: "sheds",
-      icon: Fence,
-      realProject: realShed,
-    },
-    {
-      title: "Full Exterior Repaint",
-      location: "Cochrane",
-      description: "Complete prep, two coats, all trim and fascia. Hand-cut lines at every transition.",
-      service: "painting",
-      icon: Paintbrush,
-    },
-  ];
+  const projects: PortfolioCard[] = useMemo(() => {
+    if (loading || items.length === 0) {
+      // Sensible default while loading
+      return [ALL_CARDS.decks, ALL_CARDS.sheds, ALL_CARDS.fencing];
+    }
+    const counts = new Map<ServiceCategory, number>();
+    for (const m of items) {
+      if (!m.service) continue;
+      counts.set(m.service, (counts.get(m.service) ?? 0) + 1);
+    }
+    const ranked = SERVICE_PRIORITY
+      .filter((s) => (counts.get(s) ?? 0) >= 1)
+      .slice(0, 3)
+      .map((s) => ALL_CARDS[s]);
+    if (ranked.length >= 3) return ranked;
+    // Pad with the priority list to keep the 3-up grid intact.
+    const padded = [...ranked];
+    for (const s of SERVICE_PRIORITY) {
+      if (padded.length >= 3) break;
+      const card = ALL_CARDS[s];
+      if (!padded.find((p) => p.service === card.service)) padded.push(card);
+    }
+    return padded;
+  }, [items, loading]);
 
   return (
     <section
@@ -84,7 +136,6 @@ const Portfolio = () => {
             />
           </div>
 
-          {/* Mobile: horizontal scroll-snap rail. md+: 3-up grid. */}
           <div
             className="flex md:grid md:grid-cols-3 gap-6 overflow-x-auto md:overflow-visible snap-x snap-mandatory md:snap-none -mx-6 md:mx-0 px-6 md:px-0 pb-4 md:pb-0"
             role="list"
@@ -92,11 +143,10 @@ const Portfolio = () => {
           >
             {projects.map((project, i) => {
               const Icon = project.icon;
-              const photo = project.realProject?.hero;
               const opacity = bronzeStep(i, projects.length);
               return (
                 <ScrollRevealMotion
-                  key={i}
+                  key={project.service}
                   delay={i * 0.1}
                   y={32}
                   className="snap-center shrink-0 w-[85%] sm:w-[60%] md:w-auto"
@@ -110,42 +160,28 @@ const Portfolio = () => {
                     >
                       <div
                         className="relative aspect-[4/5] rounded-sm overflow-hidden transition-all duration-700 group-hover:shadow-elevated"
-                        style={photo ? undefined : { background: BACKDROP.evergreenPlate }}
+                        style={{ background: BACKDROP.evergreenPlate }}
                       >
-                        {photo ? (
-                          <img
-                            src={photo.src}
-                            alt={photo.alt}
-                            width={photo.width}
-                            height={photo.height}
-                            loading="lazy"
-                            decoding="async"
-                            sizes="(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw"
-                            className="absolute inset-0 w-full h-full object-cover transition-transform duration-[1.2s] group-hover:scale-105"
-                          />
-                        ) : (
-                          <MediaSlot
-                            query={{
-                              service: project.service as ServiceCategory,
-                              shot_type: ["hero", "elevation", "wide"],
-                              kind: "image",
-                              min_quality: "portfolio",
-                            }}
-                            sizes="(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw"
-                            wrapperClassName="absolute inset-0 w-full h-full"
-                            className="transition-transform duration-[1.2s] group-hover:scale-105"
-                            fallback={
-                              <div className="absolute inset-0 flex items-center justify-center">
-                                <Icon
-                                  className="h-20 w-20 text-cedar/30 group-hover:text-cedar/50 transition-all duration-700 group-hover:scale-110"
-                                  aria-hidden
-                                />
-                              </div>
-                            }
-                          />
-                        )}
+                        <MediaSlot
+                          query={{
+                            service: project.service,
+                            shot_type: ["hero", "elevation", "wide"],
+                            kind: "image",
+                            min_quality: "reference",
+                          }}
+                          sizes="(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw"
+                          wrapperClassName="absolute inset-0 w-full h-full"
+                          className="transition-transform duration-[1.2s] group-hover:scale-105"
+                          fallback={
+                            <div className="absolute inset-0 flex items-center justify-center">
+                              <Icon
+                                className="h-20 w-20 text-cedar/30 group-hover:text-cedar/50 transition-all duration-700 group-hover:scale-110"
+                                aria-hidden
+                              />
+                            </div>
+                          }
+                        />
 
-                        {/* Bronze accent line */}
                         <div
                           className="absolute top-0 left-0 h-px transition-all duration-700 group-hover:w-full z-10"
                           style={{
