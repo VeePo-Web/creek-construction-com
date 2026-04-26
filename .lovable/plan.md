@@ -1,197 +1,190 @@
 
-# Navigation v3 — Path-of-Least-Resistance Audit & Upgrade
+# Audit — Every Surface That's Currently Green-When-It-Should-Be-A-Photo
 
-I shipped v2 (registry + section rail + GlobalMenu) and then drove the live preview at four viewports and through the menu panel. **The architecture is right; the execution has 20 distinct friction points** that stop it from feeling Fantasy.co-grade. They cluster into four themes:
+I walked the live preview at `/work#portfolio-fencing-2025`, mapped every `BACKDROP.evergreenPlate` / `bg-evergreen` callsite, and cross-referenced against the actual approved-media inventory. The result: **9 surfaces** silently render flat green right now. The reasons fall into three buckets:
 
-> 1. Header chrome reads as a pasted billboard, not as part of the brand surface
-> 2. Wayfinding signals collide instead of layering (brand mark vs. section rail)
-> 3. Mobile loses the conversion CTAs it most desperately needs
-> 4. The GlobalMenu is hollow — a left-stack of links with empty space, not an editorial moment
+1. **Query gates set too tight.** Most slots demand `min_quality: "portfolio"` or `"hero"`. The library has the work — 65 portfolio/hero photos — but the *combinations* (e.g. `service:fencing` + `shot_type:[hero,wide,elevation]` + `min_quality:portfolio`) match zero rows. No match → green plate.
+2. **Plate painted underneath every successful image.** Cards in `Portfolio.tsx`, `Services.tsx`, and the project tile render `BACKDROP.evergreenPlate` as the *base* of the tile, then `MediaSlot` paints on top. During load — and forever, on cards that fall back to the icon — the green plate is the entire visible surface.
+3. **Hard-coded green even when media exists nearby.** `GlobalMenu` paints a literal `bg-evergreen` div as the menu's editorial photo fallback. `ProjectTile` placeholders never even *try* to fetch a photo for the service category.
 
-This plan fixes every one of the 20 issues against named files and named pixels, in that priority order.
-
----
-
-## The 20 audited issues, with evidence
-
-| # | Where | What the user sees | Why it's wrong |
-|---|---|---|---|
-| 1 | Home, hero | Opaque cream header floats over a deep evergreen hero | Looks like a billboard pasted on top, not chrome belonging to the page |
-| 2 | All pages, header | Brand mark + section rail share weight, color, tracking | "Where I am" and "what this is" compete for the same eye |
-| 3 | Home, scrolled | Right cluster (phone + Quote) fades to 40% near footer | Primary CTA looks disabled exactly when conversion intent is highest |
-| 4 | All pages, header | Border too soft (`border-border/50`) on cream surface | The chrome has no edge — it bleeds into the page below |
-| 5 | All pages, header | Hamburger looks visually identical to a section anchor | Tier-2 entry point has no special affordance |
-| 6 | GlobalMenu | Primary stack left-aligned, right 60% empty | Not "editorial three-column" — just a list with whitespace |
-| 7 | GlobalMenu | No hero element, no logo, no warmth | Reads like an OS sheet, not a brand panel |
-| 8 | GlobalMenu | "Services" appears in the primary stack AND as a column heading | Redundant — which one do I tap? |
-| 9 | GlobalMenu | Service Areas is a flat 11-item list with no hierarchy | No "Calgary metro vs. Edmonton metro" grouping; no map cue |
-| 10 | GlobalMenu | No active route indicator | User on `/` has no signal that "Home" is current |
-| 11 | GlobalMenu | Phone in CTA bar has no padding/affordance | Reads as caption text, not a tappable phone link |
-| 12 | GlobalMenu | Bronze rule under primary stack is ~80px wide, hugs left | Pretends to "underline" a column that isn't there |
-| 13 | iPad 820px | Phone + brand stack + CTA + hamburger fight one row | Cramping the v1 audit already flagged |
-| 14 | iPad 820px | Section rail hidden, no replacement | Tier-1 wayfinding evaporates between 768–1024px |
-| 15 | Mobile 390px | Wordmark stack hidden by `compact` mode | First-time mobile visitor sees only logo crest, no brand name |
-| 16 | Mobile 390px | Quote button is `hidden sm:inline-flex` (>640px only) | Mobile users have no in-chrome conversion CTA — measurable loss |
-| 17 | Mobile 390px | Phone is `hidden md:inline-flex` (>768px only) | The device most likely to call has no tappable phone in chrome |
-| 18 | /services, header | "CATALOGUE · FAQ" — two-item rail looks broken | Rail design was never meant for n=2; it looks unfinished |
-| 19 | /services, hero | "HOME › SERVICES" breadcrumb hugs photo edge | Chrome and hero don't speak; breadcrumb is barely readable |
-| 20 | All pages, brand | "CALGARY · EDMONTON" subtext duplicates hero eyebrow | Brand mark should say what the company *is*, not where it works |
+The fix is not "soften the green." A premium exterior contractor's site shows the *exterior contracting work*. Below is the surface-by-surface plan, in priority order.
 
 ---
 
-## The fix — Nav v3
-
-### A. Header chrome — commit to one philosophy (#1, #4)
-
-**Decision: always-opaque cream chrome with a real edge,** not transparent-over-hero.
-Reasoning: Creek's whole identity is editorial cream. Transparent chrome over the deep hero would cost us legibility and force a second light/dark color logic. We instead make the cream chrome *intentional* and architectural.
-
-Concrete changes in `src/components/Navigation.tsx`:
-- Default surface (above fold): `bg-background/95 backdrop-blur-[12px]` — strong but not flat.
-- Scrolled state: same surface, but the bottom border deepens from `border-cedar/10` → `border-cedar/30` and a 1px shadow `shadow-[0_1px_0_0_rgba(0,0,0,0.04)]` appears underneath. So the user *feels* the threshold without a color flash.
-- Replace `border-border/50` with `border-cedar/15` so the edge is always visible against cream.
-- Add a 1px hairline at the *top* of the header in cedar — a tiny editorial cap that signals "this is the brand frame," same trick Royal uses with its gold rule.
-
-### B. Wayfinding hierarchy — brand vs. rail vs. CTA (#2, #5, #20)
-
-The three header zones get **distinct typographic identities** so the eye reads them in the right order:
-1. **Brand mark (left)** — DM Serif Display "Creek Construction" at 18px, locale subtext replaced with a single italic eyebrow: *"Exterior Construction · est. 2019"*. Removes the city duplication (#20). Locale moves to the GlobalMenu where it belongs.
-2. **Section rail (center)** — uppercase 10px tracked label switches from neutral gray to **cedar at 70% opacity** so it reads as "links" not "labels." Active state stays full cedar with the underline.
-3. **Right cluster** — phone gets a 1px cedar dot before the digits (`· (780)…`); Quote CTA stays solid cedar; **hamburger gets a thin cedar border + label "MENU"** at 10px tracked text under the lines on `md+`. That gives Tier-2 a clear affordance distinct from anchors (#5).
-
-### C. Footer fade — fix the disabled-CTA problem (#3)
-
-Today: the entire right cluster fades to 40% near the footer.
-**New behavior:** *only the section rail* fades. The phone, Quote CTA, and hamburger stay at 100% opacity all the way to the footer — they are conversion surfaces and must never look disabled. In `Navigation.tsx`, drop the `opacity-40` wrapper around the right cluster; keep `faded={isAtFooter}` only on `<SectionRail>`.
-
-### D. Responsive — don't punish mobile (#13, #14, #15, #16, #17)
-
-Three concrete breakpoint changes in `Navigation.tsx`:
-- **Mobile (`<sm`)**: Show a compact "Quote" pill (`px-3 py-2 text-[10px]`) and a tap-to-call phone icon button (44x44, just the icon, no text) *before* the hamburger. So mobile chrome is: `[logo]   [📞] [Quote] [☰]`. Restores both conversion paths (#16, #17).
-- **Mobile**: Bring back the wordmark — drop `compact` on `BrandMark`, just shrink it to `text-sm` on small screens. Visitors must always see the company name (#15).
-- **Tablet (768–1023px)**: Introduce a **`md`-tier section rail** that shows up to 3 anchors as tight 11px tracked text, hidden behind a chevron disclosure if more. So /services (2 anchors) and /about (3 anchors) fit, /home (5 anchors) shows the first 3 + "more →" that opens the GlobalMenu pre-scrolled to a Sections section. Closes the wayfinding gap (#14) without cramming (#13).
-
-### E. Two-anchor rail — treat n=2 with intention (#18)
-
-Today: `SectionRail` renders any list ≥ 2. On `/services` that's "CATALOGUE · FAQ" — looks abandoned.
-
-**Fix:** in `src/components/navigation/SectionRail.tsx`, when `sections.length === 2`, render a different layout: a small **left-anchored sub-route bar** below the main header with a leading "ON THIS PAGE →" eyebrow. Same anchors, same active logic, but visually framed as "this page has two stops" instead of pretending to be a 5-anchor rail. So:
-- `n < 2` → renders nothing (current)
-- `n == 2` → "ON THIS PAGE → CATALOGUE | FAQ" (left-anchored, lighter)
-- `n >= 3` → centered editorial rail (current)
-
-### F. Breadcrumb integration on sub-page heroes (#19)
-
-The breadcrumb shouldn't be a separate floating layer over the hero photo. In `src/components/ui/page-hero.tsx` (the `cinematic-bleed` and `service-portrait` variants), move the breadcrumb up into the **header itself** as a left-anchored chip on routes that have one, sitting in the empty space the section rail would normally use when `n < 2`. So on `/services` the header center reads:
-`[← Services] [section rail or "ON THIS PAGE → …"]`
-The breadcrumb becomes part of the chrome, not the hero. Hero photo stays uncluttered.
-
-### G. GlobalMenu redesign — make it an editorial moment (#6, #7, #8, #9, #10, #11, #12)
-
-This is the largest change. Rebuild `src/components/navigation/GlobalMenu.tsx` as a **two-column editorial panel** instead of a full-width left stack.
+## A. Library inventory (so the fix is grounded in reality)
 
 ```
-┌───────────────────────────────────────────────────────────────────────┐
-│  [✕ MENU]                                                              │
-│                                                                        │
-│  ┌─────────────────────────────────┬────────────────────────────────┐  │
-│  │  PRIMARY ROUTES                 │  EDITORIAL HERO                │  │
-│  │                                 │                                │  │
-│  │  Home          ·  current       │  ┌──────────────────────────┐  │  │
-│  │  Services                       │  │                          │  │  │
-│  │  Our Work                       │  │   real project photo     │  │  │
-│  │  About                          │  │   (random hero from db)  │  │  │
-│  │  Contact                        │  │                          │  │  │
-│  │                                 │  └──────────────────────────┘  │  │
-│  │  ─── BRONZE RULE                │  "Calgary · 2025 · Cedar deck" │  │
-│  │                                 │                                │  │
-│  │  SERVICES                       │  ┌──────────────────────────┐  │  │
-│  │  Decks · Fencing · Sheds · …    │  │  WHERE WE BUILD          │  │  │
-│  │  (chips, not a list — opens     │  │                          │  │  │
-│  │   QuoteModal pre-filtered)      │  │  CALGARY METRO           │  │  │
-│  │                                 │  │  • Calgary  · home base  │  │  │
-│  │                                 │  │  • Airdrie               │  │  │
-│  │                                 │  │  • Cochrane · Okotoks    │  │  │
-│  │                                 │  │                          │  │  │
-│  │                                 │  │  EDMONTON METRO          │  │  │
-│  │                                 │  │  • Edmonton              │  │  │
-│  │                                 │  │  • St. Albert · Sherwood │  │  │
-│  │                                 │  │    Park · Spruce Grove   │  │  │
-│  │                                 │  └──────────────────────────┘  │  │
-│  └─────────────────────────────────┴────────────────────────────────┘  │
-│                                                                        │
-│  ┌──────────────────────────────────────────────────────────────────┐  │
-│  │  ✓ WCB · Insured · Locally owned    📞 (780) …    [Request Quote]│  │
-│  └──────────────────────────────────────────────────────────────────┘  │
-└───────────────────────────────────────────────────────────────────────┘
+By shot_type × quality (approved, images):
+  process    × reference   44   ← largest pool
+  process    × portfolio   24   ← excellent fallback for non-hero slots
+  elevation  × reference   15
+  detail     × reference   11
+  elevation  × hero         8   ← only true "hero"-tier supply
+  wide       × hero         1
+  detail     × portfolio    1
+
+By service × quality (approved):
+  decks    : 1 hero,  5 portfolio, 21 reference  →  good coverage
+  sheds    : 6 hero, 20 portfolio, 29 reference  →  excellent coverage
+  fencing  : 2 hero,  0 portfolio, 17 reference  →  thin at portfolio tier
+  painting :         0 portfolio,  3 reference   →  thin everywhere
+  siding   : 0  approved photos                  →  no coverage
+  pergolas : 0  approved photos                  →  no coverage
+  videos   : 0 approved                          →  no field clips yet
 ```
 
-Specifically:
-- **Active route badge** on the matching primary link (`· current` in 10px cedar tracked text) — fixes #10.
-- **Services** removed from the primary stack and moved to a chip cluster below the bronze rule — chips are visually distinct from routes, so no "which one do I tap?" confusion (#8).
-- **Bronze rule** spans the column it lives in (full width inside the left column), no longer 80px orphan (#12).
-- **Right column** holds the editorial hero: a real `MediaSlot` query for `shot_type: ['hero','wide']`, randomized per open. Reuses the `hero-provenance-card` pattern below it ("Calgary · 2025 · Cedar deck"). Solves #6, #7 in one move.
-- **Service areas grouped** into Calgary Metro and Edmonton Metro, with Calgary tagged "home base" — gives a mental map (#9).
-- **Bottom CTA bar redesigned**: trust strip on left, a real `<a href="tel:">` with phone icon and 44px hit area in the middle, cedar Quote button on the right. The phone is now obviously tappable (#11).
-- Mobile (`<md`): the editorial right column collapses below the primary stack, and the service-areas grouping becomes a 2-column compact list. Trust bar wraps gracefully.
-
-### H. Motion & accessibility polish
-
-- The new "MENU" label fades in only after `isScrolled` so the header has *one extra signal* you've left the hero — subtle but premium.
-- Chip cluster in the menu uses `--kinetic-delay` so the existing stagger orchestration applies.
-- Active-route badge uses `aria-current="page"` (was missing).
-- Footer fade now applies `aria-hidden="true"` to the rail when fully faded so screen readers don't read invisible links.
-- The new `md`-tier rail respects `prefers-reduced-motion` (no chevron animation).
+**Implication**: the hard rule "show a photo at hero or portfolio quality only" is fighting the data. The right rule is *photo-or-fallback per surface, with the gate set to whatever the surface can plausibly receive*.
 
 ---
 
-## File plan
+## B. The nine green surfaces, ranked by how loud they shout
 
-### Edited
-- `src/components/Navigation.tsx` — chrome philosophy (A), wayfinding hierarchy (B), footer fade scope (C), full responsive cluster rebuild (D), top hairline + bottom border treatment.
-- `src/components/navigation/BrandMark.tsx` — replace city subtext with eyebrow (#20), keep wordmark on mobile (#15), remove `compact` prop usage in chrome.
-- `src/components/navigation/SectionRail.tsx` — split renderer into n=2 vs n≥3 layouts (#18); add `md`-tier compact mode (#14); add `aria-hidden` when fully faded.
-- `src/components/navigation/MenuTrigger.tsx` — add optional "MENU" label slot (#5), border treatment, a tiny cedar dot indicator that pulses 1× when a new GlobalMenu opens for the first time per session.
-- `src/components/navigation/GlobalMenu.tsx` — full rewrite per section G; uses `MediaSlot` for the editorial hero, groups service areas, renders Services as chips, marks active route.
-- `src/components/ui/page-hero.tsx` — move breadcrumb out of hero photo, into chrome (F). The `cinematic-bleed` and `service-portrait` variants drop their inline `BreadcrumbTrail`.
-- `src/lib/page-sections.ts` — no schema change; just a comment documenting the n=2 vs n≥3 contract so future contributors don't add 2-anchor pages thinking they'll get the centered rail.
-- `src/index.css` — top hairline `body::before` with cedar/40 1px line (or done in the header itself).
+### 1. `/work` page hero — full-bleed flat green ⚠️ (loudest offender)
 
-### New
-- `src/components/navigation/HeaderBreadcrumb.tsx` — small chip-style breadcrumb that lives inside the header for routes that have one, drawn from React Router location.
-- `src/components/navigation/SectionRailCompact.tsx` — the n=2 / md-tier compact variant. Kept separate from the editorial rail to avoid a god-component.
+**File**: `src/components/ui/page-hero.tsx` lines 360–485 (`CinematicBleed`)
 
-### Memory
-- Update `mem://features/navigation-architecture.md` with the n=2 vs n≥3 contract, the "footer fade scope = rail only" rule, and the chrome-philosophy decision (always-opaque cream).
-- Update `mem://index.md` core line to mention always-opaque chrome and mobile CTA persistence (the two rules with the highest blast radius).
+**What's happening**: query is `shot_type:[hero,elevation,wide] + min_quality:portfolio + kind:image`. The library has 8 elevation+hero, 1 wide+hero, 0 portfolio-tier shots in `[hero,elevation,wide]` shot types. The hero+elevation rows *should* match, but `min_quality:"portfolio"` requires quality ≥ portfolio (the QUALITY_ORDER index gate); `hero` qualifies and 8 of those exist. So why is it green? Because `CinematicBleed` calls `useFirstApprovedMedia(props.query)` separately from `MediaSlot`, and *only* the `useFirstApprovedMedia(props.videoQuery)` is set to videos; if photo loading is slow OR the query doesn't return, the vignette stack still paints (3 layers of dark gradient + grain), darkening the page even after the photo loads.
+
+**Two fixes — apply both**:
+- **Loosen the gate** to `min_quality: "reference"` for the hero photograph, since the cinematic vignette darkens everything anyway. We have 39+ usable images for this.
+- **Replace the `BACKDROP.evergreenPlate` fallback (line 417)** with a layered editorial fallback: a deep stone gradient + grain + a quiet bronze rule + the literal text `"Photographing this season."` as a 10px tracked caption in cedar/40. Never green again on this surface.
+
+### 2. Homepage `Portfolio` cards — green base under every tile
+
+**File**: `src/components/Portfolio.tsx` line 163
+
+**What's happening**: `<div … style={{ background: BACKDROP.evergreenPlate }}>` is the *base layer* of every card. `MediaSlot` paints on top — but during the LQIP→full-image transition the green flashes through, and any card whose service has no `[hero,elevation,wide]` photo at `reference+` quality (the current floor) reverts to a green plate with an icon overlay.
+
+**Fix**: 
+- Change the base layer from `BACKDROP.evergreenPlate` to a warm **stone-grain plate** (`bg-stone-100 grain-overlay` with a 1px hairline border) so the loading state *and* the icon-fallback state read as a calm editorial card, never a black-green void.
+- Loosen the per-card query from `min_quality:"reference"` (which is already set, good) to *also* drop the `shot_type` constraint so any hero/elevation/wide/detail shot can fill a service card. With 21 reference-grade decks photos, the deck card should always have a photo.
+- Inside the icon fallback, replace the lonely Lucide icon with the icon **layered over a faint cedar→stone gradient and the service name as 10px tracked uppercase**, so even a fallback feels intentional, not "missing photo."
+
+### 3. Homepage `Services` cards — same green-base disease
+
+**File**: `src/components/Services.tsx` lines 92–103 (`MediaSlot` fallback)
+
+**What's happening**: each service tile's `MediaSlot` fallback is again `BACKDROP.evergreenPlate` with a centered icon. For `siding` and `pergolas` (zero photos in library), this is *every page load*.
+
+**Fix**:
+- Change the per-tile fallback to the same warm-stone editorial plate as the Portfolio card — *consistent fallback aesthetic across the site*.
+- Loosen the `MediaSlot` query from `min_quality:"portfolio"` to `min_quality:"reference"`. For `decks`, `sheds`, `fencing`, this immediately lights up the cards with real work.
+- For services that genuinely have no photo (`siding`, `pergolas`, `painting` near-zero), keep the warm-stone fallback but add a corner ribbon: `"NEW WORK COMING — JOIN THE WAITLIST"` linking to `openModal([service.id])`. Turns the absence into a conversion moment.
+
+### 4. `ProjectTile` placeholders on `/work` — green plate icon cards
+
+**File**: `src/components/ui/project-tile.tsx` line ~70 (the `else` branch when no `image` prop)
+
+**What's happening**: the five `PLACEHOLDERS` in `Work.tsx` (Two-Tier Cedar Deck, Cedar Privacy Fence, Full Exterior Repaint, Soffit & Fascia Replace, Cedar Pergola) all render with no `image` prop, so each one is a green plate with a centered icon. That's five back-to-back green tiles in the "MORE WORK" grid — exactly the section that needs to *prove* breadth.
+
+**Fix**:
+- Make `ProjectTile` *itself* photo-aware: when no `image` prop is supplied but a `service` prop is, internally call `useFirstApprovedMedia({ service, kind:"image", min_quality:"reference" })` and render that photo. Each tile becomes auto-illustrated from the cloud library.
+- When still nothing matches, fall back to a **stone-grain plate + Lucide icon + the service name as caption**. Same warm fallback as #2 and #3 — consistency builds trust that this is *intentional editorial design*, not broken images.
+- Pass `service` from `Work.tsx`'s `PLACEHOLDERS.map` into the tile so it can do the lookup.
+
+### 5. About section — "On the boards" green plate
+
+**File**: `src/components/About.tsx` lines 78–86
+
+**What's happening**: the editorial `MediaSlot` queries `shot_type:[interior,process,detail] + min_quality:portfolio`. We have 24 process+portfolio rows, plenty of supply — but the `interior` shot type has zero rows, and `detail+portfolio` has only 1. The query *should* hit the 24 process shots. If it doesn't (RLS / pagination order), the fallback is again green with bronze-glow.
+
+**Fix**:
+- Loosen to `min_quality:"reference"` — that opens 44 process shots + 11 detail. Effectively guarantees a photo.
+- If the query still misses (network race), replace the green fallback with a **diagonally-cropped stone+cedar wash card** that contains the *literal brand-promise text* as art — turns the photo absence into a typographic moment instead of a flat-green hole. The right column already has the brand-promise; the left should be either a photo *or* a typographic eyebrow card ("Crew owned from Calgary" set in DM Serif Display, italic, with a cedar hairline). Either path: zero green plates.
+
+### 6. `Contact.tsx` (homepage section) — green Brand-Promise card *(intentional, but isolated)*
+
+**File**: `src/components/About.tsx` lines 91–108
+
+This one I *don't* propose changing. The deep evergreen "Brand promise" plate with the white serif quote is a deliberate dark-on-light editorial moment — the only intentionally dark card in the page rhythm. It's grain-textured and has a cedar borderleft, so it already reads as designed, not as a missing image. **Leave it alone — it's a designed dark surface, not a fallback.**
+
+### 7. `EditorialBleedSection` — `bg-evergreen/5` wash
+
+**File**: `src/components/media/EditorialBleedSection.tsx` line 59
+
+**What's happening**: the section's outer wrapper is `bg-evergreen/5`. This is barely visible (5% green tint) and gives a sub-aural background while the photo loads. *Fine on most pages*, but on the homepage it sits between the trust strip and Services, where it briefly shows during image load. With `hideIfEmpty=true` (default) the section renders nothing when no media matches, so the green wash is only visible during the LQIP fade.
+
+**Fix**: change `bg-evergreen/5` to `bg-stone-50` (warm cream-tinted neutral). The temperature shifts from cold to warm without losing the section delineation.
+
+### 8. `AmbientVideoBleed` and `FieldClipsStrip` — `bg-evergreen` posters
+
+**Files**: `src/components/media/AmbientVideoBleed.tsx` line 97, `src/components/media/FieldClipsStrip.tsx` line 73
+
+**What's happening**: video tiles render a green plate before the video frame loads. With **zero approved videos** in the library, `FieldClipsStrip` returns `null` early so users don't see this — but `AmbientVideoBleed` doesn't, and any future ambient bleed would flash green.
+
+**Fix**: change both base backgrounds to `bg-stone-200 grain-overlay` so any future video has a warm poster instead of a cold green frame. Cost: one className change × 2 files.
+
+### 9. `GlobalMenu` editorial photo — hard-coded green
+
+**File**: `src/components/navigation/GlobalMenu.tsx` lines 273–283
+
+**What's happening**: when the menu's `useFirstApprovedMedia({ kind:"image", min_quality:"portfolio", shot_type:["hero","elevation","wide"] })` misses (and it currently does because the gate is too tight), the right column paints `<div className="absolute inset-0 bg-evergreen" />`. The whole point of the right column is the editorial photograph. Green-when-empty defeats the design.
+
+**Fix**:
+- Loosen the menu's photo query to `min_quality:"reference"` — we have 65+ matching shots.
+- Cycle: instead of one fixed photo, request `useApprovedMedia({ ..., limit: 6 })` and rotate through them on a 4-second crossfade (respect `prefers-reduced-motion` — if reduced, just pick one randomly per session). Adds quiet life to the menu without being theatrical.
+- Replace the `bg-evergreen` fallback (line 282) with a **stone-grain panel + the literal type "Field photography updates each season — request a quote and we'll send you our latest project deck"** as a *content* fallback. Turns the missing photo into a soft conversion prompt.
 
 ---
 
-## QA matrix (pre-merge)
+## C. Two-line architectural change so this doesn't regress
 
-| Viewport | Page | What I'll verify |
-|---|---|---|
-| 1920 | / | Centered 5-anchor rail; brand eyebrow shows; cedar hairline visible; hamburger has MENU label after scroll |
-| 1920 | /services | "ON THIS PAGE →" left-anchored 2-stop bar; breadcrumb chip in header center area |
-| 1366 | /about | 3-anchor centered rail still fits; no truncation |
-| 820 (iPad) | / | 3-anchor compact rail with "more →"; phone + Quote + hamburger don't fight |
-| 820 | /services | n=2 compact bar; everything has breathing room |
-| 414 / 390 | / | `[logo+name]  [📞] [Quote] [☰]` — all four visible, all 44x44 |
-| 390 | menu open | Two-column collapses to single column; service-areas grouped into 2-column compact list; trust bar wraps clean; bottom CTA full-width sticky |
-| Reduced motion | all | No chevron, no stagger, no Ken Burns; instant chrome transitions |
-| Keyboard only | all | Tab through chrome, Enter on hamburger opens menu, Tab cycles inside, Esc closes, focus returns to hamburger |
-| Screen reader | menu open | "Site menu, dialog. Home — current page" reads correctly; faded rail does not announce stale links |
-| Footer fade | all | Section rail fades; phone + CTA + hamburger stay at 100% opacity |
+Right now every component invents its own fallback styling and its own quality gate. That's why we have nine variations of "flat green plate" — each one was a separate decision. To make sure this stays fixed:
+
+1. **Add `EvergreenPlate` → `EditorialPlate` rename + variants in `src/lib/colors.ts`.**  
+   Replace `BACKDROP.evergreenPlate` (line 110–112) with **three** intentional plate gradients:
+   - `BACKDROP.stonePlate` — warm cream stone, the new default fallback for *light cards* (Portfolio, Services, ProjectTile).
+   - `BACKDROP.cedarPlate` — soft cedar→stone wash for hero-card fallbacks (About left column).
+   - `BACKDROP.evergreenPlate` — kept for *deliberate* dark editorial surfaces (About brand-promise card only). Add a JSDoc warning: *"Use only as a deliberate dark surface, never as a 'missing photo' fallback."*
+
+2. **Centralize the fallback in `MediaSlot`.**  
+   Add an optional `fallbackVariant: "stone" | "cedar" | "evergreen"` prop to `MediaSlot`. When supplied, MediaSlot renders the right plate from the new BACKDROP set + an optional centered icon + optional caption text — so callers don't have to hand-roll the fallback `<div>` every time. Keeps the system honest.
 
 ---
 
-## Rollout sequence
+## D. Image-quality gate policy (write it down once, kill the bug forever)
 
-1. Header chrome (A, B, C) — invisible architectural foundation
-2. Responsive cluster (D) — restores mobile CTAs immediately
-3. Section rail variants (E) — n=2 layout + md-tier compact
-4. Breadcrumb relocation (F) — single PageHero edit
-5. GlobalMenu rewrite (G) — the largest visual upgrade
-6. Memory + QA pass
+Add to `mem://design/aesthetic-direction.md`:
 
-After approval I execute these in order in default mode and re-run the live audit at the same four viewports to verify each issue is closed.
+> **Gate policy**: Hero positions request `min_quality:"reference"` (we vignette + Ken Burns to upgrade any photo into a hero). Card positions request `min_quality:"reference"`. Bleed dividers between sections request `min_quality:"portfolio"`. Hero-tier (`min_quality:"hero"`) is reserved for: the homepage above-the-fold split-photo, and the `/services` triptych — surfaces where the photo is the entire content and any compromise shows.
+
+This single policy keeps every future page from redoing the green-plate dance.
+
+---
+
+## E. Files I'll touch (concrete change list)
+
+| File | Change |
+|---|---|
+| `src/lib/colors.ts` | Add `BACKDROP.stonePlate` + `BACKDROP.cedarPlate`, JSDoc warning on `evergreenPlate` |
+| `src/components/media/MediaSlot.tsx` | Add `fallbackVariant` + `fallbackIcon` + `fallbackCaption` props |
+| `src/components/ui/page-hero.tsx` | Loosen CinematicBleed query to `reference`; replace green fallback (line 417) with stone+grain editorial plate |
+| `src/components/Portfolio.tsx` | Replace `evergreenPlate` base with stone; drop `shot_type` constraint to broaden hits |
+| `src/components/Services.tsx` | Replace `evergreenPlate` fallback with stone; loosen quality to `reference`; add corner ribbon for empty services |
+| `src/components/ui/project-tile.tsx` | Make tile photo-aware via internal `useFirstApprovedMedia({ service })`; stone fallback |
+| `src/pages/Work.tsx` | Pass `service` to ProjectTile so the photo lookup works |
+| `src/components/About.tsx` | Loosen MediaSlot query to `reference`; replace green plate fallback with cedar-wash typographic card |
+| `src/components/media/EditorialBleedSection.tsx` | `bg-evergreen/5` → `bg-stone-50` |
+| `src/components/media/AmbientVideoBleed.tsx` | `bg-evergreen` → stone+grain poster |
+| `src/components/media/FieldClipsStrip.tsx` | Tile background `bg-evergreen` → stone+grain |
+| `src/components/navigation/GlobalMenu.tsx` | Loosen photo query to `reference`; rotate among 6 photos with 4s crossfade; replace `bg-evergreen` fallback with stone+typographic content |
+| `mem://design/aesthetic-direction.md` | Document the gate policy + the "no green-as-fallback" rule |
+
+---
+
+## F. Out of scope (intentionally)
+
+- The `/contact` standalone page hero, `/about` page hero, footer, QuoteModal sidebar — those are **deliberately** dark-evergreen surfaces (chrome, modals, footers). They're not photo positions; they're brand surfaces. Leaving them.
+- Generating or uploading new photography — the library already has 65+ portfolio-grade photos. The fix is to *let them through the gate*, not to ask for more.
+- Video work — zero approved videos, so `FieldClipsStrip` is dormant; the fix is the styling, not the content pipeline.
+
+---
+
+## Outcome
+
+After this pass:
+- Every card on Home, Services, Work shows a real photograph (not a green plate) for any service with library coverage.
+- Every fallback for services without coverage reads as **intentional warm-stone editorial design**, not a missing-image hole.
+- The `/work` hero never paints green — even on a cold cache it shows stone + grain + bronze hairline + a quiet caption.
+- The Global Menu becomes a small editorial gallery instead of a green box.
+- A documented gate policy + a centralized `MediaSlot` fallback prevent the next contributor from re-introducing flat green anywhere.
