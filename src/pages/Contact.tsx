@@ -119,42 +119,44 @@ const Contact = () => {
 
             {/* Quote CTA card */}
             <ScrollRevealMotion delay={0.2}>
-              <div
-                className="rounded-sm overflow-hidden relative grain-texture"
-                style={{
-                  background: BACKDROP.evergreenCard,
-                  borderLeft: "3px solid hsl(var(--cedar))",
-                }}
-              >
-                <div className="absolute inset-0 grain-overlay opacity-40 pointer-events-none" />
-                <div className="relative z-10 p-10 md:p-12">
-                  <p className="text-[10px] tracking-[0.25em] uppercase text-cedar/80 mb-4">
-                    The fastest path
-                  </p>
-                  <h2 className="font-serif text-evergreen-foreground text-3xl md:text-4xl leading-tight mb-5">
-                    Send us your project details.
-                  </h2>
-                  <p className="text-evergreen-foreground/70 leading-relaxed mb-8">
-                    A quick, three-step form. Tell us what you’re building, where you’re located,
-                    and how you’d like us to reach you. We’ll be in touch within 24–48 hours.
-                  </p>
+              <div id="section-contact-next" className="scroll-mt-24">
+                <div
+                  className="rounded-sm overflow-hidden relative grain-texture"
+                  style={{
+                    background: BACKDROP.evergreenCard,
+                    borderLeft: "3px solid hsl(var(--cedar))",
+                  }}
+                >
+                  <div className="absolute inset-0 grain-overlay opacity-40 pointer-events-none" />
+                  <div className="relative z-10 p-10 md:p-12">
+                    <p className="text-[10px] tracking-[0.25em] uppercase text-cedar/80 mb-4">
+                      What&rsquo;s next
+                    </p>
+                    <h2 className="font-serif text-evergreen-foreground text-3xl md:text-4xl leading-tight mb-5">
+                      Send us your project details.
+                    </h2>
+                    <p className="text-evergreen-foreground/70 leading-relaxed mb-8">
+                      A quick, three-step form. Tell us what you&rsquo;re building, where you&rsquo;re located,
+                      and how you&rsquo;d like us to reach you. We&rsquo;ll be in touch within 24&ndash;48 hours.
+                    </p>
 
-                  <ul className="space-y-2 text-sm text-evergreen-foreground/60 mb-10">
-                    <li className="flex gap-3"><span className="text-cedar">·</span>Free, no-obligation quote</li>
-                    <li className="flex gap-3"><span className="text-cedar">·</span>On-site visit at your convenience</li>
-                    <li className="flex gap-3"><span className="text-cedar">·</span>Clear scope and price in writing</li>
-                  </ul>
+                    <ul className="space-y-2 text-sm text-evergreen-foreground/60 mb-10">
+                      <li className="flex gap-3"><span className="text-cedar">·</span>Free, no-obligation quote</li>
+                      <li className="flex gap-3"><span className="text-cedar">·</span>On-site visit at your convenience</li>
+                      <li className="flex gap-3"><span className="text-cedar">·</span>Clear scope and price in writing</li>
+                    </ul>
 
-                  <div className="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6">
-                    <CedarCTA>Request a Quote</CedarCTA>
-                    <button
-                      type="button"
-                      onClick={() => openModal(["general"])}
-                      className="text-[11px] tracking-[0.18em] uppercase text-evergreen-foreground/70 hover:text-cedar transition-colors duration-500 inline-flex items-center gap-2 min-h-[44px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cedar focus-visible:ring-offset-2 rounded-sm px-1"
-                    >
-                      or send a general message
-                      <span className="inline-block w-4 h-px bg-cedar/60" aria-hidden />
-                    </button>
+                    <div className="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6">
+                      <CedarCTA>Request a Quote</CedarCTA>
+                      <button
+                        type="button"
+                        onClick={() => openModal(["general"])}
+                        className="text-[11px] tracking-[0.18em] uppercase text-evergreen-foreground/70 hover:text-cedar transition-colors duration-500 inline-flex items-center gap-2 min-h-[44px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cedar focus-visible:ring-offset-2 rounded-sm px-1"
+                      >
+                        or send a general message
+                        <span className="inline-block w-4 h-px bg-cedar/60" aria-hidden />
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>
