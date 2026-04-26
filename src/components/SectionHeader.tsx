@@ -1,4 +1,6 @@
 import ScrollRevealMotion from "@/components/ScrollRevealMotion";
+import BronzeRule from "@/components/ui/bronze-rule";
+import { HEADLINE } from "@/lib/typography";
 
 interface SectionHeaderProps {
   /** Roman numeral or number string, e.g. "I", "II", "03" */
@@ -21,7 +23,7 @@ interface SectionHeaderProps {
 
 /**
  * SectionHeader — editorial section intro used across all homepage sections.
- * Renders: numeral · divider · label, then heading, subheading, and optional badge.
+ * Composes BronzeRule (numeral + rule + eyebrow) + heading + subheading + badge.
  */
 const SectionHeader = ({
   numeral,
@@ -36,26 +38,21 @@ const SectionHeader = ({
   return (
     <>
       <ScrollRevealMotion delay={baseDelay}>
-        <div className="flex items-center gap-4 mb-6">
-          <span className="text-[11px] tracking-[0.2em] text-cedar/40 font-light tabular-nums">
-            {numeral}
-          </span>
-          <div className="w-8 h-px bg-cedar/20" />
-          <span
-            className={`text-minimal ${cedarLabel ? "text-cedar" : "text-muted-foreground"}`}
-          >
-            {label}
-          </span>
-        </div>
+        <BronzeRule
+          numeral={numeral}
+          label={label}
+          variant={cedarLabel ? "accent" : "default"}
+          className="mb-6"
+        />
       </ScrollRevealMotion>
 
       <ScrollRevealMotion delay={baseDelay + 0.1}>
-        <h2 id={headingId} className="text-display text-foreground mb-4">{heading}</h2>
+        <h2 id={headingId} className={`${HEADLINE.section} mb-4`}>{heading}</h2>
       </ScrollRevealMotion>
 
       {subheading && (
         <ScrollRevealMotion delay={baseDelay + 0.15}>
-          <p className="text-subhead text-foreground/60 italic font-serif mb-8">
+          <p className="text-subhead text-foreground/60 italic font-serif mb-8 text-balance">
             {subheading}
           </p>
         </ScrollRevealMotion>
@@ -63,12 +60,7 @@ const SectionHeader = ({
 
       {badge && (
         <ScrollRevealMotion delay={baseDelay + 0.2}>
-          <div className="flex items-center gap-3" aria-label={badge}>
-            <div className="w-12 h-px bg-cedar/15" />
-            <span className="text-[10px] tracking-[0.25em] text-muted-foreground/50 uppercase">
-              {badge}
-            </span>
-          </div>
+          <BronzeRule label={badge} variant="default" width="long" />
         </ScrollRevealMotion>
       )}
     </>
