@@ -3,27 +3,44 @@ import BronzeRule from "@/components/ui/bronze-rule";
 import { HEADLINE } from "@/lib/typography";
 
 interface SectionHeaderProps {
-  /** Roman numeral or number string, e.g. "I", "II", "03" */
-  numeral: string;
-  /** Uppercase label for the section, e.g. "THE RITUAL" */
+  /** Roman numeral or number string. Ignored when variant="quiet". */
+  numeral?: string;
+  /** Uppercase label for the section, e.g. "OUR APPROACH". */
   label: string;
-  /** Section heading id for aria-labelledby */
+  /** Section heading id for aria-labelledby. */
   headingId: string;
-  /** Optional: use cedar color for label (default: muted-foreground) */
+  /** Optional: use cedar color for label (default: muted-foreground). */
   cedarLabel?: boolean;
-  /** Main display heading */
+  /** Main display heading. */
   heading: string;
-  /** Italic serif sub-heading */
+  /** Italic serif sub-heading. */
   subheading?: string;
-  /** Counter badge text, e.g. "03 Truths" */
+  /** Counter badge text. Ignored when variant="quiet". */
   badge?: string;
-  /** Delays for staggered reveal */
+  /** Delays for staggered reveal. */
   baseDelay?: number;
+  /**
+   * "default" — full editorial intro (numeral + rule + label + heading
+   * + italic subhead + counter badge). Used on sub-pages and on sections
+   * the user navigates *to* explicitly.
+   *
+   * "quiet" — drops the numeral and the badge. Just the rule + label,
+   * the heading, and the optional subhead. Use on the homepage where
+   * the scroll itself signals progress and the editorial garnish piles up.
+   */
+  variant?: "default" | "quiet";
 }
 
 /**
- * SectionHeader — editorial section intro used across all homepage sections.
- * Composes BronzeRule (numeral + rule + eyebrow) + heading + subheading + badge.
+ * SectionHeader — editorial section intro.
+ *
+ * In default mode this composes BronzeRule (numeral + rule + eyebrow)
+ * + heading + italic subheading + counter badge.
+ *
+ * In "quiet" mode the numeral and the counter badge are dropped — the
+ * eyebrow + headline + subhead carry the section alone. This is the
+ * Fantasy.co reduction principle: the second time a page says something,
+ * it should say it more quietly.
  */
 const SectionHeader = ({
   numeral,
@@ -34,12 +51,16 @@ const SectionHeader = ({
   subheading,
   badge,
   baseDelay = 0,
+  variant = "default",
 }: SectionHeaderProps) => {
+  const showNumeral = variant === "default" && numeral;
+  const showBadge = variant === "default" && badge;
+
   return (
     <>
       <ScrollRevealMotion delay={baseDelay}>
         <BronzeRule
-          numeral={numeral}
+          numeral={showNumeral ? numeral : undefined}
           label={label}
           variant={cedarLabel ? "accent" : "default"}
           className="mb-6"
@@ -58,9 +79,9 @@ const SectionHeader = ({
         </ScrollRevealMotion>
       )}
 
-      {badge && (
+      {showBadge && (
         <ScrollRevealMotion delay={baseDelay + 0.2}>
-          <BronzeRule label={badge} variant="default" width="long" />
+          <BronzeRule label={badge!} variant="default" width="long" />
         </ScrollRevealMotion>
       )}
     </>
