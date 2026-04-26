@@ -413,8 +413,20 @@ const CinematicBleed = (props: CinematicBleedProps) => {
           sizes={MEDIA_SIZES.HERO_FULL}
         />
       ) : (
-        // Evergreen fallback when nothing matches yet
-        <div className="absolute inset-0" style={{ background: BACKDROP.evergreenPlate }} />
+        // Editorial fallback — warm stone, never green
+        <div className="absolute inset-0 overflow-hidden" style={{ background: BACKDROP.stonePlate }}>
+          <div className="absolute inset-0 grain-overlay opacity-40 pointer-events-none" />
+          <div
+            className="absolute top-8 left-8 h-px"
+            style={{
+              width: "120px",
+              background: "linear-gradient(90deg, hsl(var(--cedar) / 0.6), transparent)",
+            }}
+          />
+          <p className="absolute bottom-8 left-8 right-8 text-[10px] tracking-[0.28em] uppercase text-cedar/70 font-medium">
+            Photographing this season · Alberta
+          </p>
+        </div>
       )}
 
       {/* Cinematic vignette stack */}
