@@ -66,21 +66,22 @@ const SectionRail = ({ sections, faded = false, className }: SectionRailProps) =
         aria-label="Page sections"
         aria-hidden={faded ? true : undefined}
         className={cn(
-          "hidden lg:flex items-center gap-3 transition-opacity duration-500",
+          "hidden md:flex items-center gap-3 transition-opacity duration-500",
           faded ? "opacity-0 pointer-events-none" : "opacity-100",
           className,
         )}
       >
-        <span
-          className="text-[10px] tracking-[0.22em] uppercase text-cedar/55 font-medium select-none"
-          aria-hidden
-        >
-          On this page
-        </span>
-        <span
-          aria-hidden
-          className="block w-6 h-px bg-cedar/30"
-        />
+        {!breadcrumbOwnsContext && (
+          <>
+            <span
+              className="text-[10px] tracking-[0.22em] uppercase text-cedar/55 font-medium select-none"
+              aria-hidden
+            >
+              On this page
+            </span>
+            <span aria-hidden className="block w-6 h-px bg-cedar/30" />
+          </>
+        )}
         <div className="flex items-center">
           {sections.map((section, i) => {
             const isActive = active === section.anchor;
