@@ -163,7 +163,7 @@ export const SCRIM = {
    * Used by /services, /about, /contact.
    */
   left:
-    "linear-gradient(90deg, hsl(150 30% 6% / 0.86) 0%, hsl(150 30% 6% / 0.74) 32%, hsl(150 30% 6% / 0.46) 50%, hsl(150 30% 6% / 0.18) 64%, transparent 80%)",
+    "linear-gradient(90deg, hsl(150 30% 6% / 0.88) 0%, hsl(150 30% 6% / 0.78) 32%, hsl(150 30% 6% / 0.55) 50%, hsl(150 30% 6% / 0.32) 64%, hsl(150 30% 6% / 0.12) 78%, transparent 90%)",
   /**
    * Wider variant for the asymmetric Home triptych (40/30/30). Holds heavy
    * black through ~56% so the editorial-split headline column AND the
