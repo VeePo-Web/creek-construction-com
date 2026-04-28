@@ -176,7 +176,7 @@ const QuoteModal = () => {
     : !phoneValid
       ? "Add a 10-digit phone number to send."
       : !emailValid
-        ? "That email doesn't look right."
+        ? "That email doesn’t look right."
         : "";
 
   const handleSubmit = async () => {
@@ -291,8 +291,8 @@ const QuoteModal = () => {
         </DialogTitle>
         <DialogDescription className="sr-only">
           {mode === "inquiry"
-            ? "Tell us what you'd like to know and we'll be in touch within 24 hours."
-            : "Tell us about your exterior project and we'll be in touch within 24 hours."}
+            ? "Tell us what you’d like to know and we’ll be in touch within 24 hours."
+            : "Tell us about your exterior project and we’ll be in touch within 24 hours."}
         </DialogDescription>
 
         {/* LEFT — desktop brand panel */}
@@ -577,7 +577,7 @@ const Step1 = ({
               {generalSelected && <Check className="h-4 w-4 text-cedar shrink-0" aria-hidden />}
             </div>
             <p className="text-xs text-muted-foreground mt-0.5">
-              Pricing, warranty, custom work, or just questions — we'll get back to you.
+              Pricing, warranty, custom work, or just questions — we’ll get back to you.
             </p>
           </div>
         </button>
@@ -673,7 +673,7 @@ const Step2Combined = ({
         <Field
           label="Email (optional)"
           htmlFor="qm-email"
-          error={touched.email && !emailValid ? "Hmm — that email doesn't look right." : undefined}
+          error={touched.email && !emailValid ? "Hmm — that email doesn’t look right." : undefined}
         >
           <Input
             id="qm-email"
@@ -871,8 +871,8 @@ const SuccessPanel = ({
     </h3>
     <p className="text-muted-foreground max-w-md mb-2">
       {mode === "inquiry"
-        ? "Thanks — we'll review and reach out within 24 hours."
-        : "Thanks — we'll review your project details and reach out within 24 hours."}
+        ? "Thanks — we’ll review and reach out within 24 hours."
+        : "Thanks — we’ll review your project details and reach out within 24 hours."}
     </p>
     <p className="text-sm text-muted-foreground/70 mb-8">
       Need to talk now? Call{" "}
