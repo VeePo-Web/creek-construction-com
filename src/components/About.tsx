@@ -8,11 +8,11 @@ import { BODY } from "@/lib/typography";
 import { useReveal } from "@/hooks/useReveal";
 
 const STEPS = [
-  { title: "Request", desc: "Tell us what you're building. Takes two minutes." },
+  { title: "Request", desc: "Tell us what you’re building. Takes two minutes." },
   { title: "Site Visit & Quote", desc: "We come look. Honest scope, fair price, in writing." },
   { title: "Schedule", desc: "We lock in a start date you can actually plan around." },
   { title: "Build", desc: "Our crew, on-site. No surprises, no upsells, just the work." },
-  { title: "Walkthrough & Warranty", desc: "We walk it together. If something isn't right, we fix it." },
+  { title: "Walkthrough & Warranty", desc: "We walk it together. If something isn’t right, we fix it." },
 ];
 
 /**
@@ -45,9 +45,9 @@ const About = () => {
 
               <div className="space-y-6 mt-4">
                 <p className={BODY.lead}>
-                  We don't run loud ads or push warranties you'll never use. We do
+                  We don’t run loud ads or push warranties you’ll never use. We do
                   residential exterior construction across Calgary and Edmonton — and
-                  we get the work right the first time. That's the whole pitch.
+                  we get the work right the first time. That’s the whole pitch.
                 </p>
 
                 <p className={BODY.lead}>

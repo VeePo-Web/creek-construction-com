@@ -34,11 +34,11 @@ const Contact = () => {
                 label="THE NEXT STEP IS A CONVERSATION"
                 headingId="contact-heading"
                 heading="Let's build something right."
-                subheading="Free quote. No high-pressure sales. We'll give you straight answers."
+                subheading="Free quote. No high-pressure sales. We’ll give you straight answers."
               />
 
               <p className="text-lg text-muted-foreground leading-relaxed mt-4 mb-10">
-                Tell us about your project — size, timing, materials you're considering. We'll come look,
+                Tell us about your project — size, timing, materials you’re considering. We’ll come look,
                 give you an honest scope and a fair price in writing, and let you take it from there.
               </p>
 

@@ -42,8 +42,8 @@ const WE_HANDLE = [
 
 const YOU_HANDLE = [
   { task: "Property access on build days", note: "We coordinate the schedule with you" },
-  { task: "HOA or strata approvals if applicable", note: "We'll provide drawings or specs you can submit" },
-  { task: "Color and material preferences", note: "We'll show you options that fit your budget" },
+  { task: "HOA or strata approvals if applicable", note: "We’ll provide drawings or specs you can submit" },
+  { task: "Color and material preferences", note: "We’ll show you options that fit your budget" },
   { task: "Paying invoices on agreed milestones", note: "Clear, written, no surprises" },
 ];
 

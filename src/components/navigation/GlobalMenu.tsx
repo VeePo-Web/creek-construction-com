@@ -324,7 +324,7 @@ const GlobalMenu = ({ isOpen, onClose, id = "global-menu" }: GlobalMenuProps) =>
                         }}
                       />
                       <p className="absolute bottom-6 left-6 right-6 text-[10px] tracking-[0.25em] uppercase text-cedar/80 font-medium">
-                        Field photography updates each season — request a quote and we'll send our latest project deck.
+                        Field photography updates each season — request a quote and we’ll send our latest project deck.
                       </p>
                     </div>
                   )}

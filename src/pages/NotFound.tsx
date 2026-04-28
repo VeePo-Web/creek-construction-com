@@ -40,7 +40,7 @@ const NotFound = () => {
           </h1>
 
           <p className="text-lg text-evergreen-foreground/60 italic font-serif mb-10">
-            That page doesn't exist — but the work does.
+            That page doesn’t exist — but the work does.
           </p>
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-6">

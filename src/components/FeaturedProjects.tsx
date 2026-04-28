@@ -163,7 +163,7 @@ const FeaturedProjects = () => {
               label="FEATURED PROJECTS"
               headingId="featured-heading"
               heading="Recent work, in detail."
-              subheading="Projects we're proud of — across Calgary, Edmonton, and surrounding Alberta."
+              subheading="Projects we’re proud of — across Calgary, Edmonton, and surrounding Alberta."
               badge={`${String(withUrls.length).padStart(2, "0")} Featured`}
             />
           </div>
