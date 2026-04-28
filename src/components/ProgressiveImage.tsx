@@ -96,7 +96,7 @@ const ProgressiveImage = ({
         {...(priority ? { fetchPriority: "high" as const } : {})}
         {...(sizes ? { sizes } : {})}
         onLoad={handleLoad}
-        className={`w-full h-full object-cover transition-all duration-1000 ${
+        className={`w-full h-full object-cover transition-[opacity,transform,filter] duration-1000 ${
           prefersReducedMotion ? "" : "group-hover:scale-105"
         } ${
           loaded ? "opacity-100 blur-0 scale-100" : "opacity-0 blur-sm scale-[1.02]"
@@ -128,7 +128,7 @@ const ProgressiveImage = ({
 
       {/* Provenance caption */}
       {caption && (
-        <div className="absolute bottom-0 left-0 right-0 p-6 opacity-0 group-hover:opacity-100 transition-all duration-700 translate-y-2 group-hover:translate-y-0 flex items-end justify-between">
+        <div className="absolute bottom-0 left-0 right-0 p-6 opacity-0 group-hover:opacity-100 transition-[opacity,transform] duration-700 translate-y-2 group-hover:translate-y-0 flex items-end justify-between">
           <p className="text-[11px] tracking-[0.2em] uppercase text-white/60">
             {caption}
           </p>

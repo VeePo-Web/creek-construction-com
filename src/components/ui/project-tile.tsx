@@ -97,7 +97,7 @@ const ProjectTile = ({
         {Icon && (
           <div className="absolute inset-0 flex items-center justify-center">
             <Icon
-              className="h-16 w-16 text-cedar/40 group-hover:text-cedar/70 transition-all duration-700 group-hover:scale-110"
+              className="h-16 w-16 text-cedar/40 group-hover:text-cedar/70 transition-[color,transform] duration-700 group-hover:scale-110"
               aria-hidden
               strokeWidth={1.4}
             />
@@ -120,7 +120,7 @@ const ProjectTile = ({
       >
         <div
           className={cn(
-            "relative rounded-sm overflow-hidden transition-all duration-700 group-hover:shadow-elevated border border-border/40",
+            "relative rounded-sm overflow-hidden transition-shadow duration-700 group-hover:shadow-elevated border border-border/40",
             aspectClass,
           )}
           style={hasPhoto ? undefined : { background: BACKDROP.stonePlate }}
@@ -129,7 +129,7 @@ const ProjectTile = ({
 
           {/* Bronze accent line — sweeps across on hover. */}
           <div
-            className="absolute top-0 left-0 h-px transition-all duration-700 group-hover:w-full z-10"
+            className="absolute top-0 left-0 h-px transition-[width] duration-700 group-hover:w-full z-10"
             style={{
               width: "30%",
               background: "linear-gradient(90deg, hsl(var(--cedar)), transparent)",
@@ -140,7 +140,7 @@ const ProjectTile = ({
           <div className="absolute top-5 right-5 pointer-events-none z-10">
             <span
               className={cn(
-                "text-4xl md:text-5xl font-serif leading-none select-none transition-all duration-700 [text-shadow:0_2px_8px_rgba(0,0,0,0.4)]",
+                "text-4xl md:text-5xl font-serif leading-none select-none transition-colors duration-700 [text-shadow:0_2px_8px_rgba(0,0,0,0.4)]",
                 hasPhoto
                   ? "text-white/25 group-hover:text-white/55"
                   : "text-cedar/30 group-hover:text-cedar/60",
@@ -180,7 +180,7 @@ const ProjectTile = ({
 
         {item.description && (
           <div
-            className="mt-4 pl-5 py-3 pr-4 transition-all duration-500 group-hover:bg-cedar/[0.04] group-hover:pl-7 rounded-sm shadow-contact border border-border/40 group-hover:shadow-elevated"
+            className="mt-4 pl-5 py-3 pr-4 transition-[background-color,padding-left,box-shadow] duration-500 group-hover:bg-cedar/[0.04] group-hover:pl-7 rounded-sm shadow-contact border border-border/40 group-hover:shadow-elevated"
             style={{ borderLeft: `2px solid hsl(var(--cedar) / ${opacity})` }}
           >
             <p className="text-sm text-muted-foreground leading-relaxed">
