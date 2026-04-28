@@ -6,8 +6,8 @@ import { MEDIA_SIZES } from "@/lib/media-sizes";
 
 /**
  * HomeProjectRecapStrip — a 4-up grid of the strongest hero-quality photos
- * across every service, shown between Portfolio and Contact on the home
- * page. Editorial counterpart to "more proof before the ask."
+ * across every service, shown between FeaturedProjects and Contact on the
+ * home page. Editorial counterpart to "more proof before the ask."
  *
  * Renders absolutely nothing if we have fewer than 4 approved hero shots —
  * better to skip the section than show a half-baked grid.

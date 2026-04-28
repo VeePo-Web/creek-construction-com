@@ -15,7 +15,7 @@ import { useReveal } from "@/hooks/useReveal";
  *
  *   6+ projects → row1: 1 large + 2 stacked, row2: 3 equal
  *   3-5         → single 3-column grid
- *   <3          → renders nothing (Portfolio + recap strip carry the weight)
+ *   <3          → renders nothing (the page lands on Contact instead)
  *
  * Pulls hero photos directly from the project row (`hero_path`). Falls
  * back silently if a featured project has no hero set.
