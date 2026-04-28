@@ -51,7 +51,7 @@ const ServiceTile = ({
       role="listitem"
       aria-label={`Request a quote for ${item.title}`}
       className={cn(
-        "group w-full text-left rounded-sm border border-border/60 transition-all duration-500",
+        "group w-full text-left rounded-sm border border-border/60 transition-[transform,background-color,box-shadow] duration-500",
         "shadow-contact hover:shadow-elevated hover:bg-cedar/[0.03] hover:translate-y-[-2px]",
         FOCUS.ring,
         isCompact ? "flex items-start gap-5 p-6 grain-texture" : "flex flex-col items-stretch p-6",

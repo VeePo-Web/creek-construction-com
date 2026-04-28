@@ -111,7 +111,7 @@ export function EditorialFallback({
         <div className="absolute inset-0 flex items-center justify-center">
           <Icon
             className={cn(
-              "h-16 w-16 transition-all duration-700",
+              "h-16 w-16 transition-colors duration-700",
               PLATE_ICON_COLOR[variant],
             )}
             strokeWidth={1.4}
