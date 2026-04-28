@@ -10,8 +10,6 @@ const useAlbertaTemp = (): AlbertaTempResult => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    let interval: ReturnType<typeof setInterval>;
-
     const fetchTemp = async () => {
       try {
         const res = await fetch(
@@ -27,7 +25,7 @@ const useAlbertaTemp = (): AlbertaTempResult => {
     };
 
     fetchTemp();
-    interval = setInterval(fetchTemp, 30 * 60 * 1000); // refresh every 30 min
+    const interval = setInterval(fetchTemp, 30 * 60 * 1000); // refresh every 30 min
 
     return () => clearInterval(interval);
   }, []);
