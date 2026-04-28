@@ -71,7 +71,7 @@ export const DURATION = {
 export const HOVER = {
   /** Card lifts subtly; warm cedar background fades in. */
   cardLift:
-    "transition-all duration-500 ease-smooth hover:-translate-y-0.5 hover:bg-cedar/[0.04] hover:shadow-elevated",
+    "transition-[transform,background-color,box-shadow] duration-500 ease-smooth hover:-translate-y-0.5 hover:bg-cedar/[0.04] hover:shadow-elevated",
 
   /** Link gets cedar color + underline sweep. */
   linkUnderline:
@@ -83,11 +83,11 @@ export const HOVER = {
 
   /** Tile selection — bronze border + warmth tint. */
   tileSelect:
-    "transition-all duration-300 ease-smooth hover:border-cedar/50 hover:bg-cedar/[0.02]",
+    "transition-[border-color,background-color] duration-300 ease-smooth hover:border-cedar/50 hover:bg-cedar/[0.02]",
 
   /** Chip — gentle background warmth on hover. */
   chip:
-    "transition-all duration-500 ease-smooth hover:bg-cedar/[0.04] hover:border-cedar/40",
+    "transition-[background-color,border-color] duration-500 ease-smooth hover:bg-cedar/[0.04] hover:border-cedar/40",
 } as const;
 
 // ─────────────────────────────────────────────────────────────────────

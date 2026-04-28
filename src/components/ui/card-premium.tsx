@@ -8,7 +8,7 @@ import { cn } from "@/lib/utils";
  */
 
 const cardVariants = cva(
-  "relative rounded-sm transition-all duration-500 grain-texture overflow-hidden",
+  "relative rounded-sm transition-[transform,background-color,border-color,box-shadow] duration-500 grain-texture overflow-hidden",
   {
     variants: {
       variant: {

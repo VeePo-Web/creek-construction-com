@@ -8,8 +8,8 @@
  *   2. Import them at the top of this file.
  *   3. Add or extend a Project entry below.
  *
- * Components consume PROJECTS — never edit Portfolio.tsx, Work.tsx, or
- * ProjectGallery.tsx to swap photos.
+ * Components consume PROJECTS — never edit FeaturedProjects.tsx, Work.tsx,
+ * or ProjectGallery.tsx to swap photos.
  */
 
 import riverbendHero from "@/assets/projects/riverbend-studio-shed/riverbend-studio-shed-01-hero.jpg";
@@ -54,7 +54,7 @@ export interface Project {
   hero: ProjectPhoto;
   /** All photos in display order. Should include the hero. */
   photos: ProjectPhoto[];
-  /** True if this project should surface on the homepage Portfolio strip. */
+  /** True if this project should surface on the homepage FeaturedProjects grid. */
   featured: boolean;
 }
 

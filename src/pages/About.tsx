@@ -59,13 +59,13 @@ const About = () => {
                 and we paint, side, and repair the parts of your home that face the weather.
               </p>
               <p className={BODY.lead}>
-                We don't subcontract the build. The crew you meet at the quote is the crew on-site
-                doing the work. That's how we keep quality consistent, and it's why we'd rather do
+                We don’t subcontract the build. The crew you meet at the quote is the crew on-site
+                doing the work. That’s how we keep quality consistent, and it’s why we’d rather do
                 fewer projects exceptionally well than chase volume.
               </p>
               <p className={BODY.lead}>
-                Our marketing is the work itself. If a job doesn't earn the next referral, we
-                treat that as a failure on our end. That's the standard.
+                Our marketing is the work itself. If a job doesn’t earn the next referral, we
+                treat that as a failure on our end. That’s the standard.
               </p>
             </div>
           </div>
