@@ -459,7 +459,7 @@ const CinematicBleed = (props: CinematicBleedProps) => {
           height={photo.item.height ?? 1080}
           className="absolute inset-0 w-full h-full object-cover hero-kenburns"
           loading="eager"
-          fetchPriority="high"
+          {...({ fetchpriority: "high" } as Record<string, string>)}
           decoding="sync"
           sizes={MEDIA_SIZES.HERO_FULL}
         />
@@ -666,7 +666,7 @@ const CinematicLegacy = (props: CinematicLegacyProps) => {
         height="1080"
         className="absolute inset-0 w-full h-full object-cover hero-image-entrance"
         loading="eager"
-        fetchPriority="high"
+        {...({ fetchpriority: "high" } as Record<string, string>)}
         decoding="sync"
         sizes="100vw"
         style={{ transform: "scale(1.12)" }}
