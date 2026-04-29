@@ -1,81 +1,62 @@
-## Homepage hero — minimal black/white architect refinement
+## Optimized progressive image loading — eliminate landing-page CLS
 
-A focused, hero-only refinement on the homepage. The rest of the site keeps its cream + bronze editorial palette. The hero adopts an architectural-monograph composition: one quiet photograph, hairline rules, a small uppercase eyebrow, and an oversized lighter serif headline with generous whitespace.
+The site already runs most photographs through `EditorialPicture` (LQIP + intrinsic dimensions + aspect-ratio lock). Audit confirms the landing page has **zero raw `<img>` tags** other than the hero photograph and the footer logo. So this isn't a rewrite — it's a targeted hardening pass on the remaining gaps.
+
+### Findings
+
+1. **Hero photo (`architect-bleed` variant in `page-hero.tsx`)** — uses an absolutely-positioned `<img>` with `object-cover`. Width/height are passed but the parent has `min-h-[88vh]`, so before the image decodes there's a brief paint of the bare black background (no layout shift, but a flash). No LQIP wired in.
+2. **`HeroTriptych`** — three `EditorialPicture`-equivalent images. Already CLS-safe. But each column triggers its own approved-media fetch; columns that arrive last cause a faint "pop-in" cascade.
+3. **`ProgressiveImage` (legacy)** — hardcoded `width="1200" height="800"`. Used in `ProjectGallery` (linked from /work, not the landing page). Causes CLS whenever the host element's aspect ratio differs. Out of scope for *landing page* but worth noting; we'll mark it deprecated and route /work's gallery through `EditorialPicture` if it's reachable from the homepage. Not a landing-page blocker.
+4. **`HomeProjectRecapStrip`, `FeaturedProjects`, `EditorialBleedSection`, `Services`, `About`, `Contact`** — all already render through `EditorialPicture`/`MediaSlot`. Aspect-ratio locked, LQIP wired, fetchpriority correct. **No changes needed.**
+5. **Footer logo** — fixed 48×48 with explicit dims. Fine.
 
 ### What changes
 
-1. New variant `architect-bleed` in `src/components/ui/page-hero.tsx`
-   - Single full-bleed photograph as the hero plate (uses the same approved `query` that the homepage already feeds).
-   - Photograph desaturated and slightly darkened by a near-black scrim — gives a true black/white architect feel without rewriting tokens.
-   - 12-column type layer overlaid:
-     - Top-left: tiny uppercase sans eyebrow (`EXTERIOR CONSTRUCTION · CALGARY · EDMONTON`) on a single hairline rule. White ink, 0.18em tracking, 11px.
-     - Center-left: oversized DM Serif Display headline, weight 400, letter-spacing −0.01em, line-height 0.95, sized `clamp(56px, 8vw, 132px)`. Two lines max. The italic tail (“Pride in every detail.”) renders in white at 70% opacity, italic, on its own line — no underline, no color accent.
-     - Bottom-left: a single hairline divider, then the subtitle in white at 80% (max-width 46ch, 16px DM Sans, 1.55 leading).
-     - Bottom row: primary CTA reskinned for the hero only (white outline button, 1px border, uppercase 12px label, 56px tall, hover fills white/8%). Secondary "or call …" link sits to its right in the same restrained sans.
-   - Bottom-right corner: small caption rail — `service · location · year` in 11px uppercase sans, separated by interpuncts, with a 1px hairline above. Replaces the floating provenance card on the homepage.
-   - Stats trio is removed from inside the hero. It moves to a new lean strip immediately below the hero (3 stats, hairline-divided, on the cream page background) so the hero stays uncluttered.
-   - Trust chips are removed from inside the hero. They move below the new stats strip, presented as a single hairline rule of three items in the existing site palette — no visual change to those components, only relocation.
+1. **Hero photograph: full progressive treatment**
+   - In `ArchitectBleed` (`src/components/ui/page-hero.tsx`), wrap the bare `<img>` in a self-contained progressive layer:
+     - Read `lqip` from the `useFirstApprovedMedia` item (the field already exists on `ApprovedMedia`).
+     - Render an absolutely-positioned LQIP backdrop (`backgroundImage: url(data:image/jpeg;base64,…)`, `filter: blur(24px) grayscale(1)`, `transform: scale(1.06)`) underneath the photo. Fades out on `onLoad`.
+     - Keep the existing grayscale + brightness filter on the loaded image.
+     - Add `onLoad` state hook (mirrors `EditorialPicture`).
+     - Keep the section's `min-h-[88vh] md:min-h-screen` so the layout box is reserved before the photo arrives — no shift.
+     - Keep `fetchpriority="high"`, `decoding="sync"`, `loading="eager"`.
+   - Add `useHeroPreload` for the actual `MEDIA_SIZES.HERO_FULL` (already there) — verified.
 
-2. `src/components/Hero.tsx`
-   - Switch `<PageHero variant="editorial-split">` to `<PageHero variant="architect-bleed">`.
-   - Pass the existing `query`, `sectionLabel`, `title`, `italic`, `subtitle`.
-   - Pass `caption={{ service, location, year }}` derived from the matched media item (same logic the cinematic-bleed variant already uses).
-   - Stop passing `provenance`, `triptychQueries`, `TrustChips`, and `StatTrio` as hero children. Instead render two new sibling sections in `src/pages/Index.tsx` directly under `<Hero />`:
-     - `<HeroStatsStrip />` — hairline-bordered three-up stats on cream.
-     - `<HeroTrustStrip />` — three trust chips on a single rule on cream.
-   - These two strips reuse `StatTrio` and `TrustChips` unchanged; only their wrapper is new and lives inside `Hero.tsx` as small local components to avoid scattering files.
+2. **HeroTriptych: synchronized reveal**
+   - Today each column fades in independently as its fetch resolves, producing a staggered pop. Change column reveal to wait for **column A** (the LCP) and use a tiny coordinated stagger (60ms B, 120ms C) for an editorial cadence rather than a network race.
+   - Each column already has aspect-ratio reservation via the grid; no CLS today, this is a polish-only fix to remove perceived jank.
 
-3. Hero-only B/W token scoping
-   - No edits to `src/lib/colors.ts` or any global token file.
-   - All B/W treatment lives inside the new variant block in `page-hero.tsx`, expressed as inline `style` values and Tailwind utilities scoped to that variant. The cedar/cream tokens are not touched, so the rest of the site is unaffected.
-   - The `KineticHeadline` component is reused with `onDark` and a new optional `weight="light"` prop (or, if simpler, the variant renders its own headline directly with the same staggered reveal animation already used elsewhere — picked during implementation based on which keeps the kinetic reveal intact with the least risk).
+3. **`MEDIA_SIZES` audit on landing page**
+   - Verify each landing-page MediaSlot passes a `sizes` value tight to its rendered width so the browser doesn't fetch oversized variants. Findings file-by-file:
+     - `Hero` → `HERO_FULL` ✓
+     - `EditorialBleedSection` → `BLEED_FULL` ✓
+     - `HomeProjectRecapStrip` → `THIRD` ✓
+     - `FeaturedProjects` → confirm; if missing, add `MEDIA_SIZES.HALF`.
+     - `Services` → confirm; if missing, add `MEDIA_SIZES.THIRD`.
+   - Any gap gets a one-line addition. No prop renames.
 
-4. Motion & accessibility
-   - Keep the existing Ken Burns drift on the photograph (already implemented via `useHeroParallax`).
-   - Keep the existing clip-path text reveal cadence (eyebrow → headline → subtitle → CTA → caption).
-   - Honor `prefers-reduced-motion`: drop drift and reveal, fade in only.
-   - Maintain WCAG AA: scrim opacity tuned so white ink reaches 4.5:1 over the darkest expected photo region; verified against the current homepage hero photo set.
-   - CTA stays ≥44px tall (mobile WCAG target) — already covered by the 56px hero CTA height.
+4. **Deprecation note**
+   - Add a JSDoc `@deprecated` on `ProgressiveImage` pointing to `EditorialPicture`, with a one-line note in `MEDIA_PLAYBOOK.md`. We don't migrate /work's gallery in this pass (out of landing-page scope), but the deprecation prevents new callers.
 
-5. Memory updates
-   - Add a new memory `mem://design/architect-hero` documenting: hero-only B/W treatment, scoped to homepage `architect-bleed` variant, tokens untouched, headline weight/tracking specifics, and that Stats + Trust were lifted out of the hero into sibling strips.
-   - Update `mem://index.md` Memories section to reference it. Core rules unchanged.
+5. **Memory update**
+   - Update existing `mem://standards/performance-rendering-strategy` (already referenced in the index) with one new bullet: "Hero photographs render through an LQIP-backed progressive layer; landing page contains zero raw `<img>` tags except the footer logo." No new memory file — this folds into the existing rendering-strategy doc.
 
 ### What does not change
 
-- Color tokens, typography tokens, spacing tokens, motion tokens, brand identity tokens.
-- /style-guide page.
-- Navigation chrome, GlobalMenu, conversion CTAs (phone, Quote, MENU).
-- Every other page's hero (`evergreen-typographic`, `cinematic-bleed`, `service-portrait` variants are untouched).
-- Cream + bronze remain the sitewide palette.
+- `EditorialPicture`, `MediaSlot`, `EditorialBleedSection`, `HomeProjectRecapStrip`, `FeaturedProjects` API or behavior.
+- Cream + bronze tokens.
+- The architect-bleed visual language (filter, scrim, headline).
+- /work, /services, /about hero treatments.
 
 ### File touch list
 
-- `src/components/ui/page-hero.tsx` — add `ArchitectBleed` variant + types + dispatch case.
-- `src/components/Hero.tsx` — switch variant, drop in-hero stats/trust, render two new sibling strips.
-- `src/components/ui/kinetic-headline.tsx` — optional `weight` prop if reuse path is chosen.
-- `mem://design/architect-hero` — new memory file.
-- `mem://index.md` — append reference.
+- `src/components/ui/page-hero.tsx` — add LQIP layer + load-state to `ArchitectBleed`.
+- `src/components/media/HeroTriptych.tsx` — coordinated reveal stagger.
+- `src/components/Services.tsx`, `src/components/FeaturedProjects.tsx` — verify/add `sizes` props (only if missing).
+- `src/components/ProgressiveImage.tsx` — `@deprecated` JSDoc.
+- `MEDIA_PLAYBOOK.md` — one-line deprecation note.
+- `mem://standards/performance-rendering-strategy` — append bullet.
 
-### Composition (ASCII)
+### Why this is the right scope
 
-```text
-┌──────────────────────────────────────────────────────────────┐
-│ ── EXTERIOR CONSTRUCTION · CALGARY · EDMONTON                │
-│                                                              │
-│                                                              │
-│   Excellence in                                              │
-│   the Work.                                                  │
-│   Pride in every detail.                                     │
-│                                                              │
-│   ──                                                         │
-│   Decks, fencing, sheds, painting and siding — built to      │
-│   last across Alberta.                                       │
-│                                                              │
-│   [ REQUEST A QUOTE ]   or call (xxx) xxx-xxxx               │
-│                                                              │
-│                                ── DECKS · CALGARY · 2025     │
-└──────────────────────────────────────────────────────────────┘
-   ── 7+ years on tools   ── 200+ projects   ── 48h quote
-   ── WCB covered   ── Fully insured   ── Locally owned
-```
+The codebase already enforces aspect-ratio reservation and LQIP via `EditorialPicture` everywhere on the landing page except the hero. A wholesale "progressive image" rewrite would duplicate work and risk regressions. The targeted fix closes the one remaining flash (hero) and the one remaining perceived-jank source (triptych staggered fetch), then locks the discipline in via deprecation + memory.
