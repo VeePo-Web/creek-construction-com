@@ -19,6 +19,12 @@ interface ProgressiveImageProps {
 }
 
 /**
+ * @deprecated Use `EditorialPicture` (or `MediaSlot`) instead. ProgressiveImage
+ * has hardcoded width/height (1200×800) which causes CLS when the host element
+ * has a different aspect ratio. EditorialPicture takes intrinsic dimensions and
+ * locks an aspect-ratio container — zero CLS by construction. Landing-page
+ * images already route through EditorialPicture.
+ *
  * Premium progressive image with blur-up reveal, cinematic vignette,
  * and optional cedar-warmth hover. Respects prefers-reduced-motion.
  */
