@@ -943,6 +943,8 @@ const PageHero = (props: PageHeroProps) => {
         switch (props.variant) {
           case "editorial-split":
             return <EditorialSplit {...(props as EditorialSplitProps)} />;
+          case "architect-bleed":
+            return <ArchitectBleed {...(props as ArchitectBleedProps)} />;
           case "cinematic-bleed":
             return <CinematicBleed {...(props as CinematicBleedProps)} />;
           case "service-portrait":
