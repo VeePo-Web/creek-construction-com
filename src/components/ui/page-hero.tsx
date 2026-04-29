@@ -717,8 +717,223 @@ const CinematicLegacy = (props: CinematicLegacyProps) => {
 };
 
 // ─────────────────────────────────────────────────────────────────────
-// Dispatcher
+// Variant: architect-bleed
+// Hero-only minimal black/white architect treatment. Single full-bleed
+// photograph with a near-black scrim + slight desaturation, oversized
+// light serif headline, hairline rules, white-outline CTA.
+// Scoped to the homepage. Does not touch global tokens.
 // ─────────────────────────────────────────────────────────────────────
+
+const ArchitectBleed = (props: ArchitectBleedProps) => {
+  const lines = toLines(props.title);
+  const heroImgRef = useHeroParallax();
+  const { item } = useFirstApprovedMedia(props.query);
+
+  useHeroPreload(item?.url, MEDIA_SIZES.HERO_FULL);
+
+  const captionLine = useMemo(() => {
+    const c = props.caption ?? {};
+    const fallbackLocation = item?.alt?.split(" in ")[1]?.split(",")[0];
+    const service = c.service ?? item?.service ?? undefined;
+    const location = c.location ?? fallbackLocation;
+    const year = c.year ?? undefined;
+    return [service, location, year ? String(year) : null]
+      .filter(Boolean)
+      .join(" · ");
+  }, [props.caption, item]);
+
+  return (
+    <section
+      id="section-hero"
+      className={cn(
+        "relative overflow-hidden flex flex-col justify-between",
+        "min-h-[88vh] md:min-h-screen",
+        props.className,
+      )}
+      style={{ backgroundColor: "hsl(0 0% 4%)", contain: "layout style paint" }}
+      aria-label={lines.join(" ")}
+    >
+      {/* Background photograph — desaturated, slightly darkened */}
+      {item ? (
+        <img
+          ref={heroImgRef}
+          src={item.url}
+          alt={item.alt}
+          width={item.width ?? 1920}
+          height={item.height ?? 1080}
+          className="absolute inset-0 w-full h-full object-cover hero-kenburns"
+          loading="eager"
+          {...({ fetchpriority: "high" } as Record<string, string>)}
+          decoding="sync"
+          sizes={MEDIA_SIZES.HERO_FULL}
+          style={{ filter: "grayscale(100%) contrast(1.04) brightness(0.86)" }}
+        />
+      ) : (
+        <div className="absolute inset-0" style={{ backgroundColor: "hsl(0 0% 8%)" }} aria-hidden />
+      )}
+
+      {/* Architect scrim stack: bottom-weighted black + faint left wash for type legibility */}
+      <div
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          background:
+            "linear-gradient(180deg, hsl(0 0% 0% / 0.42) 0%, hsl(0 0% 0% / 0.18) 38%, hsl(0 0% 0% / 0.62) 100%)",
+        }}
+        aria-hidden
+      />
+      <div
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          background:
+            "linear-gradient(90deg, hsl(0 0% 0% / 0.38) 0%, hsl(0 0% 0% / 0.10) 46%, transparent 70%)",
+        }}
+        aria-hidden
+      />
+
+      {/* ── Top: hairline + uppercase eyebrow ── */}
+      <div className="container mx-auto px-6 relative z-10 pt-28 md:pt-32">
+        <div
+          className="flex items-center gap-4 hero-provenance-enter"
+          style={{ ["--kinetic-delay" as never]: "200ms" }}
+        >
+          <span
+            aria-hidden
+            className="block h-px w-10 md:w-16"
+            style={{ backgroundColor: "hsl(0 0% 100% / 0.55)" }}
+          />
+          <span
+            className="text-[10px] md:text-[11px] uppercase tabular-nums"
+            style={{
+              color: "hsl(0 0% 100% / 0.82)",
+              letterSpacing: "0.22em",
+              fontFamily: "var(--font-sans, 'DM Sans', system-ui, sans-serif)",
+            }}
+          >
+            {props.sectionLabel}
+          </span>
+        </div>
+      </div>
+
+      {/* ── Middle: oversized light serif headline ── */}
+      <div className="container mx-auto px-6 relative z-10 flex-1 flex items-center">
+        <div className="max-w-[18ch] md:max-w-[20ch]">
+          <h1
+            aria-label={[...lines, props.italic].filter(Boolean).join(" ")}
+            className="font-serif"
+            style={{
+              color: "hsl(0 0% 100%)",
+              fontWeight: 400,
+              fontSize: "clamp(3.25rem, 8vw, 8.25rem)",
+              lineHeight: 0.96,
+              letterSpacing: "-0.012em",
+            }}
+          >
+            {lines.map((line, i) => (
+              <span
+                key={i}
+                aria-hidden="true"
+                className="kinetic-line block"
+                style={
+                  {
+                    "--kinetic-delay": `${380 + i * 160}ms`,
+                  } as React.CSSProperties
+                }
+              >
+                {line}
+              </span>
+            ))}
+            {props.italic && (
+              <span
+                aria-hidden="true"
+                className="kinetic-line block font-serif italic"
+                style={
+                  {
+                    color: "hsl(0 0% 100% / 0.72)",
+                    fontWeight: 400,
+                    fontSize: "0.46em",
+                    marginTop: "0.6em",
+                    letterSpacing: "0.005em",
+                    "--kinetic-delay": `${380 + lines.length * 160 + 220}ms`,
+                  } as React.CSSProperties
+                }
+              >
+                {props.italic}
+              </span>
+            )}
+          </h1>
+        </div>
+      </div>
+
+      {/* ── Bottom: hairline, subtitle, CTA row, caption rail ── */}
+      <div className="container mx-auto px-6 relative z-10 pb-14 md:pb-20">
+        <div className="grid md:grid-cols-12 gap-y-10 gap-x-8 items-end">
+          <div className="md:col-span-8 lg:col-span-7">
+            <span
+              aria-hidden
+              className="block h-px w-12 mb-6 hero-provenance-enter"
+              style={{
+                backgroundColor: "hsl(0 0% 100% / 0.45)",
+                ["--kinetic-delay" as never]: "1100ms",
+              }}
+            />
+            {props.subtitle && (
+              <p
+                className="hero-provenance-enter"
+                style={{
+                  color: "hsl(0 0% 100% / 0.82)",
+                  maxWidth: "46ch",
+                  fontSize: "clamp(0.95rem, 1.05vw, 1.0625rem)",
+                  lineHeight: 1.55,
+                  ["--kinetic-delay" as never]: "1200ms",
+                  fontFamily: "var(--font-sans, 'DM Sans', system-ui, sans-serif)",
+                }}
+              >
+                {props.subtitle}
+              </p>
+            )}
+
+            {props.children && (
+              <div
+                className="mt-9 hero-provenance-enter"
+                style={{ ["--kinetic-delay" as never]: "1400ms" }}
+              >
+                {props.children}
+              </div>
+            )}
+          </div>
+
+          {captionLine && (
+            <div className="md:col-span-4 lg:col-span-5 md:text-right">
+              <div
+                className="inline-flex items-center gap-3 hero-provenance-enter"
+                style={{ ["--kinetic-delay" as never]: "1600ms" }}
+              >
+                <span
+                  aria-hidden
+                  className="block h-px w-8"
+                  style={{ backgroundColor: "hsl(0 0% 100% / 0.45)" }}
+                />
+                <span
+                  className="text-[10px] md:text-[11px] uppercase tabular-nums"
+                  style={{
+                    color: "hsl(0 0% 100% / 0.7)",
+                    letterSpacing: "0.22em",
+                    fontFamily: "var(--font-sans, 'DM Sans', system-ui, sans-serif)",
+                  }}
+                >
+                  {captionLine}
+                </span>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    </section>
+  );
+};
+
+// ─────────────────────────────────────────────────────────────────────
+// Dispatcher
 
 const PageHero = (props: PageHeroProps) => {
   return (
