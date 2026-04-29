@@ -1,101 +1,81 @@
-# Site-Wide Audit & Cleanup Pass
+## Homepage hero — minimal black/white architect refinement
 
-## Health snapshot
+A focused, hero-only refinement on the homepage. The rest of the site keeps its cream + bronze editorial palette. The hero adopts an architectural-monograph composition: one quiet photograph, hairline rules, a small uppercase eyebrow, and an oversized lighter serif headline with generous whitespace.
 
-- `tsc --noEmit` → **0 errors**
-- `eslint --quiet` → **0 errors** (P0 lint debt from last pass is gone)
-- Routes, lazy boundaries, section registry, RLS-backed media queries → all healthy
-- No 404s in network, no broken imports
+### What changes
 
-So this is a **polish** pass, not a structural one. Five concrete issues to clean up.
+1. New variant `architect-bleed` in `src/components/ui/page-hero.tsx`
+   - Single full-bleed photograph as the hero plate (uses the same approved `query` that the homepage already feeds).
+   - Photograph desaturated and slightly darkened by a near-black scrim — gives a true black/white architect feel without rewriting tokens.
+   - 12-column type layer overlaid:
+     - Top-left: tiny uppercase sans eyebrow (`EXTERIOR CONSTRUCTION · CALGARY · EDMONTON`) on a single hairline rule. White ink, 0.18em tracking, 11px.
+     - Center-left: oversized DM Serif Display headline, weight 400, letter-spacing −0.01em, line-height 0.95, sized `clamp(56px, 8vw, 132px)`. Two lines max. The italic tail (“Pride in every detail.”) renders in white at 70% opacity, italic, on its own line — no underline, no color accent.
+     - Bottom-left: a single hairline divider, then the subtitle in white at 80% (max-width 46ch, 16px DM Sans, 1.55 leading).
+     - Bottom row: primary CTA reskinned for the hero only (white outline button, 1px border, uppercase 12px label, 56px tall, hover fills white/8%). Secondary "or call …" link sits to its right in the same restrained sans.
+   - Bottom-right corner: small caption rail — `service · location · year` in 11px uppercase sans, separated by interpuncts, with a 1px hairline above. Replaces the floating provenance card on the homepage.
+   - Stats trio is removed from inside the hero. It moves to a new lean strip immediately below the hero (3 stats, hairline-divided, on the cream page background) so the hero stays uncluttered.
+   - Trust chips are removed from inside the hero. They move below the new stats strip, presented as a single hairline rule of three items in the existing site palette — no visual change to those components, only relocation.
 
----
+2. `src/components/Hero.tsx`
+   - Switch `<PageHero variant="editorial-split">` to `<PageHero variant="architect-bleed">`.
+   - Pass the existing `query`, `sectionLabel`, `title`, `italic`, `subtitle`.
+   - Pass `caption={{ service, location, year }}` derived from the matched media item (same logic the cinematic-bleed variant already uses).
+   - Stop passing `provenance`, `triptychQueries`, `TrustChips`, and `StatTrio` as hero children. Instead render two new sibling sections in `src/pages/Index.tsx` directly under `<Hero />`:
+     - `<HeroStatsStrip />` — hairline-bordered three-up stats on cream.
+     - `<HeroTrustStrip />` — three trust chips on a single rule on cream.
+   - These two strips reuse `StatTrio` and `TrustChips` unchanged; only their wrapper is new and lives inside `Hero.tsx` as small local components to avoid scattering files.
 
-## Issues found
+3. Hero-only B/W token scoping
+   - No edits to `src/lib/colors.ts` or any global token file.
+   - All B/W treatment lives inside the new variant block in `page-hero.tsx`, expressed as inline `style` values and Tailwind utilities scoped to that variant. The cedar/cream tokens are not touched, so the rest of the site is unaffected.
+   - The `KineticHeadline` component is reused with `onDark` and a new optional `weight="light"` prop (or, if simpler, the variant renders its own headline directly with the same staggered reveal animation already used elsewhere — picked during implementation based on which keeps the kinetic reveal intact with the least risk).
 
-### 1. Runtime React warning on every homepage load (P0)
+4. Motion & accessibility
+   - Keep the existing Ken Burns drift on the photograph (already implemented via `useHeroParallax`).
+   - Keep the existing clip-path text reveal cadence (eyebrow → headline → subtitle → CTA → caption).
+   - Honor `prefers-reduced-motion`: drop drift and reveal, fade in only.
+   - Maintain WCAG AA: scrim opacity tuned so white ink reaches 4.5:1 over the darkest expected photo region; verified against the current homepage hero photo set.
+   - CTA stays ≥44px tall (mobile WCAG target) — already covered by the 56px hero CTA height.
 
-The browser console fires this on `/`:
+5. Memory updates
+   - Add a new memory `mem://design/architect-hero` documenting: hero-only B/W treatment, scoped to homepage `architect-bleed` variant, tokens untouched, headline weight/tracking specifics, and that Stats + Trust were lifted out of the hero into sibling strips.
+   - Update `mem://index.md` Memories section to reference it. Core rules unchanged.
 
+### What does not change
+
+- Color tokens, typography tokens, spacing tokens, motion tokens, brand identity tokens.
+- /style-guide page.
+- Navigation chrome, GlobalMenu, conversion CTAs (phone, Quote, MENU).
+- Every other page's hero (`evergreen-typographic`, `cinematic-bleed`, `service-portrait` variants are untouched).
+- Cream + bronze remain the sitewide palette.
+
+### File touch list
+
+- `src/components/ui/page-hero.tsx` — add `ArchitectBleed` variant + types + dispatch case.
+- `src/components/Hero.tsx` — switch variant, drop in-hero stats/trust, render two new sibling strips.
+- `src/components/ui/kinetic-headline.tsx` — optional `weight` prop if reuse path is chosen.
+- `mem://design/architect-hero` — new memory file.
+- `mem://index.md` — append reference.
+
+### Composition (ASCII)
+
+```text
+┌──────────────────────────────────────────────────────────────┐
+│ ── EXTERIOR CONSTRUCTION · CALGARY · EDMONTON                │
+│                                                              │
+│                                                              │
+│   Excellence in                                              │
+│   the Work.                                                  │
+│   Pride in every detail.                                     │
+│                                                              │
+│   ──                                                         │
+│   Decks, fencing, sheds, painting and siding — built to      │
+│   last across Alberta.                                       │
+│                                                              │
+│   [ REQUEST A QUOTE ]   or call (xxx) xxx-xxxx               │
+│                                                              │
+│                                ── DECKS · CALGARY · 2025     │
+└──────────────────────────────────────────────────────────────┘
+   ── 7+ years on tools   ── 200+ projects   ── 48h quote
+   ── WCB covered   ── Fully insured   ── Locally owned
 ```
-Warning: React does not recognize the `fetchPriority` prop on a DOM element.
-… spell it as lowercase `fetchpriority` instead.
-  at img → TriptychColumn (HeroTriptych.tsx:284)
-```
-
-Root cause: `src/components/media/HeroTriptych.tsx:258` writes the prop as a literal JSX attribute:
-
-```tsx
-fetchPriority={priority ? "high" : undefined}
-```
-
-React 18 in this project does not normalize the camelCase form to the lowercase DOM attribute, so it leaks through and warns. The other two call sites that work cleanly (`EditorialPicture.tsx:111`, `ProgressiveImage.tsx:96`, `page-hero.tsx:462,669`) all use the spread form:
-
-```tsx
-{...(priority ? { fetchPriority: "high" as const } : {})}
-```
-
-…but the same warning is latent there too — it just hasn't fired because most renders don't satisfy `priority`. We'll standardize **all five sites** on the lowercase DOM attribute via spread:
-
-```tsx
-{...(priority ? { fetchpriority: "high" } : {})}
-```
-
-…cast through `as React.ImgHTMLAttributes<HTMLImageElement>` once where TS complains.
-
-**Files touched (5):**
-- `src/components/media/HeroTriptych.tsx` (line ~258)
-- `src/components/media/EditorialPicture.tsx` (line ~111)
-- `src/components/ProgressiveImage.tsx` (line ~96)
-- `src/components/ui/page-hero.tsx` (lines ~462, ~669)
-
-### 2. Residual `transition-all` in two admin pages (P1, narrow scope)
-
-The April perf-pass left two admin tiles using `transition-all`:
-
-- `src/pages/admin/Classify.tsx:783` — selection tile in classify queue
-- `src/pages/admin/MediaLibrary.tsx:629` — selection tile in library grid
-
-These are internal-only (admin routes), but they're hot grids with hundreds of nodes — the cheapest possible win. Replace each with `transition-[border-color,box-shadow,transform]`.
-
-The remaining `transition-all` matches are upstream shadcn primitives (`toast.tsx`, `accordion.tsx`, `progress.tsx`, `tabs.tsx`, `sidebar.tsx`, `input-otp.tsx`) — leave those alone; they're vendor and the perf cost is irrelevant at their usage volume.
-
-### 3. Stale apostrophe (P2)
-
-Memory rule: curly quotes in user-visible copy.
-
-- `src/pages/NotFound.tsx:10` — `useDocumentTitle` description: `"The page you're looking for doesn't exist…"` — both `you're` and `doesn't` are ASCII. This goes to `<meta name="description">` and the browser tab, so it IS user-visible. Fix to `you're` / `doesn't`.
-
-The other `'` matches in the rg sweep are inside `<lov-` doc strings or code labels and stay as-is.
-
-### 4. Stale `Portfolio` reference in `MEDIA_PLAYBOOK.md` (P2)
-
-`MEDIA_PLAYBOOK.md:18` still lists "Homepage Portfolio strip (decks card)" in the routing table — but `Portfolio.tsx` was deleted. Replace the row with the current routing target: `FeaturedProjects` on the homepage and the decks galleries on `/work`.
-
-### 5. Email casing inconsistency in display (P2, optional polish)
-
-`Creekproconstruction@gmail.com` is the documented brand spelling (capital C is intentional per the style guide — `StyleGuide.tsx:770` documents it). **No change.** Closing this loop so we don't keep flagging it on every audit.
-
----
-
-## What's verified clean (no action needed)
-
-- Section-anchor registry vs. all `id="section-…"` — exhaustive match
-- Skip-link target (`#section-services`) exists on every public page
-- Lazy-loaded route chunks (`Services`, `Work`, `About`, `Contact`, all admin, StyleGuide) — correctly excluded from the homepage bundle
-- All decorative `alt=""` are intentional (logos accompanied by text, ambient triptych images)
-- All `console.warn` / `console.error` calls are guarded or are legitimate non-fatal channels
-- No stale `Portfolio` / `Testimonials` / `FieldClipsStrip` imports anywhere in `src/`
-- TypeScript: 0 errors. ESLint: 0 errors.
-
----
-
-## Verification after fixes
-
-1. `npx tsc --noEmit` → 0 errors
-2. `npx eslint src --quiet` → 0 errors
-3. Reload `/`, watch console: zero warnings (the `fetchPriority` warning is gone)
-4. `rg "transition-all" src/components src/pages` → only upstream shadcn matches
-5. `rg "fetchPriority" src` → zero matches; only lowercase `fetchpriority` remains
-
-**Estimated footprint:** 7 files, all small surgical edits. No structural changes, no design shifts, no new dependencies.
