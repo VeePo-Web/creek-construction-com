@@ -21,6 +21,7 @@ import type { MediaQuery } from "@/lib/api/public-media";
 export type PageHeroVariant =
   | "evergreen-typographic"
   | "editorial-split"
+  | "architect-bleed"
   | "cinematic-bleed"
   | "service-portrait"
   // Back-compat aliases — still consumed across the codebase:
