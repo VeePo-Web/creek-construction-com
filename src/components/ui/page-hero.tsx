@@ -90,6 +90,19 @@ interface CinematicBleedProps extends BaseProps {
   minHeight?: string;
 }
 
+interface ArchitectBleedProps extends BaseProps {
+  variant: "architect-bleed";
+  /** Single full-bleed photograph that anchors the hero. */
+  query: MediaQuery;
+  /** Bottom-right caption rail. Falls back to derived values from media. */
+  caption?: { service?: string; location?: string; year?: number };
+  /** Primary CTA label (renders a white-outline button that opens QuoteModal via children-replacement when omitted). */
+  ctaLabel?: string;
+  /** Optional href for a phone link rendered next to the CTA. */
+  phoneLabel?: string;
+  phoneHref?: string;
+}
+
 interface ServicePortraitProps extends BaseProps {
   variant: "service-portrait";
   /** 2–3 service queries that compose the triptych behind the headline. */
@@ -108,6 +121,7 @@ interface CinematicLegacyProps extends BaseProps {
 type PageHeroProps =
   | EvergreenTypographicProps
   | EditorialSplitProps
+  | ArchitectBleedProps
   | CinematicBleedProps
   | ServicePortraitProps
   | CinematicLegacyProps;
