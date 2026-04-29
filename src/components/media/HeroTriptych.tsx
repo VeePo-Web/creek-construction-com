@@ -229,9 +229,18 @@ const TriptychColumn = ({
   guttersDrawn,
   className,
 }: TriptychColumnProps) => {
+  const [loaded, setLoaded] = useState(false);
+  const imgRef = useRef<HTMLImageElement | null>(null);
+
+  useEffect(() => {
+    setLoaded(false);
+    const node = imgRef.current;
+    if (node?.complete && node.naturalWidth > 0) setLoaded(true);
+  }, [media?.url]);
+
   return (
     <div
-      className={cn("relative overflow-hidden", className)}
+      className={cn("relative overflow-hidden bg-secondary", className)}
       style={
         column > 0
           ? {
@@ -244,21 +253,41 @@ const TriptychColumn = ({
       }
     >
       {media ? (
-        <img
-          src={media.url}
-          alt=""
-          width={media.width ?? 1600}
-          height={media.height ?? 1067}
-          className="absolute inset-0 w-full h-full object-cover hero-kenburns"
-          style={{
-            animationDelay: `${delayMs}ms`,
-            animationDuration: "16s",
-          }}
-          loading={priority ? "eager" : "lazy"}
-          {...(priority ? ({ fetchpriority: "high" } as Record<string, string>) : {})}
-          decoding={priority ? "sync" : "async"}
-          sizes={MEDIA_SIZES.THIRD}
-        />
+        <>
+          {/* LQIP backdrop — zero-flash placeholder until the full image decodes */}
+          {media.lqip && (
+            <div
+              aria-hidden
+              className="absolute inset-0 transition-opacity duration-700"
+              style={{
+                backgroundImage: `url(${media.lqip.startsWith("data:") ? media.lqip : `data:image/jpeg;base64,${media.lqip}`})`,
+                backgroundSize: "cover",
+                backgroundPosition: "center",
+                filter: "blur(20px)",
+                transform: "scale(1.08)",
+                opacity: loaded ? 0 : 1,
+              }}
+            />
+          )}
+          <img
+            ref={imgRef}
+            src={media.url}
+            alt=""
+            width={media.width ?? 1600}
+            height={media.height ?? 1067}
+            className="absolute inset-0 w-full h-full object-cover hero-kenburns transition-opacity duration-700"
+            style={{
+              animationDelay: `${delayMs}ms`,
+              animationDuration: "16s",
+              opacity: loaded ? 1 : 0,
+            }}
+            loading={priority ? "eager" : "lazy"}
+            {...(priority ? ({ fetchpriority: "high" } as Record<string, string>) : {})}
+            decoding={priority ? "sync" : "async"}
+            sizes={MEDIA_SIZES.THIRD}
+            onLoad={() => setLoaded(true)}
+          />
+        </>
       ) : (
         <EditorialFallback variant="stone" icon={icon} caption={caption} />
       )}
