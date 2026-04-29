@@ -48,6 +48,7 @@ The live site reads from `media_metadata` where `ai_review_status='approved'`. R
 - `<MediaSlot query={{...}} fallback={...} />` — pulls from approved cloud media. Pages should use this, never hardcoded imports.
 - `<MediaStrip query count renderItem fallback />` — render N items from a query.
 - `<ProvenanceCaption numeral location year subject />` — editorial line under any media block.
+- `<ProgressiveImage />` — **deprecated.** Hardcoded 1200×800 dimensions cause CLS in non-matching containers. Use `EditorialPicture` (or `MediaSlot`) instead. Existing call sites in `ProjectGallery` are scheduled for migration.
 
 ## When to break the rules
 

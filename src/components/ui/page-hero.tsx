@@ -1,4 +1,4 @@
-import { useMemo, type ReactNode } from "react";
+import { useMemo, useState, useEffect, useRef, type ReactNode } from "react";
 
 import { cn } from "@/lib/utils";
 import { BACKDROP, SCRIM, TEXT } from "@/lib/colors";
@@ -728,6 +728,17 @@ const ArchitectBleed = (props: ArchitectBleedProps) => {
   const lines = toLines(props.title);
   const heroImgRef = useHeroParallax();
   const { item } = useFirstApprovedMedia(props.query);
+  const [photoLoaded, setPhotoLoaded] = useState(false);
+  const localImgRef = useRef<HTMLImageElement | null>(null);
+
+  // Reset load state if the source changes; mark loaded immediately if cached.
+  useEffect(() => {
+    setPhotoLoaded(false);
+    const node = localImgRef.current;
+    if (node?.complete && node.naturalWidth > 0) {
+      setPhotoLoaded(true);
+    }
+  }, [item?.url]);
 
   useHeroPreload(item?.url, MEDIA_SIZES.HERO_FULL);
 
@@ -753,21 +764,60 @@ const ArchitectBleed = (props: ArchitectBleedProps) => {
       style={{ backgroundColor: "hsl(0 0% 4%)", contain: "layout style paint" }}
       aria-label={lines.join(" ")}
     >
-      {/* Background photograph — desaturated, slightly darkened */}
+      {/* Background photograph — LQIP-backed progressive layer.
+          The section reserves min-h-[88vh] so layout never shifts; the LQIP
+          paints instantly (data URI in HTML) so the user never sees a black
+          flash before the full image decodes. */}
       {item ? (
-        <img
-          ref={heroImgRef}
-          src={item.url}
-          alt={item.alt}
-          width={item.width ?? 1920}
-          height={item.height ?? 1080}
-          className="absolute inset-0 w-full h-full object-cover hero-kenburns"
-          loading="eager"
-          {...({ fetchpriority: "high" } as Record<string, string>)}
-          decoding="sync"
-          sizes={MEDIA_SIZES.HERO_FULL}
-          style={{ filter: "grayscale(100%) contrast(1.04) brightness(0.86)" }}
-        />
+        <>
+          {/* LQIP backdrop — blurred + grayscale to match the hero treatment */}
+          {item.lqip && (
+            <div
+              aria-hidden
+              className="absolute inset-0 transition-opacity duration-700"
+              style={{
+                backgroundImage: `url(${item.lqip.startsWith("data:") ? item.lqip : `data:image/jpeg;base64,${item.lqip}`})`,
+                backgroundSize: "cover",
+                backgroundPosition: "center",
+                filter: "grayscale(100%) blur(24px) brightness(0.82)",
+                transform: "scale(1.06)",
+                opacity: photoLoaded ? 0 : 1,
+              }}
+            />
+          )}
+          {/* When no LQIP exists, paint a soft warm-grey wash so the box isn't stark black */}
+          {!item.lqip && !photoLoaded && (
+            <div
+              aria-hidden
+              className="absolute inset-0"
+              style={{ backgroundColor: "hsl(0 0% 10%)" }}
+            />
+          )}
+          <img
+            ref={(node) => {
+              localImgRef.current = node;
+              if (typeof heroImgRef === "function") {
+                (heroImgRef as (el: HTMLImageElement | null) => void)(node);
+              } else if (heroImgRef) {
+                (heroImgRef as React.MutableRefObject<HTMLImageElement | null>).current = node;
+              }
+            }}
+            src={item.url}
+            alt={item.alt}
+            width={item.width ?? 1920}
+            height={item.height ?? 1080}
+            className="absolute inset-0 w-full h-full object-cover hero-kenburns transition-opacity duration-700"
+            loading="eager"
+            {...({ fetchpriority: "high" } as Record<string, string>)}
+            decoding="sync"
+            sizes={MEDIA_SIZES.HERO_FULL}
+            onLoad={() => setPhotoLoaded(true)}
+            style={{
+              filter: "grayscale(100%) contrast(1.04) brightness(0.86)",
+              opacity: photoLoaded ? 1 : 0,
+            }}
+          />
+        </>
       ) : (
         <div className="absolute inset-0" style={{ backgroundColor: "hsl(0 0% 8%)" }} aria-hidden />
       )}
