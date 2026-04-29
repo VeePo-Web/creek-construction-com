@@ -1,96 +1,101 @@
-# Site Audit — Consistency & Error Pass
+# Site-Wide Audit & Cleanup Pass
 
-A thorough sweep of the codebase. TypeScript compiles cleanly and the architecture is sound. Findings below are grouped by severity.
+## Health snapshot
 
----
+- `tsc --noEmit` → **0 errors**
+- `eslint --quiet` → **0 errors** (P0 lint debt from last pass is gone)
+- Routes, lazy boundaries, section registry, RLS-backed media queries → all healthy
+- No 404s in network, no broken imports
 
-## What's already healthy
-
-- `npx tsc --noEmit` — **0 errors**.
-- No broken imports to the removed `Portfolio` / `Testimonials` components.
-- Section-anchor registry (`src/lib/page-sections.ts`) matches every `id="section-…"` on every page. No orphans, no missing anchors.
-- Routes, lazy boundaries, and the Mobile Quote FAB gating in `App.tsx` are correct.
-- Curly-quote standard is honored in **headlines and hero copy** (the high-visibility surfaces).
+So this is a **polish** pass, not a structural one. Five concrete issues to clean up.
 
 ---
 
-## Issues found (prioritized)
+## Issues found
 
-### P0 — Lint errors (3)
+### 1. Runtime React warning on every homepage load (P0)
 
-ESLint reports 3 errors that should not be in `main`:
+The browser console fires this on `/`:
 
-1. `src/components/ui/command.tsx:24` — empty interface (`@typescript-eslint/no-empty-object-type`). Convert to `type ... = ...` alias.
-2. `src/components/ui/textarea.tsx:5` — same empty-interface error. Same fix.
-3. `src/hooks/useAlbertaTemp.ts:30` — `let interval` never reassigned, must be `const`.
+```
+Warning: React does not recognize the `fetchPriority` prop on a DOM element.
+… spell it as lowercase `fetchpriority` instead.
+  at img → TriptychColumn (HeroTriptych.tsx:284)
+```
 
-### P1 — Curly-quote violations in user-visible copy
+Root cause: `src/components/media/HeroTriptych.tsx:258` writes the prop as a literal JSX attribute:
 
-Project memory mandates curly quotes (' " "). Twelve user-facing strings still use ASCII apostrophes. None are in headlines, but they appear in body copy where the eye catches them next to curly quotes elsewhere on the same page:
+```tsx
+fetchPriority={priority ? "high" : undefined}
+```
 
-- `src/components/About.tsx` — process steps + body paragraph (`you're`, `isn't`, `don't`, `you'll`, `That's`).
-- `src/components/Contact.tsx` — body paragraph (`you're`, `We'll`).
-- `src/components/FeaturedProjects.tsx:166` — subheading (`we're`).
-- `src/pages/About.tsx:62-68` — long-form story (`don't`, `That's`, `it's`, `we'd`, `doesn't`).
-- `src/pages/NotFound.tsx:43` — 404 line (`doesn't`).
-- `src/pages/Services.tsx:45-46` — checklist notes (`We'll`).
-- `src/components/quote/QuoteModal.tsx:179, 294-295, 580, 676, 874-875` — modal body, error helper, success state.
-- `src/components/navigation/GlobalMenu.tsx:327` — menu copy.
+React 18 in this project does not normalize the camelCase form to the lowercase DOM attribute, so it leaks through and warns. The other two call sites that work cleanly (`EditorialPicture.tsx:111`, `ProgressiveImage.tsx:96`, `page-hero.tsx:462,669`) all use the spread form:
 
-Fix: replace ASCII `'` with `'` (U+2019) in display strings only. Code comments and `aria-*` strings stay ASCII.
+```tsx
+{...(priority ? { fetchPriority: "high" as const } : {})}
+```
 
-### P1 — Residual `transition-all` (performance)
+…but the same warning is latent there too — it just hasn't fired because most renders don't satisfy `priority`. We'll standardize **all five sites** on the lowercase DOM attribute via spread:
 
-The April perf-pass swept components but missed shared primitives. `transition-all` forces the browser to interpolate every animatable property:
+```tsx
+{...(priority ? { fetchpriority: "high" } : {})}
+```
 
-- `src/lib/motion.ts:74, 86, 90` — three motion presets used by `service-tile`, `project-tile`, etc. (high-leverage).
-- `src/lib/colors.ts:275, 285, 295` — three transition presets in the token surface map.
-- `src/components/CedarCTA.tsx:34, 60` — the **primary conversion CTA**, shipped on every page.
-- `src/components/ui/project-tile.tsx:100, 123, 132, 143, 183` — five spots on the project card.
-- `src/components/ui/faq-accordion.tsx:34`.
-- `src/components/ui/card-premium.tsx:11`.
-- `src/components/ProgressiveImage.tsx:99, 131`.
+…cast through `as React.ImgHTMLAttributes<HTMLImageElement>` once where TS complains.
 
-Fix: replace each with the explicit property list it actually animates (`transition-colors`, `transition-[transform,box-shadow]`, `transition-[width,background-color]`, etc.). Admin pages (`MediaLibrary.tsx`, `Classify.tsx`) stay as-is — internal-only.
+**Files touched (5):**
+- `src/components/media/HeroTriptych.tsx` (line ~258)
+- `src/components/media/EditorialPicture.tsx` (line ~111)
+- `src/components/ProgressiveImage.tsx` (line ~96)
+- `src/components/ui/page-hero.tsx` (lines ~462, ~669)
 
-### P2 — Stale comments referencing deleted components
+### 2. Residual `transition-all` in two admin pages (P1, narrow scope)
 
-After `Portfolio.tsx` and `Testimonials.tsx` were removed, several comments still reference them and mislead future edits:
+The April perf-pass left two admin tiles using `transition-all`:
 
-- `src/data/projects.ts:11, 57` — "never edit Portfolio.tsx" / "homepage Portfolio strip".
-- `src/components/ui/bronze-rule.tsx:34` — "Hero, About, Portfolio, FeaturedProjects".
-- `src/components/FeaturedProjects.tsx:18` — "Portfolio + recap strip carry the weight".
-- `src/components/media/HomeProjectRecapStrip.tsx:9` — "between Portfolio and Contact".
+- `src/pages/admin/Classify.tsx:783` — selection tile in classify queue
+- `src/pages/admin/MediaLibrary.tsx:629` — selection tile in library grid
 
-Fix: rewrite each comment to reflect the current homepage rhythm (Hero → TrustStrip → Bleed → Services → About → FeaturedProjects → Contact).
+These are internal-only (admin routes), but they're hot grids with hundreds of nodes — the cheapest possible win. Replace each with `transition-[border-color,box-shadow,transform]`.
 
-### P2 — Minor UX consistency
+The remaining `transition-all` matches are upstream shadcn primitives (`toast.tsx`, `accordion.tsx`, `progress.tsx`, `tabs.tsx`, `sidebar.tsx`, `input-otp.tsx`) — leave those alone; they're vendor and the perf cost is irrelevant at their usage volume.
 
-- **Contact email casing**: `src/config/contact.ts` exports `Creekproconstruction@gmail.com` with a capital `C`. Email local-parts are case-insensitive in practice, but the inconsistency reads sloppy in `mailto:` links and the visible footer line. Normalize to lowercase everywhere it's *displayed*; keep the address as-is in the `mailto:` href (servers accept both).
-- **`<input>` font-size**: `src/components/ui/input.tsx` is `text-base` on mobile and `text-sm` on `md+`. iOS auto-zooms any input under 16px, which is correct on mobile but the QuoteModal also uses `Input` on desktop where `text-sm` is fine. No change needed — flagging that this is intentional and correct.
+### 3. Stale apostrophe (P2)
 
-### P3 — Cosmetic / docs
+Memory rule: curly quotes in user-visible copy.
 
-- `STYLE_GUIDE.md` and `MEDIA_PLAYBOOK.md` were not updated when `Portfolio` and `Testimonials` were removed. Quick scan + prune of any stale references.
-- `src/lib/page-sections.ts` comment block correctly documents the n=2/n≥3 rule and matches `Core` memory — no change.
+- `src/pages/NotFound.tsx:10` — `useDocumentTitle` description: `"The page you're looking for doesn't exist…"` — both `you're` and `doesn't` are ASCII. This goes to `<meta name="description">` and the browser tab, so it IS user-visible. Fix to `you're` / `doesn't`.
 
----
+The other `'` matches in the rg sweep are inside `<lov-` doc strings or code labels and stay as-is.
 
-## What I'm NOT changing
+### 4. Stale `Portfolio` reference in `MEDIA_PLAYBOOK.md` (P2)
 
-- The architecture (route lazy-loading, two-tier nav, section registry, design tokens) is correct as-is.
-- Curly quotes inside JSX comments and `aria-*` labels stay ASCII (screen-reader compatibility, source clarity).
-- The QuoteModal flow — already frictionless in the previous pass.
-- Admin-route `transition-all` — internal tooling, not perf-critical.
+`MEDIA_PLAYBOOK.md:18` still lists "Homepage Portfolio strip (decks card)" in the routing table — but `Portfolio.tsx` was deleted. Replace the row with the current routing target: `FeaturedProjects` on the homepage and the decks galleries on `/work`.
+
+### 5. Email casing inconsistency in display (P2, optional polish)
+
+`Creekproconstruction@gmail.com` is the documented brand spelling (capital C is intentional per the style guide — `StyleGuide.tsx:770` documents it). **No change.** Closing this loop so we don't keep flagging it on every audit.
 
 ---
 
-## Verification steps after the fixes
+## What's verified clean (no action needed)
 
-1. `npx tsc --noEmit` → 0 errors.
-2. `npx eslint src --quiet` → 0 errors.
-3. `rg "you'll|don't|we're|that's|isn't|can't|won't|it's|we'd|you're|we'll|doesn't" src/components src/pages` → only matches inside `//`, `/* */`, or `aria-*`.
-4. `rg "transition-all" src/components src/lib` → only `progress.tsx` (shadcn upstream, safe).
-5. Visual spot-check `/`, `/services`, `/work`, `/about`, `/contact`, `/404` — copy reads with consistent typography.
+- Section-anchor registry vs. all `id="section-…"` — exhaustive match
+- Skip-link target (`#section-services`) exists on every public page
+- Lazy-loaded route chunks (`Services`, `Work`, `About`, `Contact`, all admin, StyleGuide) — correctly excluded from the homepage bundle
+- All decorative `alt=""` are intentional (logos accompanied by text, ambient triptych images)
+- All `console.warn` / `console.error` calls are guarded or are legitimate non-fatal channels
+- No stale `Portfolio` / `Testimonials` / `FieldClipsStrip` imports anywhere in `src/`
+- TypeScript: 0 errors. ESLint: 0 errors.
 
-Estimated change footprint: ~14 files, all small edits, no structural changes.
+---
+
+## Verification after fixes
+
+1. `npx tsc --noEmit` → 0 errors
+2. `npx eslint src --quiet` → 0 errors
+3. Reload `/`, watch console: zero warnings (the `fetchPriority` warning is gone)
+4. `rg "transition-all" src/components src/pages` → only upstream shadcn matches
+5. `rg "fetchPriority" src` → zero matches; only lowercase `fetchpriority` remains
+
+**Estimated footprint:** 7 files, all small surgical edits. No structural changes, no design shifts, no new dependencies.
