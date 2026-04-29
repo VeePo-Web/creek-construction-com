@@ -255,7 +255,7 @@ const TriptychColumn = ({
             animationDuration: "16s",
           }}
           loading={priority ? "eager" : "lazy"}
-          fetchPriority={priority ? "high" : undefined}
+          {...(priority ? ({ fetchpriority: "high" } as Record<string, string>) : {})}
           decoding={priority ? "sync" : "async"}
           sizes={MEDIA_SIZES.THIRD}
         />

@@ -780,7 +780,7 @@ const Classify = () => {
                       type="button"
                       onClick={() => setSelectedPath(a.storage_path)}
                       className={cn(
-                        "relative aspect-square rounded-sm overflow-hidden bg-muted border-2 transition-all group",
+                        "relative aspect-square rounded-sm overflow-hidden bg-muted border-2 transition-[border-color,box-shadow] group",
                         isSel
                           ? "border-cedar ring-2 ring-cedar/30"
                           : "border-transparent hover:border-cedar/40",

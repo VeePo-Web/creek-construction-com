@@ -7,7 +7,7 @@ import { useDocumentTitle } from "@/hooks/useDocumentTitle";
 
 const NotFound = () => {
   const location = useLocation();
-  useDocumentTitle("Page Not Found", "The page you're looking for doesn't exist. Find your way back to Creek Construction.");
+  useDocumentTitle("Page Not Found", "The page you’re looking for doesn’t exist. Find your way back to Creek Construction.");
 
   useEffect(() => {
     if (import.meta.env.DEV) console.warn("[404]", location.pathname);

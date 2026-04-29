@@ -93,7 +93,7 @@ const ProgressiveImage = ({
         height="800"
         loading={priority ? "eager" : "lazy"}
         decoding="async"
-        {...(priority ? { fetchPriority: "high" as const } : {})}
+        {...(priority ? ({ fetchpriority: "high" } as Record<string, string>) : {})}
         {...(sizes ? { sizes } : {})}
         onLoad={handleLoad}
         className={`w-full h-full object-cover transition-[opacity,transform,filter] duration-1000 ${

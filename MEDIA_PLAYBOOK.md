@@ -15,7 +15,7 @@ The live site reads from `media_metadata` where `ai_review_status='approved'`. R
 
 | If the AI classifies a photo as... | It appears on... |
 |---|---|
-| `service: decks`, `shot_type: hero` | Homepage Portfolio strip (decks card), `/work` decks galleries |
+| `service: decks`, `shot_type: hero` | Homepage FeaturedProjects strip (decks card), `/work` decks galleries |
 | `service: sheds`, `shot_type: hero` + `project_slug: riverbend-studio-shed` | Riverbend project gallery on `/work` |
 | Any approved video, `quality: portfolio`+ | Homepage hero ambient bleed |
 | `shot_type: process` | About page process section, between-section bleeds |

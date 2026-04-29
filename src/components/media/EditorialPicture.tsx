@@ -108,7 +108,7 @@ const EditorialPicture = ({
         height={height}
         loading={priority ? "eager" : "lazy"}
         decoding={priority ? "sync" : "async"}
-        {...(priority ? { fetchPriority: "high" as const } : {})}
+        {...(priority ? ({ fetchpriority: "high" } as Record<string, string>) : {})}
         {...(sizes ? { sizes } : {})}
         onLoad={() => setLoaded(true)}
         className={cn(
