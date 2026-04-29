@@ -10,10 +10,12 @@ import StatTrio, { type StatItem } from "@/components/ui/stat-trio";
 /**
  * Hero — homepage opener.
  *
- * Now a thin consumer of <PageHero variant="editorial-split">. The variant
- * handles all backgrounds, kinetic typography, photo card, provenance card,
- * LCP preload, and reduced-motion fallback. This file owns the *content*:
- * the headline copy, the trust chips, the dual CTA, the stats card.
+ * Architect-bleed treatment (hero-only B/W override). The hero itself stays
+ * radically minimal: one quiet photograph, a small uppercase eyebrow, one
+ * oversized lighter serif headline, a hairline-divided subtitle + CTA,
+ * and a bottom-right caption rail. Stats and trust chips have been lifted
+ * out of the hero into sibling strips on the cream page background so the
+ * hero reads as a single architectural plate.
  */
 
 const STATS: StatItem[] = [
@@ -28,49 +30,58 @@ const TRUST_ITEMS = [
   { icon: MapPin, label: "Locally owned" },
 ];
 
+const HeroStatsStrip = () => (
+  <section
+    aria-label="Creek Construction by the numbers"
+    className="border-b border-cedar/15 bg-background"
+  >
+    <div className="container mx-auto px-6 py-8 md:py-10">
+      <StatTrio items={STATS} variant="inline" />
+    </div>
+  </section>
+);
+
+const HeroTrustStrip = () => (
+  <section aria-label="Trust signals" className="bg-background">
+    <div className="container mx-auto px-6 py-6 md:py-7">
+      <TrustChips items={TRUST_ITEMS} variant="rule" ariaLabel="Trust signals" />
+    </div>
+  </section>
+);
+
 const Hero = () => {
   return (
-    <PageHero
-      variant="editorial-split"
-      breadcrumb={[{ label: "Calgary · Edmonton · Alberta" }]}
-      sectionLabel="EXTERIOR CONSTRUCTION"
-      title={["Excellence in", "the Work."]}
-      italic="Pride in every detail."
-      subtitle="Decks, fencing, sheds, painting and siding — built to last across Alberta. Our crew owns the work from quote to final nail."
-      query={{
-        shot_type: ["hero", "elevation", "wide"],
-        min_quality: "reference",
-        kind: "image",
-      }}
-      triptychQueries={[
-        { service: "decks", shot_type: ["hero", "elevation"], min_quality: "reference", kind: "image" },
-        { shot_type: ["detail", "process"], min_quality: "reference", kind: "image" },
-        { service: "sheds", shot_type: ["wide", "hero", "elevation"], min_quality: "reference", kind: "image" },
-      ]}
-      provenance={{
-        eyebrow: "Built on the work",
-        children: <StatTrio items={STATS} variant="inline" />,
-      }}
-    >
-      {/* Trust rule + dual CTA — homepage chrome */}
-      <TrustChips
-        items={TRUST_ITEMS}
-        variant="rule"
-        onDark
-        className="mb-6 sm:mb-10"
-        ariaLabel="Trust signals"
-      />
+    <>
+      <PageHero
+        variant="architect-bleed"
+        breadcrumb={[{ label: "Calgary · Edmonton · Alberta" }]}
+        sectionLabel="Exterior Construction · Calgary · Edmonton"
+        title={["Excellence in", "the Work."]}
+        italic="Pride in every detail."
+        subtitle="Decks, fencing, sheds, painting and siding — built to last across Alberta. Our crew owns the work from quote to final nail."
+        query={{
+          shot_type: ["hero", "elevation", "wide"],
+          min_quality: "reference",
+          kind: "image",
+        }}
+      >
+        {/* Architect-grade CTA row — restrained, white-outline primary */}
+        <div className="flex flex-wrap items-center gap-x-6 gap-y-3">
+          <CedarCTA className="!bg-transparent !text-white !border !border-white/70 hover:!bg-white/10">
+            Request a Quote
+          </CedarCTA>
+          <a
+            href={`tel:${CONTACT.phoneTel}`}
+            className="inline-flex items-center gap-2 text-[11px] tracking-[0.22em] uppercase text-white/70 hover:text-white transition-colors min-h-[44px] px-2"
+          >
+            or call {CONTACT.phone}
+          </a>
+        </div>
+      </PageHero>
 
-      <div className="flex flex-wrap items-center gap-x-6 gap-y-3">
-        <CedarCTA>Request a Quote</CedarCTA>
-        <a
-          href={`tel:${CONTACT.phoneTel}`}
-          className="inline-flex items-center gap-2 text-[12px] tracking-[0.16em] uppercase text-evergreen-foreground/70 hover:text-cedar transition-colors min-h-[44px] px-2"
-        >
-          or call {CONTACT.phone}
-        </a>
-      </div>
-    </PageHero>
+      <HeroStatsStrip />
+      <HeroTrustStrip />
+    </>
   );
 };
 
