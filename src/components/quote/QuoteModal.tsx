@@ -18,10 +18,38 @@ import {
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { z } from "zod";
 import { CONTACT } from "@/config/contact";
-import { SERVICES } from "@/config/services";
+import { SERVICE_GROUPS, SERVICE_ITEMS, getItemsForGroup } from "@/config/services";
 import { useQuoteModal } from "./QuoteModalProvider";
 import logo from "@/assets/creek-logo-nav-sm.png";
+
+/**
+ * Client-side payload schema. Mirrors the limits enforced server-side in
+ * `supabase/functions/submit-quote-request/index.ts` so bad data never
+ * leaves the browser.
+ */
+const quotePayloadSchema = z.object({
+  name: z.string().trim().min(2, "Add your full name.").max(120),
+  phone: z
+    .string()
+    .trim()
+    .max(40)
+    .refine((v) => v.replace(/\D/g, "").length === 10, "Add a 10-digit phone number."),
+  email: z
+    .string()
+    .trim()
+    .max(255)
+    .email("That email doesn’t look right.")
+    .optional()
+    .or(z.literal("")),
+  addressOrArea: z.string().trim().max(255).optional().or(z.literal("")),
+  projectDetails: z.string().trim().max(2000).optional().or(z.literal("")),
+  services: z.array(z.string().max(80)).max(20),
+  propertyType: z.string().max(60).optional(),
+  timeline: z.string().max(60).optional(),
+  contactPreference: z.enum(["call", "text", "email"]),
+});
 
 /**
  * QuoteModal — two-step conversion form.
@@ -191,7 +219,7 @@ const QuoteModal = () => {
       const isInquiry = mode === "inquiry";
       const serviceTitles = isInquiry
         ? ["General inquiry"]
-        : SERVICES.filter((s) => form.services.includes(s.id)).map((s) => s.title);
+        : SERVICE_ITEMS.filter((s) => form.services.includes(s.id)).map((s) => s.title);
 
       const detailsBody = form.projectDetails.trim();
       const projectDetails = isInquiry
@@ -200,18 +228,28 @@ const QuoteModal = () => {
           : "[General Inquiry]"
         : detailsBody || undefined;
 
+      const payload = {
+        name: form.name.trim(),
+        phone: form.phone.trim(),
+        email: form.email.trim() || undefined,
+        addressOrArea: form.addressOrArea.trim() || undefined,
+        services: serviceTitles,
+        projectDetails,
+        propertyType: isInquiry ? undefined : form.propertyType,
+        timeline: form.timeline,
+        contactPreference: form.contactPreference,
+      };
+
+      // Validate locally before crossing the network boundary.
+      const parsed = quotePayloadSchema.safeParse(payload);
+      if (!parsed.success) {
+        const first = parsed.error.issues[0]?.message ?? "Please check the form and try again.";
+        toast.error("Can’t send yet", { description: first });
+        return;
+      }
+
       const { data, error } = await supabase.functions.invoke("submit-quote-request", {
-        body: {
-          name: form.name.trim(),
-          phone: form.phone.trim(),
-          email: form.email.trim() || undefined,
-          addressOrArea: form.addressOrArea.trim() || undefined,
-          services: serviceTitles,
-          projectDetails,
-          propertyType: isInquiry ? undefined : form.propertyType,
-          timeline: form.timeline,
-          contactPreference: form.contactPreference,
-        },
+        body: parsed.data,
       });
       if (error || !data?.ok) {
         const msg =
@@ -270,7 +308,7 @@ const QuoteModal = () => {
     () =>
       mode === "inquiry"
         ? ["General inquiry"]
-        : SERVICES.filter((s) => form.services.includes(s.id)).map((s) => s.title),
+        : SERVICE_ITEMS.filter((s) => form.services.includes(s.id)).map((s) => s.title),
     [form.services, mode],
   );
 
@@ -514,51 +552,71 @@ const Step1 = ({
   firstTileRef: React.RefObject<HTMLButtonElement>;
 }) => {
   const generalSelected = selected.includes(GENERAL_ID);
+  // Render items grouped under their category headers. Tracks the global
+  // index so the first tile across all groups gets the autofocus ref.
+  let globalIdx = 0;
   return (
     <fieldset>
       <legend className="text-sm text-muted-foreground mb-4">
-        Select all that apply — or pick "General inquiry" if you just have questions.
+        Select all that apply — or pick “General inquiry” at the bottom if you just have questions.
       </legend>
-      <div className="grid sm:grid-cols-2 gap-3">
-        {SERVICES.map((s, idx) => {
-          const isSelected = selected.includes(s.id);
-          const Icon = s.icon;
+
+      <div className="space-y-6">
+        {SERVICE_GROUPS.map((group) => {
+          const items = getItemsForGroup(group.id);
           return (
-            <button
-              key={s.id}
-              ref={idx === 0 ? firstTileRef : undefined}
-              type="button"
-              onClick={() => onToggle(s.id)}
-              aria-pressed={isSelected}
-              className={`text-left p-4 rounded-sm border transition-colors duration-200 group flex items-start gap-3 min-h-[44px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cedar focus-visible:ring-offset-2 ${
-                isSelected
-                  ? "border-cedar bg-cedar/[0.06]"
-                  : "border-border hover:border-cedar/50 hover:bg-cedar/[0.02]"
-              }`}
-              style={{ borderLeft: `2px solid hsl(var(--cedar) / ${s.intensity})` }}
-            >
-              <Icon
-                className={`h-5 w-5 mt-0.5 shrink-0 ${
-                  isSelected ? "text-cedar" : "text-muted-foreground group-hover:text-cedar/80"
-                }`}
-                aria-hidden
-              />
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center justify-between gap-2">
-                  <p className="font-medium text-foreground">{s.title}</p>
-                  {isSelected && <Check className="h-4 w-4 text-cedar shrink-0" aria-hidden />}
-                </div>
-                <p className="text-xs text-muted-foreground mt-0.5">{s.short}</p>
+            <div key={group.id}>
+              <h4 className="text-[10px] tracking-[0.22em] uppercase text-cedar/70 mb-2">
+                {group.title}
+              </h4>
+              <div className="grid sm:grid-cols-2 gap-2">
+                {items.map((s) => {
+                  const isSelected = selected.includes(s.id);
+                  const Icon = group.icon;
+                  const tileIdx = globalIdx++;
+                  return (
+                    <button
+                      key={s.id}
+                      ref={tileIdx === 0 ? firstTileRef : undefined}
+                      type="button"
+                      onClick={() => onToggle(s.id)}
+                      aria-pressed={isSelected}
+                      className={`text-left p-3 rounded-sm border transition-colors duration-200 group flex items-start gap-3 min-h-[44px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cedar focus-visible:ring-offset-2 ${
+                        isSelected
+                          ? "border-cedar bg-cedar/[0.06]"
+                          : "border-border hover:border-cedar/50 hover:bg-cedar/[0.02]"
+                      }`}
+                      style={{ borderLeft: `2px solid hsl(var(--cedar) / ${group.intensity})` }}
+                    >
+                      <Icon
+                        className={`h-4 w-4 mt-0.5 shrink-0 ${
+                          isSelected ? "text-cedar" : "text-muted-foreground group-hover:text-cedar/80"
+                        }`}
+                        aria-hidden
+                      />
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center justify-between gap-2">
+                          <p className="text-sm font-medium text-foreground">{s.title}</p>
+                          {isSelected && <Check className="h-4 w-4 text-cedar shrink-0" aria-hidden />}
+                        </div>
+                        {s.short && (
+                          <p className="text-xs text-muted-foreground mt-0.5">{s.short}</p>
+                        )}
+                      </div>
+                    </button>
+                  );
+                })}
               </div>
-            </button>
+            </div>
           );
         })}
+
 
         <button
           type="button"
           onClick={() => onToggle(GENERAL_ID)}
           aria-pressed={generalSelected}
-          className={`sm:col-span-2 text-left p-4 rounded-sm border transition-colors duration-200 group flex items-start gap-3 min-h-[44px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cedar focus-visible:ring-offset-2 ${
+          className={`w-full text-left p-4 rounded-sm border transition-colors duration-200 group flex items-start gap-3 min-h-[44px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cedar focus-visible:ring-offset-2 mt-2 ${
             generalSelected
               ? "border-cedar bg-cedar/[0.06]"
               : "border-dashed border-border hover:border-cedar/50 hover:bg-cedar/[0.02]"
