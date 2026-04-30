@@ -18,10 +18,38 @@ import {
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { z } from "zod";
 import { CONTACT } from "@/config/contact";
-import { SERVICES } from "@/config/services";
+import { SERVICE_GROUPS, SERVICE_ITEMS, getItemsForGroup, findService } from "@/config/services";
 import { useQuoteModal } from "./QuoteModalProvider";
 import logo from "@/assets/creek-logo-nav-sm.png";
+
+/**
+ * Client-side payload schema. Mirrors the limits enforced server-side in
+ * `supabase/functions/submit-quote-request/index.ts` so bad data never
+ * leaves the browser.
+ */
+const quotePayloadSchema = z.object({
+  name: z.string().trim().min(2, "Add your full name.").max(120),
+  phone: z
+    .string()
+    .trim()
+    .max(40)
+    .refine((v) => v.replace(/\D/g, "").length === 10, "Add a 10-digit phone number."),
+  email: z
+    .string()
+    .trim()
+    .max(255)
+    .email("That email doesn’t look right.")
+    .optional()
+    .or(z.literal("")),
+  addressOrArea: z.string().trim().max(255).optional().or(z.literal("")),
+  projectDetails: z.string().trim().max(2000).optional().or(z.literal("")),
+  services: z.array(z.string().max(80)).max(20),
+  propertyType: z.string().max(60).optional(),
+  timeline: z.string().max(60).optional(),
+  contactPreference: z.enum(["call", "text", "email"]),
+});
 
 /**
  * QuoteModal — two-step conversion form.
