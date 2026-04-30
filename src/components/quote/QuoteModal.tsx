@@ -616,7 +616,7 @@ const Step1 = ({
           type="button"
           onClick={() => onToggle(GENERAL_ID)}
           aria-pressed={generalSelected}
-          className={`sm:col-span-2 text-left p-4 rounded-sm border transition-colors duration-200 group flex items-start gap-3 min-h-[44px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cedar focus-visible:ring-offset-2 ${
+          className={`w-full text-left p-4 rounded-sm border transition-colors duration-200 group flex items-start gap-3 min-h-[44px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cedar focus-visible:ring-offset-2 mt-2 ${
             generalSelected
               ? "border-cedar bg-cedar/[0.06]"
               : "border-dashed border-border hover:border-cedar/50 hover:bg-cedar/[0.02]"
