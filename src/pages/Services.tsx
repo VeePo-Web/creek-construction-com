@@ -3,19 +3,18 @@ import Footer from "@/components/Footer";
 import CedarCTA from "@/components/CedarCTA";
 import SectionHeader from "@/components/SectionHeader";
 import PageHero from "@/components/ui/page-hero";
-import ServiceTile from "@/components/ui/service-tile";
 import FaqAccordion, { type FaqItem } from "@/components/ui/faq-accordion";
-import { Check, Minus } from "lucide-react";
+import { Check, Minus, ArrowRight } from "lucide-react";
 import { useDocumentTitle } from "@/hooks/useDocumentTitle";
-import { SERVICES } from "@/config/services";
+import { SERVICE_GROUPS, getItemsForGroup } from "@/config/services";
 import { useQuoteModal } from "@/components/quote/QuoteModalProvider";
 import { BACKDROP, bronzeStep } from "@/lib/colors";
-import { SECTION_PADDING, MAX_WIDTH, GRID_GAP } from "@/lib/spacing";
+import { SECTION_PADDING, MAX_WIDTH } from "@/lib/spacing";
 
 const FAQS: FaqItem[] = [
   {
     q: "How long does a typical project take?",
-    a: "Decks and fences usually run 3–7 build days once we’re on-site, depending on size and weather. Painting and siding scale with square footage. We give you a real timeline in writing with your quote — not a vague window.",
+    a: "Decks and fences usually run 3–7 build days once we’re on-site, depending on size and weather. Painting, siding, and roofing scale with square footage. We give you a real timeline in writing with your quote — not a vague window.",
   },
   {
     q: "Do you offer a warranty?",
@@ -50,7 +49,7 @@ const YOU_HANDLE = [
 const Services = () => {
   useDocumentTitle(
     "Services",
-    "Decks, fencing, sheds, painting, siding, pergolas — full residential exterior construction in Calgary, Edmonton, and surrounding Alberta.",
+    "Decks, roofing, siding, painting, fences, landscaping and more — full residential exterior construction across Alberta.",
   );
   const { openModal } = useQuoteModal();
 
@@ -63,7 +62,7 @@ const Services = () => {
         breadcrumb={[{ label: "Home", to: "/" }, { label: "Services" }]}
         sectionLabel="EXTERIOR CONSTRUCTION"
         title={["Built outside.", "Built to last."]}
-        italic="Six services. One crew."
+        italic="Fifteen services. One crew."
         subtitle="All residential. All exterior. All built to outlast Alberta winters."
         skipToId="all-services-heading"
         queries={[
@@ -75,41 +74,87 @@ const Services = () => {
         <CedarCTA>Request a Quote</CedarCTA>
       </PageHero>
 
-      {/* Catalogue */}
+      {/* Catalogue — five groups, fifteen items */}
       <section
         id="section-catalogue"
         className={`${SECTION_PADDING.default}`}
         aria-labelledby="all-services-heading"
-        style={{ contentVisibility: "auto", containIntrinsicSize: "auto 1200px" }}
+        style={{ contentVisibility: "auto", containIntrinsicSize: "auto 1400px" }}
       >
         <div className="container mx-auto px-6">
           <div className={`${MAX_WIDTH.content} mx-auto`}>
             <SectionHeader
               variant="quiet"
-              label="EVERY SERVICE"
+              label="THE FULL MENU"
               headingId="all-services-heading"
-              heading="What we build."
+              heading="Everything we build."
               subheading="Click any service to start a quote with it pre-selected."
             />
 
-            <div className={`grid md:grid-cols-2 ${GRID_GAP.default} mt-12`} role="list">
-              {SERVICES.map((s, i) => (
-                <ServiceTile
-                  key={s.id}
-                  item={s}
-                  index={i}
-                  total={SERVICES.length}
-                  variant="compact"
-                  onClick={() => openModal([s.id])}
-                />
-              ))}
+            <div className="mt-16 space-y-16">
+              {SERVICE_GROUPS.map((group, gIdx) => {
+                const items = getItemsForGroup(group.id);
+                const Icon = group.icon;
+                const opacity = bronzeStep(gIdx, SERVICE_GROUPS.length);
+                return (
+                  <div key={group.id} aria-labelledby={`group-${group.id}`}>
+                    <div
+                      className="flex items-baseline justify-between gap-6 pb-4 mb-6 border-b"
+                      style={{ borderBottomColor: `hsl(var(--cedar) / ${opacity})` }}
+                    >
+                      <div className="flex items-center gap-4">
+                        <Icon className="h-5 w-5 text-cedar" aria-hidden strokeWidth={1.5} />
+                        <h3
+                          id={`group-${group.id}`}
+                          className="font-serif text-2xl md:text-3xl text-foreground"
+                        >
+                          {group.title}
+                        </h3>
+                      </div>
+                      <span className="text-[10px] tracking-[0.2em] uppercase text-muted-foreground/50 tabular-nums shrink-0">
+                        {String(gIdx + 1).padStart(2, "0")} / {String(SERVICE_GROUPS.length).padStart(2, "0")}
+                      </span>
+                    </div>
+
+                    <div className="grid sm:grid-cols-2 gap-x-6">
+                      {items.map((item) => (
+                        <button
+                          key={item.id}
+                          type="button"
+                          onClick={() => openModal([item.id])}
+                          className="group flex items-baseline justify-between gap-4 py-4 text-left border-b border-border/40 transition-colors duration-300 hover:bg-cedar/[0.03] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cedar focus-visible:ring-offset-2 rounded-sm px-3 -mx-3 min-h-[44px]"
+                          aria-label={`Request a quote for ${item.title}`}
+                        >
+                          <div className="flex-1 min-w-0">
+                            <p className="text-base text-foreground transition-colors duration-300 group-hover:text-cedar">
+                              {item.title}
+                            </p>
+                            {item.short && (
+                              <p className="text-xs text-muted-foreground mt-0.5">{item.short}</p>
+                            )}
+                          </div>
+                          <span
+                            className="text-[10px] tracking-[0.18em] uppercase text-cedar/60 group-hover:text-cedar transition-colors duration-300 inline-flex items-center gap-1 shrink-0"
+                            aria-hidden
+                          >
+                            Quote
+                            <ArrowRight className="h-3 w-3 transition-transform duration-300 group-hover:translate-x-0.5" />
+                          </span>
+                        </button>
+                      ))}
+                      {items.length % 2 === 1 && (
+                        <div className="hidden sm:block border-b border-border/20" aria-hidden />
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
             </div>
           </div>
         </div>
       </section>
 
-      {/* Responsibility matrix — moved here from the homepage. Lives where
-          users with intent already are; sets expectations before the quote. */}
+      {/* Responsibility matrix */}
       <section
         id="section-contract"
         className={`${SECTION_PADDING.default} bg-secondary`}
@@ -127,7 +172,6 @@ const Services = () => {
             />
 
             <div className="mt-12 grid md:grid-cols-2 gap-0">
-              {/* WE HANDLE */}
               <div
                 aria-label="What we handle"
                 className="p-10 md:p-12 border border-cedar/20 rounded-sm h-full shadow-elevated"
@@ -147,17 +191,13 @@ const Services = () => {
                       className="flex items-start gap-3 py-2.5 pl-3 rounded-sm transition-colors duration-300 hover:bg-cedar/[0.05]"
                       style={{ borderLeft: `2px solid hsl(var(--cedar) / ${bronzeStep(i, WE_HANDLE.length)})` }}
                     >
-                      <Check
-                        className="h-3.5 w-3.5 text-cedar/70 mt-0.5 flex-shrink-0"
-                        aria-hidden
-                      />
+                      <Check className="h-3.5 w-3.5 text-cedar/70 mt-0.5 flex-shrink-0" aria-hidden />
                       <p className="text-foreground text-sm">{item}</p>
                     </div>
                   ))}
                 </div>
               </div>
 
-              {/* YOU HANDLE */}
               <div
                 aria-label="What you handle"
                 className="p-10 md:p-12 border border-border/60 rounded-sm h-full shadow-contact bg-background"
@@ -176,10 +216,7 @@ const Services = () => {
                       className="flex items-start gap-3 py-2.5 pl-3 rounded-sm transition-colors duration-300 hover:bg-cedar/[0.03]"
                       style={{ borderLeft: "2px solid hsl(35 15% 86% / 0.5)" }}
                     >
-                      <Minus
-                        className="h-3.5 w-3.5 text-muted-foreground/40 mt-0.5 flex-shrink-0"
-                        aria-hidden
-                      />
+                      <Minus className="h-3.5 w-3.5 text-muted-foreground/40 mt-0.5 flex-shrink-0" aria-hidden />
                       <div>
                         <p className="text-foreground text-sm">{item.task}</p>
                         <p className="text-xs text-muted-foreground mt-1">{item.note}</p>
