@@ -6,15 +6,14 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 import {
-  ArrowLeft,
   ArrowRight,
   Check,
   Loader2,
   Mail,
-  MessageCircleQuestion,
-  MessageSquare,
-  Pencil,
   Phone,
+  ShieldCheck,
+  Star,
+  Clock,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -25,10 +24,23 @@ import { useQuoteModal } from "./QuoteModalProvider";
 import logo from "@/assets/creek-logo-nav-sm.png";
 
 /**
- * Client-side payload schema. Mirrors the limits enforced server-side in
- * `supabase/functions/submit-quote-request/index.ts` so bad data never
- * leaves the browser.
+ * QuoteModal — single-screen, conversion-optimized quote form.
+ *
+ * Design intent (Temu-translated for premium editorial):
+ *   1. One screen, no step counter — services + details + CTA visible.
+ *   2. Two genuinely required fields: name + 10-digit phone. Email,
+ *      address, and project details are optional.
+ *   3. Live phone-validation checkmark for instant micro-feedback.
+ *   4. CTA copy names the outcome ("Get my free quote →") or the
+ *      missing field ("Add your phone to continue").
+ *   5. Trust micro-strip immediately above the CTA.
+ *   6. Property type and contact preference removed from the UI and sent
+ *      as defaults — six fewer taps without sacrificing lead quality.
+ *
+ * Express mode: when `preselectedServices.length === 1`, the modal opens
+ * with that service already selected and focus on the phone field.
  */
+
 const quotePayloadSchema = z.object({
   name: z.string().trim().min(2, "Add your full name.").max(120),
   phone: z
@@ -51,20 +63,6 @@ const quotePayloadSchema = z.object({
   contactPreference: z.enum(["call", "text", "email"]),
 });
 
-/**
- * QuoteModal — two-step conversion form.
- *
- *   Step 1: pick service(s) — skipped entirely when caller preselects one.
- *   Step 2: project details + contact (collapsed from former 3-step flow).
- *
- * Express mode: when `preselectedServices.length === 1`, the modal opens
- * directly on Step 2 with an editable service chip at the top.
- *
- * Submission: Enter inside any text input (not textarea) submits when
- * the form is valid; Cmd/Ctrl+Enter still works as a power-user shortcut.
- */
-
-type Step = 1 | 2;
 type Mode = "quote" | "inquiry";
 
 const GENERAL_ID = "general";
@@ -72,34 +70,26 @@ const GENERAL_ID = "general";
 interface FormState {
   services: string[];
   projectDetails: string;
-  propertyType: string;
   timeline: string;
   name: string;
   phone: string;
   email: string;
   addressOrArea: string;
-  contactPreference: "call" | "text" | "email";
 }
 
 const INITIAL: FormState = {
   services: [],
   projectDetails: "",
-  propertyType: "Residential",
   timeline: "Within 1 month",
   name: "",
   phone: "",
   email: "",
   addressOrArea: "",
-  contactPreference: "call",
 };
 
-const TIMELINES_QUOTE = ["ASAP", "Within 1 month", "1–3 months", "Just exploring"];
-const TIMELINES_INQUIRY = ["Today if possible", "Within a few days", "No rush"];
-const PROPERTY_TYPES = ["Residential", "Acreage", "Other"];
+const TIMELINE_OPTIONS = ["ASAP", "Within 1 month", "Just exploring"] as const;
 
 function formatPhone(input: string): string {
-  // Strip non-digits, then drop a leading "1" (NANP country code) so paste
-  // of "+1 (403) 555-0123" formats to "(403) 555-0123" cleanly.
   let d = input.replace(/\D/g, "");
   if (d.length === 11 && d.startsWith("1")) d = d.slice(1);
   d = d.slice(0, 10);
@@ -111,7 +101,6 @@ function formatPhone(input: string): string {
 
 const QuoteModal = () => {
   const { open, preselectedServices, closeModal } = useQuoteModal();
-  const [step, setStep] = useState<Step>(1);
   const [form, setForm] = useState<FormState>(INITIAL);
   const [submitting, setSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);
@@ -119,14 +108,12 @@ const QuoteModal = () => {
 
   const mode: Mode = form.services.includes(GENERAL_ID) ? "inquiry" : "quote";
 
-  // Refs for autofocus + post-success focus management.
-  const detailsRef = useRef<HTMLTextAreaElement | null>(null);
+  const phoneRef = useRef<HTMLInputElement | null>(null);
   const nameRef = useRef<HTMLInputElement | null>(null);
-  const firstTileRef = useRef<HTMLButtonElement | null>(null);
   const doneBtnRef = useRef<HTMLButtonElement | null>(null);
 
-  // Reset / preselect each time the modal opens. Express mode (single
-  // preselection) jumps the user straight to Step 2.
+  // Reset on each open. Express mode (single preselection) just lands you
+  // on the same screen with that chip ticked and focus on the phone.
   useEffect(() => {
     if (open) {
       setSuccess(false);
@@ -135,30 +122,19 @@ const QuoteModal = () => {
         ? [GENERAL_ID]
         : preselectedServices;
       setForm({ ...INITIAL, services: pre });
-      // Express: single non-general service preselected → skip to Step 2.
-      const express =
-        pre.length === 1 && pre[0] !== GENERAL_ID;
-      setStep(express ? 2 : 1);
     }
   }, [open, preselectedServices]);
 
-  // Autofocus on step transitions (small tick for Radix mount).
+  // Autofocus: phone first (highest-conversion field). On success → Done.
   useEffect(() => {
     if (!open) return;
     if (success) {
       const t = setTimeout(() => doneBtnRef.current?.focus(), 60);
       return () => clearTimeout(t);
     }
-    const t = setTimeout(() => {
-      if (step === 1) firstTileRef.current?.focus();
-      if (step === 2) {
-        // Focus the first empty required field; otherwise project details.
-        if (!form.name) nameRef.current?.focus();
-        else detailsRef.current?.focus();
-      }
-    }, 60);
+    const t = setTimeout(() => phoneRef.current?.focus(), 80);
     return () => clearTimeout(t);
-  }, [step, open, success, form.name]);
+  }, [open, success]);
 
   const update = <K extends keyof FormState>(key: K, value: FormState[K]) =>
     setForm((prev) => ({ ...prev, [key]: value }));
@@ -182,36 +158,43 @@ const QuoteModal = () => {
       };
     });
 
-  const canContinueStep1 = form.services.length > 0;
-
-  // Validation.
+  // Validation
   const phoneDigits = form.phone.replace(/\D/g, "").length;
+  const phoneValid = phoneDigits === 10;
+  const nameValid = form.name.trim().length > 1;
   const emailValid =
     !form.email || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email);
-  const nameValid = form.name.trim().length > 1;
-  const phoneValid = phoneDigits === 10;
-  // Area is now optional client-side (server also accepts without it) —
-  // we only ask name + phone as truly required, matching the friction goal.
-  const areaValid = true;
 
-  const canSubmit = useMemo(
-    () => nameValid && phoneValid && emailValid,
-    [nameValid, phoneValid, emailValid],
+  const canSubmit = nameValid && phoneValid && emailValid && !submitting;
+
+  // Dynamic header copy — names the user's progress in plain words.
+  const selectedItems = useMemo(
+    () => SERVICE_ITEMS.filter((s) => form.services.includes(s.id)),
+    [form.services],
   );
+  const headerLine = useMemo(() => {
+    if (mode === "inquiry") return "We typically reply within a few hours.";
+    if (selectedItems.length === 0) return "Free quote in 24 hours. No obligation.";
+    if (selectedItems.length === 1)
+      return `Quoting your ${selectedItems[0].title.toLowerCase()}. Takes 30 seconds.`;
+    return `Quoting ${selectedItems.length} services. Takes 30 seconds.`;
+  }, [selectedItems, mode]);
 
-  const submitDisabledReason = !nameValid
-    ? "Add your name to send."
-    : !phoneValid
-      ? "Add a 10-digit phone number to send."
-      : !emailValid
-        ? "That email doesn’t look right."
-        : "";
+  // CTA copy — names the outcome or the missing field.
+  const ctaLabel = useMemo(() => {
+    if (submitting) return "Sending…";
+    if (!phoneValid)
+      return phoneDigits === 0 ? "Add your phone to continue" : "Finish your phone number";
+    if (!nameValid) return "Add your name to continue";
+    if (!emailValid) return "Check your email address";
+    return mode === "inquiry" ? "Send my message" : "Get my free quote";
+  }, [submitting, phoneValid, phoneDigits, nameValid, emailValid, mode]);
 
   const handleSubmit = async () => {
     if (!canSubmit) {
       setTouched({ name: true, phone: true, email: true });
-      // Move focus to the first invalid field.
-      if (!nameValid) nameRef.current?.focus();
+      if (!phoneValid) phoneRef.current?.focus();
+      else if (!nameValid) nameRef.current?.focus();
       return;
     }
     setSubmitting(true);
@@ -219,7 +202,7 @@ const QuoteModal = () => {
       const isInquiry = mode === "inquiry";
       const serviceTitles = isInquiry
         ? ["General inquiry"]
-        : SERVICE_ITEMS.filter((s) => form.services.includes(s.id)).map((s) => s.title);
+        : selectedItems.map((s) => s.title);
 
       const detailsBody = form.projectDetails.trim();
       const projectDetails = isInquiry
@@ -235,12 +218,11 @@ const QuoteModal = () => {
         addressOrArea: form.addressOrArea.trim() || undefined,
         services: serviceTitles,
         projectDetails,
-        propertyType: isInquiry ? undefined : form.propertyType,
+        propertyType: isInquiry ? undefined : "Residential",
         timeline: form.timeline,
-        contactPreference: form.contactPreference,
+        contactPreference: "call" as const,
       };
 
-      // Validate locally before crossing the network boundary.
       const parsed = quotePayloadSchema.safeParse(payload);
       if (!parsed.success) {
         const first = parsed.error.issues[0]?.message ?? "Please check the form and try again.";
@@ -263,25 +245,20 @@ const QuoteModal = () => {
     } catch (err) {
       console.error("[QuoteModal] submit failed", err);
       toast.error("Network error", {
-        description: `We couldn't reach the server. Please try again or call ${CONTACT.phone}.`,
+        description: `We couldn’t reach the server. Please try again or call ${CONTACT.phone}.`,
       });
     } finally {
       setSubmitting(false);
     }
   };
 
-  // Cmd/Ctrl+Enter advances; Enter inside a text input (not textarea) submits.
   const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
     const isTextarea =
       (e.target as HTMLElement)?.tagName?.toLowerCase() === "textarea";
     if ((e.metaKey || e.ctrlKey) && e.key === "Enter") {
       e.preventDefault();
-      if (step === 1) {
-        if (canContinueStep1) setStep(2);
-      } else if (canSubmit && !submitting) {
-        handleSubmit();
-      }
-    } else if (e.key === "Enter" && !isTextarea && step === 2 && canSubmit && !submitting) {
+      if (canSubmit) handleSubmit();
+    } else if (e.key === "Enter" && !isTextarea && canSubmit) {
       e.preventDefault();
       handleSubmit();
     }
@@ -289,28 +266,9 @@ const QuoteModal = () => {
 
   const resetForAnother = () => {
     setForm(INITIAL);
-    setStep(1);
     setSuccess(false);
     setTouched({});
   };
-
-  const stepHeading =
-    step === 1
-      ? mode === "inquiry"
-        ? "How can we help?"
-        : "What are we building?"
-      : mode === "inquiry"
-        ? "Send your message"
-        : "Your project & contact";
-
-  // Selected service titles, used for the editable chip on Step 2.
-  const selectedServiceTitles = useMemo(
-    () =>
-      mode === "inquiry"
-        ? ["General inquiry"]
-        : SERVICE_ITEMS.filter((s) => form.services.includes(s.id)).map((s) => s.title),
-    [form.services, mode],
-  );
 
   return (
     <Dialog
@@ -319,24 +277,20 @@ const QuoteModal = () => {
         if (!o) closeModal();
       }}
     >
-      <DialogContent
-        className="max-w-5xl w-[95vw] p-0 gap-0 overflow-hidden border-evergreen/20 bg-background sm:rounded-lg max-h-[92vh] grid-cols-1 md:grid-cols-[260px_1fr] md:grid"
-      >
+      <DialogContent className="max-w-4xl w-[95vw] p-0 gap-0 overflow-hidden border-evergreen/20 bg-background sm:rounded-lg max-h-[92vh] grid-cols-1 md:grid-cols-[240px_1fr] md:grid">
         <DialogTitle className="sr-only">
           {mode === "inquiry"
             ? "Send us a message — Creek Construction"
-            : "Request a Quote — Creek Construction"}
+            : "Request a free quote — Creek Construction"}
         </DialogTitle>
         <DialogDescription className="sr-only">
-          {mode === "inquiry"
-            ? "Tell us what you’d like to know and we’ll be in touch within 24 hours."
-            : "Tell us about your exterior project and we’ll be in touch within 24 hours."}
+          Tell us about your project and we’ll be in touch within 24 hours.
         </DialogDescription>
 
         {/* LEFT — desktop brand panel */}
         <aside
-          className="hidden md:flex flex-col justify-between bg-evergreen text-evergreen-foreground p-7 relative overflow-hidden"
-          aria-label="Creek Construction brand panel"
+          className="hidden md:flex flex-col justify-between bg-evergreen text-evergreen-foreground p-6 relative overflow-hidden"
+          aria-label="Creek Construction"
         >
           <div className="relative z-10">
             <img
@@ -344,49 +298,52 @@ const QuoteModal = () => {
               alt="Creek Construction"
               width={200}
               height={200}
-              className="h-24 w-auto object-contain mb-6 drop-shadow-[0_4px_24px_hsl(0_0%_0%/0.3)]"
+              className="h-20 w-auto object-contain mb-5 drop-shadow-[0_4px_24px_hsl(0_0%_0%/0.3)]"
               loading="eager"
             />
             <p className="text-[10px] tracking-[0.25em] uppercase text-cedar/80 mb-3">
-              Creek Construction
+              Free · No obligation
             </p>
             <h2 className="font-serif text-xl leading-tight mb-3">
-              Excellence in the Work.
+              A real quote, in 24 hours.
             </h2>
             <p className="text-sm text-evergreen-foreground/70 leading-relaxed">
-              Residential exterior construction across Calgary, Edmonton, and surrounding Alberta.
+              Calgary, Edmonton & surrounding Alberta. We quote what we’ll actually charge.
             </p>
           </div>
 
-          <div className="relative z-10 mt-6 space-y-2 text-sm">
-            <div className="w-12 h-px bg-cedar/40 mb-4" />
+          <div className="relative z-10 mt-6 space-y-3 text-sm">
+            <div className="w-12 h-px bg-cedar/40 mb-3" />
+            <div className="flex items-center gap-2 text-cedar">
+              <Star className="h-3 w-3 fill-cedar" aria-hidden />
+              <Star className="h-3 w-3 fill-cedar" aria-hidden />
+              <Star className="h-3 w-3 fill-cedar" aria-hidden />
+              <Star className="h-3 w-3 fill-cedar" aria-hidden />
+              <Star className="h-3 w-3 fill-cedar" aria-hidden />
+              <span className="text-[10px] tracking-[0.2em] uppercase text-evergreen-foreground/70 ml-1">
+                Verified builds
+              </span>
+            </div>
             <a
               href={`tel:${CONTACT.phoneTel}`}
-              className="flex items-center gap-3 text-evergreen-foreground/80 hover:text-cedar transition-colors min-h-[44px]"
+              className="flex items-center gap-3 text-evergreen-foreground/80 hover:text-cedar transition-colors min-h-[40px]"
             >
               <Phone className="h-3.5 w-3.5" aria-hidden />
               <span>{CONTACT.phone}</span>
             </a>
-            <a
-              href={`mailto:${CONTACT.email}`}
-              className="flex items-center gap-3 text-evergreen-foreground/80 hover:text-cedar transition-colors min-h-[44px] break-all"
-            >
-              <Mail className="h-3.5 w-3.5 shrink-0" aria-hidden />
-              <span className="truncate">{CONTACT.email}</span>
-            </a>
           </div>
         </aside>
 
-        {/* Slim mobile brand strip — 40px so form fields land above-the-fold */}
+        {/* Slim mobile brand strip */}
         <div className="md:hidden bg-evergreen text-evergreen-foreground px-5 py-2.5 flex items-center gap-2.5">
           <img src={logo} alt="" width={28} height={28} className="h-7 w-7 object-contain" />
           <p className="font-serif text-sm leading-none">Creek Construction</p>
           <span className="ml-auto text-[9px] tracking-[0.25em] uppercase text-cedar/80">
-            Quote
+            Free Quote
           </span>
         </div>
 
-        {/* RIGHT — step content */}
+        {/* RIGHT — single-screen form */}
         <div
           className="flex flex-col overflow-y-auto max-h-[92vh] md:max-h-[92vh] relative"
           onKeyDown={handleKeyDown}
@@ -400,126 +357,262 @@ const QuoteModal = () => {
             />
           ) : (
             <>
-              <header className="sticky top-0 z-10 bg-background border-b border-border/40 px-6 md:px-8 pt-6 md:pt-7 pb-5">
-                <div className="flex items-center justify-between mb-3">
-                  <p className="text-[10px] tracking-[0.25em] uppercase text-muted-foreground">
-                    {mode === "inquiry" ? "Send us a Message" : "Request a Quote"}
-                  </p>
-                  <p className="text-[10px] tracking-[0.2em] uppercase text-cedar tabular-nums">
-                    Step {step} / 2
-                  </p>
-                </div>
-                <ProgressBar step={step} />
+              {/* Header — dynamic line replaces step counter */}
+              <header className="px-6 md:px-8 pt-6 md:pt-7 pb-4">
+                <p className="text-[10px] tracking-[0.25em] uppercase text-cedar mb-2">
+                  {mode === "inquiry" ? "Send us a message" : "Free quote"}
+                </p>
                 <h3
-                  className="font-serif text-2xl md:text-[28px] mt-4 text-foreground leading-tight"
+                  className="font-serif text-2xl md:text-[28px] text-foreground leading-tight"
                   aria-live="polite"
                 >
-                  {stepHeading}
+                  {headerLine}
                 </h3>
-
-                {/* Editable service chip on Step 2 — Express-mode breadcrumb */}
-                {step === 2 && mode === "quote" && selectedServiceTitles.length > 0 && (
-                  <div className="mt-3 flex flex-wrap items-center gap-2">
-                    {selectedServiceTitles.map((title) => (
-                      <span
-                        key={title}
-                        className="inline-flex items-center gap-1.5 text-[11px] tracking-wide px-2.5 py-1 rounded-sm bg-cedar/[0.06] border border-cedar/30 text-foreground"
-                      >
-                        {title}
-                      </span>
-                    ))}
-                    <button
-                      type="button"
-                      onClick={() => setStep(1)}
-                      className="inline-flex items-center gap-1 text-[11px] tracking-wide text-muted-foreground hover:text-cedar transition-colors px-1.5 py-1 rounded-sm focus-visible:ring-2 focus-visible:ring-cedar focus-visible:ring-offset-1"
-                    >
-                      <Pencil className="h-3 w-3" aria-hidden /> change
-                    </button>
-                  </div>
-                )}
               </header>
 
-              <div className="px-6 md:px-8 py-6 flex-1">
-                {step === 1 && (
-                  <Step1
-                    selected={form.services}
-                    onToggle={toggleService}
-                    firstTileRef={firstTileRef}
-                  />
+              <div className="px-6 md:px-8 pb-6 flex-1 space-y-6">
+                {/* CONTACT BLOCK FIRST — phone is the conversion-critical field */}
+                <div className="grid sm:grid-cols-2 gap-3">
+                  <Field
+                    label="Phone"
+                    htmlFor="qm-phone"
+                    required
+                    error={
+                      touched.phone && !phoneValid
+                        ? phoneDigits === 0
+                          ? "Phone number is required."
+                          : `${10 - phoneDigits} digit${10 - phoneDigits === 1 ? "" : "s"} to go.`
+                        : undefined
+                    }
+                    adornment={
+                      phoneValid ? (
+                        <span className="inline-flex items-center gap-1 text-[10px] tracking-[0.18em] uppercase text-cedar">
+                          <Check className="h-3 w-3" aria-hidden /> Ready
+                        </span>
+                      ) : null
+                    }
+                  >
+                    <Input
+                      id="qm-phone"
+                      ref={phoneRef}
+                      type="tel"
+                      inputMode="tel"
+                      value={form.phone}
+                      onChange={(v) => update("phone", formatPhone(v))}
+                      onBlur={() => markTouched("phone")}
+                      placeholder="(403) 555-0123"
+                      autoComplete="tel"
+                      invalid={touched.phone && !phoneValid}
+                    />
+                  </Field>
+                  <Field
+                    label="Name"
+                    htmlFor="qm-name"
+                    required
+                    error={touched.name && !nameValid ? "Add your name." : undefined}
+                  >
+                    <Input
+                      id="qm-name"
+                      ref={nameRef}
+                      value={form.name}
+                      onChange={(v) => update("name", v)}
+                      onBlur={() => markTouched("name")}
+                      placeholder="Jane Doe"
+                      maxLength={120}
+                      autoComplete="name"
+                      invalid={touched.name && !nameValid}
+                    />
+                  </Field>
+                </div>
+
+                {/* Optional contact details — collapsed visual weight */}
+                <div className="grid sm:grid-cols-2 gap-3">
+                  <Field
+                    label="Email"
+                    htmlFor="qm-email"
+                    optional
+                    error={touched.email && !emailValid ? "That email doesn’t look right." : undefined}
+                  >
+                    <Input
+                      id="qm-email"
+                      type="email"
+                      inputMode="email"
+                      value={form.email}
+                      onChange={(v) => update("email", v)}
+                      onBlur={() => markTouched("email")}
+                      placeholder="you@example.com"
+                      maxLength={255}
+                      autoComplete="email"
+                      invalid={touched.email && !emailValid}
+                    />
+                  </Field>
+                  <Field label="City or area" htmlFor="qm-area" optional>
+                    <Input
+                      id="qm-area"
+                      value={form.addressOrArea}
+                      onChange={(v) => update("addressOrArea", v)}
+                      placeholder="e.g. Calgary NW"
+                      maxLength={255}
+                      autoComplete="address-level2"
+                    />
+                  </Field>
+                </div>
+
+                {/* SERVICES — chip picker, grouped */}
+                {mode === "quote" && (
+                  <div>
+                    <p className="text-[11px] tracking-[0.18em] uppercase text-muted-foreground mb-3">
+                      What do you need? <span className="text-muted-foreground/60 normal-case tracking-normal">— pick any</span>
+                    </p>
+                    <div className="space-y-3">
+                      {SERVICE_GROUPS.map((group) => {
+                        const items = getItemsForGroup(group.id);
+                        return (
+                          <div key={group.id}>
+                            <p className="text-[10px] tracking-[0.22em] uppercase text-cedar/70 mb-1.5">
+                              {group.title}
+                            </p>
+                            <div className="flex flex-wrap gap-1.5">
+                              {items.map((s) => {
+                                const isSelected = form.services.includes(s.id);
+                                return (
+                                  <button
+                                    key={s.id}
+                                    type="button"
+                                    onClick={() => toggleService(s.id)}
+                                    aria-pressed={isSelected}
+                                    className={`inline-flex items-center gap-1.5 px-3 py-2 rounded-sm border text-xs transition-colors min-h-[40px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cedar focus-visible:ring-offset-1 ${
+                                      isSelected
+                                        ? "border-cedar bg-cedar/[0.08] text-foreground"
+                                        : "border-border text-muted-foreground hover:border-cedar/50 hover:text-foreground hover:bg-cedar/[0.02]"
+                                    }`}
+                                  >
+                                    {isSelected && <Check className="h-3 w-3 text-cedar" aria-hidden />}
+                                    {s.title}
+                                  </button>
+                                );
+                              })}
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
                 )}
-                {step === 2 && (
-                  <Step2Combined
-                    form={form}
-                    mode={mode}
-                    onUpdate={update}
-                    detailsRef={detailsRef}
-                    nameRef={nameRef}
-                    touched={touched}
-                    markTouched={markTouched}
-                    nameValid={nameValid}
-                    phoneValid={phoneValid}
-                    emailValid={emailValid}
+
+                {/* Timeline — segmented, 3 options, defaults to "Within 1 month" */}
+                {mode === "quote" && (
+                  <div>
+                    <p className="text-[11px] tracking-[0.18em] uppercase text-muted-foreground mb-2">
+                      When?
+                    </p>
+                    <div className="grid grid-cols-3 gap-1.5" role="radiogroup">
+                      {TIMELINE_OPTIONS.map((t) => {
+                        const active = form.timeline === t;
+                        return (
+                          <button
+                            key={t}
+                            type="button"
+                            role="radio"
+                            aria-checked={active}
+                            onClick={() => update("timeline", t)}
+                            className={`px-2 py-2.5 rounded-sm border text-xs transition-colors min-h-[44px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cedar focus-visible:ring-offset-1 ${
+                              active
+                                ? "border-cedar bg-cedar/[0.08] text-foreground"
+                                : "border-border text-muted-foreground hover:border-cedar/50"
+                            }`}
+                          >
+                            {t}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
+
+                {/* Project details — optional, encouraged */}
+                <Field
+                  label={mode === "inquiry" ? "How can we help?" : "Anything we should know?"}
+                  htmlFor="qm-details"
+                  optional
+                >
+                  <textarea
+                    id="qm-details"
+                    value={form.projectDetails}
+                    onChange={(e) => update("projectDetails", e.target.value)}
+                    rows={2}
+                    maxLength={2000}
+                    placeholder={
+                      mode === "inquiry"
+                        ? "e.g. Wondering about pricing for a 200 ft fence in Cochrane."
+                        : "e.g. 14×20 cedar deck, replacing a worn pressure-treated one."
+                    }
+                    className="w-full rounded-sm border border-border bg-background px-3 py-2.5 text-sm focus:outline-none focus:border-cedar focus:ring-1 focus:ring-cedar/30 transition-colors resize-none"
                   />
+                </Field>
+
+                {/* Quiet inquiry-mode escape hatch */}
+                {mode === "quote" && (
+                  <button
+                    type="button"
+                    onClick={() => toggleService(GENERAL_ID)}
+                    className="text-xs text-muted-foreground hover:text-cedar transition-colors underline-offset-4 hover:underline"
+                  >
+                    Just have a question? Send a message instead.
+                  </button>
+                )}
+                {mode === "inquiry" && (
+                  <button
+                    type="button"
+                    onClick={() => toggleService(GENERAL_ID)}
+                    className="text-xs text-muted-foreground hover:text-cedar transition-colors underline-offset-4 hover:underline"
+                  >
+                    ← Back to quote request
+                  </button>
                 )}
               </div>
 
+              {/* Trust micro-strip + CTA */}
               <footer
-                className="sticky bottom-0 z-10 bg-muted px-6 md:px-8 py-4 border-t border-border/40 flex items-center justify-between gap-3"
-                style={{ paddingBottom: "max(1rem, env(safe-area-inset-bottom))" }}
+                className="sticky bottom-0 z-10 bg-muted border-t border-border/40"
+                style={{ paddingBottom: "max(0px, env(safe-area-inset-bottom))" }}
               >
-                <button
-                  type="button"
-                  onClick={() => setStep(1)}
-                  className={`flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors min-h-[44px] px-2 rounded-sm ${
-                    step === 1 ? "invisible" : ""
-                  }`}
-                >
-                  <ArrowLeft className="h-3.5 w-3.5" aria-hidden /> Back
-                </button>
-
-                {step === 2 && submitDisabledReason && (
-                  <p
-                    role="status"
-                    className="hidden sm:block text-xs text-muted-foreground/70 flex-1 text-right pr-3"
-                  >
-                    {submitDisabledReason}
-                  </p>
-                )}
-
-                {step === 1 ? (
-                  <button
-                    type="button"
-                    onClick={() => setStep(2)}
-                    disabled={!canContinueStep1}
-                    aria-label={
-                      !canContinueStep1
-                        ? "Pick a service or 'General inquiry' to continue"
-                        : undefined
-                    }
-                    className="inline-flex items-center gap-2 bg-evergreen text-evergreen-foreground px-6 py-3 rounded-sm text-[11px] tracking-[0.18em] uppercase font-medium hover:bg-evergreen/90 disabled:opacity-40 disabled:cursor-not-allowed transition-colors min-h-[44px]"
-                  >
-                    Continue <ArrowRight className="h-3.5 w-3.5" aria-hidden />
-                  </button>
-                ) : (
+                <div className="px-6 md:px-8 py-2 flex items-center justify-center gap-4 text-[10px] tracking-[0.18em] uppercase text-muted-foreground border-b border-border/30">
+                  <span className="inline-flex items-center gap-1.5">
+                    <Star className="h-3 w-3 fill-cedar text-cedar" aria-hidden />
+                    Verified
+                  </span>
+                  <span className="text-border" aria-hidden>·</span>
+                  <span className="inline-flex items-center gap-1.5">
+                    <Clock className="h-3 w-3 text-cedar" aria-hidden />
+                    24-hour reply
+                  </span>
+                  <span className="text-border" aria-hidden>·</span>
+                  <span className="inline-flex items-center gap-1.5">
+                    <ShieldCheck className="h-3 w-3 text-cedar" aria-hidden />
+                    No obligation
+                  </span>
+                </div>
+                <div className="px-6 md:px-8 py-3">
                   <button
                     type="button"
                     onClick={handleSubmit}
-                    disabled={!canSubmit || submitting}
-                    aria-label={submitDisabledReason || undefined}
-                    className="inline-flex items-center gap-2 bg-cedar text-cedar-foreground px-6 py-3 rounded-sm text-[11px] tracking-[0.18em] uppercase font-medium hover:bg-cedar-hover disabled:opacity-40 disabled:cursor-not-allowed transition-colors min-h-[44px]"
+                    disabled={!canSubmit}
+                    aria-label={ctaLabel}
+                    className="w-full inline-flex items-center justify-center gap-2 bg-cedar text-cedar-foreground px-6 py-3.5 rounded-sm text-[12px] tracking-[0.18em] uppercase font-medium hover:bg-cedar-hover disabled:opacity-50 disabled:cursor-not-allowed transition-colors min-h-[52px]"
                   >
                     {submitting ? (
                       <>
-                        <Loader2 className="h-3.5 w-3.5 animate-spin" aria-hidden /> Sending
+                        <Loader2 className="h-4 w-4 animate-spin" aria-hidden /> Sending
                       </>
                     ) : (
                       <>
-                        {mode === "inquiry" ? "Send Message" : "Send Request"}{" "}
-                        <ArrowRight className="h-3.5 w-3.5" aria-hidden />
+                        {ctaLabel}
+                        {canSubmit && <ArrowRight className="h-4 w-4" aria-hidden />}
                       </>
                     )}
                   </button>
-                )}
+                </div>
               </footer>
             </>
           )}
@@ -529,332 +622,45 @@ const QuoteModal = () => {
   );
 };
 
-const ProgressBar = ({ step }: { step: Step }) => (
-  <div className="flex items-center gap-1.5" aria-hidden>
-    {[1, 2].map((i) => (
-      <div
-        key={i}
-        className={`h-[3px] flex-1 rounded-full transition-colors duration-300 ${
-          i <= step ? "bg-cedar" : "bg-border"
-        }`}
-      />
-    ))}
-  </div>
-);
-
-const Step1 = ({
-  selected,
-  onToggle,
-  firstTileRef,
-}: {
-  selected: string[];
-  onToggle: (id: string) => void;
-  firstTileRef: React.RefObject<HTMLButtonElement>;
-}) => {
-  const generalSelected = selected.includes(GENERAL_ID);
-  // Render items grouped under their category headers. Tracks the global
-  // index so the first tile across all groups gets the autofocus ref.
-  let globalIdx = 0;
-  return (
-    <fieldset>
-      <legend className="text-sm text-muted-foreground mb-4">
-        Select all that apply — or pick “General inquiry” at the bottom if you just have questions.
-      </legend>
-
-      <div className="space-y-6">
-        {SERVICE_GROUPS.map((group) => {
-          const items = getItemsForGroup(group.id);
-          return (
-            <div key={group.id}>
-              <h4 className="text-[10px] tracking-[0.22em] uppercase text-cedar/70 mb-2">
-                {group.title}
-              </h4>
-              <div className="grid sm:grid-cols-2 gap-2">
-                {items.map((s) => {
-                  const isSelected = selected.includes(s.id);
-                  const Icon = group.icon;
-                  const tileIdx = globalIdx++;
-                  return (
-                    <button
-                      key={s.id}
-                      ref={tileIdx === 0 ? firstTileRef : undefined}
-                      type="button"
-                      onClick={() => onToggle(s.id)}
-                      aria-pressed={isSelected}
-                      className={`text-left p-3 rounded-sm border transition-colors duration-200 group flex items-start gap-3 min-h-[44px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cedar focus-visible:ring-offset-2 ${
-                        isSelected
-                          ? "border-cedar bg-cedar/[0.06]"
-                          : "border-border hover:border-cedar/50 hover:bg-cedar/[0.02]"
-                      }`}
-                      style={{ borderLeft: `2px solid hsl(var(--cedar) / ${group.intensity})` }}
-                    >
-                      <Icon
-                        className={`h-4 w-4 mt-0.5 shrink-0 ${
-                          isSelected ? "text-cedar" : "text-muted-foreground group-hover:text-cedar/80"
-                        }`}
-                        aria-hidden
-                      />
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center justify-between gap-2">
-                          <p className="text-sm font-medium text-foreground">{s.title}</p>
-                          {isSelected && <Check className="h-4 w-4 text-cedar shrink-0" aria-hidden />}
-                        </div>
-                        {s.short && (
-                          <p className="text-xs text-muted-foreground mt-0.5">{s.short}</p>
-                        )}
-                      </div>
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-          );
-        })}
-
-
-        <button
-          type="button"
-          onClick={() => onToggle(GENERAL_ID)}
-          aria-pressed={generalSelected}
-          className={`w-full text-left p-4 rounded-sm border transition-colors duration-200 group flex items-start gap-3 min-h-[44px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cedar focus-visible:ring-offset-2 mt-2 ${
-            generalSelected
-              ? "border-cedar bg-cedar/[0.06]"
-              : "border-dashed border-border hover:border-cedar/50 hover:bg-cedar/[0.02]"
-          }`}
-          style={{ borderLeftWidth: 2, borderLeftStyle: "solid", borderLeftColor: "hsl(var(--cedar))" }}
-        >
-          <MessageCircleQuestion
-            className={`h-5 w-5 mt-0.5 shrink-0 ${
-              generalSelected ? "text-cedar" : "text-muted-foreground group-hover:text-cedar/80"
-            }`}
-            aria-hidden
-          />
-          <div className="flex-1 min-w-0">
-            <div className="flex items-center justify-between gap-2">
-              <p className="font-medium text-foreground">Something else / General inquiry</p>
-              {generalSelected && <Check className="h-4 w-4 text-cedar shrink-0" aria-hidden />}
-            </div>
-            <p className="text-xs text-muted-foreground mt-0.5">
-              Pricing, warranty, custom work, or just questions — we’ll get back to you.
-            </p>
-          </div>
-        </button>
-      </div>
-    </fieldset>
-  );
-};
-
-/**
- * Step 2 (combined) — project details + contact in one screen. Replaces
- * the former Step 2 (details) and Step 3 (contact) for a 2-step flow.
- */
-const Step2Combined = ({
-  form,
-  mode,
-  onUpdate,
-  detailsRef,
-  nameRef,
-  touched,
-  markTouched,
-  nameValid,
-  phoneValid,
-  emailValid,
-}: {
-  form: FormState;
-  mode: Mode;
-  onUpdate: <K extends keyof FormState>(k: K, v: FormState[K]) => void;
-  detailsRef: React.RefObject<HTMLTextAreaElement>;
-  nameRef: React.RefObject<HTMLInputElement>;
-  touched: Record<string, boolean>;
-  markTouched: (field: string) => void;
-  nameValid: boolean;
-  phoneValid: boolean;
-  emailValid: boolean;
-}) => {
-  const isInquiry = mode === "inquiry";
-  const detailsLabel = isInquiry ? "How can we help? (optional)" : "Project details (optional)";
-  const detailsPlaceholder = isInquiry
-    ? "e.g. Wondering about pricing for a 200 ft fence in Cochrane."
-    : "e.g. 14x20 cedar deck, replacing a worn pressure-treated one. Built-in benches if budget allows.";
-  const timelineLabel = isInquiry ? "When do you need a reply?" : "Timeline";
-  const timelineOptions = isInquiry ? TIMELINES_INQUIRY : TIMELINES_QUOTE;
-  const phoneDigits = form.phone.replace(/\D/g, "").length;
-
-  return (
-    <div className="space-y-5">
-      {/* Contact block FIRST — it's the only required info. Details below
-          encourage but never block submission. */}
-      <div className="grid sm:grid-cols-2 gap-4">
-        <Field
-          label="Your name"
-          htmlFor="qm-name"
-          required
-          error={touched.name && !nameValid ? "Please enter your name." : undefined}
-        >
-          <Input
-            id="qm-name"
-            ref={nameRef}
-            value={form.name}
-            onChange={(v) => onUpdate("name", v)}
-            onBlur={() => markTouched("name")}
-            placeholder="Jane Doe"
-            maxLength={120}
-            autoComplete="name"
-            invalid={touched.name && !nameValid}
-          />
-        </Field>
-        <Field
-          label="Phone"
-          htmlFor="qm-phone"
-          required
-          error={
-            touched.phone && !phoneValid
-              ? phoneDigits === 0
-                ? "Phone number is required."
-                : `Looks like the phone is missing ${10 - phoneDigits} digit${10 - phoneDigits === 1 ? "" : "s"}.`
-              : undefined
-          }
-        >
-          <Input
-            id="qm-phone"
-            type="tel"
-            value={form.phone}
-            onChange={(v) => onUpdate("phone", formatPhone(v))}
-            onBlur={() => markTouched("phone")}
-            placeholder="(403) 555-0123"
-            autoComplete="tel"
-            invalid={touched.phone && !phoneValid}
-          />
-        </Field>
-      </div>
-      <div className="grid sm:grid-cols-2 gap-4">
-        <Field
-          label="Email (optional)"
-          htmlFor="qm-email"
-          error={touched.email && !emailValid ? "Hmm — that email doesn’t look right." : undefined}
-        >
-          <Input
-            id="qm-email"
-            type="email"
-            value={form.email}
-            onChange={(v) => onUpdate("email", v)}
-            onBlur={() => markTouched("email")}
-            placeholder="you@example.com"
-            maxLength={255}
-            autoComplete="email"
-            invalid={touched.email && !emailValid}
-          />
-        </Field>
-        <Field label="City or area (optional)" htmlFor="qm-area">
-          <Input
-            id="qm-area"
-            value={form.addressOrArea}
-            onChange={(v) => onUpdate("addressOrArea", v)}
-            placeholder="e.g. Calgary NW"
-            maxLength={255}
-            autoComplete="address-level2"
-          />
-        </Field>
-      </div>
-
-      {/* Project details — optional but encouraged */}
-      <Field label={detailsLabel} htmlFor="qm-details">
-        <textarea
-          ref={detailsRef}
-          id="qm-details"
-          value={form.projectDetails}
-          onChange={(e) => onUpdate("projectDetails", e.target.value)}
-          rows={3}
-          maxLength={2000}
-          placeholder={detailsPlaceholder}
-          className="w-full rounded-sm border border-border bg-background px-3 py-2.5 text-sm focus:outline-none focus:border-cedar focus:ring-1 focus:ring-cedar/30 transition-colors resize-none"
-        />
-      </Field>
-
-      <div className={`grid gap-4 ${isInquiry ? "sm:grid-cols-2" : "sm:grid-cols-3"}`}>
-        {!isInquiry && (
-          <Field label="Property" htmlFor="qm-property">
-            <Select
-              id="qm-property"
-              value={form.propertyType}
-              options={PROPERTY_TYPES}
-              onChange={(v) => onUpdate("propertyType", v)}
-            />
-          </Field>
-        )}
-        <Field label={timelineLabel} htmlFor="qm-timeline">
-          <Select
-            id="qm-timeline"
-            value={isInquiry && !TIMELINES_INQUIRY.includes(form.timeline) ? TIMELINES_INQUIRY[1] : form.timeline}
-            options={timelineOptions}
-            onChange={(v) => onUpdate("timeline", v)}
-          />
-        </Field>
-        <Field label="Reach me by" htmlFor="qm-pref">
-          <div className="grid grid-cols-3 gap-1.5" role="radiogroup">
-            {(
-              [
-                { v: "call", label: "Call", icon: Phone },
-                { v: "text", label: "Text", icon: MessageSquare },
-                { v: "email", label: "Email", icon: Mail },
-              ] as const
-            ).map(({ v, label, icon: Icon }) => {
-              const active = form.contactPreference === v;
-              return (
-                <button
-                  key={v}
-                  type="button"
-                  role="radio"
-                  aria-checked={active}
-                  onClick={() => onUpdate("contactPreference", v)}
-                  className={`flex items-center justify-center gap-1.5 px-2 py-2 rounded-sm border text-xs transition-colors min-h-[44px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cedar focus-visible:ring-offset-2 ${
-                    active
-                      ? "border-cedar bg-cedar/[0.08] text-foreground"
-                      : "border-border text-muted-foreground hover:border-cedar/50"
-                  }`}
-                >
-                  <Icon className="h-3 w-3" aria-hidden /> {label}
-                </button>
-              );
-            })}
-          </div>
-        </Field>
-      </div>
-    </div>
-  );
-};
-
 const Field = ({
   label,
   htmlFor,
   required,
-  hint,
+  optional,
   error,
+  adornment,
   children,
 }: {
   label: string;
   htmlFor: string;
   required?: boolean;
-  hint?: string;
+  optional?: boolean;
   error?: string;
+  adornment?: React.ReactNode;
   children: React.ReactNode;
 }) => (
   <div>
-    <label
-      htmlFor={htmlFor}
-      className="block text-[11px] tracking-[0.15em] uppercase text-muted-foreground mb-2"
-    >
-      {label}
-      {required && <span className="text-cedar ml-1">*</span>}
-    </label>
+    <div className="flex items-center justify-between mb-1.5 min-h-[16px]">
+      <label
+        htmlFor={htmlFor}
+        className="block text-[11px] tracking-[0.15em] uppercase text-muted-foreground"
+      >
+        {label}
+        {required && <span className="text-cedar ml-1">*</span>}
+        {optional && (
+          <span className="text-muted-foreground/50 ml-1.5 normal-case tracking-normal text-[10px]">
+            optional
+          </span>
+        )}
+      </label>
+      {adornment}
+    </div>
     {children}
-    {error ? (
-      <p className="text-xs text-destructive mt-1.5" role="alert">
+    {error && (
+      <p className="text-xs text-destructive mt-1" role="alert">
         {error}
       </p>
-    ) : hint ? (
-      <p className="text-xs text-muted-foreground/60 mt-1.5">{hint}</p>
-    ) : null}
+    )}
   </div>
 );
 
@@ -874,7 +680,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
       onChange={(e) => onChange(e.target.value)}
       aria-invalid={invalid || undefined}
       {...rest}
-      className={`w-full rounded-sm border bg-background px-3 py-2.5 text-sm focus:outline-none focus:ring-1 transition-colors ${
+      className={`w-full rounded-sm border bg-background px-3 py-2.5 text-sm focus:outline-none focus:ring-1 transition-colors min-h-[44px] ${
         invalid
           ? "border-destructive/60 focus:border-destructive focus:ring-destructive/30"
           : "border-border focus:border-cedar focus:ring-cedar/30"
@@ -883,31 +689,6 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
   ),
 );
 Input.displayName = "QuoteModalInput";
-
-const Select = ({
-  id,
-  value,
-  options,
-  onChange,
-}: {
-  id: string;
-  value: string;
-  options: readonly string[];
-  onChange: (v: string) => void;
-}) => (
-  <select
-    id={id}
-    value={value}
-    onChange={(e) => onChange(e.target.value)}
-    className="w-full rounded-sm border border-border bg-background px-3 py-2.5 text-sm focus:outline-none focus:border-cedar focus:ring-1 focus:ring-cedar/30 transition-colors min-h-[44px]"
-  >
-    {options.map((o) => (
-      <option key={o} value={o}>
-        {o}
-      </option>
-    ))}
-  </select>
-);
 
 const SuccessPanel = ({
   mode,
@@ -925,21 +706,23 @@ const SuccessPanel = ({
       <Check className="h-7 w-7 text-cedar" aria-hidden />
     </div>
     <h3 className="font-serif text-3xl text-foreground mb-3">
-      {mode === "inquiry" ? "Message received." : "Request received."}
+      {mode === "inquiry" ? "Message received." : "We’ve got it."}
     </h3>
     <p className="text-muted-foreground max-w-md mb-2">
       {mode === "inquiry"
         ? "Thanks — we’ll review and reach out within 24 hours."
-        : "Thanks — we’ll review your project details and reach out within 24 hours."}
+        : "Thanks — we’ll review your project and reach out within 24 hours."}
     </p>
     <p className="text-sm text-muted-foreground/70 mb-8">
-      Need to talk now? Call{" "}
-      <a href={`tel:${CONTACT.phoneTel}`} className="text-cedar hover:underline">
-        {CONTACT.phone}
-      </a>
-      .
+      We typically respond within 4 hours during business days.
     </p>
-    <div className="flex items-center gap-6">
+    <div className="flex flex-col sm:flex-row items-center gap-4">
+      <a
+        href={`tel:${CONTACT.phoneTel}`}
+        className="inline-flex items-center gap-2 bg-cedar text-cedar-foreground px-6 py-3 rounded-sm text-[11px] tracking-[0.18em] uppercase font-medium hover:bg-cedar-hover transition-colors min-h-[44px]"
+      >
+        <Phone className="h-3.5 w-3.5" aria-hidden /> Call us now
+      </a>
       <button
         type="button"
         ref={doneBtnRef}

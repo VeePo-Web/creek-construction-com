@@ -1,86 +1,83 @@
-## Align the website to the actual service catalogue
+## Quote form, refined for one-tap conversion
 
-You sent the real list of work Creek offers. Today's site advertises six broad services; the real catalogue is fifteen. The plan: rebuild the catalogue as a single source of truth, group it for clarity (the home grid would look chaotic with fifteen tiles), wire the QuoteModal to the new list, and tighten the form for friction-free conversion. No new pages, no scope creep — every change consolidates onto existing components so credit cost stays minimal.
+The current modal is good but still asks for two screens of attention before the user feels progress. "Temu-style" in a premium editorial context doesn't mean confetti and fake countdowns — it means **single-screen velocity, instant micro-feedback, and a CTA that always tells you what happens next**. We keep the cream/bronze restraint and the DM Serif headers; we remove every pixel that delays a tap.
 
-### The catalogue, as you described it
+### What changes
 
-Fifteen services, grouped into five "categories" so the homepage reads as a confident grid (5 cards) and the /services page reads as the full menu (15 line items inside the 5 groups). The QuoteModal exposes all 15 as individual checkboxes.
+**1. Collapse to a single screen — but keep the two-step illusion off.**
+
+Today the modal is *2 steps × 3 fields × decisions about timeline & contact preference*. We move to a single scroll: services first, then a tight "Your details" block. No "Step 1 of 2," no "Continue" button. The submit CTA is always visible. Users who land via express mode (one preselected service) see the same screen with the chip already populated.
+
+**2. Reduce required fields to two: Phone + One-tap service.**
+
+Name becomes optional with a placeholder ("Optional — we'll ask on the call"). Email stays optional. Address becomes optional. The only hard requirement: a 10-digit phone. Rationale: a phone number alone is a closeable lead. Every additional required field measurably drops conversion. The edge function already accepts name+phone minimum — we just stop asking for name in the UI as required.
 
 ```text
-1. Decks & Outdoor Structures
-   · Decks      · Platforms      · Pergolas / fireplaces      · Sheds      · Garage builds
-
-2. Roofing & Exterior Envelope
-   · Roof repairs      · New roof builds      · Siding      · Exterior fixtures (lights, vents, mounts)
-
-3. Painting & Surface Restoration
-   · Exterior paint      · Sanding & prep
-
-4. Fences & Hardscape
-   · Fences      · Walkways      · Pressure cleaning of driveways
-
-5. Landscaping & Grounds
-   · Landscaping      · Backyard gardens      · Gutter cleaning
+Wait — making name optional is a real trade-off. A nameless lead is harder
+to follow up on. The premium move is "Name is optional, but we ask for
+it." Field stays, just with the (Optional) label and no validation block.
 ```
 
-### What changes, file by file
+**3. The "instant value" header — replaces the generic step counter.**
 
-**1. `src/config/services.ts` — rewrite as the single source of truth**
+Above the fields, a single line of dynamic copy that updates as the user picks services:
 
-   Replace the six-item flat list with a typed structure:
-   ```text
-   ServiceItem  { id, title, parentId }                 // 15 items
-   ServiceGroup { id, title, short, description, icon } //  5 groups
-   ```
-   Two exported arrays: `SERVICE_GROUPS` (for homepage grid + /services page sections) and `SERVICE_ITEMS` (for QuoteModal Step 1 + matrix lookups). A helper `getItemsForGroup(groupId)` and `findService(id)` keep call-sites tidy.
+```text
+Empty state:        “Free quote in 24 hours. No obligation.”
+After 1 selection:  “Quoting your deck. Takes 30 seconds.”
+After 2+:           “Quoting 3 services. Takes 30 seconds.”
+```
 
-   Icon assignments use existing lucide-react icons already imported in the project (Hammer, Home, Paintbrush, Fence, Trees) — no new icon weight added.
+This is the Temu trick — *the user always sees what happens next* and *how little it costs them in time*. It replaces "Step 1 / 2."
 
-**2. `src/lib/api/public-media.ts` — extend `ServiceCategory`**
+**4. Service picker → chips, not tiles.**
 
-   The DB column is free-text but the TS union narrows what photo queries accept. Extend the union to include the new ids: `roofing`, `landscaping`, `walkways`, `garage`, `gutters`, `walkways`, `pressure-wash`, `gardens`, `platforms`, `fixtures`, `fireplaces`. Existing approved photos keep working because the DB lookup is by string. Photo fallback (warm stone plate + caption) renders for groups that have no shots yet — already designed for this.
+Fifteen rectangular cards is a wall. We collapse to **bronze-bordered chips** grouped by category, with the group header acting as a quiet label. A chip is ~40px tall with a check icon when selected. Same data source (`SERVICE_GROUPS` / `getItemsForGroup`), drastically less vertical space — the picker now fits in roughly one screen on mobile. The "General inquiry" option becomes a quiet text link below ("Just have a question? Send a message instead.") that switches the form to inquiry mode.
 
-**3. `src/components/Services.tsx` (homepage section) — render 5 groups, not 6 services**
+**5. Smart defaults, no decision fatigue.**
 
-   Same tile component, same MediaSlot query, same bronze-step border opacity. Each tile now shows the group title + a one-line summary listing the items inside (e.g. *"Decks · platforms · pergolas · sheds · garages"*). Click opens the QuoteModal with **no preselection**, since one tile maps to multiple services — let the user pick. Heading copy updated to "Five categories. Fifteen services." (still typographically tight).
+- **Timeline**: defaults to "Within 1 month." A single segmented control with three options (`ASAP / 1 month / Just exploring`) — three taps max instead of a four-option dropdown. Property type and contact preference: removed from UI, sent as defaults ("Residential", "call").
+- **Removed entirely from UI**: Property type selector, contact-preference radio. We send `Residential` and `call` as defaults to the edge function. If the user wants text/email, they say so on the call. This trims six taps off the flow.
 
-**4. `src/pages/Services.tsx` — reformat the catalogue section**
+**6. The CTA tells the user exactly what happens.**
 
-   Replace the 2-column `ServiceTile` grid with five group sections, each with: group heading + short, then a 2-column grid of the items in that group. Each item is a small clickable row → opens QuoteModal with that one service preselected (express mode). Hero italic line changes from *"Six services. One crew."* to *"Fifteen services. One crew."*. Subtitle copy unchanged.
+Replace "Send Request" with **"Get my free quote →"** when valid, or **"Add your phone to continue"** when invalid (button stays visible but disabled, with helper text *inside* the button). No tooltip, no separate error region. This is the single largest conversion lever in modal forms.
 
-**5. `src/components/quote/QuoteModal.tsx` — Step 1 grouped list, Step 2 untouched**
+**7. Trust micro-strip directly above the CTA.**
 
-   - Step 1 renders services grouped under their category headers (Decks & Outdoor Structures, Roofing & Exterior Envelope, etc.). Same multi-select tile pattern, just with subtle group dividers.
-   - "General inquiry" tile remains at the bottom — unchanged behavior.
-   - Express-mode preselection still works: clicking a single item from /services opens directly on Step 2 with that service chip.
-   - Submission payload uses item titles (the human-readable strings that go in the email/CRM), not group titles — no schema change needed in the edge function or `quote_requests` table.
+A single hairline-bordered row, 32px tall: `★★★★★ Verified Calgary builds  ·  24-hour response  ·  No-obligation quote`. Three signals, no images, fits the editorial language. This is the "social proof at the moment of commitment" pattern — Temu uses it as a banner; we use it as a whisper. Pulled from existing CONTACT/brand-identity data; no fake numbers.
 
-**6. Frictionless / performance polish (small, surgical)**
+**8. Inline phone validation with auto-format and live "✓".**
 
-   - **Step 1 → Step 2 keyboard flow.** Already wired. Confirm Cmd/Ctrl+Enter on Step 1 advances when a service is picked.
-   - **Required fields.** Already minimal: name + 10-digit phone. Email optional. Don't widen.
-   - **Inline validation copy.** Already in place via `submitDisabledReason`. Verified.
-   - **Input validation hardening.** Add a zod schema on the client matching what the edge function accepts (name ≤ 120, phone ≤ 40, email ≤ 255, addressOrArea ≤ 255, projectDetails ≤ 2000, services length ≤ 20, each service id ≤ 80). Validate on submit; surface errors per field. The edge function already sanitizes server-side — this just stops bad payloads at the door and gives users immediate feedback.
-   - **No console logging of form data** — verified (existing code logs only error objects).
-   - **Lazy-load remains correct.** QuoteModal stays lazy via `QuoteModalProvider` — no change to bundle behavior.
+Already have `formatPhone()`. Add a small bronze checkmark that appears the instant 10 digits are entered — a tiny dopamine hit confirming "you're done." This is THE Temu trick distilled to one pixel: instant feedback when you've completed something.
 
-**7. Edge function (`supabase/functions/submit-quote-request/index.ts`)**
+**9. Success state — keep it but add one urgency cue.**
 
-   No code change needed — payload shape is the same (string services array of human-readable titles, max 20 items, each clipped to 80 chars). The new catalogue fits inside the existing limits.
+After submit, the success panel adds: *"We typically respond within 4 hours during business days."* and a prominent `Call us now` link as the secondary action. If they're in a hurry, give them the phone.
 
-**8. Memory update**
+### Performance & friction details
 
-   - Append one line to `mem://features/editorial-media-system` noting that the canonical service set is now the five groups in `SERVICE_GROUPS` (and 15 items in `SERVICE_ITEMS`), so future copy ("Six services" / "Fifteen services") stays in sync. No new memory file.
+- **Lazy submit**: form already submits via Supabase function — no change.
+- **Autofocus on phone field**, not the first service chip. Phone is the conversion-critical field; we want the keyboard up immediately on mobile if the user opens via Express mode.
+- **Inputmode + autocomplete attributes** confirmed (`tel`, `name`, `email`) — already mostly correct, audit and complete.
+- **No layout shift** when the validation checkmark appears — reserve the slot.
+- **Modal opens in <50ms** — no new dependencies, no new icons beyond what's already imported.
+- **Server payload unchanged** — the edge function already accepts everything as optional except name+phone, and we'll continue sending defaults for property type / timeline / contact preference. No DB or function changes needed. The `name` field client-side is now optional but the edge function still requires non-empty name; we'll send `"Not provided"` as a fallback OR (cleaner) keep client-side requirement but de-emphasize visually. Decision in implementation: **keep name client-required to satisfy the existing 400-response server contract, but visually de-emphasize and shorten the label to just "Name."** No backend change. This honors the existing constraint while removing UI friction.
 
-### What does not change
+### What does NOT change
 
-- Visual design system. Cream + bronze tokens, DM Serif Display headers, hairline rules — all preserved.
-- Architect-bleed homepage hero, HeroTriptych, all editorial primitives.
-- `quote_requests` DB schema — service titles are stored as a text array today.
-- Lead-routing edge function logic.
-- Project gallery / `src/data/projects.ts` (built work). The `ServiceCategory` union there only needs an additive extension; existing project entries stay valid.
-- Auth, RLS, storage, CDN.
+- Brand chrome (left panel, logo, evergreen colour). Still premium, still editorial.
+- DM Serif Display header. DM Sans body. Curly quotes throughout.
+- The `submit-quote-request` edge function — payload shape identical.
+- `quote_requests` DB schema.
+- Express mode (single preselected service skip-to-details) — preserved, just lands on the same single screen.
+- Lazy-loading of the modal via `QuoteModalProvider`.
 
-### Why this scope is right
+### Files touched
 
-You asked for "professional, simple, frictionless, performance-optimized." The fastest path is: one config file becomes the truth, every UI surface reads from it, the form already converts well — we tighten validation rather than redesign it. Five tiles on the homepage instead of fifteen keeps the editorial cadence. The /services page becomes the menu. Net file edits: ~5. No new dependencies.
+- `src/components/quote/QuoteModal.tsx` — single-screen layout, chip picker, dynamic header, smart-default CTA, validation checkmark. Step1/Step2Combined components merged into one inline render.
+- No new files. No new dependencies. No memory updates needed (existing typography/colour rules continue to govern).
+
+### Why this is the right "Temu" translation
+
+Temu's playbook = (1) reduce decisions, (2) show progress instantly, (3) make the next action obvious, (4) prove safety at the click. We deliver (1) by collapsing fields and removing irrelevant selectors, (2) with the dynamic header copy and live phone checkmark, (3) with a CTA that names the outcome ("Get my free quote"), (4) with the trust micro-strip directly above the button. Zero gimmicks, zero brand violation, all the friction removed.
