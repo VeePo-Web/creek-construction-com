@@ -219,7 +219,7 @@ const QuoteModal = () => {
       const isInquiry = mode === "inquiry";
       const serviceTitles = isInquiry
         ? ["General inquiry"]
-        : SERVICES.filter((s) => form.services.includes(s.id)).map((s) => s.title);
+        : SERVICE_ITEMS.filter((s) => form.services.includes(s.id)).map((s) => s.title);
 
       const detailsBody = form.projectDetails.trim();
       const projectDetails = isInquiry
@@ -228,18 +228,28 @@ const QuoteModal = () => {
           : "[General Inquiry]"
         : detailsBody || undefined;
 
+      const payload = {
+        name: form.name.trim(),
+        phone: form.phone.trim(),
+        email: form.email.trim() || undefined,
+        addressOrArea: form.addressOrArea.trim() || undefined,
+        services: serviceTitles,
+        projectDetails,
+        propertyType: isInquiry ? undefined : form.propertyType,
+        timeline: form.timeline,
+        contactPreference: form.contactPreference,
+      };
+
+      // Validate locally before crossing the network boundary.
+      const parsed = quotePayloadSchema.safeParse(payload);
+      if (!parsed.success) {
+        const first = parsed.error.issues[0]?.message ?? "Please check the form and try again.";
+        toast.error("Can’t send yet", { description: first });
+        return;
+      }
+
       const { data, error } = await supabase.functions.invoke("submit-quote-request", {
-        body: {
-          name: form.name.trim(),
-          phone: form.phone.trim(),
-          email: form.email.trim() || undefined,
-          addressOrArea: form.addressOrArea.trim() || undefined,
-          services: serviceTitles,
-          projectDetails,
-          propertyType: isInquiry ? undefined : form.propertyType,
-          timeline: form.timeline,
-          contactPreference: form.contactPreference,
-        },
+        body: parsed.data,
       });
       if (error || !data?.ok) {
         const msg =
@@ -298,7 +308,7 @@ const QuoteModal = () => {
     () =>
       mode === "inquiry"
         ? ["General inquiry"]
-        : SERVICES.filter((s) => form.services.includes(s.id)).map((s) => s.title),
+        : SERVICE_ITEMS.filter((s) => form.services.includes(s.id)).map((s) => s.title),
     [form.services, mode],
   );
 
