@@ -1,11 +1,10 @@
-import { ShieldCheck, FileCheck, MapPin } from "lucide-react";
-
 import CedarCTA from "@/components/CedarCTA";
 import { CONTACT } from "@/config/contact";
 import PageHero from "@/components/ui/page-hero";
 
 import TrustChips from "@/components/ui/trust-chip";
 import StatTrio, { type StatItem } from "@/components/ui/stat-trio";
+import { TRUST_SIGNALS } from "@/config/trust-signals";
 
 /**
  * Hero — homepage opener.
@@ -23,11 +22,9 @@ const STATS: StatItem[] = [
   { value: 48, suffix: "h", label: "Quote turnaround" },
 ];
 
-const TRUST_ITEMS = [
-  { icon: ShieldCheck, label: "WCB covered" },
-  { icon: FileCheck, label: "Fully insured" },
-  { icon: MapPin, label: "Locally owned" },
-];
+// Single source of truth — same casing as QuoteCloserCard, GlobalMenu,
+// StyleGuide, and Footer. Show the first three (icons fit the band).
+const TRUST_ITEMS = TRUST_SIGNALS.slice(0, 3);
 
 /** Combined post-hero band: stats over a hairline over trust chips. One section, one paint root. */
 const HeroProofBand = () => (
