@@ -105,7 +105,7 @@ const About = () => {
                   <div
                     key={i}
                     role="listitem"
-                    className="flex items-start space-x-4 pl-6 py-4 rounded-sm transition-[background-color,transform,box-shadow] duration-300 hover:bg-accent/5 hover:translate-x-1 hover:shadow-elevated group/step cursor-default grain-texture shadow-contact border border-border/40 focus-visible:ring-2 focus-visible:ring-cedar focus-visible:ring-offset-2"
+                    className="flex items-start space-x-4 pl-6 py-4 rounded-sm transition-[background-color,transform] duration-300 hover:bg-accent/5 hover:translate-x-1 group/step cursor-default grain-texture shadow-contact border border-border/40 focus-visible:ring-2 focus-visible:ring-cedar focus-visible:ring-offset-2"
                     tabIndex={0}
                     style={{ borderLeft: `2px solid hsl(var(--cedar) / ${bronzeStep(i, STEPS.length)})` }}
                   >
