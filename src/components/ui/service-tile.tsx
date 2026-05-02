@@ -104,7 +104,7 @@ const ServiceTile = ({
           </h3>
           <p className="text-sm text-muted-foreground leading-relaxed flex-1">{item.description}</p>
           <span className="text-[10px] tracking-[0.18em] uppercase text-cedar/70 group-hover:text-cedar transition-colors duration-500 mt-4">
-            Request a Quote →
+            Quote this →
           </span>
         </>
       )}
