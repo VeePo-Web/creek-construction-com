@@ -5,6 +5,7 @@ import { Phone, ShieldCheck, Mail } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { CONTACT } from "@/config/contact";
 import { SERVICES } from "@/config/services";
+import { TRUST_LINE } from "@/config/trust-signals";
 import { useQuoteModal } from "@/components/quote/QuoteModalProvider";
 import CedarCTA from "@/components/CedarCTA";
 import BronzeRule from "@/components/ui/bronze-rule";
@@ -411,7 +412,7 @@ const GlobalMenu = ({ isOpen, onClose, id = "global-menu" }: GlobalMenuProps) =>
             <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
               <div className="flex items-center gap-2 text-[11px] tracking-[0.18em] uppercase text-muted-foreground">
                 <ShieldCheck className="h-4 w-4 text-cedar shrink-0" aria-hidden />
-                <span>WCB covered · Fully insured · Locally owned</span>
+                <span>{TRUST_LINE}</span>
               </div>
 
               <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-5">
