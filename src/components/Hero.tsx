@@ -10,12 +10,11 @@ import StatTrio, { type StatItem } from "@/components/ui/stat-trio";
 /**
  * Hero — homepage opener.
  *
- * Architect-bleed treatment (hero-only B/W override). The hero itself stays
- * radically minimal: one quiet photograph, a small uppercase eyebrow, one
- * oversized lighter serif headline, a hairline-divided subtitle + CTA,
- * and a bottom-right caption rail. Stats and trust chips have been lifted
- * out of the hero into sibling strips on the cream page background so the
- * hero reads as a single architectural plate.
+ * Architect-bleed treatment (hero-only B/W override). The hero stays
+ * radically minimal: one quiet photograph, eyebrow, oversized headline,
+ * subtitle and the primary site CTA. Stats + trust chips live in a
+ * SINGLE post-hero section (one paint root, internal hairline divider)
+ * so the eye reads "hero → one trust band → content."
  */
 
 const STATS: StatItem[] = [
@@ -30,21 +29,18 @@ const TRUST_ITEMS = [
   { icon: MapPin, label: "Locally owned" },
 ];
 
-const HeroStatsStrip = () => (
+/** Combined post-hero band: stats over a hairline over trust chips. One section, one paint root. */
+const HeroProofBand = () => (
   <section
-    aria-label="Creek Construction by the numbers"
+    aria-label="Creek Construction credentials"
     className="border-b border-cedar/15 bg-background"
+    style={{ contentVisibility: "auto", containIntrinsicSize: "auto 220px" }}
   >
     <div className="container mx-auto px-6 py-8 md:py-10">
       <StatTrio items={STATS} variant="inline" />
-    </div>
-  </section>
-);
-
-const HeroTrustStrip = () => (
-  <section aria-label="Trust signals" className="bg-background">
-    <div className="container mx-auto px-6 py-6 md:py-7">
-      <TrustChips items={TRUST_ITEMS} variant="rule" ariaLabel="Trust signals" />
+      <div className="mt-7 md:mt-8 pt-6 md:pt-7 border-t border-cedar/10">
+        <TrustChips items={TRUST_ITEMS} variant="rule" ariaLabel="Trust signals" />
+      </div>
     </div>
   </section>
 );
@@ -65,11 +61,10 @@ const Hero = () => {
           kind: "image",
         }}
       >
-        {/* Architect-grade CTA row — restrained, white-outline primary */}
+        {/* Solid cedar pill — the most important conversion button on the site
+            should look primary, not secondary. Reads cleanly against the B/W plate. */}
         <div className="flex flex-wrap items-center gap-x-6 gap-y-3">
-          <CedarCTA className="!bg-transparent !text-white !border !border-white/70 hover:!bg-white/10">
-            Request a Quote
-          </CedarCTA>
+          <CedarCTA />
           <a
             href={`tel:${CONTACT.phoneTel}`}
             className="inline-flex items-center gap-2 text-[11px] tracking-[0.22em] uppercase text-white/70 hover:text-white transition-colors min-h-[44px] px-2"
@@ -79,8 +74,7 @@ const Hero = () => {
         </div>
       </PageHero>
 
-      <HeroStatsStrip />
-      <HeroTrustStrip />
+      <HeroProofBand />
     </>
   );
 };
