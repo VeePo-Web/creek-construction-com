@@ -873,9 +873,9 @@ const ArchitectBleed = (props: ArchitectBleedProps) => {
             style={{
               color: "hsl(0 0% 100%)",
               fontWeight: 400,
-              // Floor lowered from 3.25rem → 2.5rem so a single long word
-              // ("Excellence") never overflows a 360–414px viewport.
-              fontSize: "clamp(2.5rem, 9vw, 8.25rem)",
+              // Floor lowered so the longest word ("Excellence" at ~10 chars in
+              // DM Serif Display) fits a 360–414px viewport without clipping.
+              fontSize: "clamp(2.125rem, 8.5vw, 8.25rem)",
               lineHeight: 0.96,
               letterSpacing: "-0.012em",
             }}
