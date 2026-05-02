@@ -9,7 +9,8 @@ interface CedarCTAProps {
   to?: string;
   /** Service IDs to preselect when opening the modal. */
   preselectServices?: string[];
-  children: string;
+  /** CTA label. Defaults to the canonical site phrase. */
+  children?: string;
   variant?: "primary" | "secondary";
   className?: string;
   /**
