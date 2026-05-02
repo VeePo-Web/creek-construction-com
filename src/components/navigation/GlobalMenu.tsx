@@ -430,7 +430,7 @@ const GlobalMenu = ({ isOpen, onClose, id = "global-menu" }: GlobalMenuProps) =>
                   <Phone className="h-3.5 w-3.5 text-cedar" aria-hidden />
                   <span className="tracking-[0.06em]">{CONTACT.phone}</span>
                 </a>
-                <CedarCTA onActivate={onClose}>Request a Quote</CedarCTA>
+                <CedarCTA onActivate={onClose} />
               </div>
             </div>
           </div>
