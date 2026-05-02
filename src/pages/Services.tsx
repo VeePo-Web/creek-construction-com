@@ -72,7 +72,7 @@ const Services = () => {
           { service: "sheds", shot_type: ["wide", "hero", "interior"], min_quality: "reference", kind: "image" },
         ]}
       >
-        <CedarCTA>Request a Quote</CedarCTA>
+        <CedarCTA />
       </PageHero>
 
       {/* Catalogue — five groups, fifteen items */}
