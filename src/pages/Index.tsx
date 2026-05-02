@@ -1,7 +1,6 @@
 import Navigation from "@/components/Navigation";
 import { useDocumentTitle } from "@/hooks/useDocumentTitle";
 import Hero from "@/components/Hero";
-import TrustStrip from "@/components/TrustStrip";
 import Services from "@/components/Services";
 import About from "@/components/About";
 import FeaturedProjects from "@/components/FeaturedProjects";
@@ -11,18 +10,14 @@ import { LocalBusinessJsonLd } from "@/components/JsonLd";
 import EditorialBleedSection from "@/components/media/EditorialBleedSection";
 
 /**
- * Homepage rhythm (post-reduction):
+ * Homepage rhythm:
  *
- *   Hero → TrustStrip (hairline byline) → Bleed → Services → About →
- *   FeaturedProjects → Contact → Footer
+ *   Hero → Bleed → Services → About → FeaturedProjects → Contact (closer) → Footer
  *
- * Removed from the homepage during the editorial reduction pass:
- *   - Testimonials  (gated behind real reviews; placeholder bylines retired)
- *   - Portfolio     (lives on /work; was duplicating FeaturedProjects)
- *   - FieldClipsStrip (lives on /work; was a third gallery layer here)
- *
- * Discipline: every section says one thing. The hero owns trust chips
- * and stats; subsequent sections do not repeat them.
+ * The hero now owns ALL trust signals (stats + chips) in a single combined
+ * post-hero band. The previous standalone <TrustStrip /> was deleted — three
+ * trust bands collapsed to one. Every page closes with the same shared
+ * <QuoteCloserCard /> evergreen plate via <Contact />.
  */
 const Index = () => {
   useDocumentTitle(
@@ -46,11 +41,9 @@ const Index = () => {
 
       <Hero />
 
-      {/* Hairline byline beneath the hero. No icons, no boxes — just type. */}
-      <TrustStrip />
-
-      {/* One editorial bleed between trust and services. Discipline: never two
-          bleeds in a row. Renders nothing if no hero/wide shot is approved. */}
+      {/* One editorial bleed between hero proof-band and services. Discipline:
+          never two bleeds in a row. Falls back to a quiet evergreen plate so
+          the slot always anchors visually even before media is approved. */}
       <EditorialBleedSection
         query={{
           shot_type: ["hero", "wide"],
@@ -60,6 +53,7 @@ const Index = () => {
         location="Calgary · Edmonton · Alberta"
         year={new Date().getFullYear()}
         subject="Recent work"
+        hideIfEmpty={false}
       />
 
       <Services />
