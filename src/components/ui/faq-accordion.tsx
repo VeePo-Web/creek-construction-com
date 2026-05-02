@@ -31,7 +31,7 @@ const FaqAccordion = ({ items, className }: FaqAccordionProps) => {
           <AccordionItem
             key={i}
             value={`faq-${i}`}
-            className="grain-texture border px-6 transition-[border-color,background-color,box-shadow] duration-500 shadow-contact hover:shadow-elevated hover:border-cedar/30 data-[state=open]:border-cedar/40 data-[state=open]:bg-cedar/[0.03] rounded-sm bg-background"
+            className="grain-texture border px-6 transition-[border-color,background-color] duration-500 shadow-contact hover:border-cedar/30 data-[state=open]:border-cedar/40 data-[state=open]:bg-cedar/[0.03] rounded-sm bg-background"
             style={{
               borderColor: `hsl(var(--cedar) / ${borderOp})`,
               borderLeft: `3px solid hsl(var(--cedar) / ${accentOp})`,
