@@ -132,13 +132,14 @@ const About = () => {
             <p className="text-sm text-muted-foreground/70 mt-6 italic">
               Not on the list? Ask anyway — we’ll let you know if we can travel.
             </p>
-
-            <div className="mt-12">
-              <CedarCTA>Request a Quote</CedarCTA>
-            </div>
           </div>
         </div>
       </section>
+
+      <QuoteCloserCard
+        heading="Ready to start the conversation?"
+        body="Tell us what you're building. It takes 30 seconds — just your name and phone. We reply within 24–48 hours with next steps."
+      />
 
       <Footer />
     </main>
