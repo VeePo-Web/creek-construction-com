@@ -98,14 +98,11 @@ const Work = () => {
                       </header>
                     )}
                     <ProjectGallery project={project} priority={idx === 0} />
-                    <button
-                      type="button"
-                      onClick={() => openModal([project.service])}
-                      className="mt-6 text-[11px] tracking-[0.2em] uppercase text-cedar hover:text-cedar-hover transition-colors min-h-[44px] inline-flex items-center gap-2"
-                    >
-                      Quote a similar build
-                      <span aria-hidden>→</span>
-                    </button>
+                    <div className="mt-8">
+                      <CedarCTA preselectServices={[project.service]}>
+                        Quote a similar build
+                      </CedarCTA>
+                    </div>
                   </article>
                 ))}
               </div>
