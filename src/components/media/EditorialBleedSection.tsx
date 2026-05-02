@@ -67,13 +67,20 @@ const EditorialBleedSection = ({
           sizes={MEDIA_SIZES.BLEED_FULL}
           wrapperClassName="absolute inset-0 w-full h-full"
           fallback={hideIfEmpty ? null : (
-            <div
-              className="absolute inset-0"
-              style={{
-                background:
-                  "radial-gradient(ellipse at center, hsl(150 30% 18%) 0%, hsl(150 30% 8%) 100%)",
-              }}
-            />
+            <div className="absolute inset-0 bg-secondary flex items-center justify-center">
+              <div className="text-center px-6">
+                <div className="mx-auto mb-4 h-px w-16 bg-cedar/40" aria-hidden />
+                <p className="text-[10px] tracking-[0.28em] uppercase text-muted-foreground/60">
+                  {subject ?? "Recent work"}
+                </p>
+                {(location || year) && (
+                  <p className="mt-2 text-[10px] tracking-[0.22em] uppercase text-muted-foreground/40">
+                    {[location, year].filter(Boolean).join(" · ")}
+                  </p>
+                )}
+                <div className="mx-auto mt-4 h-px w-16 bg-cedar/40" aria-hidden />
+              </div>
+            </div>
           )}
           {...(asVideo
             ? { height: "100%", aspectRatio: undefined, opacity: 1 }

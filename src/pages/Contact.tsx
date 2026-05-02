@@ -1,17 +1,15 @@
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
-import CedarCTA from "@/components/CedarCTA";
+import QuoteCloserCard from "@/components/QuoteCloserCard";
 import SectionHeader from "@/components/SectionHeader";
 import PageHero from "@/components/ui/page-hero";
 import { useDocumentTitle } from "@/hooks/useDocumentTitle";
 import { Phone, Mail, Clock, MapPin } from "lucide-react";
 import { CONTACT } from "@/config/contact";
-import { useQuoteModal } from "@/components/quote/QuoteModalProvider";
-import { BACKDROP, bronzeStep } from "@/lib/colors";
+import { bronzeStep } from "@/lib/colors";
 import { SECTION_PADDING, MAX_WIDTH } from "@/lib/spacing";
 
 const Contact = () => {
-  const { openModal } = useQuoteModal();
   useDocumentTitle(
     "Contact",
     `Get in touch with Creek Construction — call ${CONTACT.phone} or email ${CONTACT.email}. Free quotes across Calgary, Edmonton, and surrounding Alberta.`,
@@ -118,36 +116,9 @@ const Contact = () => {
               </aside>
             </div>
 
-            {/* Quote CTA card — primary CTA, no secondary */}
+            {/* Quote CTA card — shared closer used identically across the site */}
             <div id="section-contact-next" className="scroll-mt-24">
-              <div
-                className="rounded-sm overflow-hidden relative grain-texture"
-                style={{
-                  background: BACKDROP.evergreenCard,
-                  borderLeft: "3px solid hsl(var(--cedar))",
-                }}
-              >
-                <div className="relative z-10 p-10 md:p-12">
-                  <p className="text-[10px] tracking-[0.25em] uppercase text-cedar/80 mb-4">
-                    What&rsquo;s next
-                  </p>
-                  <h2 className="font-serif text-evergreen-foreground text-3xl md:text-4xl leading-tight mb-5">
-                    Send us your project details.
-                  </h2>
-                  <p className="text-evergreen-foreground/70 leading-relaxed mb-8">
-                    A two-step form — only your name and phone are required. Tell us what
-                    you&rsquo;re building and we&rsquo;ll be in touch within 24&ndash;48 hours.
-                  </p>
-
-                  <ul className="space-y-2 text-sm text-evergreen-foreground/60 mb-10">
-                    <li className="flex gap-3"><span className="text-cedar">·</span>Free, no-obligation quote</li>
-                    <li className="flex gap-3"><span className="text-cedar">·</span>On-site visit at your convenience</li>
-                    <li className="flex gap-3"><span className="text-cedar">·</span>Clear scope and price in writing</li>
-                  </ul>
-
-                  <CedarCTA>Request a Quote</CedarCTA>
-                </div>
-              </div>
+              <QuoteCloserCard asSection={false} />
             </div>
           </div>
         </div>

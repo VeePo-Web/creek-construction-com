@@ -1,6 +1,7 @@
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import CedarCTA from "@/components/CedarCTA";
+import QuoteCloserCard from "@/components/QuoteCloserCard";
 import SectionHeader from "@/components/SectionHeader";
 import PageHero from "@/components/ui/page-hero";
 import { useDocumentTitle } from "@/hooks/useDocumentTitle";
@@ -41,7 +42,9 @@ const About = () => {
           { shot_type: ["detail", "interior"], min_quality: "reference", kind: "image" },
           { shot_type: ["wide", "elevation", "hero"], min_quality: "reference", kind: "image" },
         ]}
-      />
+      >
+        <CedarCTA />
+      </PageHero>
 
       <section id="section-story" className={`${SECTION_PADDING.default}`} aria-labelledby="story-heading">
         <div className="container mx-auto px-6">
@@ -89,7 +92,7 @@ const About = () => {
                 <div
                   key={i}
                   role="listitem"
-                  className="flex items-start gap-5 pl-6 py-5 rounded-sm transition-[background-color,transform,box-shadow] duration-300 hover:bg-cedar/[0.03] hover:translate-x-1 hover:shadow-elevated grain-texture shadow-contact border border-border/40 bg-background"
+                  className="flex items-start gap-5 pl-6 py-5 rounded-sm transition-[background-color,transform] duration-300 hover:bg-cedar/[0.03] hover:translate-x-1 grain-texture shadow-contact border border-border/40 bg-background"
                   style={{ borderLeft: `2px solid hsl(var(--cedar) / ${bronzeStep(i, STEPS.length)})` }}
                 >
                   <span className="text-cedar/30 text-xs tabular-nums mt-1.5 font-medium">
@@ -129,13 +132,14 @@ const About = () => {
             <p className="text-sm text-muted-foreground/70 mt-6 italic">
               Not on the list? Ask anyway — we’ll let you know if we can travel.
             </p>
-
-            <div className="mt-12">
-              <CedarCTA>Request a Quote</CedarCTA>
-            </div>
           </div>
         </div>
       </section>
+
+      <QuoteCloserCard
+        heading="Ready to start the conversation?"
+        body="Tell us what you're building. It takes 30 seconds — just your name and phone. We reply within 24–48 hours with next steps."
+      />
 
       <Footer />
     </main>

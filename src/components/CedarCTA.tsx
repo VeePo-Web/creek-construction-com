@@ -9,7 +9,8 @@ interface CedarCTAProps {
   to?: string;
   /** Service IDs to preselect when opening the modal. */
   preselectServices?: string[];
-  children: string;
+  /** CTA label. Defaults to the canonical site phrase. */
+  children?: string;
   variant?: "primary" | "secondary";
   className?: string;
   /**
@@ -27,7 +28,14 @@ interface CedarCTAProps {
  * design tokens. The thermal shimmer comes from the .cta-thermal utility
  * in src/index.css.
  */
-const CedarCTA = ({ to, preselectServices, children, variant = "primary", className, onActivate }: CedarCTAProps) => {
+const CedarCTA = ({
+  to,
+  preselectServices,
+  children = "Get my free quote",
+  variant = "primary",
+  className,
+  onActivate,
+}: CedarCTAProps) => {
   const { openModal } = useQuoteModal();
 
   const secondaryClass = cn(
@@ -64,9 +72,15 @@ const CedarCTA = ({ to, preselectServices, children, variant = "primary", classN
     </>
   );
 
+  // [data-quote-cta] is a sentinel observed by MobileQuoteFAB so the floating
+  // pill hides whenever any in-page primary CTA is on screen. Only the primary
+  // variant is treated as a funnel anchor — the secondary "learn more" arrow
+  // link should not suppress the FAB.
+  const dataAttr = variant === "primary" ? { "data-quote-cta": "true" as const } : {};
+
   if (to) {
     return (
-      <Link to={to} className={className_}>
+      <Link to={to} className={className_} {...dataAttr}>
         {inner}
       </Link>
     );
@@ -80,6 +94,7 @@ const CedarCTA = ({ to, preselectServices, children, variant = "primary", classN
         openModal(preselectServices);
       }}
       className={className_}
+      {...dataAttr}
     >
       {inner}
     </button>

@@ -1,5 +1,5 @@
 import SectionHeader from "@/components/SectionHeader";
-import { SERVICE_GROUPS } from "@/config/services";
+import { SERVICE_GROUPS, getItemsForGroup } from "@/config/services";
 import { useQuoteModal } from "@/components/quote/QuoteModalProvider";
 import MediaSlot from "@/components/media/MediaSlot";
 import { MEDIA_SIZES } from "@/lib/media-sizes";
@@ -43,14 +43,15 @@ const Services = () => {
             {SERVICE_GROUPS.map((group, i) => {
               const Icon = group.icon;
               const opacity = bronzeStep(i, SERVICE_GROUPS.length);
+              const groupItemIds = getItemsForGroup(group.id).map((s) => s.id);
               return (
                 <button
                   key={group.id}
                   type="button"
-                  onClick={() => openModal([])}
+                  onClick={() => openModal(groupItemIds)}
                   role="listitem"
-                  aria-label={`Request a quote — ${group.title}`}
-                  className="group w-full text-left flex flex-col items-stretch overflow-hidden rounded-sm transition-[box-shadow,background-color] duration-300 shadow-contact hover:shadow-elevated hover:bg-cedar/[0.03] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cedar focus-visible:ring-offset-2 cursor-pointer min-h-[340px] border border-border/60"
+                  aria-label={`Get my free quote — ${group.title}`}
+                  className="group w-full text-left flex flex-col items-stretch overflow-hidden rounded-sm transition-[background-color] duration-300 shadow-contact hover:bg-cedar/[0.03] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cedar focus-visible:ring-offset-2 cursor-pointer min-h-[340px] border border-border/60"
                   style={{
                     borderLeftWidth: "3px",
                     borderLeftColor: `hsl(var(--cedar) / ${opacity})`,
@@ -93,7 +94,7 @@ const Services = () => {
                       </p>
                     </div>
                     <span className="text-[10px] tracking-[0.18em] uppercase text-cedar/70 group-hover:text-cedar transition-colors duration-300 mt-4">
-                      Request a Quote →
+                      Quote this →
                     </span>
                   </div>
                 </button>

@@ -1,6 +1,7 @@
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import CedarCTA from "@/components/CedarCTA";
+import QuoteCloserCard from "@/components/QuoteCloserCard";
 import SectionHeader from "@/components/SectionHeader";
 import PageHero from "@/components/ui/page-hero";
 import ProjectTile from "@/components/ui/project-tile";
@@ -97,14 +98,11 @@ const Work = () => {
                       </header>
                     )}
                     <ProjectGallery project={project} priority={idx === 0} />
-                    <button
-                      type="button"
-                      onClick={() => openModal([project.service])}
-                      className="mt-6 text-[11px] tracking-[0.2em] uppercase text-cedar hover:text-cedar-hover transition-colors min-h-[44px] inline-flex items-center gap-2"
-                    >
-                      Quote a similar build
-                      <span aria-hidden>→</span>
-                    </button>
+                    <div className="mt-8">
+                      <CedarCTA preselectServices={[project.service]}>
+                        Quote a similar build
+                      </CedarCTA>
+                    </div>
                   </article>
                 ))}
               </div>
@@ -145,14 +143,18 @@ const Work = () => {
             </div>
 
             <div className="mt-20 text-center">
-              <p className="text-sm text-muted-foreground italic mb-6">
+              <p className="text-sm text-muted-foreground italic">
                 More projects added each month.
               </p>
-              <CedarCTA>Request a Quote</CedarCTA>
             </div>
           </div>
         </div>
       </section>
+
+      <QuoteCloserCard
+        heading="Want work like this?"
+        body="Tell us what you have in mind. 30 seconds to send the brief — we'll be in touch within 24–48 hours."
+      />
 
       <Footer />
     </main>
