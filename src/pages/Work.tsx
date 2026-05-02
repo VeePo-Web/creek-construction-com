@@ -143,14 +143,18 @@ const Work = () => {
             </div>
 
             <div className="mt-20 text-center">
-              <p className="text-sm text-muted-foreground italic mb-6">
+              <p className="text-sm text-muted-foreground italic">
                 More projects added each month.
               </p>
-              <CedarCTA>Request a Quote</CedarCTA>
             </div>
           </div>
         </div>
       </section>
+
+      <QuoteCloserCard
+        heading="Want work like this?"
+        body="Tell us what you have in mind. 30 seconds to send the brief — we'll be in touch within 24–48 hours."
+      />
 
       <Footer />
     </main>
