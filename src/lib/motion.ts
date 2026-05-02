@@ -71,7 +71,7 @@ export const DURATION = {
 export const HOVER = {
   /** Card lifts subtly; warm cedar background fades in. */
   cardLift:
-    "transition-[transform,background-color,box-shadow] duration-500 ease-smooth hover:-translate-y-0.5 hover:bg-cedar/[0.04] hover:shadow-elevated",
+    "transition-[transform,background-color,border-color] duration-500 ease-smooth hover:-translate-y-0.5 hover:bg-cedar/[0.04] hover:border-cedar/30",
 
   /** Link gets cedar color + underline sweep. */
   linkUnderline:

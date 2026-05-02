@@ -8,33 +8,33 @@ import { cn } from "@/lib/utils";
  */
 
 const cardVariants = cva(
-  "relative rounded-sm transition-[transform,background-color,border-color,box-shadow] duration-500 grain-texture overflow-hidden",
+  "relative rounded-sm transition-[transform,background-color,border-color] duration-500 grain-texture overflow-hidden",
   {
     variants: {
       variant: {
         foundation: [
           "bg-card border border-border/60",
           "shadow-contact",
-          "hover:shadow-elevated hover:border-cedar/20",
+          "hover:border-cedar/30",
           "hover:translate-y-[-2px]",
         ].join(" "),
         interactive: [
           "bg-card border border-border/50",
           "shadow-contact",
-          "hover:shadow-elevated hover:border-cedar/25",
+          "hover:border-cedar/35",
           "hover:translate-y-[-3px] hover:bg-cedar/[0.02]",
-          "focus-within:shadow-elevated focus-within:border-cedar/30",
+          "focus-within:border-cedar/40",
         ].join(" "),
         testimonial: [
           "bg-background/60 backdrop-blur-md border border-border/40",
           "shadow-contact",
-          "hover:shadow-elevated hover:bg-background/75 hover:border-cedar/20",
+          "hover:bg-background/75 hover:border-cedar/30",
         ].join(" "),
         cta: [
           "bg-gradient-to-br from-cedar/[0.06] to-cedar/[0.02]",
           "border border-cedar/20",
           "shadow-elevated",
-          "hover:shadow-thermal hover:border-cedar/35",
+          "hover:border-cedar/45",
           "hover:translate-y-[-4px]",
           "hover:from-cedar/[0.08] hover:to-cedar/[0.03]",
         ].join(" "),

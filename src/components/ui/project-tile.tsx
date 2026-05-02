@@ -180,7 +180,7 @@ const ProjectTile = ({
 
         {item.description && (
           <div
-            className="mt-4 pl-5 py-3 pr-4 transition-[background-color,padding-left,box-shadow] duration-500 group-hover:bg-cedar/[0.04] group-hover:pl-7 rounded-sm shadow-contact border border-border/40 group-hover:shadow-elevated"
+            className="mt-4 pl-5 py-3 pr-4 transition-[background-color,padding-left,border-color] duration-500 group-hover:bg-cedar/[0.04] group-hover:pl-7 group-hover:border-cedar/30 rounded-sm shadow-contact border border-border/40"
             style={{ borderLeft: `2px solid hsl(var(--cedar) / ${opacity})` }}
           >
             <p className="text-sm text-muted-foreground leading-relaxed">

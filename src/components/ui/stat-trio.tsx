@@ -69,8 +69,8 @@ const StatRow = ({
     <div
       tabIndex={0}
       className={cn(
-        "group/stat cursor-default rounded-sm transition-[padding-left,background-color,box-shadow] duration-500 focus-visible:ring-2 focus-visible:ring-cedar focus-visible:ring-offset-2",
-        variant === "card" && "py-3 pl-5 hover:pl-7 hover:bg-accent/[0.04] border border-border/40 grain-texture shadow-contact hover:shadow-elevated",
+        "group/stat cursor-default rounded-sm transition-[padding-left,background-color,border-color] duration-500 focus-visible:ring-2 focus-visible:ring-cedar focus-visible:ring-offset-2",
+        variant === "card" && "py-3 pl-5 hover:pl-7 hover:bg-accent/[0.04] hover:border-cedar/30 border border-border/40 grain-texture shadow-contact",
         variant === "footer" && "py-2",
       )}
       style={

@@ -272,7 +272,7 @@ export const BUTTON = {
     focus:
       "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cedar focus-visible:ring-offset-2",
     disabled: "disabled:opacity-40 disabled:cursor-not-allowed",
-    transition: "transition-[background-color,letter-spacing,box-shadow] duration-500",
+    transition: "transition-[background-color,letter-spacing] duration-500",
   },
   /** Secondary — evergreen on light, used for non-CTA primary actions. */
   secondary: {

@@ -866,14 +866,16 @@ const ArchitectBleed = (props: ArchitectBleedProps) => {
 
       {/* ── Middle: oversized light serif headline ── */}
       <div className="container mx-auto px-6 relative z-10 flex-1 flex items-center">
-        <div className="max-w-[18ch] md:max-w-[20ch]">
+        <div className="max-w-[14ch] sm:max-w-[18ch] md:max-w-[20ch]">
           <h1
             aria-label={[...lines, props.italic].filter(Boolean).join(" ")}
             className="font-serif"
             style={{
               color: "hsl(0 0% 100%)",
               fontWeight: 400,
-              fontSize: "clamp(3.25rem, 8vw, 8.25rem)",
+              // Floor lowered so the longest word ("Excellence" at ~10 chars in
+              // DM Serif Display) fits a 360–414px viewport without clipping.
+              fontSize: "clamp(2.125rem, 8.5vw, 8.25rem)",
               lineHeight: 0.96,
               letterSpacing: "-0.012em",
             }}
