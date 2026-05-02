@@ -1,5 +1,5 @@
 import SectionHeader from "@/components/SectionHeader";
-import { SERVICE_GROUPS } from "@/config/services";
+import { SERVICE_GROUPS, getItemsForGroup } from "@/config/services";
 import { useQuoteModal } from "@/components/quote/QuoteModalProvider";
 import MediaSlot from "@/components/media/MediaSlot";
 import { MEDIA_SIZES } from "@/lib/media-sizes";
