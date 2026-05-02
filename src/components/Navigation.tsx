@@ -157,7 +157,7 @@ const Navigation = ({ transparent: _transparent }: NavigationProps) => {
               onClick={() => openModal()}
               className={cn(desktopCta, "hidden sm:inline-flex")}
             >
-              Request a Quote
+              Free quote
             </button>
 
             {/* Desktop (lg+) menu trigger — pill with "MENU" label */}
