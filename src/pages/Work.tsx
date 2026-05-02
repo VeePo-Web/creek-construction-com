@@ -58,12 +58,16 @@ const Work = () => {
         height="84vh"
         minHeight="640px"
       >
-        {/* Sister studios — quiet editorial footnote */}
-        <div className="flex items-center gap-3 text-evergreen-foreground/40">
-          <div className="w-8 h-px bg-evergreen-foreground/30" />
-          <span className="text-[10px] tracking-[0.25em] uppercase">
-            Sister studios · B &amp; P Saunas · Hickory &amp; Rose
-          </span>
+        {/* Primary CTA — every PageHero must carry one (funnel contract). */}
+        <div className="flex flex-col gap-5">
+          <CedarCTA />
+          {/* Sister studios — quiet editorial footnote */}
+          <div className="flex items-center gap-3 text-evergreen-foreground/45">
+            <div className="w-8 h-px bg-evergreen-foreground/30" />
+            <span className="text-[10px] tracking-[0.25em] uppercase">
+              Sister studios · B &amp; P Saunas · Hickory &amp; Rose
+            </span>
+          </div>
         </div>
       </PageHero>
 

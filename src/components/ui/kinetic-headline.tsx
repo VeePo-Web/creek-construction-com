@@ -98,8 +98,13 @@ const KineticHeadline = ({
     ? "text-evergreen-foreground"
     : "text-foreground";
 
+  // On dark photographic heroes the italic was rendering in `text-cedar/95`,
+  // which disappears against warm wood / sun-lit photos (services, work,
+  // contact). Switch to the warm cream foreground + a legibility shadow so
+  // the brand-promise line stays readable on every photo while keeping
+  // bronze as the light-mode accent.
   const italicColorClass = onDark
-    ? "text-cedar/95"
+    ? "text-cedar-foreground/95 text-on-dark-legible"
     : "text-cedar";
 
   return (

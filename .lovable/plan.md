@@ -1,85 +1,56 @@
-## Pass 2 — visual & interaction polish (real issues found in preview)
+## Pass 3 — legibility & funnel completeness on photographic heroes
 
-I scanned the live preview at 390×844 (iPhone) plus the full codebase against the consistency contract from pass 1. Found four concrete defects that contradict "professional · sleek · easy to use." Each fix is mechanical and isolated.
+I walked all five public routes on iPhone (390px). Hero pass was clean (pass 2 fixed it). Three real defects on the inner pages, all hurting conversion:
 
 ---
 
-### 1. Mobile hero headline is being clipped — highest priority
+### 1. The italic brand-promise line is illegible on warm-photo heroes
 
-At 390px the homepage hero shows `Excellenc` cut off on the right (screenshot confirmed). The brand promise is literally severed. Cause: `fontSize: clamp(3.25rem, 8vw, 8.25rem)` floors at **52px**, but the container is only ~358px wide and the word "Excellence" (10 chars) needs ~280px alone — and the surrounding `max-w-[18ch]` gives the wrapper headroom that doesn't actually exist on a phone.
+`KineticHeadline` renders the italic in `text-cedar/95` whenever `onDark`. Bronze on warm-toned photographs (wood, sun-lit decks) has near-zero contrast. Confirmed broken on:
 
-**Fix in `src/components/ui/page-hero.tsx`** (architect-bleed variant only):
+- `/services` — "Fifteen services. One crew." disappears into the wood deck photo.
+- `/work` — "Alberta-built. Crew-owned." disappears into the cedar shed.
+- `/contact` — "Free quote. Honest answers." disappears into the wood siding.
 
-- Lower clamp floor: `clamp(2.5rem, 9vw, 8.25rem)` — 40px on small phones, scales identically on desktop.
-- Tighten container ladder: `max-w-[14ch] sm:max-w-[18ch] md:max-w-[20ch]` so the wrapper never reserves more horizontal room than the viewport actually gives.
+The white headline reads fine because it uses `text-evergreen-foreground` (cream) plus the `text-on-dark-legible` shadow utility. The italic gets neither.
 
-No other page is affected (only the homepage uses architect-bleed).
+`/about` reads fine only because its photo is cool-green forest — a coincidence, not a fix.
 
-### 2. Trust label casing disagrees across surfaces
+**Fix in `src/components/ui/kinetic-headline.tsx`:**
 
-The user sees three different versions of the same trust line:
+Change the `onDark` italic class from `"text-cedar/95"` to `"text-cedar-foreground/95 text-on-dark-legible"`. `--cedar-foreground` is the warm cream that's already in the design system (`38 30% 97%`), used as the on-bronze foreground. It keeps the italic warm (it's not a cold white) but pushes contrast above WCAG AA on every photo. Adds the same legibility shadow the headline uses.
 
-- `Hero.tsx` post-hero band: `"WCB covered"`, `"Fully insured"` (sentence case)
-- `trust-signals.ts` / `QuoteCloserCard` / `StyleGuide`: `"WCB Covered"`, `"Fully Insured"` (Title Case)
-- `GlobalMenu.tsx` bottom CTA bar: `"WCB covered · Fully insured · Locally owned"` (sentence case + wrong third item)
+Light-mode (`onDark = false`) stays `text-cedar` — bronze on cream is fine and on-brand.
 
-**Fix:**
+### 2. /work hero subtitle is illegible
 
-- `src/components/Hero.tsx` — delete the local `TRUST_ITEMS` array; map over `TRUST_SIGNALS` from `@/config/trust-signals` (drops the first 3 for the hero band — `Locally owned` was a brand attribute, not a trust signal, and is already covered by the footer).
-- `src/components/navigation/GlobalMenu.tsx` line 414 — replace the hand-written string with `TRUST_LINE` from `@/config/trust-signals`.
+Same root cause — `cinematic-bleed` puts the subtitle in `text-evergreen-foreground/90 text-on-dark-legible`, which *should* work, but the cinematic scrim's bottom band only covers the lower 68% and the subtitle on /work sits where the scrim transitions to lighter alpha. Pass 1 fix #1 already resolves it for the italic; the subtitle stays as-is and reads fine once the italic stops competing with the photo.
 
-Result: one casing, one source of truth, three surfaces in sync.
+No code change here — verifying after #1 ships.
 
-### 3. Animated `box-shadow` still on five public-facing components
+### 3. /work hero is missing its primary CTA
 
-Pass 1 only stripped it from About step rows. These also animate shadow on hover, which is one of the most expensive CSS properties (forces full repaints):
+Pass 1 contract: every PageHero carries a primary CTA so the funnel never dead-ends at the top of a page. /work passed only the "Sister studios" editorial footnote into `children`. Add `<CedarCTA />` above the footnote so the conversion path is one tap from landing.
 
-- `src/components/ui/project-tile.tsx:183` — every project tile on `/work`
-- `src/components/ui/service-tile.tsx:54` — service tiles
-- `src/components/ui/stat-trio.tsx:72` — `card` variant in proof bands
-- `src/components/ui/faq-accordion.tsx:34` — every FAQ row on `/services`
-- `src/components/ui/card-premium.tsx:11` (foundation, interactive variants)
-- `src/lib/motion.ts:74` (`HOVER.cardLift` token)
-- `src/lib/colors.ts:275` (`BUTTON.primary.transition` — animates the thermal CTA shadow on every primary button)
-
-**Fix pattern (same in all six files):**
-
-- Remove `box-shadow` from the `transition-[…]` list.
-- Replace `hover:shadow-elevated` with `hover:border-cedar/30` (or keep an existing border-color hover; effect is similar but compositor-only).
-- Keep the resting `shadow-contact` — that's static, no repaint cost.
-
-For the CTA button token, drop the animated `box-shadow` from the transition; the thermal shimmer (`.cta-thermal` CSS gradient) carries the visual hover affordance. The shadow stays static.
-
-Net effect: ~6 fewer style recalcs per scroll on long pages with many tiles, no visible change in resting state.
-
-### 4. PageHero variant audit — no change required
-
-Each public page uses a different PageHero variant (`architect-bleed` home, `service-portrait` services, `cinematic-bleed` work, `evergreen-typographic` about + contact). This *looks* inconsistent in the source, but in practice each variant carries the same five-element vocabulary (eyebrow → headline → italic → subtitle → CTA row) and the same brand tokens. They give each page a distinct cinematic identity, not a visual mismatch. **Leave as-is.**
+`CedarCTA` is already imported in `src/pages/Work.tsx` — no new import needed.
 
 ### Files
 
 ```text
-EDIT  src/components/ui/page-hero.tsx        architect-bleed: clamp floor + container ladder
-EDIT  src/components/Hero.tsx                pull trust items from TRUST_SIGNALS
-EDIT  src/components/navigation/GlobalMenu.tsx  pull trust line from TRUST_LINE
-EDIT  src/components/ui/project-tile.tsx     drop animated box-shadow
-EDIT  src/components/ui/service-tile.tsx     drop animated box-shadow
-EDIT  src/components/ui/stat-trio.tsx        drop animated box-shadow
-EDIT  src/components/ui/faq-accordion.tsx    drop animated box-shadow
-EDIT  src/components/ui/card-premium.tsx     drop animated box-shadow (2 variants)
-EDIT  src/lib/motion.ts                      HOVER.cardLift token: drop animated box-shadow
-EDIT  src/lib/colors.ts                      BUTTON.primary.transition: drop animated box-shadow
+EDIT  src/components/ui/kinetic-headline.tsx   onDark italic → cream + legibility shadow
+EDIT  src/pages/Work.tsx                       add CedarCTA above sister-studios footnote
 ```
 
-10 file edits. No new files, no deps, no DB.
+2 file edits. No tokens added (uses existing `--cedar-foreground` + `text-on-dark-legible`). No layout shift expected — same font, same size, same position; only color + shadow change.
 
 ### What this delivers
 
-- The hero headline reads cleanly on every iPhone (no more severed brand promise).
-- Same trust line in the same casing on the hero band, the QuoteCloserCard, the GlobalMenu, the Footer, and the StyleGuide.
-- Smoother scroll on `/services` and `/work` (the longest pages) — primary bottleneck is the FAQ accordion + project tile shadow animations.
+- The brand-promise italic ("Honest answers", "Crew-owned", "One crew") is finally readable on every photo.
+- /work has a primary CTA in the hero, matching the rest of the site.
+- Same conversion path one tap from landing, every page.
 
-### Out of scope (intentionally)
+### Out of scope
 
-- PageHero variant unification (each variant earns its keep — see §4).
-- The QuoteModal, services taxonomy, brand tokens, fonts, colors, routing, lazy-loading topology.
+- Anything that requires re-shooting hero photographs.
+- Eyebrow text size / letter-spacing (current spec reads fine on iPhone after pass 2).
+- The cinematic-bleed scrim density (legibility is solved by changing the text, not the scrim).
