@@ -98,55 +98,75 @@ const Services = () => {
                 const Icon = group.icon;
                 const opacity = bronzeStep(gIdx, SERVICE_GROUPS.length);
                 return (
-                  <div key={group.id} aria-labelledby={`group-${group.id}`}>
-                    <div
-                      className="flex items-baseline justify-between gap-6 pb-4 mb-6 border-b"
-                      style={{ borderBottomColor: `hsl(var(--cedar) / ${opacity})` }}
-                    >
-                      <div className="flex items-center gap-4">
-                        <Icon className="h-5 w-5 text-cedar" aria-hidden strokeWidth={1.5} />
-                        <h3
-                          id={`group-${group.id}`}
-                          className="font-serif text-2xl md:text-3xl text-foreground"
-                        >
-                          {group.title}
-                        </h3>
+                  <div key={group.id} className="contents">
+                    <div aria-labelledby={`group-${group.id}`}>
+                      <div
+                        className="flex items-baseline justify-between gap-6 pb-4 mb-6 border-b"
+                        style={{ borderBottomColor: `hsl(var(--cedar) / ${opacity})` }}
+                      >
+                        <div className="flex items-center gap-4">
+                          <Icon className="h-5 w-5 text-cedar" aria-hidden strokeWidth={1.5} />
+                          <h3
+                            id={`group-${group.id}`}
+                            className="font-serif text-2xl md:text-3xl text-foreground"
+                          >
+                            {group.title}
+                          </h3>
+                        </div>
+                        <span className="text-[10px] tracking-[0.2em] uppercase text-muted-foreground/50 tabular-nums shrink-0">
+                          {String(gIdx + 1).padStart(2, "0")} / {String(SERVICE_GROUPS.length).padStart(2, "0")}
+                        </span>
                       </div>
-                      <span className="text-[10px] tracking-[0.2em] uppercase text-muted-foreground/50 tabular-nums shrink-0">
-                        {String(gIdx + 1).padStart(2, "0")} / {String(SERVICE_GROUPS.length).padStart(2, "0")}
-                      </span>
+
+                      <div className="grid sm:grid-cols-2 gap-x-6">
+                        {items.map((item) => (
+                          <button
+                            key={item.id}
+                            type="button"
+                            onClick={() => openModal([item.id])}
+                            className="group flex items-baseline justify-between gap-4 py-4 text-left border-b border-border/40 transition-colors duration-300 hover:bg-cedar/[0.03] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cedar focus-visible:ring-offset-2 rounded-sm px-3 -mx-3 min-h-[44px]"
+                            aria-label={`Get my free quote for ${item.title}`}
+                          >
+                            <div className="flex-1 min-w-0">
+                              <p className="text-base text-foreground transition-colors duration-300 group-hover:text-cedar">
+                                {item.title}
+                              </p>
+                              {item.short && (
+                                <p className="text-xs text-muted-foreground mt-0.5">{item.short}</p>
+                              )}
+                            </div>
+                            <span
+                              className="text-[10px] tracking-[0.18em] uppercase text-cedar/60 group-hover:text-cedar transition-colors duration-300 inline-flex items-center gap-1 shrink-0"
+                              aria-hidden
+                            >
+                              Quote
+                              <ArrowRight className="h-3 w-3 transition-transform duration-300 group-hover:translate-x-0.5" />
+                            </span>
+                          </button>
+                        ))}
+                        {items.length % 2 === 1 && (
+                          <div className="hidden sm:block border-b border-border/20" aria-hidden />
+                        )}
+                      </div>
                     </div>
 
-                    <div className="grid sm:grid-cols-2 gap-x-6">
-                      {items.map((item) => (
-                        <button
-                          key={item.id}
-                          type="button"
-                          onClick={() => openModal([item.id])}
-                          className="group flex items-baseline justify-between gap-4 py-4 text-left border-b border-border/40 transition-colors duration-300 hover:bg-cedar/[0.03] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cedar focus-visible:ring-offset-2 rounded-sm px-3 -mx-3 min-h-[44px]"
-                          aria-label={`Request a quote for ${item.title}`}
-                        >
-                          <div className="flex-1 min-w-0">
-                            <p className="text-base text-foreground transition-colors duration-300 group-hover:text-cedar">
-                              {item.title}
-                            </p>
-                            {item.short && (
-                              <p className="text-xs text-muted-foreground mt-0.5">{item.short}</p>
-                            )}
-                          </div>
-                          <span
-                            className="text-[10px] tracking-[0.18em] uppercase text-cedar/60 group-hover:text-cedar transition-colors duration-300 inline-flex items-center gap-1 shrink-0"
-                            aria-hidden
-                          >
-                            Quote
-                            <ArrowRight className="h-3 w-3 transition-transform duration-300 group-hover:translate-x-0.5" />
-                          </span>
-                        </button>
-                      ))}
-                      {items.length % 2 === 1 && (
-                        <div className="hidden sm:block border-b border-border/20" aria-hidden />
-                      )}
-                    </div>
+                    {/* Mid-catalogue CTA strip — keeps the funnel within ~1 viewport at all times */}
+                    {gIdx === 2 && (
+                      <div
+                        className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-5 px-6 md:px-8 py-7 rounded-sm border border-cedar/20 bg-cedar/[0.04]"
+                        aria-label="Mid-catalogue quote prompt"
+                      >
+                        <div>
+                          <p className="text-[10px] tracking-[0.25em] uppercase text-cedar/80 mb-1.5">
+                            Seen something you want?
+                          </p>
+                          <p className="font-serif text-xl md:text-2xl text-foreground leading-snug">
+                            Start a quote — pick the rest later.
+                          </p>
+                        </div>
+                        <CedarCTA />
+                      </div>
+                    )}
                   </div>
                 );
               })}
