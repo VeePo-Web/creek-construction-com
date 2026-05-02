@@ -42,7 +42,9 @@ const About = () => {
           { shot_type: ["detail", "interior"], min_quality: "reference", kind: "image" },
           { shot_type: ["wide", "elevation", "hero"], min_quality: "reference", kind: "image" },
         ]}
-      />
+      >
+        <CedarCTA />
+      </PageHero>
 
       <section id="section-story" className={`${SECTION_PADDING.default}`} aria-labelledby="story-heading">
         <div className="container mx-auto px-6">
