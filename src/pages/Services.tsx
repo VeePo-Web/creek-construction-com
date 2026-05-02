@@ -268,13 +268,11 @@ const Services = () => {
               subheading="If we don’t address yours, ask on the call."
             />
             <FaqAccordion items={FAQS} className="mt-10" />
-
-            <div className="mt-16 text-center">
-              <CedarCTA>Request a Quote</CedarCTA>
-            </div>
           </div>
         </div>
       </section>
+
+      <QuoteCloserCard />
 
       <Footer />
     </main>
