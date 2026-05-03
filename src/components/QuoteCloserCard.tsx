@@ -46,8 +46,6 @@ const QuoteCloserCard = ({
       style={{
         background: BACKDROP.evergreenCard,
         borderLeft: "3px solid hsl(var(--cedar))",
-        contentVisibility: "auto",
-        containIntrinsicSize: "auto 520px",
       }}
     >
       <div className="relative z-10 p-10 md:p-12">

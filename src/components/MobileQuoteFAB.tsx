@@ -24,22 +24,32 @@ const MobileQuoteFAB = () => {
   const { open, openModal } = useQuoteModal();
   const [scrolledPast, setScrolledPast] = useState(false);
   const [ctaInView, setCtaInView] = useState(false);
+  const [nearBottom, setNearBottom] = useState(false);
 
   // Scroll threshold — 600px is roughly past the hero CTA on a mobile
-  // viewport. rAF-throttled.
+  // viewport. Also detect when the user is within 1200px of the document
+  // end so the FAB never doubles up with the footer's primary CTA, even
+  // if a future page forgets the [data-quote-cta] sentinel. rAF-throttled.
   useEffect(() => {
     let ticking = false;
     const onScroll = () => {
       if (ticking) return;
       ticking = true;
       requestAnimationFrame(() => {
-        setScrolledPast(window.scrollY > 600);
+        const y = window.scrollY;
+        setScrolledPast(y > 600);
+        const docEnd = document.documentElement.scrollHeight;
+        setNearBottom(y + window.innerHeight > docEnd - 1200);
         ticking = false;
       });
     };
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
+    window.addEventListener("resize", onScroll, { passive: true });
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+    };
   }, []);
 
   // Observe every [data-quote-cta] anchor on the page. When at least one
@@ -80,7 +90,7 @@ const MobileQuoteFAB = () => {
     };
   }, []);
 
-  const visible = scrolledPast && !open && !ctaInView;
+  const visible = scrolledPast && !open && !ctaInView && !nearBottom;
 
   return (
     <button

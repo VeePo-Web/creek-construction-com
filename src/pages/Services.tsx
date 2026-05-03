@@ -80,7 +80,6 @@ const Services = () => {
         id="section-catalogue"
         className={`${SECTION_PADDING.default}`}
         aria-labelledby="all-services-heading"
-        style={{ contentVisibility: "auto", containIntrinsicSize: "auto 1400px" }}
       >
         <div className="container mx-auto px-6">
           <div className={`${MAX_WIDTH.content} mx-auto`}>
@@ -180,7 +179,6 @@ const Services = () => {
         id="section-contract"
         className={`${SECTION_PADDING.default} bg-secondary`}
         aria-labelledby="contract-heading"
-        style={{ contentVisibility: "auto", containIntrinsicSize: "auto 800px" }}
       >
         <div className="container mx-auto px-6">
           <div className={`${MAX_WIDTH.content} mx-auto`}>
@@ -256,7 +254,6 @@ const Services = () => {
         id="section-faq"
         className={`${SECTION_PADDING.default} bg-background`}
         aria-labelledby="faq-heading"
-        style={{ contentVisibility: "auto", containIntrinsicSize: "auto 700px" }}
       >
         <div className="container mx-auto px-6">
           <div className="max-w-3xl mx-auto">

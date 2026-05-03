@@ -46,7 +46,6 @@ const HomeProjectRecapStrip = () => {
     <section
       aria-labelledby="home-recap-heading"
       className="py-16 md:py-24 bg-background relative grain-overlay"
-      style={{ contentVisibility: "auto", containIntrinsicSize: "auto 800px" }}
     >
       <div className="container mx-auto px-6">
         <div className="max-w-7xl mx-auto">

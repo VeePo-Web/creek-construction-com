@@ -25,7 +25,6 @@ const Services = () => {
       id="section-services"
       className={`${SECTION_PADDING.default} bg-background`}
       aria-labelledby="services-heading"
-      style={{ contentVisibility: "auto", containIntrinsicSize: "auto 1100px" }}
     >
       <div className="container mx-auto px-6">
         <div ref={ref} className={`${MAX_WIDTH.wide} mx-auto ${cls}`} style={style}>
