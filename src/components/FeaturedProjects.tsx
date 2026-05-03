@@ -153,7 +153,6 @@ const FeaturedProjects = () => {
       id="section-featured"
       className="py-24 md:py-32 bg-background relative"
       aria-labelledby="featured-heading"
-      style={{ contentVisibility: "auto", containIntrinsicSize: "auto 1200px" }}
     >
       <div className="container mx-auto px-6">
         <div ref={ref} className={`max-w-7xl mx-auto ${cls}`} style={style}>

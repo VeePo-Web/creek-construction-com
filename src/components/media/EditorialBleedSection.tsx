@@ -57,7 +57,6 @@ const EditorialBleedSection = ({
     <section
       aria-hidden="true"
       className={cn("relative w-full bg-stone-50", className)}
-      style={{ contentVisibility: "auto", containIntrinsicSize: "auto 600px" }}
     >
       <div className={cn("relative w-full overflow-hidden", aspectClass)}>
         <MediaSlot
