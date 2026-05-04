@@ -6,6 +6,7 @@ import { SECTION_PADDING } from "@/lib/spacing";
 import { EYEBROW } from "@/lib/typography";
 import { TEXT } from "@/lib/colors";
 import CedarCTA from "@/components/CedarCTA";
+import { TRUST_SIGNALS } from "@/config/trust-signals";
 
 const Footer = () => {
   return (
