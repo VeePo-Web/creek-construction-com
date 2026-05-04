@@ -1,4 +1,5 @@
 import Navigation from "@/components/Navigation";
+import SkipToContent from "@/components/ui/skip-to-content";
 import Footer from "@/components/Footer";
 import CedarCTA from "@/components/CedarCTA";
 import QuoteCloserCard from "@/components/QuoteCloserCard";
@@ -20,6 +21,8 @@ const About = () => {
   return (
     <main className="min-h-screen bg-background" aria-label="About — Creek Construction">
       <Navigation />
+      <SkipToContent target="section-story" />
+
 
       <PageHero
         variant="evergreen-typographic"

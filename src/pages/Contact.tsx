@@ -1,6 +1,8 @@
 import Navigation from "@/components/Navigation";
+import SkipToContent from "@/components/ui/skip-to-content";
 import Footer from "@/components/Footer";
 import QuoteCloserCard from "@/components/QuoteCloserCard";
+import CedarCTA from "@/components/CedarCTA";
 import SectionHeader from "@/components/SectionHeader";
 import PageHero from "@/components/ui/page-hero";
 import { useDocumentTitle } from "@/hooks/useDocumentTitle";
@@ -21,6 +23,7 @@ const Contact = () => {
   return (
     <main className="min-h-screen bg-background" aria-label="Contact — Creek Construction">
       <Navigation />
+      <SkipToContent target="section-contact" />
 
       <PageHero
         variant="evergreen-typographic"
@@ -35,7 +38,17 @@ const Contact = () => {
           { shot_type: ["detail", "process"], min_quality: "reference", kind: "image" },
           { shot_type: ["wide", "interior", "elevation"], min_quality: "reference", kind: "image" },
         ]}
-      />
+      >
+        <div className="flex flex-wrap items-center gap-x-6 gap-y-3">
+          <CedarCTA />
+          <a
+            href={`tel:${CONTACT.phoneTel}`}
+            className="inline-flex items-center gap-2 text-[11px] tracking-[0.22em] uppercase text-evergreen-foreground/65 hover:text-evergreen-foreground transition-colors min-h-[44px] px-2"
+          >
+            or call {CONTACT.phone}
+          </a>
+        </div>
+      </PageHero>
 
       <section id="section-contact" className={`${SECTION_PADDING.default}`} aria-labelledby="contact-heading">
         <div className="container mx-auto px-6">

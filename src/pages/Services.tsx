@@ -1,4 +1,5 @@
 import Navigation from "@/components/Navigation";
+import SkipToContent from "@/components/ui/skip-to-content";
 import Footer from "@/components/Footer";
 import CedarCTA from "@/components/CedarCTA";
 import QuoteCloserCard from "@/components/QuoteCloserCard";
@@ -57,6 +58,7 @@ const Services = () => {
   return (
     <main className="min-h-screen bg-background" aria-label="Services — Creek Construction">
       <Navigation />
+      <SkipToContent target="section-catalogue" />
 
       <PageHero
         variant="service-portrait"

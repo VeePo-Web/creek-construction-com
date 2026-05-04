@@ -1,4 +1,5 @@
 import Navigation from "@/components/Navigation";
+import SkipToContent from "@/components/ui/skip-to-content";
 import Footer from "@/components/Footer";
 import CedarCTA from "@/components/CedarCTA";
 import QuoteCloserCard from "@/components/QuoteCloserCard";
@@ -43,6 +44,7 @@ const Work = () => {
     <main className="min-h-screen bg-background" aria-label="Our Work — Creek Construction">
       <ProjectsJsonLd />
       <Navigation />
+      <SkipToContent target={PROJECTS.length > 0 ? "section-featured" : "section-gallery"} />
 
       <PageHero
         variant="cinematic-bleed"
