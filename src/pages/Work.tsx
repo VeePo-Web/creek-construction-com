@@ -44,6 +44,7 @@ const Work = () => {
     <main className="min-h-screen bg-background" aria-label="Our Work — Creek Construction">
       <ProjectsJsonLd />
       <Navigation />
+      <SkipToContent target={PROJECTS.length > 0 ? "section-featured" : "section-gallery"} />
 
       <PageHero
         variant="cinematic-bleed"
