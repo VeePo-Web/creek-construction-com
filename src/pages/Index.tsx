@@ -1,4 +1,5 @@
 import Navigation from "@/components/Navigation";
+import SkipToContent from "@/components/ui/skip-to-content";
 import { useDocumentTitle } from "@/hooks/useDocumentTitle";
 import Hero from "@/components/Hero";
 import Services from "@/components/Services";
