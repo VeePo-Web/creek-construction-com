@@ -20,11 +20,7 @@ const Contact = () => {
     >
       <div className="container mx-auto px-6">
         <div className="max-w-4xl mx-auto">
-          <QuoteCloserCard
-            asSection={false}
-            heading="Let's build something right."
-            body="Tell us about your project — size, timing, materials you're considering. We'll come look, give you an honest scope and a fair price in writing, and let you take it from there."
-          />
+          <QuoteCloserCard asSection={false} eyebrow="What's next" />
         </div>
       </div>
     </section>
