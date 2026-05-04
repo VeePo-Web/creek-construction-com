@@ -1,6 +1,8 @@
 import Navigation from "@/components/Navigation";
+import SkipToContent from "@/components/ui/skip-to-content";
 import Footer from "@/components/Footer";
 import QuoteCloserCard from "@/components/QuoteCloserCard";
+import CedarCTA from "@/components/CedarCTA";
 import SectionHeader from "@/components/SectionHeader";
 import PageHero from "@/components/ui/page-hero";
 import { useDocumentTitle } from "@/hooks/useDocumentTitle";
