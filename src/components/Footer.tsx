@@ -6,6 +6,7 @@ import { SECTION_PADDING } from "@/lib/spacing";
 import { EYEBROW } from "@/lib/typography";
 import { TEXT } from "@/lib/colors";
 import CedarCTA from "@/components/CedarCTA";
+import { TRUST_SIGNALS } from "@/config/trust-signals";
 
 const Footer = () => {
   return (
@@ -85,12 +86,30 @@ const Footer = () => {
           </div>
         </div>
 
-        {/* Tertiary Quote CTA — the final ask before the user leaves */}
-        <div className="mt-12 pt-8 border-t border-evergreen-foreground/10 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-5 max-w-7xl mx-auto">
-          <p className={`${TEXT.onDark.secondary} text-sm font-serif italic`}>
-            Free quote in 30 seconds. No obligation.
-          </p>
-          <CedarCTA />
+        {/* Tertiary Quote CTA — the final ask before the user leaves.
+            Mirrors the QuoteCloserCard trust line so every conversion
+            surface on the site closes with the same four signals. */}
+        <div className="mt-12 pt-8 border-t border-evergreen-foreground/10 max-w-7xl mx-auto">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-5">
+            <p className={`${TEXT.onDark.secondary} text-sm font-serif italic`}>
+              Free quote in 30 seconds. No obligation.
+            </p>
+            <CedarCTA />
+          </div>
+          <div
+            className="mt-6 pt-5 border-t border-evergreen-foreground/10 flex flex-wrap items-center gap-x-5 gap-y-2"
+            aria-label="Trust signals"
+          >
+            {TRUST_SIGNALS.map(({ icon: Icon, label }) => (
+              <span
+                key={label}
+                className={`inline-flex items-center gap-1.5 text-[10px] tracking-[0.2em] uppercase ${TEXT.onDark.tertiary}`}
+              >
+                <Icon className="h-3 w-3 text-cedar/80" aria-hidden strokeWidth={1.6} />
+                {label}
+              </span>
+            ))}
+          </div>
         </div>
 
         <div className="mt-12 pt-8 border-t border-evergreen-foreground/10 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 max-w-7xl mx-auto">

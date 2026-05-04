@@ -155,10 +155,7 @@ const Work = () => {
         </div>
       </section>
 
-      <QuoteCloserCard
-        heading="Want work like this?"
-        body="Tell us what you have in mind. 30 seconds to send the brief — we'll be in touch within 24–48 hours."
-      />
+      <QuoteCloserCard eyebrow="Quote a similar build" />
 
       <Footer />
     </main>
