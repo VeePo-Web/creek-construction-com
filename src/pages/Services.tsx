@@ -57,6 +57,7 @@ const Services = () => {
   return (
     <main className="min-h-screen bg-background" aria-label="Services — Creek Construction">
       <Navigation />
+      <SkipToContent target="section-catalogue" />
 
       <PageHero
         variant="service-portrait"
