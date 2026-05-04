@@ -1,56 +1,59 @@
-## Pass 3 — legibility & funnel completeness on photographic heroes
+# Pass 5 — sitewide consistency sweep
 
-I walked all five public routes on iPhone (390px). Hero pass was clean (pass 2 fixed it). Three real defects on the inner pages, all hurting conversion:
+The collapsed-page bug from Pass 4 is fixed and verified at 390×844. Now an in-depth scan for **anything one page does that other pages should copy** — the brief is "looks like fantasy.co", which means the page-to-page rhythm has to feel like the same hand wrote every screen.
 
----
+Three real leaks. All small, all mechanical, all worth fixing in one pass.
 
-### 1. The italic brand-promise line is illegible on warm-photo heroes
+## What's inconsistent today
 
-`KineticHeadline` renders the italic in `text-cedar/95` whenever `onDark`. Bronze on warm-toned photographs (wood, sun-lit decks) has near-zero contrast. Confirmed broken on:
+### 1. The closer ask changes copy on three pages
+Every page ends with `<QuoteCloserCard />`, which is the right pattern. But three pages override the canonical copy with bespoke wording:
 
-- `/services` — "Fifteen services. One crew." disappears into the wood deck photo.
-- `/work` — "Alberta-built. Crew-owned." disappears into the cedar shed.
-- `/contact` — "Free quote. Honest answers." disappears into the wood siding.
+| Page | Heading | Body |
+|---|---|---|
+| `/` (Index) | "Let's build something right." | "Tell us about your project — size, timing…" |
+| `/work` | "Want work like this?" | "Tell us what you have in mind. 30 seconds…" |
+| `/about` | "Ready to start the conversation?" | "Tell us what you're building. It takes 30 seconds…" |
+| `/services` | *(default)* "Send us your project details." | *(default)* |
+| `/contact` | *(default, inline)* | *(default)* |
 
-The white headline reads fine because it uses `text-evergreen-foreground` (cream) plus the `text-on-dark-legible` shadow utility. The italic gets neither.
+Three different headlines for the same ask breaks the funnel's muscle memory. Fantasy.co's strength is that the closing ask reads identically every time you scroll to it.
 
-`/about` reads fine only because its photo is cool-green forest — a coincidence, not a fix.
+**Fix:** keep ONE canonical headline + body site-wide. Use `eyebrow` overrides only (e.g. "Up next", "What's next", "Quote a similar build") so each page still has a thread of context, but the big serif line and supporting paragraph stay locked.
 
-**Fix in `src/components/ui/kinetic-headline.tsx`:**
+### 2. The Creek Process is duplicated in two files with different copy
 
-Change the `onDark` italic class from `"text-cedar/95"` to `"text-cedar-foreground/95 text-on-dark-legible"`. `--cedar-foreground` is the warm cream that's already in the design system (`38 30% 97%`), used as the on-bronze foreground. It keeps the italic warm (it's not a cold white) but pushes contrast above WCAG AA on every photo. Adds the same legibility shadow the headline uses.
+- `src/components/About.tsx` (homepage section) — 5 steps, terse copy ("Tell us what you're building. Takes two minutes.")
+- `src/pages/About.tsx` (About page) — 5 steps, longer copy ("Tell us what you're building. Online form, a call, or a text…")
 
-Light-mode (`onDark = false`) stays `text-cedar` — bronze on cream is fine and on-brand.
+Two sources of truth means they will drift further. They already have.
 
-### 2. /work hero subtitle is illegible
+**Fix:** extract to `src/config/process.ts` as the single source. Both renderers import from it. Use the longer, more confident copy from `/about` everywhere — it sells better.
 
-Same root cause — `cinematic-bleed` puts the subtitle in `text-evergreen-foreground/90 text-on-dark-legible`, which *should* work, but the cinematic scrim's bottom band only covers the lower 68% and the subtitle on /work sits where the scrim transitions to lighter alpha. Pass 1 fix #1 already resolves it for the italic; the subtitle stays as-is and reads fine once the italic stops competing with the photo.
+### 3. The dark footer closer has no trust signals
+`QuoteCloserCard` renders four trust chips (WCB Covered · Fully Insured · 24-hour reply · No obligation) under its CTA. The hero band shows the same chips. The footer's tertiary CTA strip ("Free quote in 30 seconds. No obligation.") shows none — it's the only conversion surface on the site without the trust line.
 
-No code change here — verifying after #1 ships.
+**Fix:** add the same `TRUST_SIGNALS` row above (or beside) the footer's `<CedarCTA />`, dark-mode tinted. Same icons, same labels, same order.
 
-### 3. /work hero is missing its primary CTA
-
-Pass 1 contract: every PageHero carries a primary CTA so the funnel never dead-ends at the top of a page. /work passed only the "Sister studios" editorial footnote into `children`. Add `<CedarCTA />` above the footnote so the conversion path is one tap from landing.
-
-`CedarCTA` is already imported in `src/pages/Work.tsx` — no new import needed.
-
-### Files
+## Files to touch
 
 ```text
-EDIT  src/components/ui/kinetic-headline.tsx   onDark italic → cream + legibility shadow
-EDIT  src/pages/Work.tsx                       add CedarCTA above sister-studios footnote
+src/config/process.ts          NEW — single source for the 5 steps
+src/components/About.tsx       import STEPS from config; delete local copy
+src/pages/About.tsx            import STEPS from config; delete local copy
+src/components/Contact.tsx     remove heading/body overrides
+src/pages/Work.tsx             remove heading/body overrides on closer
+src/pages/About.tsx            remove heading/body overrides on closer
+src/components/Footer.tsx      add TRUST_SIGNALS strip above tertiary CTA
 ```
 
-2 file edits. No tokens added (uses existing `--cedar-foreground` + `text-on-dark-legible`). No layout shift expected — same font, same size, same position; only color + shadow change.
+No new dependencies. No layout shift. No behavioural changes to the funnel — only copy and visual unification.
 
-### What this delivers
+## What this is explicitly NOT doing
 
-- The brand-promise italic ("Honest answers", "Crew-owned", "One crew") is finally readable on every photo.
-- /work has a primary CTA in the hero, matching the rest of the site.
-- Same conversion path one tap from landing, every page.
+- Not redesigning any hero. The four hero variants (`architect-bleed`, `cinematic-bleed`, `evergreen-typographic`, `service-portrait`) are intentional editorial signatures per route — leaving them.
+- Not touching Pass 4's mobile fixes.
+- Not adding new sections. The page count and section count stay identical.
+- Not changing the QuoteModal, the Navigation, or the FAB.
 
-### Out of scope
-
-- Anything that requires re-shooting hero photographs.
-- Eyebrow text size / letter-spacing (current spec reads fine on iPhone after pass 2).
-- The cinematic-bleed scrim density (legibility is solved by changing the text, not the scrim).
+After this pass the site will have: one closer headline, one process definition, one trust line — repeated everywhere the user might convert.
