@@ -21,6 +21,8 @@ const About = () => {
   return (
     <main className="min-h-screen bg-background" aria-label="About — Creek Construction">
       <Navigation />
+      <SkipToContent target="section-story" />
+
 
       <PageHero
         variant="evergreen-typographic"
