@@ -1,4 +1,5 @@
 import Navigation from "@/components/Navigation";
+import SkipToContent from "@/components/ui/skip-to-content";
 import Footer from "@/components/Footer";
 import CedarCTA from "@/components/CedarCTA";
 import QuoteCloserCard from "@/components/QuoteCloserCard";
