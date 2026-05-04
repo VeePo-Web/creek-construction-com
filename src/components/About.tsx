@@ -6,14 +6,7 @@ import { bronzeStep } from "@/lib/colors";
 import { SECTION_PADDING, MAX_WIDTH, GRID_GAP } from "@/lib/spacing";
 import { BODY } from "@/lib/typography";
 import { useReveal } from "@/hooks/useReveal";
-
-const STEPS = [
-  { title: "Request", desc: "Tell us what you’re building. Takes two minutes." },
-  { title: "Site Visit & Quote", desc: "We come look. Honest scope, fair price, in writing." },
-  { title: "Schedule", desc: "We lock in a start date you can actually plan around." },
-  { title: "Build", desc: "Our crew, on-site. No surprises, no upsells, just the work." },
-  { title: "Walkthrough & Warranty", desc: "We walk it together. If something isn’t right, we fix it." },
-];
+import { CREEK_PROCESS as STEPS } from "@/config/process";
 
 /**
  * About — homepage approach section.
