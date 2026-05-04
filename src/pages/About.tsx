@@ -129,10 +129,7 @@ const About = () => {
         </div>
       </section>
 
-      <QuoteCloserCard
-        heading="Ready to start the conversation?"
-        body="Tell us what you're building. It takes 30 seconds — just your name and phone. We reply within 24–48 hours with next steps."
-      />
+      <QuoteCloserCard eyebrow="Up next" />
 
       <Footer />
     </main>
