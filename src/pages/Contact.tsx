@@ -5,6 +5,7 @@ import QuoteCloserCard from "@/components/QuoteCloserCard";
 import CedarCTA from "@/components/CedarCTA";
 import SectionHeader from "@/components/SectionHeader";
 import PageHero from "@/components/ui/page-hero";
+import MiniFaq from "@/components/MiniFaq";
 import { useDocumentTitle } from "@/hooks/useDocumentTitle";
 import { Phone, Mail, Clock, MapPin } from "lucide-react";
 import { CONTACT } from "@/config/contact";
