@@ -5,6 +5,8 @@ import CedarCTA from "@/components/CedarCTA";
 import QuoteCloserCard from "@/components/QuoteCloserCard";
 import SectionHeader from "@/components/SectionHeader";
 import PageHero from "@/components/ui/page-hero";
+import CrewMoment from "@/components/CrewMoment";
+import TestimonialStrip from "@/components/TestimonialStrip";
 import { useDocumentTitle } from "@/hooks/useDocumentTitle";
 import { CONTACT } from "@/config/contact";
 import { bronzeStep } from "@/lib/colors";
