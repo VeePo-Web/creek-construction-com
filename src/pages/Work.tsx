@@ -7,6 +7,7 @@ import SectionHeader from "@/components/SectionHeader";
 import PageHero from "@/components/ui/page-hero";
 import ProjectTile from "@/components/ui/project-tile";
 import ProjectGallery from "@/components/ProjectGallery";
+import TestimonialStrip from "@/components/TestimonialStrip";
 import { ProjectsJsonLd } from "@/components/JsonLd";
 import { useDocumentTitle } from "@/hooks/useDocumentTitle";
 import { Hammer, Fence, Paintbrush, Home, Trees, type LucideIcon } from "lucide-react";
