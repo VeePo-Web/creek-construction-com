@@ -64,7 +64,7 @@ const SectionHeader = ({
   const showNumeral = variant === "default" && numeral;
   const showBadge = variant === "default" && badge;
 
-  const Wrap = ({ delay, children }: { delay: number; children: React.ReactNode }) =>
+  const Wrap = ({ delay, children }: { delay: number; children: ReactNode }) =>
     disableMotion ? <>{children}</> : <ScrollRevealMotion delay={delay}>{children}</ScrollRevealMotion>;
 
   return (
