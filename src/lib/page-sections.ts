@@ -38,24 +38,30 @@ const PAGE_SECTIONS: Record<string, PageSection[]> = {
     { name: "Services", anchor: "section-services" },
     { name: "About", anchor: "section-about" },
     { name: "Work", anchor: "section-featured" },
+    { name: "Reviews", anchor: "section-testimonials" },
+    { name: "FAQ", anchor: "section-faq" },
     { name: "Contact", anchor: "section-contact" },
   ],
   "/services": [
     { name: "Catalogue", anchor: "section-catalogue" },
     { name: "Contract", anchor: "section-contract" },
+    { name: "Reviews", anchor: "section-testimonials" },
     { name: "FAQ", anchor: "section-faq" },
   ],
   "/work": [
     { name: "Featured", anchor: "section-featured" },
     { name: "Gallery", anchor: "section-gallery" },
+    { name: "Reviews", anchor: "section-testimonials" },
   ],
   "/about": [
     { name: "Story", anchor: "section-story" },
     { name: "Process", anchor: "section-process" },
     { name: "Service Areas", anchor: "section-areas" },
+    { name: "Reviews", anchor: "section-testimonials" },
   ],
   "/contact": [
     { name: "Reach Us", anchor: "section-contact" },
+    { name: "FAQ", anchor: "section-faq" },
     { name: "What's Next", anchor: "section-contact-next" },
   ],
 };

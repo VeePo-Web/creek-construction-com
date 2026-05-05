@@ -8,17 +8,18 @@ import FeaturedProjects from "@/components/FeaturedProjects";
 import Contact from "@/components/Contact";
 import Footer from "@/components/Footer";
 import { LocalBusinessJsonLd } from "@/components/JsonLd";
-import EditorialBleedSection from "@/components/media/EditorialBleedSection";
+import CrewMoment from "@/components/CrewMoment";
+import TestimonialStrip from "@/components/TestimonialStrip";
+import MiniFaq from "@/components/MiniFaq";
 
 /**
- * Homepage rhythm:
+ * Homepage rhythm (Pass 7 — funnel discipline):
  *
- *   Hero → Bleed → Services → About → FeaturedProjects → Contact (closer) → Footer
+ *   Hero → ProofBand → Services → CrewMoment → About →
+ *   FeaturedProjects → TestimonialStrip → MiniFaq → Contact → Footer
  *
- * The hero now owns ALL trust signals (stats + chips) in a single combined
- * post-hero band. The previous standalone <TrustStrip /> was deleted — three
- * trust bands collapsed to one. Every page closes with the same shared
- * <QuoteCloserCard /> evergreen plate via <Contact />.
+ * Every scroll milestone resolves to a CedarCTA. Same rhythm reused
+ * across every public page.
  */
 const Index = () => {
   useDocumentTitle(
@@ -36,29 +37,12 @@ const Index = () => {
       <Navigation />
 
       <Hero />
-
-      {/* One editorial bleed between hero proof-band and services. Discipline:
-          never two bleeds in a row. Falls back to a quiet evergreen plate so
-          the slot always anchors visually even before media is approved. */}
-      <EditorialBleedSection
-        query={{
-          shot_type: ["hero", "wide"],
-          min_quality: "hero",
-          kind: "image",
-        }}
-        location="Calgary · Edmonton · Alberta"
-        year={new Date().getFullYear()}
-        subject="Recent work"
-        hideIfEmpty={false}
-      />
-
       <Services />
+      <CrewMoment />
       <About />
-
-      {/* Featured projects gallery — pulls from the `projects` table.
-          Renders nothing until at least 3 featured projects exist. */}
       <FeaturedProjects />
-
+      <TestimonialStrip background="secondary" />
+      <MiniFaq />
       <Contact />
       <Footer />
     </main>

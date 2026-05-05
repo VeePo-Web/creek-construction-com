@@ -7,6 +7,7 @@ import SectionHeader from "@/components/SectionHeader";
 import PageHero from "@/components/ui/page-hero";
 import ProjectTile from "@/components/ui/project-tile";
 import ProjectGallery from "@/components/ProjectGallery";
+import TestimonialStrip from "@/components/TestimonialStrip";
 import { ProjectsJsonLd } from "@/components/JsonLd";
 import { useDocumentTitle } from "@/hooks/useDocumentTitle";
 import { Hammer, Fence, Paintbrush, Home, Trees, type LucideIcon } from "lucide-react";
@@ -148,7 +149,19 @@ const Work = () => {
               ))}
             </div>
 
-            <div className="mt-20 text-center">
+            <div className="mt-20 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-5 px-6 md:px-8 py-7 rounded-sm border border-cedar/20 bg-cedar/[0.04]">
+              <div>
+                <p className="text-[10px] tracking-[0.25em] uppercase text-cedar/80 mb-1.5">
+                  Like what you see?
+                </p>
+                <p className="font-serif text-xl md:text-2xl text-foreground leading-snug">
+                  Start a quote for a similar build.
+                </p>
+              </div>
+              <CedarCTA />
+            </div>
+
+            <div className="mt-12 text-center">
               <p className="text-sm text-muted-foreground italic">
                 More projects added each month.
               </p>
@@ -156,6 +169,8 @@ const Work = () => {
           </div>
         </div>
       </section>
+
+      <TestimonialStrip background="background" />
 
       <QuoteCloserCard eyebrow="Quote a similar build" />
 

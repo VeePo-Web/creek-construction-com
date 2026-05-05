@@ -5,6 +5,8 @@ import CedarCTA from "@/components/CedarCTA";
 import QuoteCloserCard from "@/components/QuoteCloserCard";
 import SectionHeader from "@/components/SectionHeader";
 import PageHero from "@/components/ui/page-hero";
+import CrewMoment from "@/components/CrewMoment";
+import TestimonialStrip from "@/components/TestimonialStrip";
 import { useDocumentTitle } from "@/hooks/useDocumentTitle";
 import { CONTACT } from "@/config/contact";
 import { bronzeStep } from "@/lib/colors";
@@ -71,6 +73,9 @@ const About = () => {
         </div>
       </section>
 
+      {/* Human moment between story and process */}
+      <CrewMoment />
+
       <section id="section-process" className={`${SECTION_PADDING.default} bg-secondary`} aria-labelledby="process-heading">
         <div className="container mx-auto px-6">
           <div className={`${MAX_WIDTH.content} mx-auto`}>
@@ -131,6 +136,8 @@ const About = () => {
           </div>
         </div>
       </section>
+
+      <TestimonialStrip background="secondary" />
 
       <QuoteCloserCard eyebrow="Up next" />
 
