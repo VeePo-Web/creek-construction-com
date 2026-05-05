@@ -236,6 +236,9 @@ const Services = () => {
         </div>
       </section>
 
+      {/* Social proof — neighbors’ words before the FAQ */}
+      <TestimonialStrip background="background" />
+
       {/* FAQ */}
       <section
         id="section-faq"
