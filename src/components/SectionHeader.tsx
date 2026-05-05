@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import ScrollRevealMotion from "@/components/ScrollRevealMotion";
 import BronzeRule from "@/components/ui/bronze-rule";
 import { HEADLINE } from "@/lib/typography";
