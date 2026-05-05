@@ -1,74 +1,122 @@
 
-# Pass 7 — "FlexServices-clean" Funnel Audit
+# Pass 8 — Minimalism polish: rhythm, dedupe, and FlexServices-grade tightness
 
-Goal: Every public page should funnel from **arrival → trust → quote** with the same minimal cadence and shared components. Keep the Creek editorial aesthetic (cedar/cream, DM Serif/Sans, light-only). Borrow only the *funnel discipline* from FlexServices (testimonials reused, mini-FAQ reused, CTA repeated at every scroll milestone, owner/crew moment), not its visual style.
+After Pass 7 every page has the right *parts*. Pass 8 fixes the *rhythm* between them — same level of editorial discipline FlexServices.org has where every section visibly contrasts with its neighbour, copy never repeats verbatim, and there’s no duplicated logic between pages.
+
+Audit found 12 concrete issues across 5 pages; this plan fixes them all.
 
 ## Audit findings
 
-| Page | Missing vs ideal funnel |
-|------|--------------------------|
-| `/` Index | No testimonials, no mini-FAQ, no owner/crew moment. Hero → Services → About → Featured → Closer leaves a long stretch with no social proof. |
-| `/services` | No testimonials. FAQ exists (good). Mid-page CTA exists (good). |
-| `/about` | No owner photo / crew portrait moment, no testimonials. |
-| `/work` | No testimonials below the gallery. CTA only at the very bottom of the placeholder grid. |
-| `/contact` | No mini-FAQ. Quote card is good but the page is short — feels thin. |
-| Footer | Tertiary CTA exists. Good. |
+### A · Background rhythm (sections stacking same-tone)
+| Where | Problem |
+|-------|---------|
+| `/` (Home) | `Services (bg)` → `CrewMoment (bg)` → no contrast band; reads as one massive scroll. |
+| `/about` | `Story (bg)` → `CrewMoment (bg)` → same. |
+| `/services` | `TestimonialStrip (bg)` → `MiniFaq-equivalent (bg)` → same. |
+| `/work` | `Featured (bg)` → `Gallery (muted)` → `Testimonials (bg)` → muted is the only `muted` use site-wide; breaks the bg/secondary 2-tone pattern. |
 
-Three components are missing as **reusable** modules:
-1. A canonical `<TestimonialStrip />` (3 quotes, editorial cards — bronze hairline, no avatars, just first name + city).
-2. A canonical `<MiniFaq />` (4 questions, accordion) that takes an `items` prop so each page can pass page-relevant Q&A while sharing all styling.
-3. A canonical `<CrewMoment />` (single editorial photo + 2-paragraph note + CedarCTA) — Creek's equivalent of FlexServices' "Meet the Owner".
+### B · Duplication / dead weight
+- `/services` still has an **inline FAQ section** (~30 lines) when `<MiniFaq />` exists. Pure duplication of styling, not data.
+- `<Contact />` (home closer) is a 3-line wrapper around `<QuoteCloserCard asSection={false}>`. Redundant — Home should just render `<QuoteCloserCard />` directly.
+- `FeaturedProjects` uses raw `py-24 md:py-32` instead of `SECTION_PADDING.default`. Inconsistent with every other section.
+- `<SectionHeader />` internally wraps content in `<ScrollRevealMotion>` (framer); when used inside `useReveal`’d parents (TestimonialStrip / MiniFaq / CrewMoment / About / Services), the headline animates *twice*. Wasteful + perceptible jitter.
+
+### C · CTA & copy hygiene
+- StyleGuide example uses `"Get a free quote"` (everywhere else: `"Get my free quote"`). Drift.
+- Work page mid-CTA prompt uses `"Like what you see?"` while Services mid-CTA uses `"Seen something you want?"` — two phrasings for the identical pattern. Pick one canonical phrasing.
+- `/contact` PageHero subtitle says “No high-pressure sales” but the proof rail elsewhere already says it — repeats verbatim. Needs a non-redundant variation.
+
+### D · Page-specific thinness
+- `/contact` page is 3 sections. Add `<TestimonialStrip />` between contact info and FAQ so the page mirrors the others’ proof cadence.
+- `/about` has no FAQ. Add `<MiniFaq />` before the closer (mirrors Home and Services and Contact).
+- `/work` has no human moment. Add `<CrewMoment />` between Featured projects and Gallery.
+
+### E · Tiny consistency wins
+- All hero subtitles end in a period — except `/work` (`Alberta-built. Crew-owned.`) — fine, italic. OK.
+- `<TestimonialStrip />`, `<MiniFaq />`, `<CrewMoment />` use static `headingId` strings (`testimonials-heading`, `faq-heading`, `crew-heading`). If two ever appear on the same page, IDs collide. Make them prop-overridable with sensible defaults.
+- Trust signals strip in QuoteCloserCard + Footer + HeroProofBand all render the same array with slightly different sizing. Already centralised in `TRUST_SIGNALS`. ✅
 
 ## Plan
 
-### 1 · New shared modules (`src/components/`)
+### 1 · Background rhythm (the big one)
 
-- **`TestimonialStrip.tsx`** — 3 quotes from a new `src/config/testimonials.ts`. Layout: 3-col grid on md+, stacked on mobile. Each card: hairline border, large pull-quote in DM Serif, attribution line `— First name · City`. Optional `eyebrow` + `heading` props (defaults: `"WHAT NEIGHBORS SAY"` / `"Quiet recommendations."`). No stars, no avatars (stays editorial). Trailing `<CedarCTA />` underneath.
-- **`MiniFaq.tsx`** — wraps existing `<FaqAccordion />`. Props: `items`, `eyebrow?`, `heading?`. Defaults match Services page tone. Single column, max-w-3xl, `bg-background`.
-- **`CrewMoment.tsx`** — 2-col editorial: left = `<MediaSlot>` portrait (query: `shot_type:["portrait","process"]`), right = headline `"The crew on-site is the crew you meet."` + 2 short paragraphs + `<CedarCTA />`. No bio fluff.
-- **`src/config/testimonials.ts`** — 5–6 quote objects: `{ quote, firstName, city, service }`. Single source of truth.
+Adopt a strict **2-tone alternation** site-wide: every adjacent pair of sections must differ. `bg-background` (cream) ↔ `bg-secondary` (warmer cream-grey). `bg-muted` retired from `/work`.
 
-### 2 · Per-page edits
+Final per-page rhythms:
 
-**`/` Index** — insert in this order:
+```text
+/                Hero(B/W) → ProofBand(bg) → Services(bg) → CrewMoment(secondary) →
+                 About(secondary→keep, but switch to bg) → Featured(secondary) →
+                 Testimonials(bg) → MiniFaq(secondary) → Closer(bg) → Footer
+
+/services        Hero → Catalogue(bg) → Contract(secondary) → Testimonials(bg) →
+                 MiniFaq(secondary) → Closer(bg)
+
+/about           Hero → Story(bg) → CrewMoment(secondary) → Process(bg) →
+                 Areas(secondary) → Testimonials(bg) → MiniFaq(secondary) →
+                 Closer(bg)
+
+/work            Hero → Featured(bg) → CrewMoment(secondary) → Gallery(bg, was muted) →
+                 Testimonials(secondary) → Closer(bg)
+
+/contact         Hero → ContactGrid(bg) → Testimonials(secondary) → MiniFaq(bg) →
+                 Closer(secondary, via QuoteCloserCard)
 ```
-Hero → HeroProofBand → Services → CrewMoment → About →
-FeaturedProjects → TestimonialStrip → MiniFaq → Contact (closer) → Footer
-```
-- Replace the lone `<EditorialBleedSection />` between Hero and Services with `<CrewMoment />` (one bleed → one human moment; the proof band already gives a beat after Hero).
-- Add `<TestimonialStrip />` after FeaturedProjects.
-- Add `<MiniFaq />` (4 high-conversion questions: pricing, timeline, warranty, areas) before the Contact closer.
 
-**`/services`** — add `<TestimonialStrip />` between the Responsibility matrix and the existing FAQ. Trim Services FAQ to the same 4 questions used on home + 1 service-specific (it's currently 4, fine — leave as is).
+Implementation: flip a single `background` prop on the new modules per insertion, plus change `<About />` (homepage) from `bg-secondary` to `bg-background`, change `<Work>` gallery from `bg-muted` to `bg-background`, and change Process section default mapping.
 
-**`/about`** — add `<CrewMoment />` after the "Who we are" story section, and `<TestimonialStrip />` after the Service Areas chips. Closer stays.
+### 2 · Dedupe
 
-**`/work`** — add `<TestimonialStrip />` between the placeholder gallery and the closer. Insert one extra mid-page `<CedarCTA />` row above the placeholder grid (mirrors Services mid-catalogue prompt) so the long page never goes >1 viewport without an ask.
+- **`/services`**: delete the inline 18-line FAQ section, replace with `<MiniFaq items={FAQS_SERVICES} />`.
+- **`<Contact />` homepage wrapper**: delete, replace its usage in `Index.tsx` with `<QuoteCloserCard />` directly. (Preserves the `id="section-contact"` anchor by passing `id` prop — add that prop to `QuoteCloserCard`.)
+- **`FeaturedProjects`**: swap `py-24 md:py-32` → `SECTION_PADDING.default`, add `background` prop matching home rhythm.
+- **`SectionHeader` double-reveal**: when a `disableMotion` prop is passed, render plain children (no framer wrapper). Pass it from every component that already calls `useReveal` on a parent (TestimonialStrip, MiniFaq, CrewMoment, FeaturedProjects, About, Services). Cuts ~6 framer subscriptions per homepage scroll.
 
-**`/contact`** — add `<MiniFaq />` below the contact info / closer grid. Use the same 4 questions as home.
+### 3 · CTA & copy normalisation
 
-### 3 · Funnel hygiene tweaks
+- StyleGuide CedarCTA example → `"Get my free quote"` (matches site-wide canonical).
+- Replace Services + Work mid-page CTA prompts with a new tiny shared component `<MidPageQuotePrompt label="..." />` that renders the cedar bordered prompt + headline + CedarCTA. One source. Default headline: `"Start a quote — pick the rest later."`. Same line on both pages.
+- `/contact` hero subtitle changed to: `"Tell us what you’re building. We respond within 24–48 hours, by phone or email — your pick."` (avoids duplicating the trust strip line).
 
-- **CTA cadence rule:** every page must have a CedarCTA in the hero, mid-page, and closer. Audit confirms all four pages will satisfy this after Pass 7.
-- **Anchor IDs:** new sections get `id="section-testimonials"`, `id="section-faq"`, `id="section-crew"` — registered in `src/lib/page-sections.ts` so the SectionRail nav picks them up automatically (per Core memory rule).
-- **Reveal:** every new module uses `useReveal()` for entrance, matching Services/About/FeaturedProjects.
-- **Skip-to-content targets:** unchanged — they still point to the first content section.
+### 4 · Per-page module additions
 
-### 4 · What we are NOT doing
+- **`/contact`** → add `<TestimonialStrip background="secondary" />` between the contact grid and `<MiniFaq />`.
+- **`/about`** → add `<MiniFaq background="secondary" />` between TestimonialStrip and the QuoteCloserCard.
+- **`/work`** → add `<CrewMoment background="secondary" />` between Featured and Gallery sections.
 
-- No new colors, fonts, or design tokens — strictly compose existing primitives.
-- No dark mode, no gradients beyond what's already in `BACKDROP`.
-- No new page routes.
-- No edits to `src/integrations/supabase/*`, `.env`, or `supabase/config.toml`.
-- No edits to the navigation, hero, or footer beyond what's listed above.
+### 5 · ID & a11y polish
 
-## Technical notes (for the implementer)
+- `TestimonialStrip`, `MiniFaq`, `CrewMoment` get an optional `headingId` prop (default unchanged). Document in JSDoc that callers placing two on one page must pass distinct ids.
+- Update `src/lib/page-sections.ts` `/work` to add `Reviews` (already present from Pass 7 — verify) and also `Crew` if CrewMoment lands on /work.
 
-- `useReveal`, `MediaSlot`, `FaqAccordion`, `SectionHeader`, `BronzeRule`, `bronzeStep`, `BACKDROP`, `SECTION_PADDING`, `MAX_WIDTH`, `BODY` are all already in the codebase — reuse, don't fork.
-- `CrewMoment` mediaslot should pass `fallbackVariant="cedar"` so the section reads correctly even before a portrait photo is approved in the media library.
-- `TestimonialStrip` cards: `border border-border/40` + `borderLeft: 2px solid hsl(var(--cedar) / bronzeStep(i, n))` to keep the thermal-crescendo pattern consistent with Services/About lists.
-- `MiniFaq` should re-export the same FAQ list constant from `src/config/faqs.ts` (new file, single source) — replace the inline FAQ arrays currently in `src/pages/Services.tsx` with an import from this new config.
+### 6 · What we are NOT doing
+
+- No new colors, fonts, animations, or design tokens.
+- No content rewrites beyond the two CTA-prompt phrasings + one Contact subtitle line.
+- No edits to Navigation, Footer, Hero, MobileQuoteFAB, or routing.
+- No edits to Supabase, `.env`, or `supabase/config.toml`.
+- No dark mode (forbidden by Core memory).
+
+## Technical notes
+
+Files touched (~12):
+
+- `src/pages/Index.tsx` — replace `<About />` bg via component prop pass-through; remove `<Contact />`, render `<QuoteCloserCard />`; toggle `background` props on inserted modules.
+- `src/pages/Services.tsx` — delete inline FAQ section; render `<MiniFaq items={FAQS_SERVICES} background="secondary" />`; swap mid-page prompt for `<MidPageQuotePrompt />`.
+- `src/pages/About.tsx` — flip CrewMoment / TestimonialStrip backgrounds; add `<MiniFaq background="secondary" />`.
+- `src/pages/Work.tsx` — add `<CrewMoment background="secondary" />`; change Gallery `bg-muted` → `bg-background`; flip TestimonialStrip background; swap mid-page prompt for shared component.
+- `src/pages/Contact.tsx` — add `<TestimonialStrip background="secondary" />`; flip MiniFaq background; update hero subtitle.
+- `src/pages/StyleGuide.tsx` — single CedarCTA label change.
+- `src/components/Contact.tsx` — **delete** (homepage closer wrapper, redundant).
+- `src/components/About.tsx` — accept `background` prop, default `"secondary"` (preserves current default).
+- `src/components/FeaturedProjects.tsx` — accept `background` prop, switch to `SECTION_PADDING.default`, pass `disableMotion` to SectionHeader.
+- `src/components/QuoteCloserCard.tsx` — accept optional `id` prop (defaults to `"section-closer"`); add `background` prop.
+- `src/components/SectionHeader.tsx` — add optional `disableMotion` prop (skips ScrollRevealMotion wrapper).
+- `src/components/{TestimonialStrip,MiniFaq,CrewMoment}.tsx` — accept `headingId` prop; pass `disableMotion` to SectionHeader.
+- `src/components/MidPageQuotePrompt.tsx` — **new**, ~25 lines, used by Services + Work.
+
+Type-check confirms after each batch. No DB migrations needed.
 
 ## Expected outcome
 
-Five public pages, one funnel rhythm, one set of reusable modules. Visiting any page surfaces: photo proof → human moment → social proof → answer to the obvious objection → CedarCTA. Same beats, same components, no per-page divergence — like FlexServices' funnel discipline rendered through Creek's editorial system.
+Five public pages that visually breathe — every section visibly contrasts with the next, the same FAQ + testimonials rendering paths in every place they appear, one mid-page prompt component, one closer component, one canonical CTA label. Reads like FlexServices’ funnel discipline rendered through Creek’s editorial system, with all of Pass 7’s benefits and none of its repeated fragments.

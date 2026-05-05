@@ -16,6 +16,10 @@ interface QuoteCloserCardProps {
   preselectServices?: string[];
   /** Wrap in its own <section> with vertical padding. Default true. */
   asSection?: boolean;
+  /** Override the section id. Default "section-closer". */
+  id?: string;
+  /** Background tone when rendered as a section. Default "background". */
+  background?: "background" | "secondary";
 }
 
 const DEFAULT_BULLETS = [
@@ -39,6 +43,8 @@ const QuoteCloserCard = ({
   bullets = DEFAULT_BULLETS,
   preselectServices,
   asSection = true,
+  id = "section-closer",
+  background = "background",
 }: QuoteCloserCardProps) => {
   const card = (
     <div
@@ -92,8 +98,8 @@ const QuoteCloserCard = ({
 
   return (
     <section
-      id="section-closer"
-      className={`${SECTION_PADDING.default} bg-background`}
+      id={id}
+      className={`${SECTION_PADDING.default} ${background === "secondary" ? "bg-secondary" : "bg-background"}`}
       aria-label="Request a quote"
     >
       <div className="container mx-auto px-6">

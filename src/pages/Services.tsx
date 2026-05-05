@@ -5,8 +5,9 @@ import CedarCTA from "@/components/CedarCTA";
 import QuoteCloserCard from "@/components/QuoteCloserCard";
 import SectionHeader from "@/components/SectionHeader";
 import PageHero from "@/components/ui/page-hero";
-import FaqAccordion from "@/components/ui/faq-accordion";
+import MiniFaq from "@/components/MiniFaq";
 import TestimonialStrip from "@/components/TestimonialStrip";
+import MidPageQuotePrompt from "@/components/MidPageQuotePrompt";
 import { Check, Minus, ArrowRight } from "lucide-react";
 import { useDocumentTitle } from "@/hooks/useDocumentTitle";
 import { SERVICE_GROUPS, getItemsForGroup } from "@/config/services";
@@ -14,8 +15,6 @@ import { useQuoteModal } from "@/components/quote/QuoteModalProvider";
 import { BACKDROP, bronzeStep } from "@/lib/colors";
 import { SECTION_PADDING, MAX_WIDTH } from "@/lib/spacing";
 import { FAQS_SERVICES } from "@/config/faqs";
-
-const FAQS = FAQS_SERVICES;
 
 const WE_HANDLE = [
   "Site assessment and accurate quote",
@@ -137,22 +136,7 @@ const Services = () => {
                     </div>
 
                     {/* Mid-catalogue CTA strip — keeps the funnel within ~1 viewport at all times */}
-                    {gIdx === 2 && (
-                      <div
-                        className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-5 px-6 md:px-8 py-7 rounded-sm border border-cedar/20 bg-cedar/[0.04]"
-                        aria-label="Mid-catalogue quote prompt"
-                      >
-                        <div>
-                          <p className="text-[10px] tracking-[0.25em] uppercase text-cedar/80 mb-1.5">
-                            Seen something you want?
-                          </p>
-                          <p className="font-serif text-xl md:text-2xl text-foreground leading-snug">
-                            Start a quote — pick the rest later.
-                          </p>
-                        </div>
-                        <CedarCTA />
-                      </div>
-                    )}
+                    {gIdx === 2 && <MidPageQuotePrompt />}
                   </div>
                 );
               })}
@@ -239,25 +223,8 @@ const Services = () => {
       {/* Social proof — neighbors’ words before the FAQ */}
       <TestimonialStrip background="background" />
 
-      {/* FAQ */}
-      <section
-        id="section-faq"
-        className={`${SECTION_PADDING.default} bg-background`}
-        aria-labelledby="faq-heading"
-      >
-        <div className="container mx-auto px-6">
-          <div className="max-w-3xl mx-auto">
-            <SectionHeader
-              variant="quiet"
-              label="COMMON QUESTIONS"
-              headingId="faq-heading"
-              heading="Straight answers."
-              subheading="If we don’t address yours, ask on the call."
-            />
-            <FaqAccordion items={FAQS} className="mt-10" />
-          </div>
-        </div>
-      </section>
+      {/* FAQ — shared module, single source of truth */}
+      <MiniFaq items={FAQS_SERVICES} background="secondary" />
 
       <QuoteCloserCard />
 

@@ -6,6 +6,7 @@ import CedarCTA from "@/components/CedarCTA";
 import SectionHeader from "@/components/SectionHeader";
 import PageHero from "@/components/ui/page-hero";
 import MiniFaq from "@/components/MiniFaq";
+import TestimonialStrip from "@/components/TestimonialStrip";
 import { useDocumentTitle } from "@/hooks/useDocumentTitle";
 import { Phone, Mail, Clock, MapPin } from "lucide-react";
 import { CONTACT } from "@/config/contact";
@@ -33,7 +34,7 @@ const Contact = () => {
         sectionLabel="GET IN TOUCH"
         title={["Let's talk about", "your project."]}
         italic="Free quote. Honest answers."
-        subtitle="No high-pressure sales. We respond within 24–48 hours."
+        subtitle="Tell us what you’re building. We respond within 24–48 hours, by phone or email — your pick."
         triptychQueries={[
           { service: "decks", shot_type: ["hero", "elevation"], min_quality: "reference", kind: "image" },
           { shot_type: ["detail", "process"], min_quality: "reference", kind: "image" },
@@ -138,7 +139,9 @@ const Contact = () => {
         </div>
       </section>
 
-      <MiniFaq background="secondary" />
+      <TestimonialStrip background="secondary" />
+
+      <MiniFaq background="background" />
 
       <Footer />
     </main>

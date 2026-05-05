@@ -7,6 +7,7 @@ import SectionHeader from "@/components/SectionHeader";
 import PageHero from "@/components/ui/page-hero";
 import CrewMoment from "@/components/CrewMoment";
 import TestimonialStrip from "@/components/TestimonialStrip";
+import MiniFaq from "@/components/MiniFaq";
 import { useDocumentTitle } from "@/hooks/useDocumentTitle";
 import { CONTACT } from "@/config/contact";
 import { bronzeStep } from "@/lib/colors";
@@ -73,10 +74,10 @@ const About = () => {
         </div>
       </section>
 
-      {/* Human moment between story and process */}
-      <CrewMoment />
+      {/* Human moment between story and process — secondary tone alternates with story (bg) */}
+      <CrewMoment background="secondary" />
 
-      <section id="section-process" className={`${SECTION_PADDING.default} bg-secondary`} aria-labelledby="process-heading">
+      <section id="section-process" className={`${SECTION_PADDING.default}`} aria-labelledby="process-heading">
         <div className="container mx-auto px-6">
           <div className={`${MAX_WIDTH.content} mx-auto`}>
             <SectionHeader
@@ -110,7 +111,7 @@ const About = () => {
         </div>
       </section>
 
-      <section id="section-areas" className={`${SECTION_PADDING.default}`} aria-labelledby="areas-heading">
+      <section id="section-areas" className={`${SECTION_PADDING.default} bg-secondary`} aria-labelledby="areas-heading">
         <div className="container mx-auto px-6">
           <div className={`${MAX_WIDTH.content} mx-auto`}>
             <SectionHeader
@@ -137,7 +138,9 @@ const About = () => {
         </div>
       </section>
 
-      <TestimonialStrip background="secondary" />
+      <TestimonialStrip background="background" />
+
+      <MiniFaq background="secondary" />
 
       <QuoteCloserCard eyebrow="Up next" />
 

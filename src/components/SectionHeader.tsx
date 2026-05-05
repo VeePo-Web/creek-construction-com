@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import ScrollRevealMotion from "@/components/ScrollRevealMotion";
 import BronzeRule from "@/components/ui/bronze-rule";
 import { HEADLINE } from "@/lib/typography";
@@ -29,6 +30,12 @@ interface SectionHeaderProps {
    * the scroll itself signals progress and the editorial garnish piles up.
    */
   variant?: "default" | "quiet";
+  /**
+   * Skip the per-line ScrollRevealMotion wrappers. Use when the parent
+   * already animates the whole section via `useReveal()` — avoids the
+   * "double reveal" jitter and ~4 framer subscriptions per header.
+   */
+  disableMotion?: boolean;
 }
 
 /**
@@ -52,37 +59,41 @@ const SectionHeader = ({
   badge,
   baseDelay = 0,
   variant = "default",
+  disableMotion = false,
 }: SectionHeaderProps) => {
   const showNumeral = variant === "default" && numeral;
   const showBadge = variant === "default" && badge;
 
+  const Wrap = ({ delay, children }: { delay: number; children: ReactNode }) =>
+    disableMotion ? <>{children}</> : <ScrollRevealMotion delay={delay}>{children}</ScrollRevealMotion>;
+
   return (
     <>
-      <ScrollRevealMotion delay={baseDelay}>
+      <Wrap delay={baseDelay}>
         <BronzeRule
           numeral={showNumeral ? numeral : undefined}
           label={label}
           variant={cedarLabel ? "accent" : "default"}
           className="mb-6"
         />
-      </ScrollRevealMotion>
+      </Wrap>
 
-      <ScrollRevealMotion delay={baseDelay + 0.1}>
+      <Wrap delay={baseDelay + 0.1}>
         <h2 id={headingId} className={`${HEADLINE.section} mb-4`}>{heading}</h2>
-      </ScrollRevealMotion>
+      </Wrap>
 
       {subheading && (
-        <ScrollRevealMotion delay={baseDelay + 0.15}>
+        <Wrap delay={baseDelay + 0.15}>
           <p className="text-subhead text-foreground/60 italic font-serif mb-8 text-balance">
             {subheading}
           </p>
-        </ScrollRevealMotion>
+        </Wrap>
       )}
 
       {showBadge && (
-        <ScrollRevealMotion delay={baseDelay + 0.2}>
+        <Wrap delay={baseDelay + 0.2}>
           <BronzeRule label={badge!} variant="default" width="long" />
-        </ScrollRevealMotion>
+        </Wrap>
       )}
     </>
   );

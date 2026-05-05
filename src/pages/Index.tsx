@@ -5,7 +5,7 @@ import Hero from "@/components/Hero";
 import Services from "@/components/Services";
 import About from "@/components/About";
 import FeaturedProjects from "@/components/FeaturedProjects";
-import Contact from "@/components/Contact";
+import QuoteCloserCard from "@/components/QuoteCloserCard";
 import Footer from "@/components/Footer";
 import { LocalBusinessJsonLd } from "@/components/JsonLd";
 import CrewMoment from "@/components/CrewMoment";
@@ -13,13 +13,13 @@ import TestimonialStrip from "@/components/TestimonialStrip";
 import MiniFaq from "@/components/MiniFaq";
 
 /**
- * Homepage rhythm (Pass 7 — funnel discipline):
+ * Homepage rhythm (Pass 8 — strict 2-tone alternation):
  *
- *   Hero → ProofBand → Services → CrewMoment → About →
- *   FeaturedProjects → TestimonialStrip → MiniFaq → Contact → Footer
+ *   Hero(B/W) → Services(bg) → CrewMoment(secondary) → About(bg) →
+ *   FeaturedProjects(secondary) → TestimonialStrip(bg) → MiniFaq(secondary) →
+ *   QuoteCloserCard(bg, id="section-contact") → Footer
  *
- * Every scroll milestone resolves to a CedarCTA. Same rhythm reused
- * across every public page.
+ * Every adjacent pair contrasts. Every section resolves to a CedarCTA.
  */
 const Index = () => {
   useDocumentTitle(
@@ -38,12 +38,12 @@ const Index = () => {
 
       <Hero />
       <Services />
-      <CrewMoment />
-      <About />
-      <FeaturedProjects />
-      <TestimonialStrip background="secondary" />
-      <MiniFaq />
-      <Contact />
+      <CrewMoment background="secondary" />
+      <About background="background" />
+      <FeaturedProjects background="secondary" />
+      <TestimonialStrip background="background" />
+      <MiniFaq background="secondary" />
+      <QuoteCloserCard id="section-contact" background="background" />
       <Footer />
     </main>
   );

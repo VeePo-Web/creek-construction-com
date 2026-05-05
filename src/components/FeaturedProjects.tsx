@@ -7,6 +7,7 @@ import { MEDIA_SIZES } from "@/lib/media-sizes";
 import { supabase } from "@/integrations/supabase/client";
 import type { DBProject } from "@/lib/api/public-media";
 import { useReveal } from "@/hooks/useReveal";
+import { SECTION_PADDING } from "@/lib/spacing";
 
 /**
  * FeaturedProjects — editorial gallery of `featured = true` projects from
@@ -120,7 +121,12 @@ const ProjectCard = ({ project, variant, index }: ProjectCardProps) => {
     );
 };
 
-const FeaturedProjects = () => {
+interface FeaturedProjectsProps {
+  /** Background tone. Default "background". */
+  background?: "background" | "secondary";
+}
+
+const FeaturedProjects = ({ background = "background" }: FeaturedProjectsProps = {}) => {
   const { projects, loading } = useProjects({ featured: true, limit: 6 });
   const { ref, cls, style } = useReveal();
 
@@ -151,7 +157,7 @@ const FeaturedProjects = () => {
   return (
     <section
       id="section-featured"
-      className="py-24 md:py-32 bg-background relative"
+      className={`${SECTION_PADDING.default} ${background === "secondary" ? "bg-secondary" : "bg-background"} relative`}
       aria-labelledby="featured-heading"
     >
       <div className="container mx-auto px-6">
@@ -164,6 +170,7 @@ const FeaturedProjects = () => {
               heading="Recent work, in detail."
               subheading="Projects we’re proud of — across Calgary, Edmonton, and surrounding Alberta."
               badge={`${String(withUrls.length).padStart(2, "0")} Featured`}
+              disableMotion
             />
           </div>
 
