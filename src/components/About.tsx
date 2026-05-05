@@ -15,13 +15,18 @@ import { CREEK_PROCESS as STEPS } from "@/config/process";
  * — the process column reads as one editorial unit. Step hover is
  * compositor-only (translate-x), durations cut from 500ms → 300ms.
  */
-const About = () => {
+interface AboutProps {
+  /** Background tone. Default "secondary" (preserves prior behavior). */
+  background?: "background" | "secondary";
+}
+
+const About = ({ background = "secondary" }: AboutProps = {}) => {
   const { ref, cls, style } = useReveal();
 
   return (
     <section
       id="section-about"
-      className={`${SECTION_PADDING.default} bg-secondary`}
+      className={`${SECTION_PADDING.default} ${background === "secondary" ? "bg-secondary" : "bg-background"}`}
       aria-labelledby="about-heading"
     >
       <div className="container mx-auto px-6">

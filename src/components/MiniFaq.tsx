@@ -13,6 +13,8 @@ interface MiniFaqProps {
   asSection?: boolean;
   background?: "background" | "secondary";
   showCta?: boolean;
+  /** Override heading id (only needed if two FAQs share one page). */
+  headingId?: string;
 }
 
 /**
@@ -27,6 +29,7 @@ const MiniFaq = ({
   asSection = true,
   background = "background",
   showCta = true,
+  headingId = "faq-heading",
 }: MiniFaqProps) => {
   const { ref, cls, style } = useReveal();
 
@@ -35,9 +38,10 @@ const MiniFaq = ({
       <SectionHeader
         variant="quiet"
         label={eyebrow}
-        headingId="faq-heading"
+        headingId={headingId}
         heading={heading}
         subheading={subheading}
+        disableMotion
       />
       <FaqAccordion items={items} className="mt-10" />
       {showCta && (
@@ -54,7 +58,7 @@ const MiniFaq = ({
     <section
       id="section-faq"
       className={`${SECTION_PADDING.default} ${background === "secondary" ? "bg-secondary" : "bg-background"}`}
-      aria-labelledby="faq-heading"
+      aria-labelledby={headingId}
     >
       <div className="container mx-auto px-6">{inner}</div>
     </section>

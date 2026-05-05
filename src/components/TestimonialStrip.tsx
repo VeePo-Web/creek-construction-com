@@ -16,6 +16,8 @@ interface TestimonialStripProps {
   background?: "background" | "secondary";
   /** Show trailing CedarCTA row. Default true. */
   showCta?: boolean;
+  /** Override heading id (only needed if two strips share one page). */
+  headingId?: string;
 }
 
 /**
@@ -30,6 +32,7 @@ const TestimonialStrip = ({
   asSection = true,
   background = "background",
   showCta = true,
+  headingId = "testimonials-heading",
 }: TestimonialStripProps) => {
   const { ref, cls, style } = useReveal();
 
@@ -38,9 +41,10 @@ const TestimonialStrip = ({
       <SectionHeader
         variant="quiet"
         label={eyebrow}
-        headingId="testimonials-heading"
+        headingId={headingId}
         heading={heading}
         subheading={subheading}
+        disableMotion
       />
 
       <ul
@@ -91,7 +95,7 @@ const TestimonialStrip = ({
     <section
       id="section-testimonials"
       className={`${SECTION_PADDING.default} ${background === "secondary" ? "bg-secondary" : "bg-background"}`}
-      aria-labelledby="testimonials-heading"
+      aria-labelledby={headingId}
     >
       <div className="container mx-auto px-6">{inner}</div>
     </section>

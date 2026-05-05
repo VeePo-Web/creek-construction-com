@@ -12,6 +12,8 @@ interface CrewMomentProps {
   paragraphs?: string[];
   asSection?: boolean;
   background?: "background" | "secondary";
+  /** Override heading id (only needed if two appear on one page). */
+  headingId?: string;
 }
 
 /**
@@ -28,6 +30,7 @@ const CrewMoment = ({
   ],
   asSection = true,
   background = "background",
+  headingId = "crew-heading",
 }: CrewMomentProps) => {
   const { ref, cls, style } = useReveal();
 
@@ -51,8 +54,9 @@ const CrewMoment = ({
           <SectionHeader
             variant="quiet"
             label={eyebrow}
-            headingId="crew-heading"
+            headingId={headingId}
             heading={heading}
+            disableMotion
           />
           <div className="mt-6 space-y-5">
             {paragraphs.map((p, i) => (
@@ -75,7 +79,7 @@ const CrewMoment = ({
     <section
       id="section-crew"
       className={`${SECTION_PADDING.default} ${background === "secondary" ? "bg-secondary" : "bg-background"}`}
-      aria-labelledby="crew-heading"
+      aria-labelledby={headingId}
     >
       <div className="container mx-auto px-6">{inner}</div>
     </section>
