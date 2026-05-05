@@ -38,11 +38,11 @@ const Index = () => {
 
       <Hero />
       <Services />
-      <CrewMoment background="secondary" />
+      <CrewMoment />
       <About />
       <FeaturedProjects />
-      <TestimonialStrip />
-      <MiniFaq background="secondary" />
+      <TestimonialStrip background="secondary" />
+      <MiniFaq />
       <Contact />
       <Footer />
     </main>
