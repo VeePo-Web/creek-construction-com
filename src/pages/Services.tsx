@@ -5,32 +5,17 @@ import CedarCTA from "@/components/CedarCTA";
 import QuoteCloserCard from "@/components/QuoteCloserCard";
 import SectionHeader from "@/components/SectionHeader";
 import PageHero from "@/components/ui/page-hero";
-import FaqAccordion, { type FaqItem } from "@/components/ui/faq-accordion";
+import FaqAccordion from "@/components/ui/faq-accordion";
+import TestimonialStrip from "@/components/TestimonialStrip";
 import { Check, Minus, ArrowRight } from "lucide-react";
 import { useDocumentTitle } from "@/hooks/useDocumentTitle";
 import { SERVICE_GROUPS, getItemsForGroup } from "@/config/services";
 import { useQuoteModal } from "@/components/quote/QuoteModalProvider";
 import { BACKDROP, bronzeStep } from "@/lib/colors";
 import { SECTION_PADDING, MAX_WIDTH } from "@/lib/spacing";
+import { FAQS_SERVICES } from "@/config/faqs";
 
-const FAQS: FaqItem[] = [
-  {
-    q: "How long does a typical project take?",
-    a: "Decks and fences usually run 3–7 build days once we’re on-site, depending on size and weather. Painting, siding, and roofing scale with square footage. We give you a real timeline in writing with your quote — not a vague window.",
-  },
-  {
-    q: "Do you offer a warranty?",
-    a: "Yes. We warranty our workmanship — if something we built fails because of how we built it, we come back and fix it. Manufacturer warranties on materials are passed through to you.",
-  },
-  {
-    q: "How does payment work?",
-    a: "Most projects are split into milestones — a deposit on scheduling, a progress payment partway through, and the balance on final walkthrough. No payment is due before you’ve signed off on the quote.",
-  },
-  {
-    q: "What about permits?",
-    a: "If your municipality requires a permit for the work, we handle pulling it and include it in the quote. We’ll tell you upfront whether one is needed.",
-  },
-];
+const FAQS = FAQS_SERVICES;
 
 const WE_HANDLE = [
   "Site assessment and accurate quote",
