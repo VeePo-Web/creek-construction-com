@@ -137,6 +137,8 @@ const About = () => {
         </div>
       </section>
 
+      <TestimonialStrip background="secondary" />
+
       <QuoteCloserCard eyebrow="Up next" />
 
       <Footer />
