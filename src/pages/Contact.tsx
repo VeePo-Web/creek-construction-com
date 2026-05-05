@@ -138,6 +138,8 @@ const Contact = () => {
         </div>
       </section>
 
+      <MiniFaq background="secondary" />
+
       <Footer />
     </main>
   );
