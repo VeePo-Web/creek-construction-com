@@ -36,7 +36,7 @@ const CrewMoment = ({
       <div className={`grid md:grid-cols-2 ${GRID_GAP.editorial} items-center`}>
         <MediaSlot
           query={{
-            shot_type: ["portrait", "process", "detail"],
+            shot_type: ["process", "detail", "interior"],
             kind: "image",
             min_quality: "reference",
           }}
