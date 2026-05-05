@@ -73,6 +73,9 @@ const About = () => {
         </div>
       </section>
 
+      {/* Human moment between story and process */}
+      <CrewMoment />
+
       <section id="section-process" className={`${SECTION_PADDING.default} bg-secondary`} aria-labelledby="process-heading">
         <div className="container mx-auto px-6">
           <div className={`${MAX_WIDTH.content} mx-auto`}>
