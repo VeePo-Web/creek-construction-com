@@ -1518,7 +1518,7 @@ const ComponentsSection = () => (
     <Card className="mb-6">
       <EyebrowLabel className="mb-4">CedarCTA — primary &amp; secondary</EyebrowLabel>
       <div className="flex flex-wrap items-center gap-6">
-        <CedarCTA to="#">Get a free quote</CedarCTA>
+        <CedarCTA to="#">Get my free quote</CedarCTA>
         <CedarCTA to="#" variant="secondary">
           See our work
         </CedarCTA>

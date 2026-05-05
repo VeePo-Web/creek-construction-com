@@ -223,25 +223,8 @@ const Services = () => {
       {/* Social proof — neighbors’ words before the FAQ */}
       <TestimonialStrip background="background" />
 
-      {/* FAQ */}
-      <section
-        id="section-faq"
-        className={`${SECTION_PADDING.default} bg-background`}
-        aria-labelledby="faq-heading"
-      >
-        <div className="container mx-auto px-6">
-          <div className="max-w-3xl mx-auto">
-            <SectionHeader
-              variant="quiet"
-              label="COMMON QUESTIONS"
-              headingId="faq-heading"
-              heading="Straight answers."
-              subheading="If we don’t address yours, ask on the call."
-            />
-            <FaqAccordion items={FAQS} className="mt-10" />
-          </div>
-        </div>
-      </section>
+      {/* FAQ — shared module, single source of truth */}
+      <MiniFaq items={FAQS_SERVICES} background="secondary" />
 
       <QuoteCloserCard />
 
