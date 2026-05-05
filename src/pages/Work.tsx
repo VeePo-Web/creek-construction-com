@@ -8,6 +8,8 @@ import PageHero from "@/components/ui/page-hero";
 import ProjectTile from "@/components/ui/project-tile";
 import ProjectGallery from "@/components/ProjectGallery";
 import TestimonialStrip from "@/components/TestimonialStrip";
+import CrewMoment from "@/components/CrewMoment";
+import MidPageQuotePrompt from "@/components/MidPageQuotePrompt";
 import { ProjectsJsonLd } from "@/components/JsonLd";
 import { useDocumentTitle } from "@/hooks/useDocumentTitle";
 import { Hammer, Fence, Paintbrush, Home, Trees, type LucideIcon } from "lucide-react";
@@ -118,8 +120,11 @@ const Work = () => {
         </section>
       )}
 
+      {/* Human moment between featured and category gallery */}
+      <CrewMoment background="secondary" />
+
       {/* Service-category placeholder grid — replaced as real photos arrive */}
-      <section id="section-gallery" className={`${SECTION_PADDING.default} bg-muted`} aria-labelledby="gallery-heading">
+      <section id="section-gallery" className={`${SECTION_PADDING.default} bg-background`} aria-labelledby="gallery-heading">
         <div className="container mx-auto px-6">
           <div className={`${MAX_WIDTH.wide} mx-auto`}>
             <SectionHeader
@@ -149,16 +154,8 @@ const Work = () => {
               ))}
             </div>
 
-            <div className="mt-20 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-5 px-6 md:px-8 py-7 rounded-sm border border-cedar/20 bg-cedar/[0.04]">
-              <div>
-                <p className="text-[10px] tracking-[0.25em] uppercase text-cedar/80 mb-1.5">
-                  Like what you see?
-                </p>
-                <p className="font-serif text-xl md:text-2xl text-foreground leading-snug">
-                  Start a quote for a similar build.
-                </p>
-              </div>
-              <CedarCTA />
+            <div className="mt-20">
+              <MidPageQuotePrompt heading="Start a quote for a similar build." />
             </div>
 
             <div className="mt-12 text-center">
@@ -170,7 +167,7 @@ const Work = () => {
         </div>
       </section>
 
-      <TestimonialStrip background="background" />
+      <TestimonialStrip background="secondary" />
 
       <QuoteCloserCard eyebrow="Quote a similar build" />
 

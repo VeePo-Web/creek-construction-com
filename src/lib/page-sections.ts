@@ -50,6 +50,7 @@ const PAGE_SECTIONS: Record<string, PageSection[]> = {
   ],
   "/work": [
     { name: "Featured", anchor: "section-featured" },
+    { name: "Crew", anchor: "section-crew" },
     { name: "Gallery", anchor: "section-gallery" },
     { name: "Reviews", anchor: "section-testimonials" },
   ],
@@ -61,6 +62,7 @@ const PAGE_SECTIONS: Record<string, PageSection[]> = {
   ],
   "/contact": [
     { name: "Reach Us", anchor: "section-contact" },
+    { name: "Reviews", anchor: "section-testimonials" },
     { name: "FAQ", anchor: "section-faq" },
     { name: "What's Next", anchor: "section-contact-next" },
   ],
