@@ -10,8 +10,6 @@ interface QuoteCloserCardProps {
   heading?: string;
   /** Supporting paragraph. */
   body?: string;
-  /** Three short bullet promises. */
-  bullets?: string[];
   /** Pre-select these service ids in the QuoteModal. */
   preselectServices?: string[];
   /** Wrap in its own <section> with vertical padding. Default true. */
@@ -22,25 +20,16 @@ interface QuoteCloserCardProps {
   background?: "background" | "secondary";
 }
 
-const DEFAULT_BULLETS = [
-  "Free, no-obligation quote",
-  "On-site visit at your convenience",
-  "Clear scope and price in writing",
-];
-
 /**
  * QuoteCloserCard — the single canonical "ask" used across every public page.
  *
- * Cedar-bordered evergreen plate with eyebrow → headline → body → bullets →
- * primary CedarCTA → trust line. One closer, used identically on Home,
- * Services, About, Work, and Contact so the funnel ending always feels the
- * same. Lifted from the /contact page's evergreen card.
+ * Cedar-bordered evergreen plate: eyebrow → headline → body → primary
+ * CedarCTA → trust strip. Trust language is owned here and nowhere else.
  */
 const QuoteCloserCard = ({
   eyebrow = "What's next",
   heading = "Send us your project details.",
   body = "It takes 30 seconds — just your name and phone. Tell us what you're building and we'll be in touch within 24–48 hours.",
-  bullets = DEFAULT_BULLETS,
   preselectServices,
   asSection = true,
   id = "section-closer",
@@ -64,15 +53,6 @@ const QuoteCloserCard = ({
         <p className="text-evergreen-foreground/70 leading-relaxed mb-8 max-w-prose">
           {body}
         </p>
-
-        <ul className="space-y-2 text-sm text-evergreen-foreground/60 mb-10">
-          {bullets.map((b) => (
-            <li key={b} className="flex gap-3">
-              <span className="text-cedar">·</span>
-              {b}
-            </li>
-          ))}
-        </ul>
 
         <CedarCTA preselectServices={preselectServices}>Get my free quote</CedarCTA>
 

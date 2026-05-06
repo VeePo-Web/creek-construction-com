@@ -28,8 +28,7 @@ const CrewMoment = ({
   eyebrow = "OUR CREW",
   heading = "The crew on-site is the crew you meet.",
   paragraphs = [
-    "We don’t subcontract the build. The same hands that quote your project are the ones putting in the screws — that’s how we keep quality consistent across every job.",
-    "It also means you get a straight answer to every question, on the phone or on the boards. No middlemen, no project manager telling you what the crew said.",
+    "We don’t subcontract. The crew you meet at the quote is the crew on-site — that’s how we keep quality consistent, and it’s why we’d rather do fewer projects exceptionally well than chase volume.",
   ],
   asSection = true,
   background = "background",

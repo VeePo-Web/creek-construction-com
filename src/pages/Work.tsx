@@ -81,12 +81,10 @@ const Work = () => {
           <div className="container mx-auto px-6">
             <div className={`${MAX_WIDTH.wide} mx-auto`}>
               <SectionHeader
-                numeral="II"
                 label="FEATURED PROJECT"
                 headingId="featured-heading"
                 heading={PROJECTS[0].title + "."}
                 subheading={PROJECTS[0].summary}
-                badge={`${PROJECTS[0].location} · ${formatStatus(PROJECTS[0].status)}`}
               />
 
               <div className="mt-12 space-y-20">
@@ -119,12 +117,10 @@ const Work = () => {
         <div className="container mx-auto px-6">
           <div className={`${MAX_WIDTH.wide} mx-auto`}>
             <SectionHeader
-              numeral="III"
               label="MORE WORK"
               headingId="gallery-heading"
               heading="Across every service."
               subheading="Click any category to request a quote for similar work."
-              badge={`0${totalCount} Projects`}
             />
 
             <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-12" role="list">

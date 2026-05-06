@@ -58,7 +58,7 @@ const SectionHeader = ({
   subheading,
   badge,
   baseDelay = 0,
-  variant = "default",
+  variant = "quiet",
   disableMotion = false,
 }: SectionHeaderProps) => {
   const showNumeral = variant === "default" && numeral;

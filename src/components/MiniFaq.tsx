@@ -31,7 +31,7 @@ interface MiniFaqProps {
 const MiniFaq = ({
   eyebrow = "COMMON QUESTIONS",
   heading = "Straight answers.",
-  subheading = "If we don’t address yours, ask on the call — we always pick up.",
+  subheading,
   items = FAQS_CORE,
   asSection = true,
   background = "background",
