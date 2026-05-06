@@ -92,9 +92,6 @@ const Services = () => {
                         {group.description}
                       </p>
                     </div>
-                    <span className="text-[10px] tracking-[0.18em] uppercase text-cedar/70 group-hover:text-cedar transition-colors duration-300 mt-4">
-                      Quote this →
-                    </span>
                   </div>
                 </button>
               );

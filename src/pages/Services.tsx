@@ -6,7 +6,6 @@ import QuoteCloserCard from "@/components/QuoteCloserCard";
 import SectionHeader from "@/components/SectionHeader";
 import PageHero from "@/components/ui/page-hero";
 import MiniFaq from "@/components/MiniFaq";
-import TestimonialStrip from "@/components/TestimonialStrip";
 import MidPageQuotePrompt from "@/components/MidPageQuotePrompt";
 import { Check, Minus, ArrowRight } from "lucide-react";
 import { useDocumentTitle } from "@/hooks/useDocumentTitle";
@@ -98,9 +97,6 @@ const Services = () => {
                             {group.title}
                           </h3>
                         </div>
-                        <span className="text-[10px] tracking-[0.2em] uppercase text-muted-foreground/50 tabular-nums shrink-0">
-                          {String(gIdx + 1).padStart(2, "0")} / {String(SERVICE_GROUPS.length).padStart(2, "0")}
-                        </span>
                       </div>
 
                       <div className="grid sm:grid-cols-2 gap-x-6">
@@ -220,13 +216,10 @@ const Services = () => {
         </div>
       </section>
 
-      {/* Social proof — neighbors’ words before the FAQ */}
-      <TestimonialStrip background="background" />
-
       {/* FAQ — shared module, single source of truth */}
-      <MiniFaq items={FAQS_SERVICES} background="secondary" />
+      <MiniFaq items={FAQS_SERVICES} background="background" />
 
-      <QuoteCloserCard />
+      <QuoteCloserCard background="secondary" />
 
       <Footer />
     </main>

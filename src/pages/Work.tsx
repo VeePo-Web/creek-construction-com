@@ -8,7 +8,6 @@ import PageHero from "@/components/ui/page-hero";
 import ProjectTile from "@/components/ui/project-tile";
 import ProjectGallery from "@/components/ProjectGallery";
 import TestimonialStrip from "@/components/TestimonialStrip";
-import CrewMoment from "@/components/CrewMoment";
 import MidPageQuotePrompt from "@/components/MidPageQuotePrompt";
 import { ProjectsJsonLd } from "@/components/JsonLd";
 import { useDocumentTitle } from "@/hooks/useDocumentTitle";
@@ -107,11 +106,6 @@ const Work = () => {
                       </header>
                     )}
                     <ProjectGallery project={project} priority={idx === 0} />
-                    <div className="mt-8">
-                      <CedarCTA preselectServices={[project.service]}>
-                        Quote a similar build
-                      </CedarCTA>
-                    </div>
                   </article>
                 ))}
               </div>
@@ -120,11 +114,8 @@ const Work = () => {
         </section>
       )}
 
-      {/* Human moment between featured and category gallery */}
-      <CrewMoment background="secondary" />
-
       {/* Service-category placeholder grid — replaced as real photos arrive */}
-      <section id="section-gallery" className={`${SECTION_PADDING.default} bg-background`} aria-labelledby="gallery-heading">
+      <section id="section-gallery" className={`${SECTION_PADDING.default} bg-secondary`} aria-labelledby="gallery-heading">
         <div className="container mx-auto px-6">
           <div className={`${MAX_WIDTH.wide} mx-auto`}>
             <SectionHeader
@@ -167,9 +158,9 @@ const Work = () => {
         </div>
       </section>
 
-      <TestimonialStrip background="secondary" />
+      <TestimonialStrip background="background" />
 
-      <QuoteCloserCard eyebrow="Quote a similar build" />
+      <QuoteCloserCard eyebrow="Quote a similar build" background="secondary" />
 
       <Footer />
     </main>

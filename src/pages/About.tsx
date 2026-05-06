@@ -5,15 +5,13 @@ import CedarCTA from "@/components/CedarCTA";
 import QuoteCloserCard from "@/components/QuoteCloserCard";
 import SectionHeader from "@/components/SectionHeader";
 import PageHero from "@/components/ui/page-hero";
-import CrewMoment from "@/components/CrewMoment";
-import TestimonialStrip from "@/components/TestimonialStrip";
-import MiniFaq from "@/components/MiniFaq";
 import { useDocumentTitle } from "@/hooks/useDocumentTitle";
 import { CONTACT } from "@/config/contact";
 import { bronzeStep } from "@/lib/colors";
 import { SECTION_PADDING, MAX_WIDTH } from "@/lib/spacing";
 import { BODY } from "@/lib/typography";
 import { CREEK_PROCESS as STEPS } from "@/config/process";
+import { STATS_TRIO } from "@/config/stats";
 
 const About = () => {
   useDocumentTitle(
@@ -70,14 +68,29 @@ const About = () => {
                 treat that as a failure on our end. That’s the standard.
               </p>
             </div>
+
+            {/* Inline stat trio — quiet, no border, no CTA */}
+            <div
+              className="mt-12 pt-8 border-t border-cedar/15 grid grid-cols-3 gap-6 max-w-2xl"
+              role="group"
+              aria-label="Creek by the numbers"
+            >
+              {STATS_TRIO.map((s) => (
+                <div key={s.label}>
+                  <p className="font-serif text-2xl md:text-3xl text-foreground leading-none tabular-nums">
+                    {s.value}
+                  </p>
+                  <p className="text-[10px] tracking-[0.2em] uppercase text-muted-foreground/70 mt-2 leading-tight">
+                    {s.label}
+                  </p>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </section>
 
-      {/* Human moment between story and process — secondary tone alternates with story (bg) */}
-      <CrewMoment background="secondary" showStats />
-
-      <section id="section-process" className={`${SECTION_PADDING.default}`} aria-labelledby="process-heading">
+      <section id="section-process" className={`${SECTION_PADDING.default} bg-secondary`} aria-labelledby="process-heading">
         <div className="container mx-auto px-6">
           <div className={`${MAX_WIDTH.content} mx-auto`}>
             <SectionHeader
@@ -111,7 +124,7 @@ const About = () => {
         </div>
       </section>
 
-      <section id="section-areas" className={`${SECTION_PADDING.default} bg-secondary`} aria-labelledby="areas-heading">
+      <section id="section-areas" className={`${SECTION_PADDING.default}`} aria-labelledby="areas-heading">
         <div className="container mx-auto px-6">
           <div className={`${MAX_WIDTH.content} mx-auto`}>
             <SectionHeader
@@ -138,11 +151,7 @@ const About = () => {
         </div>
       </section>
 
-      <TestimonialStrip background="background" />
-
-      <MiniFaq background="secondary" />
-
-      <QuoteCloserCard eyebrow="Up next" />
+      <QuoteCloserCard eyebrow="Up next" background="secondary" />
 
       <Footer />
     </main>

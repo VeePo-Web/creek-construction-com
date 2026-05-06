@@ -37,7 +37,7 @@ const PAGE_SECTIONS: Record<string, PageSection[]> = {
   "/": [
     { name: "Quote", anchor: "section-quote" },
     { name: "Services", anchor: "section-services" },
-    { name: "About", anchor: "section-about" },
+    { name: "Crew", anchor: "section-crew" },
     { name: "Work", anchor: "section-featured" },
     { name: "Reviews", anchor: "section-testimonials" },
     { name: "FAQ", anchor: "section-faq" },
@@ -46,12 +46,10 @@ const PAGE_SECTIONS: Record<string, PageSection[]> = {
   "/services": [
     { name: "Catalogue", anchor: "section-catalogue" },
     { name: "Contract", anchor: "section-contract" },
-    { name: "Reviews", anchor: "section-testimonials" },
     { name: "FAQ", anchor: "section-faq" },
   ],
   "/work": [
     { name: "Featured", anchor: "section-featured" },
-    { name: "Crew", anchor: "section-crew" },
     { name: "Gallery", anchor: "section-gallery" },
     { name: "Reviews", anchor: "section-testimonials" },
   ],
@@ -59,7 +57,6 @@ const PAGE_SECTIONS: Record<string, PageSection[]> = {
     { name: "Story", anchor: "section-story" },
     { name: "Process", anchor: "section-process" },
     { name: "Service Areas", anchor: "section-areas" },
-    { name: "Reviews", anchor: "section-testimonials" },
   ],
   // /contact uses NavigationMinimal (no rail). Empty array = no rail rendered.
   "/contact": [],

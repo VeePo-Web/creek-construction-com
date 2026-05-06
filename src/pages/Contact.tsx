@@ -2,10 +2,9 @@ import NavigationMinimal from "@/components/navigation/NavigationMinimal";
 import SkipToContent from "@/components/ui/skip-to-content";
 import Footer from "@/components/Footer";
 import SectionHeader from "@/components/SectionHeader";
-import MiniFaq from "@/components/MiniFaq";
 import QuoteFormInline from "@/components/quote/QuoteFormInline";
 import { useDocumentTitle } from "@/hooks/useDocumentTitle";
-import { Phone, Mail, Clock, MapPin } from "lucide-react";
+import { Phone, Mail, MapPin } from "lucide-react";
 import { CONTACT } from "@/config/contact";
 import { bronzeStep } from "@/lib/colors";
 import { SECTION_PADDING, MAX_WIDTH, GRID_GAP } from "@/lib/spacing";
@@ -29,7 +28,7 @@ const Contact = () => {
     `Get in touch with Creek Construction — call ${CONTACT.phone} or email ${CONTACT.email}. Free quotes across Calgary, Edmonton, and surrounding Alberta.`,
   );
 
-  const ROW_COUNT = 4;
+  const ROW_COUNT = 3;
 
   return (
     <main className="min-h-screen bg-background" aria-label="Contact — Creek Construction">
@@ -84,7 +83,7 @@ const Contact = () => {
                       <Phone className="h-4 w-4 text-cedar" aria-hidden />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="text-[10px] tracking-[0.2em] uppercase text-muted-foreground/60">Call or Text</p>
+                      <p className="text-[10px] tracking-[0.2em] uppercase text-muted-foreground/60">Call or Text · Reply in 24–48h</p>
                       <p className="text-foreground font-medium group-hover/row:text-cedar transition-colors duration-200">
                         {CONTACT.phone}
                       </p>
@@ -107,18 +106,6 @@ const Contact = () => {
                       </p>
                     </div>
                   </a>
-
-                  <div className="border-t border-border/30" aria-hidden />
-
-                  <div className="flex items-center gap-4 px-5 py-5">
-                    <div className="shrink-0 w-10 h-10 rounded-sm bg-cedar/10 flex items-center justify-center">
-                      <Clock className="h-4 w-4 text-cedar" aria-hidden />
-                    </div>
-                    <div className="flex-1">
-                      <p className="text-[10px] tracking-[0.2em] uppercase text-muted-foreground/60">Response Time</p>
-                      <p className="text-foreground font-medium">Within 24–48 hours</p>
-                    </div>
-                  </div>
 
                   <div className="border-t border-border/30" aria-hidden />
 
@@ -155,8 +142,6 @@ const Contact = () => {
           </div>
         </div>
       </section>
-
-      <MiniFaq background="secondary" showCta={false} />
 
       <Footer />
     </main>
