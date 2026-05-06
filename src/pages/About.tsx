@@ -5,15 +5,13 @@ import CedarCTA from "@/components/CedarCTA";
 import QuoteCloserCard from "@/components/QuoteCloserCard";
 import SectionHeader from "@/components/SectionHeader";
 import PageHero from "@/components/ui/page-hero";
-import CrewMoment from "@/components/CrewMoment";
-import TestimonialStrip from "@/components/TestimonialStrip";
-import MiniFaq from "@/components/MiniFaq";
 import { useDocumentTitle } from "@/hooks/useDocumentTitle";
 import { CONTACT } from "@/config/contact";
 import { bronzeStep } from "@/lib/colors";
 import { SECTION_PADDING, MAX_WIDTH } from "@/lib/spacing";
 import { BODY } from "@/lib/typography";
 import { CREEK_PROCESS as STEPS } from "@/config/process";
+import { STATS_TRIO } from "@/config/stats";
 
 const About = () => {
   useDocumentTitle(
