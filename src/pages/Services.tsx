@@ -219,7 +219,7 @@ const Services = () => {
       {/* FAQ — shared module, single source of truth */}
       <MiniFaq items={FAQS_SERVICES} background="background" />
 
-      <QuoteCloserCard />
+      <QuoteCloserCard background="secondary" />
 
       <Footer />
     </main>
