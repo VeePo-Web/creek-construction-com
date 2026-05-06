@@ -8,7 +8,7 @@ import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import { QuoteModalProvider } from "@/components/quote/QuoteModalProvider";
 import RequireAdmin from "@/components/admin/RequireAdmin";
-import MobileQuoteFAB from "@/components/MobileQuoteFAB";
+import MobileConversionBar from "@/components/MobileConversionBar";
 
 // Public routes are lazy except Home (the LCP/entry route).
 // Each non-home route ships its own JS chunk so visitors only download
@@ -40,17 +40,18 @@ function ScrollToTop() {
 }
 
 /**
- * Gate the mobile Quote FAB to public marketing routes only — never on
- * admin, /style-guide, or /contact (the contact page is itself a CTA).
+ * Gate the mobile conversion bar to public marketing routes only — never
+ * on admin, /style-guide, or /contact (the contact page IS the form, so
+ * a duplicate Quote/Call bar would be noise).
  */
-function PublicMobileFAB() {
+function PublicMobileBar() {
   const { pathname } = useLocation();
   const blocked =
     pathname.startsWith("/admin") ||
     pathname.startsWith("/style-guide") ||
     pathname.startsWith("/contact");
   if (blocked) return null;
-  return <MobileQuoteFAB />;
+  return <MobileConversionBar />;
 }
 
 const App = () => (
@@ -95,7 +96,7 @@ const App = () => (
               <Route path="*" element={<NotFound />} />
             </Routes>
           </Suspense>
-          <PublicMobileFAB />
+          <PublicMobileBar />
         </QuoteModalProvider>
       </BrowserRouter>
     </TooltipProvider>

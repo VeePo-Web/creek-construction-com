@@ -1,7 +1,9 @@
+import { Phone } from "lucide-react";
 import SectionHeader from "@/components/SectionHeader";
 import FaqAccordion, { type FaqItem } from "@/components/ui/faq-accordion";
 import CedarCTA from "@/components/CedarCTA";
 import { FAQS_CORE } from "@/config/faqs";
+import { CONTACT } from "@/config/contact";
 import { SECTION_PADDING } from "@/lib/spacing";
 import { useReveal } from "@/hooks/useReveal";
 
@@ -13,13 +15,18 @@ interface MiniFaqProps {
   asSection?: boolean;
   background?: "background" | "secondary";
   showCta?: boolean;
+  /** Show "Have more questions? Call …" tel-link below the accordion. */
+  showPhoneFallback?: boolean;
   /** Override heading id (only needed if two FAQs share one page). */
   headingId?: string;
 }
 
 /**
  * MiniFaq — shared 4-question accordion used on Home, Services, Contact.
- * Wraps FaqAccordion with the canonical SectionHeader + optional trailing CTA.
+ * Wraps FaqAccordion with the canonical SectionHeader + optional trailing
+ * CedarCTA + phone-fallback row. The phone fallback is the FlexServices
+ * pattern: every objection-killer ends with a tel link for users who
+ * still prefer to talk.
  */
 const MiniFaq = ({
   eyebrow = "COMMON QUESTIONS",
@@ -29,6 +36,7 @@ const MiniFaq = ({
   asSection = true,
   background = "background",
   showCta = true,
+  showPhoneFallback = true,
   headingId = "faq-heading",
 }: MiniFaqProps) => {
   const { ref, cls, style } = useReveal();
@@ -44,8 +52,21 @@ const MiniFaq = ({
         disableMotion
       />
       <FaqAccordion items={items} className="mt-10" />
+      {showPhoneFallback && (
+        <div className="mt-10 pt-6 border-t border-cedar/15 text-center">
+          <p className="text-sm text-muted-foreground">
+            Have more questions?{" "}
+            <a
+              href={`tel:${CONTACT.phoneTel}`}
+              className="inline-flex items-center gap-1.5 text-cedar hover:text-cedar-hover font-medium transition-colors"
+            >
+              <Phone className="h-3.5 w-3.5" aria-hidden /> Call {CONTACT.phone}
+            </a>
+          </p>
+        </div>
+      )}
       {showCta && (
-        <div className="mt-12 flex justify-center">
+        <div className="mt-10 flex justify-center">
           <CedarCTA />
         </div>
       )}

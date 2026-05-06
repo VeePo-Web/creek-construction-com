@@ -11,6 +11,7 @@ import { LocalBusinessJsonLd } from "@/components/JsonLd";
 import CrewMoment from "@/components/CrewMoment";
 import TestimonialStrip from "@/components/TestimonialStrip";
 import MiniFaq from "@/components/MiniFaq";
+import InlineQuoteSection from "@/components/InlineQuoteSection";
 
 /**
  * Homepage rhythm (Pass 8 — strict 2-tone alternation):
@@ -37,8 +38,9 @@ const Index = () => {
       <Navigation />
 
       <Hero />
+      <InlineQuoteSection background="secondary" />
       <Services />
-      <CrewMoment background="secondary" />
+      <CrewMoment background="secondary" showStats />
       <About background="background" />
       <FeaturedProjects background="secondary" />
       <TestimonialStrip background="background" />

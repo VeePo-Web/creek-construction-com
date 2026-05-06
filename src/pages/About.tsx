@@ -75,7 +75,7 @@ const About = () => {
       </section>
 
       {/* Human moment between story and process — secondary tone alternates with story (bg) */}
-      <CrewMoment background="secondary" />
+      <CrewMoment background="secondary" showStats />
 
       <section id="section-process" className={`${SECTION_PADDING.default}`} aria-labelledby="process-heading">
         <div className="container mx-auto px-6">
