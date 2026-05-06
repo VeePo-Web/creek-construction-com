@@ -35,7 +35,8 @@ const CrewMoment = ({
   background = "background",
   headingId = "crew-heading",
   showStats = false,
-}: CrewMomentProps) => {
+  showCta = false,
+}: CrewMomentProps & { showCta?: boolean }) => {
   const { ref, cls, style } = useReveal();
 
   const inner = (
@@ -87,9 +88,11 @@ const CrewMoment = ({
               ))}
             </div>
           )}
-          <div className="mt-10">
-            <CedarCTA />
-          </div>
+          {showCta && (
+            <div className="mt-10">
+              <CedarCTA />
+            </div>
+          )}
         </div>
       </div>
     </div>
