@@ -3,7 +3,6 @@ import SkipToContent from "@/components/ui/skip-to-content";
 import { useDocumentTitle } from "@/hooks/useDocumentTitle";
 import Hero from "@/components/Hero";
 import Services from "@/components/Services";
-import About from "@/components/About";
 import FeaturedProjects from "@/components/FeaturedProjects";
 import QuoteCloserCard from "@/components/QuoteCloserCard";
 import Footer from "@/components/Footer";
@@ -14,13 +13,9 @@ import MiniFaq from "@/components/MiniFaq";
 import InlineQuoteSection from "@/components/InlineQuoteSection";
 
 /**
- * Homepage rhythm (Pass 8 — strict 2-tone alternation):
- *
- *   Hero(B/W) → Services(bg) → CrewMoment(secondary) → About(bg) →
- *   FeaturedProjects(secondary) → TestimonialStrip(bg) → MiniFaq(secondary) →
- *   QuoteCloserCard(bg, id="section-contact") → Footer
- *
- * Every adjacent pair contrasts. Every section resolves to a CedarCTA.
+ * Homepage rhythm (Pass 10 — minimalism audit):
+ *   Hero → InlineQuote → Services → CrewMoment → Featured → Testimonials → MiniFaq → Closer
+ * One mid-page form anchor (InlineQuote), one terminal CTA (Closer). Supporting strips carry no CTA.
  */
 const Index = () => {
   useDocumentTitle(
@@ -40,12 +35,11 @@ const Index = () => {
       <Hero />
       <InlineQuoteSection background="secondary" />
       <Services />
-      <CrewMoment background="secondary" showStats />
-      <About background="background" />
-      <FeaturedProjects background="secondary" />
-      <TestimonialStrip background="background" />
-      <MiniFaq background="secondary" />
-      <QuoteCloserCard id="section-contact" background="background" />
+      <CrewMoment background="secondary" />
+      <FeaturedProjects background="background" />
+      <TestimonialStrip background="secondary" />
+      <MiniFaq background="background" />
+      <QuoteCloserCard id="section-contact" background="secondary" />
       <Footer />
     </main>
   );
