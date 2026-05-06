@@ -62,7 +62,6 @@ const Contact = () => {
               {/* LEFT — direct contact card */}
               <div>
                 <SectionHeader
-                  numeral="I"
                   label="DIRECT"
                   headingId="direct-heading"
                   heading="Reach us directly."
@@ -127,7 +126,6 @@ const Contact = () => {
               {/* RIGHT — the actual form */}
               <div>
                 <SectionHeader
-                  numeral="II"
                   label="OR FILL THIS OUT"
                   headingId="form-heading"
                   heading="It takes about 30 seconds."

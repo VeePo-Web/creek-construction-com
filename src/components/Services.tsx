@@ -71,27 +71,17 @@ const Services = () => {
                   />
 
                   <div className="p-6 flex flex-col flex-1">
-                    <div className="flex items-center justify-between w-full mb-3">
-                      <Icon
-                        className="h-5 w-5 text-cedar/70 transition-colors duration-300 group-hover:text-cedar"
-                        aria-hidden
-                        strokeWidth={1.5}
-                      />
-                      <span className="text-[10px] tracking-[0.2em] uppercase text-muted-foreground/50 tabular-nums">
-                        {String(i + 1).padStart(2, "0")}
-                      </span>
-                    </div>
-                    <div className="flex-1">
-                      <h3 className="font-serif text-2xl text-foreground mb-2 transition-colors duration-300 group-hover:text-cedar">
-                        {group.title}
-                      </h3>
-                      <p className="text-[11px] tracking-[0.12em] uppercase text-cedar/70 mb-3">
-                        {group.short}
-                      </p>
-                      <p className="text-sm text-muted-foreground leading-relaxed">
-                        {group.description}
-                      </p>
-                    </div>
+                    <Icon
+                      className="h-5 w-5 text-cedar/70 mb-3 transition-colors duration-300 group-hover:text-cedar"
+                      aria-hidden
+                      strokeWidth={1.5}
+                    />
+                    <h3 className="font-serif text-2xl text-foreground mb-2 transition-colors duration-300 group-hover:text-cedar">
+                      {group.title}
+                    </h3>
+                    <p className="text-sm text-muted-foreground leading-relaxed">
+                      {group.short}
+                    </p>
                   </div>
                 </button>
               );

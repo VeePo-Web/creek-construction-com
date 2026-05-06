@@ -7,7 +7,7 @@ import SectionHeader from "@/components/SectionHeader";
 import PageHero from "@/components/ui/page-hero";
 import MiniFaq from "@/components/MiniFaq";
 import MidPageQuotePrompt from "@/components/MidPageQuotePrompt";
-import { Check, Minus, ArrowRight } from "lucide-react";
+import { Check, Minus } from "lucide-react";
 import { useDocumentTitle } from "@/hooks/useDocumentTitle";
 import { SERVICE_GROUPS, getItemsForGroup } from "@/config/services";
 import { useQuoteModal } from "@/components/quote/QuoteModalProvider";
@@ -69,34 +69,28 @@ const Services = () => {
         <div className="container mx-auto px-6">
           <div className={`${MAX_WIDTH.content} mx-auto`}>
             <SectionHeader
-              variant="quiet"
               label="THE FULL MENU"
               headingId="all-services-heading"
               heading="Everything we build."
-              subheading="Click any service to start a quote with it pre-selected."
             />
 
             <div className="mt-16 space-y-16">
               {SERVICE_GROUPS.map((group, gIdx) => {
                 const items = getItemsForGroup(group.id);
-                const Icon = group.icon;
                 const opacity = bronzeStep(gIdx, SERVICE_GROUPS.length);
                 return (
                   <div key={group.id} className="contents">
                     <div aria-labelledby={`group-${group.id}`}>
                       <div
-                        className="flex items-baseline justify-between gap-6 pb-4 mb-6 border-b"
+                        className="pb-4 mb-6 border-b"
                         style={{ borderBottomColor: `hsl(var(--cedar) / ${opacity})` }}
                       >
-                        <div className="flex items-center gap-4">
-                          <Icon className="h-5 w-5 text-cedar" aria-hidden strokeWidth={1.5} />
-                          <h3
-                            id={`group-${group.id}`}
-                            className="font-serif text-2xl md:text-3xl text-foreground"
-                          >
-                            {group.title}
-                          </h3>
-                        </div>
+                        <h3
+                          id={`group-${group.id}`}
+                          className="font-serif text-2xl md:text-3xl text-foreground"
+                        >
+                          {group.title}
+                        </h3>
                       </div>
 
                       <div className="grid sm:grid-cols-2 gap-x-6">
@@ -116,13 +110,6 @@ const Services = () => {
                                 <p className="text-xs text-muted-foreground mt-0.5">{item.short}</p>
                               )}
                             </div>
-                            <span
-                              className="text-[10px] tracking-[0.18em] uppercase text-cedar/60 group-hover:text-cedar transition-colors duration-300 inline-flex items-center gap-1 shrink-0"
-                              aria-hidden
-                            >
-                              Quote
-                              <ArrowRight className="h-3 w-3 transition-transform duration-300 group-hover:translate-x-0.5" />
-                            </span>
                           </button>
                         ))}
                         {items.length % 2 === 1 && (
@@ -150,11 +137,9 @@ const Services = () => {
         <div className="container mx-auto px-6">
           <div className={`${MAX_WIDTH.content} mx-auto`}>
             <SectionHeader
-              variant="quiet"
               label="HOW WE SPLIT THE WORK"
               headingId="contract-heading"
               heading="What we handle. What you handle."
-              subheading="Clear from the start — no scope drift, no surprises."
             />
 
             <div className="mt-12 grid md:grid-cols-2 gap-0">

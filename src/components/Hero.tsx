@@ -2,9 +2,7 @@ import CedarCTA from "@/components/CedarCTA";
 import { CONTACT } from "@/config/contact";
 import PageHero from "@/components/ui/page-hero";
 
-import TrustChips from "@/components/ui/trust-chip";
 import StatTrio, { type StatItem } from "@/components/ui/stat-trio";
-import { TRUST_SIGNALS } from "@/config/trust-signals";
 
 /**
  * Hero — homepage opener.
@@ -22,11 +20,7 @@ const STATS: StatItem[] = [
   { value: 48, suffix: "h", label: "Quote turnaround" },
 ];
 
-// Single source of truth — same casing as QuoteCloserCard, GlobalMenu,
-// StyleGuide, and Footer. Show the first three (icons fit the band).
-const TRUST_ITEMS = TRUST_SIGNALS.slice(0, 3);
-
-/** Combined post-hero band: stats over a hairline over trust chips. One section, one paint root. */
+/** Post-hero proof band: stats only. Trust language lives in the closer. */
 const HeroProofBand = () => (
   <section
     aria-label="Creek Construction credentials"
@@ -34,9 +28,6 @@ const HeroProofBand = () => (
   >
     <div className="container mx-auto px-6 py-8 md:py-10">
       <StatTrio items={STATS} variant="inline" />
-      <div className="mt-7 md:mt-8 pt-6 md:pt-7 border-t border-cedar/10">
-        <TrustChips items={TRUST_ITEMS} variant="rule" ariaLabel="Trust signals" />
-      </div>
     </div>
   </section>
 );
@@ -50,7 +41,7 @@ const Hero = () => {
         sectionLabel="Exterior Construction · Calgary · Edmonton"
         title={["Excellence in", "the Work."]}
         italic="Pride in every detail."
-        subtitle="Decks, fencing, sheds, painting and siding — built to last across Alberta. Our crew owns the work from quote to final nail."
+        subtitle="Decks, fencing, sheds, painting and siding — built to last across Alberta."
         query={{
           shot_type: ["hero", "elevation", "wide"],
           min_quality: "reference",

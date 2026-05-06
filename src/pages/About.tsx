@@ -45,9 +45,8 @@ const About = () => {
 
       <section id="section-story" className={`${SECTION_PADDING.default}`} aria-labelledby="story-heading">
         <div className="container mx-auto px-6">
-          <div className="max-w-3xl">
+          <div className={`${MAX_WIDTH.content} mx-auto`}>
             <SectionHeader
-              numeral="II"
               label="WHO WE ARE"
               headingId="story-heading"
               heading="A small crew that takes the work seriously."
@@ -63,15 +62,11 @@ const About = () => {
                 doing the work. That’s how we keep quality consistent, and it’s why we’d rather do
                 fewer projects exceptionally well than chase volume.
               </p>
-              <p className={BODY.lead}>
-                Our marketing is the work itself. If a job doesn’t earn the next referral, we
-                treat that as a failure on our end. That’s the standard.
-              </p>
             </div>
 
             {/* Inline stat trio — quiet, no border, no CTA */}
             <div
-              className="mt-12 pt-8 border-t border-cedar/15 grid grid-cols-3 gap-6 max-w-2xl"
+              className="mt-12 pt-8 border-t border-cedar/15 grid grid-cols-3 gap-6"
               role="group"
               aria-label="Creek by the numbers"
             >
@@ -94,12 +89,10 @@ const About = () => {
         <div className="container mx-auto px-6">
           <div className={`${MAX_WIDTH.content} mx-auto`}>
             <SectionHeader
-              numeral="III"
               label="HOW WE WORK"
               headingId="process-heading"
               heading="The Creek Process."
               subheading="Five steps. Nothing surprising along the way."
-              badge="05 Steps"
             />
 
             <div className="space-y-4 mt-12" role="list">
@@ -128,7 +121,6 @@ const About = () => {
         <div className="container mx-auto px-6">
           <div className={`${MAX_WIDTH.content} mx-auto`}>
             <SectionHeader
-              numeral="IV"
               label="WHERE WE WORK"
               headingId="areas-heading"
               heading="Calgary, Edmonton, and the towns in between."
