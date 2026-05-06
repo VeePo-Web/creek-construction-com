@@ -5,6 +5,7 @@ import { MEDIA_SIZES } from "@/lib/media-sizes";
 import { BODY } from "@/lib/typography";
 import { SECTION_PADDING, MAX_WIDTH, GRID_GAP } from "@/lib/spacing";
 import { useReveal } from "@/hooks/useReveal";
+import { STATS_TRIO } from "@/config/stats";
 
 interface CrewMomentProps {
   eyebrow?: string;
@@ -14,6 +15,8 @@ interface CrewMomentProps {
   background?: "background" | "secondary";
   /** Override heading id (only needed if two appear on one page). */
   headingId?: string;
+  /** Render the 3-up stat row beneath the paragraphs. */
+  showStats?: boolean;
 }
 
 /**
@@ -31,6 +34,7 @@ const CrewMoment = ({
   asSection = true,
   background = "background",
   headingId = "crew-heading",
+  showStats = false,
 }: CrewMomentProps) => {
   const { ref, cls, style } = useReveal();
 
@@ -65,6 +69,24 @@ const CrewMoment = ({
               </p>
             ))}
           </div>
+          {showStats && (
+            <div
+              className="mt-10 pt-8 border-t border-cedar/15 grid grid-cols-3 gap-4"
+              role="group"
+              aria-label="Creek by the numbers"
+            >
+              {STATS_TRIO.map((s) => (
+                <div key={s.label} className="text-left">
+                  <p className="font-serif text-2xl md:text-[1.75rem] text-foreground leading-none tabular-nums">
+                    {s.value}
+                  </p>
+                  <p className="text-[9px] tracking-[0.18em] uppercase text-muted-foreground/70 mt-2 leading-tight">
+                    {s.label}
+                  </p>
+                </div>
+              ))}
+            </div>
+          )}
           <div className="mt-10">
             <CedarCTA />
           </div>
