@@ -51,14 +51,14 @@ const Work = () => {
       <PageHero
         variant="cinematic-bleed"
         breadcrumb={[{ label: "Home", to: "/" }, { label: "Our Work" }]}
-        numeral="I"
+        
         sectionLabel="SELECTED WORK"
         title={["The work", "speaks first."]}
         italic="Alberta-built. Crew-owned."
         subtitle="Selected projects across Calgary, Edmonton, and the towns in between."
         query={{ shot_type: ["hero", "elevation", "wide"], min_quality: "reference", kind: "image" }}
         videoQuery={{ kind: "video", min_quality: "portfolio" }}
-        caption={{ service: "Mixed services", location: "Alberta", year: new Date().getFullYear() }}
+        
         height="84vh"
         minHeight="640px"
       >

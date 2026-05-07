@@ -6,8 +6,8 @@ import { HEADLINE } from "@/lib/typography";
 interface SectionHeaderProps {
   /** Roman numeral or number string. Ignored when variant="quiet". */
   numeral?: string;
-  /** Uppercase label for the section, e.g. "OUR APPROACH". */
-  label: string;
+  /** Uppercase label for the section, e.g. "OUR APPROACH". Optional — when absent, the bronze rule row is skipped. */
+  label?: string;
   /** Section heading id for aria-labelledby. */
   headingId: string;
   /** Optional: use cedar color for label (default: muted-foreground). */
@@ -69,14 +69,16 @@ const SectionHeader = ({
 
   return (
     <>
-      <Wrap delay={baseDelay}>
-        <BronzeRule
-          numeral={showNumeral ? numeral : undefined}
-          label={label}
-          variant={cedarLabel ? "accent" : "default"}
-          className="mb-6"
-        />
-      </Wrap>
+      {label && (
+        <Wrap delay={baseDelay}>
+          <BronzeRule
+            numeral={showNumeral ? numeral : undefined}
+            label={label}
+            variant={cedarLabel ? "accent" : "default"}
+            className="mb-6"
+          />
+        </Wrap>
+      )}
 
       <Wrap delay={baseDelay + 0.1}>
         <h2 id={headingId} className={`${HEADLINE.section} mb-4`}>{heading}</h2>

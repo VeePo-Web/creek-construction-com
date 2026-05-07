@@ -28,7 +28,7 @@ const About = () => {
       <PageHero
         variant="evergreen-typographic"
         breadcrumb={[{ label: "Home", to: "/" }, { label: "About" }]}
-        numeral="I"
+        
         sectionLabel="OUR STORY"
         title={["Built on the", "work itself."]}
         italic="Locally owned. No gimmicks."
