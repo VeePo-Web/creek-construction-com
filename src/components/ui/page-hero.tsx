@@ -217,7 +217,7 @@ const EvergreenTypographic = (props: EvergreenTypographicProps) => {
         </div>
       )}
 
-      <div className="container mx-auto px-6 relative z-10">
+      <div className="container mx-auto px-5 sm:px-6 md:px-10 relative z-10">
         <div className="max-w-2xl">
           {/* Breadcrumb intentionally omitted — HeaderBreadcrumb in the chrome
               owns sub-page wayfinding (v3.1). The `breadcrumb` prop is still
@@ -319,7 +319,7 @@ const EditorialSplit = (props: EditorialSplitProps) => {
         ]}
       />
 
-      <div className="container mx-auto px-6 relative z-10 py-20 md:py-28 lg:py-32">
+      <div className="container mx-auto px-5 sm:px-6 md:px-10 relative z-10 py-20 md:py-28 lg:py-32">
         <div
           className={
             hasMedia
@@ -508,7 +508,7 @@ const CinematicBleed = (props: CinematicBleedProps) => {
       />
 
       {/* Content */}
-      <div className="container mx-auto px-6 relative z-10 pb-16 md:pb-20">
+      <div className="container mx-auto px-5 sm:px-6 md:px-10 relative z-10 pb-16 md:pb-20">
         <div className="max-w-3xl">
           {/* Breadcrumb intentionally omitted — HeaderBreadcrumb in the
               chrome owns sub-page wayfinding so the hero photo stays clean. */}
@@ -602,7 +602,7 @@ const ServicePortrait = (props: ServicePortraitProps) => {
         ]}
       />
 
-      <div className="container mx-auto px-6 relative z-10 pb-20 md:pb-24 pt-32">
+      <div className="container mx-auto px-5 sm:px-6 md:px-10 relative z-10 pb-20 md:pb-24 pt-32">
         <div className="max-w-3xl">
           {/* Breadcrumb intentionally omitted — see CinematicBleed for the
               same rationale. HeaderBreadcrumb owns sub-page wayfinding. */}
@@ -689,7 +689,7 @@ const CinematicLegacy = (props: CinematicLegacyProps) => {
       <div className="absolute inset-0" style={{ background: BACKDROP.cinematicVignette }} aria-hidden />
       <div className="absolute inset-0 pointer-events-none" style={{ background: BACKDROP.cinematicRadial }} aria-hidden />
 
-      <div className="container mx-auto px-6 relative z-10 pb-16">
+      <div className="container mx-auto px-5 sm:px-6 md:px-10 relative z-10 pb-16">
         <div className="max-w-3xl">
           <BreadcrumbTrail items={props.breadcrumb} onDark className="mb-6" />
           <BronzeRule
