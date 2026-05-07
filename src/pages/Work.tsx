@@ -51,27 +51,19 @@ const Work = () => {
       <PageHero
         variant="cinematic-bleed"
         breadcrumb={[{ label: "Home", to: "/" }, { label: "Our Work" }]}
-        
         sectionLabel="SELECTED WORK"
         title={["The work", "speaks first."]}
-        italic="Alberta-built. Crew-owned."
         subtitle="Selected projects across Calgary, Edmonton, and the towns in between."
         query={{ shot_type: ["hero", "elevation", "wide"], min_quality: "reference", kind: "image" }}
         videoQuery={{ kind: "video", min_quality: "portfolio" }}
-        
         height="84vh"
         minHeight="640px"
       >
-        {/* Primary CTA — every PageHero must carry one (funnel contract). */}
         <div className="flex flex-col gap-5">
           <CedarCTA />
-          {/* Sister studios — quiet editorial footnote */}
-          <div className="flex items-center gap-3 text-evergreen-foreground/45">
-            <div className="w-8 h-px bg-evergreen-foreground/30" />
-            <span className="text-[10px] tracking-[0.25em] uppercase">
-              Sister studios · B&amp;P Saunas · Hickory&nbsp;&amp;&nbsp;Rose
-            </span>
-          </div>
+          <span className="text-[10px] tracking-[0.25em] uppercase text-evergreen-foreground/45">
+            Sister studios · B&amp;P Saunas · Hickory&nbsp;&amp;&nbsp;Rose
+          </span>
         </div>
       </PageHero>
 
