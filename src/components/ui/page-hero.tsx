@@ -217,7 +217,7 @@ const EvergreenTypographic = (props: EvergreenTypographicProps) => {
         </div>
       )}
 
-      <div className="container mx-auto px-6 relative z-10">
+      <div className="container mx-auto px-5 sm:px-6 md:px-10 relative z-10">
         <div className="max-w-2xl">
           {/* Breadcrumb intentionally omitted — HeaderBreadcrumb in the chrome
               owns sub-page wayfinding (v3.1). The `breadcrumb` prop is still
@@ -319,7 +319,7 @@ const EditorialSplit = (props: EditorialSplitProps) => {
         ]}
       />
 
-      <div className="container mx-auto px-6 relative z-10 py-20 md:py-28 lg:py-32">
+      <div className="container mx-auto px-5 sm:px-6 md:px-10 relative z-10 py-20 md:py-28 lg:py-32">
         <div
           className={
             hasMedia
@@ -508,7 +508,7 @@ const CinematicBleed = (props: CinematicBleedProps) => {
       />
 
       {/* Content */}
-      <div className="container mx-auto px-6 relative z-10 pb-16 md:pb-20">
+      <div className="container mx-auto px-5 sm:px-6 md:px-10 relative z-10 pb-14 md:pb-20 lg:pb-24">
         <div className="max-w-3xl">
           {/* Breadcrumb intentionally omitted — HeaderBreadcrumb in the
               chrome owns sub-page wayfinding so the hero photo stays clean. */}
@@ -602,7 +602,7 @@ const ServicePortrait = (props: ServicePortraitProps) => {
         ]}
       />
 
-      <div className="container mx-auto px-6 relative z-10 pb-20 md:pb-24 pt-32">
+      <div className="container mx-auto px-5 sm:px-6 md:px-10 relative z-10 pb-20 md:pb-24 pt-24 md:pt-28 lg:pt-32">
         <div className="max-w-3xl">
           {/* Breadcrumb intentionally omitted — see CinematicBleed for the
               same rationale. HeaderBreadcrumb owns sub-page wayfinding. */}
@@ -689,7 +689,7 @@ const CinematicLegacy = (props: CinematicLegacyProps) => {
       <div className="absolute inset-0" style={{ background: BACKDROP.cinematicVignette }} aria-hidden />
       <div className="absolute inset-0 pointer-events-none" style={{ background: BACKDROP.cinematicRadial }} aria-hidden />
 
-      <div className="container mx-auto px-6 relative z-10 pb-16">
+      <div className="container mx-auto px-5 sm:px-6 md:px-10 relative z-10 pb-16">
         <div className="max-w-3xl">
           <BreadcrumbTrail items={props.breadcrumb} onDark className="mb-6" />
           <BronzeRule
@@ -779,8 +779,8 @@ const ArchitectBleed = (props: ArchitectBleedProps) => {
                 backgroundImage: `url(${item.lqip.startsWith("data:") ? item.lqip : `data:image/jpeg;base64,${item.lqip}`})`,
                 backgroundSize: "cover",
                 backgroundPosition: "center",
-                filter: "grayscale(100%) blur(24px) brightness(0.82)",
-                transform: "scale(1.06)",
+                filter: "grayscale(100%) blur(18px) brightness(0.82)",
+                transform: "scale(1.04)",
                 opacity: photoLoaded ? 0 : 1,
               }}
             />
@@ -841,7 +841,7 @@ const ArchitectBleed = (props: ArchitectBleedProps) => {
       />
 
       {/* ── Top: hairline + uppercase eyebrow ── */}
-      <div className="container mx-auto px-6 relative z-10 pt-28 md:pt-32">
+      <div className="container mx-auto px-5 sm:px-6 md:px-10 relative z-10 pt-28 md:pt-32">
         <div
           className="flex items-center gap-4 hero-provenance-enter"
           style={{ ["--kinetic-delay" as never]: "200ms" }}
@@ -865,7 +865,7 @@ const ArchitectBleed = (props: ArchitectBleedProps) => {
       </div>
 
       {/* ── Middle: oversized light serif headline ── */}
-      <div className="container mx-auto px-6 relative z-10 flex-1 flex items-center">
+      <div className="container mx-auto px-5 sm:px-6 md:px-10 relative z-10 flex-1 flex items-center">
         <div className="max-w-[14ch] sm:max-w-[18ch] md:max-w-[20ch]">
           <h1
             aria-label={[...lines, props.italic].filter(Boolean).join(" ")}
@@ -878,6 +878,8 @@ const ArchitectBleed = (props: ArchitectBleedProps) => {
               fontSize: "clamp(2.125rem, 8.5vw, 8.25rem)",
               lineHeight: 0.96,
               letterSpacing: "-0.012em",
+              hyphens: "manual",
+              wordBreak: "keep-all",
             }}
           >
             {lines.map((line, i) => (
@@ -917,8 +919,8 @@ const ArchitectBleed = (props: ArchitectBleedProps) => {
       </div>
 
       {/* ── Bottom: hairline, subtitle, CTA row, caption rail ── */}
-      <div className="container mx-auto px-6 relative z-10 pb-14 md:pb-20">
-        <div className="grid md:grid-cols-12 gap-y-10 gap-x-8 items-end">
+      <div className="container mx-auto px-5 sm:px-6 md:px-10 relative z-10 pb-14 md:pb-20 lg:pb-24">
+        <div className="grid md:grid-cols-12 gap-y-10 gap-x-10 lg:gap-x-12 items-end">
           <div className="md:col-span-8 lg:col-span-7">
             <span
               aria-hidden
@@ -934,7 +936,7 @@ const ArchitectBleed = (props: ArchitectBleedProps) => {
                 style={{
                   color: "hsl(0 0% 100% / 0.82)",
                   maxWidth: "46ch",
-                  fontSize: "clamp(0.95rem, 1.05vw, 1.0625rem)",
+                  fontSize: "clamp(0.95rem, 1.05vw, 1.125rem)",
                   lineHeight: 1.55,
                   ["--kinetic-delay" as never]: "1200ms",
                   fontFamily: "var(--font-sans, 'DM Sans', system-ui, sans-serif)",

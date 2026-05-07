@@ -58,7 +58,7 @@ const StatRow = ({
         <p className="font-serif text-2xl md:text-[1.75rem] text-foreground leading-none tabular-nums">
           {display}
         </p>
-        <p className="text-[9px] tracking-[0.18em] uppercase text-muted-foreground/70 mt-2 leading-tight">
+        <p className="text-[10px] tracking-[0.2em] uppercase text-muted-foreground/70 mt-2 leading-tight">
           {item.label}
         </p>
       </div>

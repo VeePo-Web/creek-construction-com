@@ -21,7 +21,7 @@
 
 export const SECTION_PADDING = {
   /** Standard homepage section (Hero, Services, About, etc.). */
-  default: "py-16 sm:py-20 md:py-24 lg:py-28",
+  default: "py-16 sm:py-20 md:py-24 lg:py-28 xl:py-32",
   /** Tight — proof bands, footer-adjacent sections. */
   tight: "py-12 sm:py-16 md:py-20",
   /** Slimmer — for trust strips and inline rows. */

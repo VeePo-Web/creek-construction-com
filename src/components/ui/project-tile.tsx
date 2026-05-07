@@ -120,7 +120,7 @@ const ProjectTile = ({
       >
         <div
           className={cn(
-            "relative rounded-sm overflow-hidden transition-shadow duration-700 group-hover:shadow-elevated border border-border/40",
+            "relative rounded-sm overflow-hidden transition-shadow duration-700 group-hover:shadow-[0_8px_24px_-12px_hsl(var(--cedar)/0.18)] border border-border/40",
             aspectClass,
           )}
           style={hasPhoto ? undefined : { background: BACKDROP.stonePlate }}
@@ -180,7 +180,7 @@ const ProjectTile = ({
 
         {item.description && (
           <div
-            className="mt-4 pl-5 py-3 pr-4 transition-[background-color,padding-left,border-color] duration-500 group-hover:bg-cedar/[0.04] group-hover:pl-7 group-hover:border-cedar/30 rounded-sm shadow-contact border border-border/40"
+            className="mt-4 pl-5 py-3 pr-4 transition-[background-color,padding-left,border-color,box-shadow] duration-500 group-hover:bg-cedar/[0.04] group-hover:pl-7 group-hover:border-cedar/30 group-hover:shadow-[0_2px_8px_rgba(0,0,0,0.04)] rounded-sm border border-border/40"
             style={{ borderLeft: `2px solid hsl(var(--cedar) / ${opacity})` }}
           >
             <p className="text-sm text-muted-foreground leading-relaxed">

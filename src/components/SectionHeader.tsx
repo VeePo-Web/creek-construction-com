@@ -81,7 +81,7 @@ const SectionHeader = ({
       )}
 
       <Wrap delay={baseDelay + 0.1}>
-        <h2 id={headingId} className={`${HEADLINE.section} mb-4`}>{heading}</h2>
+        <h2 id={headingId} className={`${HEADLINE.section} mb-4 [&:last-child]:mb-8`}>{heading}</h2>
       </Wrap>
 
       {subheading && (

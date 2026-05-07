@@ -9,6 +9,7 @@ import { useReveal } from "@/hooks/useReveal";
 
 interface MiniFaqProps {
   eyebrow?: string;
+  /* heading override */
   heading?: string;
   subheading?: string;
   items?: FaqItem[];
