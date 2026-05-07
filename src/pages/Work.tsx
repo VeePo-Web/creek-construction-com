@@ -101,7 +101,7 @@ const Work = () => {
 
       {/* Service-category placeholder grid — replaced as real photos arrive */}
       <section id="section-gallery" className={`${SECTION_PADDING.default} bg-secondary`} aria-labelledby="gallery-heading">
-        <div className="container mx-auto px-6">
+        <div className="container mx-auto px-5 sm:px-6">
           <div className={`${MAX_WIDTH.wide} mx-auto`}>
             <SectionHeader
               label="MORE WORK"
