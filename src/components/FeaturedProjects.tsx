@@ -81,7 +81,7 @@ const ProjectCard = ({ project, variant, index }: ProjectCardProps) => {
             </div>
           )}
 
-          <div className="mt-5 flex items-baseline justify-between gap-4">
+          <div className="mt-6 flex items-baseline justify-between gap-4">
             <div className="flex items-center gap-3 min-w-0">
               <span className="text-[10px] tracking-[0.25em] uppercase text-cedar/70 tabular-nums shrink-0">
                 {String(index + 1).padStart(2, "0")}
