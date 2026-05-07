@@ -65,7 +65,7 @@ const About = () => {
 
             {/* Inline stat trio — quiet, no border, no CTA */}
             <div
-              className="mt-12 pt-8 border-t border-cedar/15 grid grid-cols-3 gap-4 sm:gap-6"
+              className="mt-12 pt-8 border-t border-cedar/15 grid grid-cols-3 gap-6 md:gap-10"
               role="group"
               aria-label="Creek by the numbers"
             >
