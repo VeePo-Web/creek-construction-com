@@ -129,7 +129,7 @@ const Services = () => {
         className={`${SECTION_PADDING.default} bg-secondary`}
         aria-labelledby="contract-heading"
       >
-        <div className="container mx-auto px-6">
+        <div className="container mx-auto px-5 sm:px-6">
           <div className={`${MAX_WIDTH.content} mx-auto`}>
             <SectionHeader
               label="HOW WE SPLIT THE WORK"
