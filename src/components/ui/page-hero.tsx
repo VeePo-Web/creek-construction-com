@@ -919,8 +919,8 @@ const ArchitectBleed = (props: ArchitectBleedProps) => {
       </div>
 
       {/* ── Bottom: hairline, subtitle, CTA row, caption rail ── */}
-      <div className="container mx-auto px-6 relative z-10 pb-14 md:pb-20">
-        <div className="grid md:grid-cols-12 gap-y-10 gap-x-8 items-end">
+      <div className="container mx-auto px-5 sm:px-6 md:px-10 relative z-10 pb-14 md:pb-20 lg:pb-24">
+        <div className="grid md:grid-cols-12 gap-y-10 gap-x-10 lg:gap-x-12 items-end">
           <div className="md:col-span-8 lg:col-span-7">
             <span
               aria-hidden
@@ -936,7 +936,7 @@ const ArchitectBleed = (props: ArchitectBleedProps) => {
                 style={{
                   color: "hsl(0 0% 100% / 0.82)",
                   maxWidth: "46ch",
-                  fontSize: "clamp(0.95rem, 1.05vw, 1.0625rem)",
+                  fontSize: "clamp(0.95rem, 1.05vw, 1.125rem)",
                   lineHeight: 1.55,
                   ["--kinetic-delay" as never]: "1200ms",
                   fontFamily: "var(--font-sans, 'DM Sans', system-ui, sans-serif)",
