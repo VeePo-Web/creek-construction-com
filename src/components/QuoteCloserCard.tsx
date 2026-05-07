@@ -57,7 +57,7 @@ const QuoteCloserCard = ({
         <CedarCTA preselectServices={preselectServices}>Get my free quote</CedarCTA>
 
         <div
-          className="mt-8 pt-6 border-t border-evergreen-foreground/10 flex flex-wrap items-center gap-x-4 gap-y-2"
+          className="mt-8 pt-6 border-t border-evergreen-foreground/10 flex flex-wrap items-center gap-x-5 gap-y-2.5"
           aria-label="Trust signals"
         >
           {TRUST_SIGNALS.map(({ icon: Icon, label }) => (
