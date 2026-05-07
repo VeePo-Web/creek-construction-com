@@ -142,7 +142,7 @@ const About = () => {
         </div>
       </section>
 
-      <QuoteCloserCard eyebrow="Up next" background="secondary" />
+      <QuoteCloserCard background="secondary" />
 
       <Footer />
     </main>
