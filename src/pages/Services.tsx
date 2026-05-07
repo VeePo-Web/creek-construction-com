@@ -85,7 +85,7 @@ const Services = () => {
                       >
                         <h3
                           id={`group-${group.id}`}
-                          className="font-serif text-2xl md:text-3xl text-foreground"
+                          className="font-serif text-xl md:text-2xl text-foreground"
                         >
                           {group.title}
                         </h3>
