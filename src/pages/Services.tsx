@@ -63,7 +63,7 @@ const Services = () => {
         className={`${SECTION_PADDING.default}`}
         aria-labelledby="all-services-heading"
       >
-        <div className="container mx-auto px-6">
+        <div className="container mx-auto px-5 sm:px-6">
           <div className={`${MAX_WIDTH.content} mx-auto`}>
             <SectionHeader
               label="THE FULL MENU"
