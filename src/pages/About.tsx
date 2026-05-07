@@ -124,11 +124,11 @@ const About = () => {
               headingId="areas-heading"
               heading="Calgary, Edmonton, and the towns in between."
             />
-            <div className="flex flex-wrap gap-2 mt-10">
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 mt-10">
               {CONTACT.cities.map((city, i) => (
                 <span
                   key={city}
-                  className="text-sm text-muted-foreground border rounded-sm px-3 py-2.5 inline-flex items-center min-h-[44px] hover:text-foreground hover:bg-cedar/[0.04] hover:border-cedar/60 transition-[color,background-color,border-color] duration-300 grain-texture shadow-contact"
+                  className="text-sm text-muted-foreground border rounded-sm px-3 py-2.5 inline-flex items-center justify-center min-h-[44px] hover:text-foreground hover:bg-cedar/[0.04] hover:border-cedar/30 transition-[color,background-color,border-color] duration-300"
                   style={{ borderColor: `hsl(var(--cedar) / ${bronzeStep(i, CONTACT.cities.length)})` }}
                 >
                   {city}
