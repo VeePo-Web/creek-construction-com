@@ -1,144 +1,93 @@
-# Pass 11 — FlexServices-Grade Reduction (Deep Audit)
+# Pass 12 — Editorial Crispness (FlexServices-Grade Audit, Round 2)
 
-Pass 10 cut the section count. Pass 11 cuts the **chrome inside what remains**. The pages are now structurally clean but each section still wears too much editorial garnish (numerals, subheadings, badges, quote bullets, trust strips repeated three times). FlexServices wins by saying things **once**, with confidence, in plain voice — never twice in two registers.
-
-This pass executes 11 surgical edits across components and pages. Zero new files. Zero new tokens. Pure subtraction.
+Pass 11 deduplicated trust language and stripped editorial garnish. Pass 12 is the next reduction layer: delete dead code, drop default subheadings, fix the few remaining spots where the page introduces itself twice, and tighten section padding by one notch so the homepage scrolls in fewer screen-fulls. No new files; pure subtraction with one rename.
 
 ---
 
-## 1. Footer — collapse from 3-col to one editorial line
+## 1. Delete dead component — `src/components/About.tsx`
 
-`src/components/Footer.tsx` currently carries: 3-col grid (Brand / Navigate / Service Areas), tertiary `<CedarCTA>`, full `TRUST_SIGNALS` strip, copyright, and an "Excellence in the Work" tagline. The `QuoteCloserCard` directly above already carries the same CTA + the same trust strip. The footer therefore renders the conversion ask **twice in the same visual breath**.
+The homepage `<About />` block was removed from `src/pages/Index.tsx` in Pass 10. The component file (~130 lines) is now orphaned — nothing imports it. Delete it. The /about route already uses `src/pages/About.tsx`, which is the live one.
 
-Rewrite `Footer.tsx` to a single row:
+Verification: `rg "from \"@/components/About\"" src/` after delete must return zero hits.
 
-```text
-[brand mark + name]    Home · Services · Work · About · Contact    [phone] [email]
-                            © 2026 Creek Construction · Calgary · Edmonton
+---
+
+## 2. Trim `SECTION_PADDING.default` one step
+
+Currently `py-24 md:py-32` (96px → 128px). FlexServices runs `py-20` (80px). Set:
+
+```ts
+default: "py-20 md:py-28",  // was py-24 md:py-32
 ```
 
-- Remove the tertiary `<CedarCTA>` block entirely.
-- Remove the `TRUST_SIGNALS` strip (it lives in the closer 100px above).
-- Remove the service-area chips (they live on About).
-- Remove the "Excellence in the Work · Pride in Every Detail" tagline.
-- Result: one centered, two-row footer that reads like FlexServices' "© Flex • Licensed & Insured" line.
-
-Net: ~80 lines → ~30 lines.
+This single token change ripples through every section on every page. The site loses ~32px between sections at desktop and ~16px at mobile — measurable, not invisible, and a more confident editorial cadence.
 
 ---
 
-## 2. Hero proof band — stats only
+## 3. Default-strip subheadings that the heading already covers
 
-`src/components/Hero.tsx` renders `<StatTrio>` over a hairline over `<TrustChips>`. The trust chips reappear in the QuoteCloserCard's trust strip (4 signals, identical labels). Drop the trust-chips half of the band. The stats stay because numbers are not repeated anywhere else above the closer.
+In `TestimonialStrip.tsx` the default subheading "Real words from real homes across Alberta." restates the heading "Quiet recommendations." Drop the default (`subheading?: string` becomes truly optional with no default); pages can still pass one if they need it.
 
-Single-section band becomes:
+In `src/components/Services.tsx` (homepage tile section) the subheading "Residential exterior construction across Alberta — one crew, end to end." is redundant of the headline "Five categories. Fifteen services." Remove the `subheading` prop from the call.
 
-```tsx
-<section className="border-b border-cedar/15 bg-background">
-  <div className="container mx-auto px-6 py-8 md:py-10">
-    <StatTrio items={STATS} variant="inline" />
-  </div>
-</section>
-```
+In `src/pages/Services.tsx` "Responsibility matrix" section already had its subheading dropped in Pass 11. Confirmed — no action.
+
+In `src/components/About.tsx` (the homepage one we're deleting in step 1) — n/a.
 
 ---
 
-## 3. Hero subtitle — one sentence
+## 4. /work PageHero — drop the duplicated caption
 
-Drop the second sentence ("Our crew owns the work from quote to final nail."). The closer already owns that voice. Hero subtitle becomes:
-
-> "Decks, fencing, sheds, painting and siding — built to last across Alberta."
+`src/pages/Work.tsx` PageHero passes `caption={{ service, location, year }}`. The caption renders as a small chip near the headline. The breadcrumb already says "Home → Our Work" and the headline already says "The work speaks first." The caption is decorative noise. Remove the `caption` prop from the PageHero call.
 
 ---
 
-## 4. SectionHeader — promote `quiet` to the default
+## 5. /about PageHero — drop the `numeral="I"`
 
-The numeral + counter-badge editorial garnish (Roman I/II/III, "05 Steps") suits a single PageHero per route, not in-body sections. Currently many in-body uses pass `numeral` + `badge`. Two changes:
-
-- In `src/components/SectionHeader.tsx`, flip the `variant` default from `"default"` to `"quiet"`. Pages that genuinely need the editorial treatment (PageHero captions on sub-pages) opt in with `variant="default"`.
-- Sweep all `<SectionHeader numeral=… badge=… />` calls in `About.tsx`, `Services.tsx`, `Work.tsx`, `Contact.tsx` and drop the `numeral` + `badge` props. The `label` + `heading` carry the section.
-
-This kills the "academic textbook" feel in one move.
+PageHero on /about renders `numeral="I"`. It's the only sub-page that does this, and there is no "II" anywhere because Pass 11 stripped in-body numerals. A lone "I" reads as orphaned. Remove it.
 
 ---
 
-## 5. InlineQuoteSection — drop the trust bullets
+## 6. CrewMoment — make headline carry the beat alone
 
-The 3 trust bullets ("Free, written, no obligation" / "We quote what we'll actually charge" / cities) duplicate the closer card's bullets word-for-word. Strip them. The left column becomes eyebrow + serif headline alone, the form sits right and dominates.
+After Pass 11, CrewMoment is one short paragraph. Drop the eyebrow `OUR CREW` (it duplicates the heading "The crew on-site is the crew you meet."). Pass `eyebrow=""` is awkward — instead change `SectionHeader` to skip rendering BronzeRule when `label` is empty/undefined, and call `<CrewMoment />` with no `eyebrow` so the section opens straight on the serif headline.
 
-```tsx
-<div>
-  <p className="...eyebrow">{eyebrow}</p>
-  <h2 id={headingId} className="font-serif text-3xl md:text-4xl ...">{heading}</h2>
-</div>
-<QuoteFormInline surface={background} />
-```
+Implementation: in `SectionHeader.tsx`, wrap the BronzeRule block in `{label && (...)}`. Then in `CrewMoment.tsx`, remove the default `eyebrow = "OUR CREW"` so it's truly optional.
 
 ---
 
-## 6. QuoteCloserCard — drop the bullets, keep the trust strip
+## 7. Footer — make middle nav slightly louder
 
-Same dedup logic in reverse. The `bullets` prop renders 3 lines that repeat the trust strip immediately below. Remove the bullets block; let the trust strip carry the proof. Body text + CTA + trust strip = enough.
-
-Also: remove the `bullets` prop from the public API since nothing else uses it.
+The Pass-11 footer reduced the link colors to `text-evergreen-foreground/65`. On evergreen at /65, the contrast is borderline. Bump to `/80` for default and keep `/65` for the © line. Pure quality-of-life — matches FlexServices' "Licensed & Insured" line which sits at high-contrast on white.
 
 ---
 
-## 7. Services homepage tile — strip to icon + title + short
+## 8. Homepage rhythm — strip CrewMoment default background
 
-`src/components/Services.tsx` group tiles currently render: image, icon, "01" tabular index, serif title, uppercase short, full description, "Quote this →" line *(already removed)*. Still too dense for the homepage cadence.
-
-Trim to: image, icon, serif title, one-line `short`. Drop the `01/02/03` index (homepage doesn't number elsewhere) and drop the long `description` paragraph (it lives on /services).
+Pass 10 set Index.tsx alternation: `Hero → Quote(secondary) → Services(bg) → CrewMoment(secondary) → Featured(bg) → Testimonials(secondary) → MiniFaq(bg) → Closer(secondary)`. Solid. No change to the section list. But verify after step 2 (smaller padding) that the rhythm still reads — no anchor changes.
 
 ---
 
-## 8. Services /services page — clean catalogue rows
+## 9. Style guide page — leave alone
 
-`src/pages/Services.tsx` group catalogue:
-
-- Per-item button currently has title + short + a "Quote →" suffix chip. The whole row is the button — the suffix is decorative. Drop it.
-- Group header shows the icon + group title. Already lost the "01 / 05" badge in Pass 10. Now also drop the `Icon` from the group header (the homepage already showed icons; here we want catalogue clarity, not visual repetition).
-- The "Click any service to start a quote with it pre-selected." subheading reads as instruction. Soften to a single short line, or drop it — the rows obviously open quotes via cursor + hover affordance.
+`/style-guide` uses these primitives indirectly. With the SectionHeader change (label optional) it'll render fine — only behavior change is that an empty label hides the rule. No call sites pass empty by accident.
 
 ---
 
-## 9. About page — center the Story column
+## Verification checklist
 
-`src/pages/About.tsx` Story section uses `max-w-3xl` left-aligned inside a wide container, leaving a big empty right gutter. Center the column (`mx-auto`) and increase the leading. The inline stat trio aligns under it as a centered 3-up.
-
-Process and Areas sections already use `MAX_WIDTH.content mx-auto`. Story should match.
-
----
-
-## 10. CrewMoment — tighten paragraphs
-
-Two paragraphs read as wall-of-text on a section that wants quiet. Cut to one short paragraph + one short pull line:
-
-> "We don't subcontract. The crew you meet at the quote is the crew on-site. That's how we keep quality consistent — and it's why we'd rather do fewer projects exceptionally well than chase volume."
-
-Remove the second paragraph entirely.
-
----
-
-## 11. MiniFaq — drop the subheading
-
-Subheading "If we don't address yours, ask on the call — we always pick up." duplicates the phone fallback row directly below it. Drop the subheading; let the eyebrow + heading + accordion + phone fallback do the work.
-
----
-
-## Verification & registry
-
-- `rg "<CedarCTA"` should still resolve to **two pills per route** (hero + closer), with `MidPageQuotePrompt` and `Footer` no longer contributing.
-- `src/lib/page-sections.ts` — no changes; section IDs are unchanged.
-- `mem://index.md` — no changes; aesthetic still cream + cedar, light-only, DM Serif/Sans.
+- `rg "from \"@/components/About\"" src/` → zero hits.
+- `rg "py-24 md:py-32" src/` → zero hits (token replaced).
+- `rg "<CedarCTA" src/` count remains: 2 per page route (hero + closer).
+- `/about` PageHero shows no numeral.
+- `/work` PageHero shows no caption chip.
+- `MiniFaq`, `TestimonialStrip`, `CrewMoment` render with NO subheading by default.
 
 ---
 
 ## Expected outcome
 
-- **Footer** reads in 2 lines instead of 9.
-- **Hero** band shows 3 stats and that's it.
-- **In-body sections** stop numbering themselves (no more I/II/III/IV/V).
-- **Trust language** (free / no-obligation / 24h reply / cities) appears **exactly once per page** — in the closer trust strip — instead of three times.
-- **Catalogue and tile components** reduce to title + one-liner.
-- Net: ~250 fewer lines, every page reads quieter, the cedar pill is the only conversion shape the eye remembers.
+- Homepage scrolls one full viewport shorter on a 14" laptop.
+- Two more sub-headlines stop talking over their own H2.
+- One dead 130-line file disappears.
+- The lone "I" on /about no longer reads like the start of a numbered series that never arrives.
