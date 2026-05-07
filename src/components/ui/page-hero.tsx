@@ -878,6 +878,8 @@ const ArchitectBleed = (props: ArchitectBleedProps) => {
               fontSize: "clamp(2.125rem, 8.5vw, 8.25rem)",
               lineHeight: 0.96,
               letterSpacing: "-0.012em",
+              hyphens: "manual",
+              wordBreak: "keep-all",
             }}
           >
             {lines.map((line, i) => (
