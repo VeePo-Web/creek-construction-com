@@ -99,7 +99,7 @@ const About = () => {
                 <div
                   key={i}
                   role="listitem"
-                  className="flex items-start gap-5 pl-6 py-5 rounded-sm transition-[background-color,transform] duration-300 hover:bg-cedar/[0.03] hover:translate-x-1 grain-texture shadow-contact border border-border/40 bg-background"
+                  className="flex items-start gap-5 pl-6 py-5 rounded-sm transition-[background-color,transform] duration-300 hover:bg-cedar/[0.03] hover:translate-x-1 border border-border/40 bg-background"
                   style={{ borderLeft: `2px solid hsl(var(--cedar) / ${bronzeStep(i, STEPS.length)})` }}
                 >
                   <span className="text-cedar/30 text-xs tabular-nums mt-1.5 font-medium">
