@@ -43,7 +43,7 @@ const About = () => {
       </PageHero>
 
       <section id="section-story" className={`${SECTION_PADDING.default}`} aria-labelledby="story-heading">
-        <div className="container mx-auto px-6">
+        <div className="container mx-auto px-5 sm:px-6">
           <div className={`${MAX_WIDTH.content} mx-auto`}>
             <SectionHeader
               label="WHO WE ARE"
