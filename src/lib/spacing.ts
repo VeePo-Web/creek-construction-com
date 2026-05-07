@@ -21,7 +21,7 @@
 
 export const SECTION_PADDING = {
   /** Standard homepage section (Hero, Services, About, etc.). */
-  default: "py-24 md:py-32",
+  default: "py-20 md:py-28",
   /** Slimmer — for trust strips and inline rows. */
   strip: "py-12 md:py-16",
   /** Hero — extra top breathing because of the nav. */

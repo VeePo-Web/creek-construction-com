@@ -25,7 +25,7 @@ interface CrewMomentProps {
  * "Meet the Owner" beat without bio fluff.
  */
 const CrewMoment = ({
-  eyebrow = "OUR CREW",
+  eyebrow,
   heading = "The crew on-site is the crew you meet.",
   paragraphs = [
     "We don’t subcontract. The crew you meet at the quote is the crew on-site — that’s how we keep quality consistent, and it’s why we’d rather do fewer projects exceptionally well than chase volume.",

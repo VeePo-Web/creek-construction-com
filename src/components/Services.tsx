@@ -34,7 +34,7 @@ const Services = () => {
               label="WHAT WE BUILD"
               headingId="services-heading"
               heading="Five categories. Fifteen services."
-              subheading="Residential exterior construction across Alberta — one crew, end to end."
+              
             />
           </div>
 

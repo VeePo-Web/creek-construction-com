@@ -27,7 +27,7 @@ interface TestimonialStripProps {
 const TestimonialStrip = ({
   eyebrow = "WHAT NEIGHBORS SAY",
   heading = "Quiet recommendations.",
-  subheading = "Real words from real homes across Alberta.",
+  subheading,
   items = TESTIMONIALS_TOP3,
   asSection = true,
   background = "background",

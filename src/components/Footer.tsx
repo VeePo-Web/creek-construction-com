@@ -38,7 +38,7 @@ const Footer = () => {
                 <li key={l.to}>
                   <Link
                     to={l.to}
-                    className="text-evergreen-foreground/65 hover:text-cedar transition-colors min-h-[44px] inline-flex items-center"
+                    className="text-evergreen-foreground/80 hover:text-cedar transition-colors min-h-[44px] inline-flex items-center"
                   >
                     {l.label}
                   </Link>
@@ -50,13 +50,13 @@ const Footer = () => {
           <div className="flex items-center gap-5 text-sm">
             <a
               href={`tel:${CONTACT.phoneTel}`}
-              className="text-evergreen-foreground/65 hover:text-cedar transition-colors"
+              className="text-evergreen-foreground/80 hover:text-cedar transition-colors"
             >
               {CONTACT.phone}
             </a>
             <a
               href={`mailto:${CONTACT.email}`}
-              className="text-evergreen-foreground/65 hover:text-cedar transition-colors hidden sm:inline"
+              className="text-evergreen-foreground/80 hover:text-cedar transition-colors hidden sm:inline"
             >
               {CONTACT.email}
             </a>
