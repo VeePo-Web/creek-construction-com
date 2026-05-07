@@ -37,7 +37,7 @@ const Contact = () => {
 
       <section
         id="section-contact"
-        className={`${SECTION_PADDING.default}`}
+        className="pt-10 sm:pt-14 md:pt-20 pb-20 md:pb-28"
         aria-labelledby="contact-heading"
       >
         <div className="container mx-auto px-6">
@@ -49,7 +49,7 @@ const Contact = () => {
               </p>
               <h1
                 id="contact-heading"
-                className="font-serif text-4xl md:text-5xl lg:text-6xl text-foreground leading-[1.05] tracking-tight"
+                className="font-serif text-[32px] sm:text-4xl md:text-5xl lg:text-[56px] text-foreground leading-[1.05] tracking-[-0.025em] text-balance"
               >
                 Tell us what you’re building.
               </h1>
@@ -58,7 +58,7 @@ const Contact = () => {
               </p>
             </div>
 
-            <div className={`grid lg:grid-cols-[5fr_7fr] ${GRID_GAP.editorial} items-start`}>
+            <div className="grid md:grid-cols-[5fr_7fr] gap-10 md:gap-12 lg:gap-16 items-start">
               {/* LEFT — direct contact card */}
               <div>
                 <SectionHeader
