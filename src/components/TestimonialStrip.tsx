@@ -54,14 +54,14 @@ const TestimonialStrip = ({
         {items.map((t, i) => (
           <li
             key={t.firstName + i}
-            className="flex flex-col p-8 md:p-9 bg-background border border-border/40 rounded-sm shadow-contact transition-[background-color,border-color] duration-300 hover:bg-cedar/[0.03] hover:border-cedar/30"
+            className="flex flex-col p-6 md:p-9 bg-background border border-border/40 rounded-sm shadow-contact transition-[background-color,border-color] duration-300 hover:bg-cedar/[0.03] hover:border-cedar/30"
             style={{
-              borderLeft: `2px solid hsl(var(--cedar) / ${bronzeStep(i, items.length)})`,
+              borderLeft: `2px solid hsl(var(--cedar) / ${Math.max(bronzeStep(i, items.length), 0.3)})`,
             }}
           >
             <span
               aria-hidden
-              className="font-serif text-cedar/30 text-5xl leading-none mb-3 select-none"
+              className="font-serif text-cedar/30 text-4xl md:text-5xl leading-none mb-3 select-none"
             >
               &ldquo;
             </span>

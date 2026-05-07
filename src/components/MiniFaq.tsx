@@ -53,7 +53,7 @@ const MiniFaq = ({
       />
       <FaqAccordion items={items} className="mt-10" />
       {showPhoneFallback && (
-        <div className="mt-10 pt-6 border-t border-cedar/15 text-center">
+        <div className="mt-10 pt-6 border-t border-border/40 text-center">
           <p className="text-sm text-muted-foreground">
             Have more questions?{" "}
             <a

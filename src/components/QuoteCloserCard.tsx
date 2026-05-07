@@ -43,11 +43,11 @@ const QuoteCloserCard = ({
         borderLeft: "3px solid hsl(var(--cedar))",
       }}
     >
-      <div className="relative z-10 p-10 md:p-12">
+      <div className="relative z-10 p-7 md:p-12">
         <p className="text-[10px] tracking-[0.25em] uppercase text-cedar/80 mb-4">
           {eyebrow}
         </p>
-        <h2 className="font-serif text-evergreen-foreground text-3xl md:text-4xl leading-tight mb-5">
+        <h2 className="font-serif text-evergreen-foreground text-3xl md:text-4xl lg:text-5xl leading-tight tracking-tight text-balance mb-5">
           {heading}
         </h2>
         <p className="text-evergreen-foreground/70 leading-relaxed mb-8 max-w-prose">
@@ -57,7 +57,7 @@ const QuoteCloserCard = ({
         <CedarCTA preselectServices={preselectServices}>Get my free quote</CedarCTA>
 
         <div
-          className="mt-8 pt-6 border-t border-evergreen-foreground/10 flex flex-wrap items-center gap-x-5 gap-y-2"
+          className="mt-8 pt-6 border-t border-evergreen-foreground/10 flex flex-wrap items-center gap-x-5 gap-y-2.5"
           aria-label="Trust signals"
         >
           {TRUST_SIGNALS.map(({ icon: Icon, label }) => (
