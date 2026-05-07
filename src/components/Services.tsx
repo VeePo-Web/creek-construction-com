@@ -70,7 +70,7 @@ const Services = () => {
                     fallbackCaption={`${group.title} · new work coming`}
                   />
 
-                  <div className="p-6 flex flex-col flex-1">
+                  <div className="p-5 md:p-6 flex flex-col flex-1">
                     <Icon
                       className="h-5 w-5 text-cedar/70 mb-3 transition-colors duration-300 group-hover:text-cedar"
                       aria-hidden
