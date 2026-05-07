@@ -85,9 +85,9 @@ export const GRID_GAP = {
   /** Default — card grids. */
   default: "gap-6 md:gap-8",
   /** Generous — 2-column hero layouts. */
-  generous: "gap-12 md:gap-16",
+  generous: "gap-10 md:gap-14",
   /** Editorial — large 2-column sections. */
-  editorial: "gap-16 md:gap-20",
+  editorial: "gap-8 md:gap-12 lg:gap-16",
 } as const;
 
 // ─────────────────────────────────────────────────────────────────────
