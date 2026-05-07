@@ -43,6 +43,10 @@ export const CONTAINER_PADDING = {
   narrow: "px-6 md:px-8",
   /** Wide — for full-bleed grids. */
   wide: "px-4 md:px-6",
+  /** Tight — page-level container, gives 320px viewports an extra 4px gutter. */
+  tight: "px-5 sm:px-6",
+  /** Snug — content sections needing comfort at md+. */
+  snug: "px-5 sm:px-6 md:px-8",
 } as const;
 
 // ─────────────────────────────────────────────────────────────────────
