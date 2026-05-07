@@ -115,7 +115,7 @@ const Work = () => {
               subheading="Click any category to request a quote for similar work."
             />
 
-            <div className="grid sm:grid-cols-2 gap-6 md:gap-8 mt-12" role="list">
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 mt-12 [&>*:nth-child(5)]:lg:col-start-2" role="list">
               {PLACEHOLDERS.map((w, i) => (
                 <ProjectTile
                   key={i}
@@ -133,13 +133,9 @@ const Work = () => {
               ))}
             </div>
 
-            <div className="mt-20">
-              <MidPageQuotePrompt heading="Start a quote for a similar build." />
-            </div>
-
             <div className="mt-12 text-center">
-              <p className="text-sm text-muted-foreground italic">
-                More projects added each month.
+              <p className="text-[10px] tracking-[0.25em] uppercase text-muted-foreground/60">
+                More projects added each month
               </p>
             </div>
           </div>
