@@ -143,9 +143,9 @@ const Services = () => {
                 className="p-7 sm:p-8 md:p-10 border border-cedar/30 rounded-sm h-full"
                 style={{ background: BACKDROP.bronzeWash }}
               >
-                <div className="flex items-baseline justify-between mb-8">
+                <div className="flex items-baseline justify-between gap-2 flex-wrap mb-8">
                   <h3 className="text-minimal text-cedar">WE HANDLE</h3>
-                  <span className="text-[11px] tracking-[0.2em] text-cedar/50 tabular-nums">
+                  <span className="text-[10px] tracking-[0.2em] text-cedar/50 tabular-nums">
                     {String(WE_HANDLE.length).padStart(2, "0")} ITEMS
                   </span>
                 </div>
