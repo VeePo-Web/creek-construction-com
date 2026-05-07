@@ -116,7 +116,7 @@ const Navigation = ({ transparent: _transparent }: NavigationProps) => {
           {/* Right cluster — never fades, never hides on mobile.
               Mobile: [📞] [Quote-pill] [☰]
               Tablet/Desktop: [phone link] [Quote CTA] [☰ MENU] */}
-          <div className="flex items-center gap-1 md:gap-2 shrink-0">
+          <div className="flex items-center gap-1.5 md:gap-2.5 shrink-0">
             {/* Tablet phone icon removed — phone lives in GlobalMenu, footer, and closer */}
 
             {/* Desktop-only (lg+) phone link with the number spelled out */}
