@@ -64,7 +64,7 @@ const Navigation = ({ transparent: _transparent }: NavigationProps) => {
   // Full desktop Quote CTA.
   const desktopCta = cn(
     BUTTON.primary.base,
-    "px-5 py-2.5 text-[10px] gap-2",
+    "px-4 py-2 text-[10px] gap-2",
     BUTTON.primary.hover,
     BUTTON.primary.focus,
     BUTTON.primary.transition,
