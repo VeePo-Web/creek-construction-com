@@ -38,7 +38,7 @@ const Services = () => {
             />
           </div>
 
-          <div className={`grid sm:grid-cols-2 lg:grid-cols-3 ${GRID_GAP.default}`} role="list">
+          <div className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 ${GRID_GAP.default} [&>*:nth-child(5)]:lg:col-start-2`} role="list">
             {SERVICE_GROUPS.map((group, i) => {
               const Icon = group.icon;
               const opacity = bronzeStep(i, SERVICE_GROUPS.length);
@@ -50,7 +50,7 @@ const Services = () => {
                   onClick={() => openModal(groupItemIds)}
                   role="listitem"
                   aria-label={`Get my free quote — ${group.title}`}
-                  className="group w-full text-left flex flex-col items-stretch overflow-hidden rounded-sm transition-[background-color] duration-300 shadow-contact hover:bg-cedar/[0.03] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cedar focus-visible:ring-offset-2 cursor-pointer min-h-[340px] border border-border/60"
+                  className="group w-full text-left flex flex-col items-stretch overflow-hidden rounded-sm transition-[background-color] duration-300 hover:bg-cedar/[0.03] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cedar focus-visible:ring-offset-2 cursor-pointer min-h-[300px] md:min-h-[340px] border border-border/40"
                   style={{
                     borderLeftWidth: "3px",
                     borderLeftColor: `hsl(var(--cedar) / ${opacity})`,
@@ -79,7 +79,7 @@ const Services = () => {
                     <h3 className="font-serif text-2xl text-foreground mb-2 transition-colors duration-300 group-hover:text-cedar">
                       {group.title}
                     </h3>
-                    <p className="text-sm text-muted-foreground leading-relaxed">
+                    <p className="text-sm text-muted-foreground leading-relaxed line-clamp-2">
                       {group.short}
                     </p>
                   </div>
