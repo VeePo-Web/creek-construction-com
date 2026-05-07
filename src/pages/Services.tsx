@@ -168,9 +168,9 @@ const Services = () => {
                 aria-label="What you handle"
                 className="p-7 sm:p-8 md:p-10 border border-border/40 rounded-sm h-full bg-background"
               >
-                <div className="flex items-baseline justify-between mb-8">
+                <div className="flex items-baseline justify-between gap-2 flex-wrap mb-8">
                   <h3 className="text-minimal text-muted-foreground">YOU HANDLE</h3>
-                  <span className="text-[11px] tracking-[0.2em] text-muted-foreground/40 tabular-nums">
+                  <span className="text-[10px] tracking-[0.2em] text-muted-foreground/40 tabular-nums">
                     {String(YOU_HANDLE.length).padStart(2, "0")} ITEMS
                   </span>
                 </div>
