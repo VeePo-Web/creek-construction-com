@@ -105,7 +105,7 @@ const CrewMoment = ({
       className={`${SECTION_PADDING.default} ${background === "secondary" ? "bg-secondary" : "bg-background"}`}
       aria-labelledby={headingId}
     >
-      <div className="container mx-auto px-6">{inner}</div>
+      <div className="container mx-auto px-5 sm:px-6">{inner}</div>
     </section>
   );
 };
