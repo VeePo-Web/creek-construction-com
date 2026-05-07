@@ -16,7 +16,7 @@ interface BronzeRuleProps {
 const widthMap = {
   short: "w-6",
   default: "w-10",
-  long: "w-16",
+  long: "w-12 sm:w-14 md:w-16",
 } as const;
 
 const labelClass = {
