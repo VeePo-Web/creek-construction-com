@@ -508,7 +508,7 @@ const CinematicBleed = (props: CinematicBleedProps) => {
       />
 
       {/* Content */}
-      <div className="container mx-auto px-5 sm:px-6 md:px-10 relative z-10 pb-16 md:pb-20">
+      <div className="container mx-auto px-5 sm:px-6 md:px-10 relative z-10 pb-14 md:pb-20 lg:pb-24">
         <div className="max-w-3xl">
           {/* Breadcrumb intentionally omitted — HeaderBreadcrumb in the
               chrome owns sub-page wayfinding so the hero photo stays clean. */}
