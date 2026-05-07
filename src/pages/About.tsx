@@ -117,7 +117,7 @@ const About = () => {
       </section>
 
       <section id="section-areas" className={`${SECTION_PADDING.default}`} aria-labelledby="areas-heading">
-        <div className="container mx-auto px-6">
+        <div className="container mx-auto px-5 sm:px-6">
           <div className={`${MAX_WIDTH.content} mx-auto`}>
             <SectionHeader
               label="WHERE WE WORK"
