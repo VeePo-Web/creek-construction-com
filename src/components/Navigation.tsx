@@ -87,11 +87,13 @@ const Navigation = ({ transparent: _transparent }: NavigationProps) => {
         )}
         role="banner"
       >
-        {/* Top hairline — quieter on cream */}
-        <span
-          aria-hidden
-          className="block h-px w-full bg-gradient-to-r from-transparent via-cedar/15 to-transparent"
-        />
+        {/* Top hairline — only when scrolled, to avoid double-line at rest */}
+        {isScrolled && (
+          <span
+            aria-hidden
+            className="block h-px w-full bg-gradient-to-r from-transparent via-cedar/15 to-transparent"
+          />
+        )}
 
         <div className="container mx-auto px-3 sm:px-4 md:px-6 h-14 sm:h-16 md:h-[4.5rem] lg:h-20 flex items-center justify-between gap-2 md:gap-4">
           {/* Left — brand */}
