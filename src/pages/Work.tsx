@@ -110,7 +110,7 @@ const Work = () => {
               subheading="Click any category to request a quote for similar work."
             />
 
-            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 mt-12 [&>*:nth-child(5)]:lg:col-start-2" role="list">
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 mt-12 md:[&>*:nth-child(5)]:hidden lg:[&>*:nth-child(5)]:block lg:[&>*:nth-child(5)]:col-start-2" role="list">
               {PLACEHOLDERS.map((w, i) => (
                 <ProjectTile
                   key={i}
