@@ -59,12 +59,7 @@ const Work = () => {
         height="84vh"
         minHeight="640px"
       >
-        <div className="flex flex-col gap-5">
-          <CedarCTA />
-          <span className="text-[10px] tracking-[0.25em] uppercase text-evergreen-foreground/45">
-            Sister studios · B&amp;P Saunas · Hickory&nbsp;&amp;&nbsp;Rose
-          </span>
-        </div>
+        <CedarCTA />
       </PageHero>
 
       {/* Featured editorial galleries — real photographed projects */}
