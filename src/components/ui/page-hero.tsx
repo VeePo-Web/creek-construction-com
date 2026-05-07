@@ -602,7 +602,7 @@ const ServicePortrait = (props: ServicePortraitProps) => {
         ]}
       />
 
-      <div className="container mx-auto px-5 sm:px-6 md:px-10 relative z-10 pb-20 md:pb-24 pt-32">
+      <div className="container mx-auto px-5 sm:px-6 md:px-10 relative z-10 pb-20 md:pb-24 pt-24 md:pt-28 lg:pt-32">
         <div className="max-w-3xl">
           {/* Breadcrumb intentionally omitted — see CinematicBleed for the
               same rationale. HeaderBreadcrumb owns sub-page wayfinding. */}
