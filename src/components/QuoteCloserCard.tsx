@@ -37,35 +37,35 @@ const QuoteCloserCard = ({
 }: QuoteCloserCardProps) => {
   const card = (
     <div
-      className="rounded-sm overflow-hidden relative grain-texture"
+      className="rounded-sm overflow-hidden relative md:grain-texture"
       style={{
         background: BACKDROP.evergreenCard,
         borderLeft: "3px solid hsl(var(--cedar))",
       }}
     >
-      <div className="relative z-10 p-7 md:p-12">
+      <div className="relative z-10 p-6 sm:p-8 md:p-10 lg:p-12">
         <p className="text-[10px] tracking-[0.25em] uppercase text-cedar/80 mb-4">
           {eyebrow}
         </p>
-        <h2 className="font-serif text-evergreen-foreground text-3xl md:text-4xl lg:text-5xl leading-tight tracking-tight text-balance mb-5">
+        <h2 className="font-serif text-evergreen-foreground text-[28px] sm:text-3xl md:text-4xl lg:text-[44px] leading-[1.1] tracking-[-0.02em] text-balance mb-5">
           {heading}
         </h2>
-        <p className="text-evergreen-foreground/70 leading-relaxed mb-8 max-w-prose">
+        <p className="text-evergreen-foreground/70 leading-relaxed mb-8 max-w-[52ch]">
           {body}
         </p>
 
         <CedarCTA preselectServices={preselectServices}>Get my free quote</CedarCTA>
 
         <div
-          className="mt-8 pt-6 border-t border-evergreen-foreground/10 flex flex-wrap items-center gap-x-5 gap-y-2.5"
+          className="mt-8 pt-6 border-t border-evergreen-foreground/10 flex flex-wrap items-center gap-x-4 gap-y-2"
           aria-label="Trust signals"
         >
           {TRUST_SIGNALS.map(({ icon: Icon, label }) => (
             <span
               key={label}
-              className="inline-flex items-center gap-1.5 text-[10px] tracking-[0.2em] uppercase text-evergreen-foreground/55"
+              className="inline-flex items-center gap-1.5 text-[10px] tracking-[0.18em] uppercase text-evergreen-foreground/55"
             >
-              <Icon className="h-3 w-3 text-cedar/80" aria-hidden strokeWidth={1.6} />
+              <Icon className="h-2.5 w-2.5 text-cedar/80" aria-hidden strokeWidth={1.6} />
               {label}
             </span>
           ))}
