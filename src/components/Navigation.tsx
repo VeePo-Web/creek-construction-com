@@ -90,7 +90,7 @@ const Navigation = ({ transparent: _transparent }: NavigationProps) => {
         {/* Top hairline — a tiny editorial cap that signals "brand frame". */}
         <span
           aria-hidden
-          className="block h-px w-full bg-gradient-to-r from-transparent via-cedar/40 to-transparent"
+          className="block h-px w-full bg-gradient-to-r from-transparent via-cedar/25 to-transparent"
         />
 
         <div className="container mx-auto px-3 sm:px-4 md:px-6 h-16 md:h-20 flex items-center justify-between gap-2 md:gap-4">
@@ -115,13 +115,14 @@ const Navigation = ({ transparent: _transparent }: NavigationProps) => {
               Mobile: [📞] [Quote-pill] [☰]
               Tablet/Desktop: [phone link] [Quote CTA] [☰ MENU] */}
           <div className="flex items-center gap-1 md:gap-2 shrink-0">
-            {/* Mobile + tablet (< lg) phone icon button. A 44x44 cedar-bordered
-                tap target — keeps "call us" one tap away without consuming
-                the horizontal real estate that the full text link does. */}
+            {/* Tablet (sm to lg) phone icon — keeps "call us" one tap away
+                where horizontal real estate allows. Hidden on `<sm` to give
+                the Quote pill + menu room to breathe (the phone link is also
+                pinned at the top of GlobalMenu and in the footer). */}
             <a
               href={`tel:${CONTACT.phoneTel}`}
               className={cn(
-                "lg:hidden inline-flex items-center justify-center w-11 h-11 rounded-sm",
+                "hidden sm:inline-flex lg:hidden items-center justify-center w-11 h-11 rounded-sm",
                 "border border-cedar/20 hover:border-cedar/50 hover:bg-cedar/5",
                 "text-cedar transition-colors duration-300",
                 "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cedar focus-visible:ring-offset-2",

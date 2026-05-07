@@ -17,7 +17,7 @@ import StatTrio, { type StatItem } from "@/components/ui/stat-trio";
 const STATS: StatItem[] = [
   { value: 7, suffix: "+", label: "Years on tools" },
   { value: 200, suffix: "+", label: "Projects built" },
-  { value: 48, suffix: "h", label: "Quote turnaround" },
+  { value: 48, suffix: "h", label: "Quote reply" },
 ];
 
 /** Post-hero proof band: stats only. Trust language lives in the closer. */
@@ -38,7 +38,7 @@ const Hero = () => {
       <PageHero
         variant="architect-bleed"
         breadcrumb={[{ label: "Calgary · Edmonton · Alberta" }]}
-        sectionLabel="Exterior Construction · Calgary · Edmonton"
+        sectionLabel="Exterior Construction"
         title={["Excellence in", "the Work."]}
         italic="Pride in every detail."
         subtitle="Decks, fencing, sheds, painting and siding — built to last across Alberta."
@@ -54,7 +54,7 @@ const Hero = () => {
           <CedarCTA />
           <a
             href={`tel:${CONTACT.phoneTel}`}
-            className="inline-flex items-center gap-2 text-[11px] tracking-[0.22em] uppercase text-white/70 hover:text-white transition-colors min-h-[44px] px-2"
+            className="inline-flex items-center gap-2 text-[11px] tracking-[0.22em] uppercase text-white/85 hover:text-white transition-colors min-h-[44px] px-2"
           >
             or call {CONTACT.phone}
           </a>
