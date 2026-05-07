@@ -779,8 +779,8 @@ const ArchitectBleed = (props: ArchitectBleedProps) => {
                 backgroundImage: `url(${item.lqip.startsWith("data:") ? item.lqip : `data:image/jpeg;base64,${item.lqip}`})`,
                 backgroundSize: "cover",
                 backgroundPosition: "center",
-                filter: "grayscale(100%) blur(24px) brightness(0.82)",
-                transform: "scale(1.06)",
+                filter: "grayscale(100%) blur(18px) brightness(0.82)",
+                transform: "scale(1.04)",
                 opacity: photoLoaded ? 0 : 1,
               }}
             />
