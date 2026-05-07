@@ -115,22 +115,7 @@ const Navigation = ({ transparent: _transparent }: NavigationProps) => {
               Mobile: [📞] [Quote-pill] [☰]
               Tablet/Desktop: [phone link] [Quote CTA] [☰ MENU] */}
           <div className="flex items-center gap-1 md:gap-2 shrink-0">
-            {/* Tablet (sm to lg) phone icon — keeps "call us" one tap away
-                where horizontal real estate allows. Hidden on `<sm` to give
-                the Quote pill + menu room to breathe (the phone link is also
-                pinned at the top of GlobalMenu and in the footer). */}
-            <a
-              href={`tel:${CONTACT.phoneTel}`}
-              className={cn(
-                "hidden sm:inline-flex lg:hidden items-center justify-center w-11 h-11 rounded-sm",
-                "border border-cedar/20 hover:border-cedar/50 hover:bg-cedar/5",
-                "text-cedar transition-colors duration-300",
-                "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cedar focus-visible:ring-offset-2",
-              )}
-              aria-label={`Call ${CONTACT.phone}`}
-            >
-              <Phone className="h-4 w-4" aria-hidden />
-            </a>
+            {/* Tablet phone icon removed — phone lives in GlobalMenu, footer, and closer */}
 
             {/* Desktop-only (lg+) phone link with the number spelled out */}
             <a
