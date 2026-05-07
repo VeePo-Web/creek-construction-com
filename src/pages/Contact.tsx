@@ -78,7 +78,7 @@ const Contact = () => {
                     href={`tel:${CONTACT.phoneTel}`}
                     className="flex items-center gap-4 px-5 py-5 min-h-[44px] hover:bg-cedar/[0.03] transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cedar focus-visible:ring-inset group/row"
                   >
-                    <div className="shrink-0 w-10 h-10 rounded-sm bg-cedar/10 flex items-center justify-center">
+                    <div className="shrink-0 w-9 h-9 rounded-sm bg-cedar/10 flex items-center justify-center">
                       <Phone className="h-4 w-4 text-cedar" aria-hidden />
                     </div>
                     <div className="flex-1 min-w-0">
@@ -95,7 +95,7 @@ const Contact = () => {
                     href={`mailto:${CONTACT.email}`}
                     className="flex items-center gap-4 px-5 py-5 min-h-[44px] hover:bg-cedar/[0.03] transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cedar focus-visible:ring-inset group/row"
                   >
-                    <div className="shrink-0 w-10 h-10 rounded-sm bg-cedar/10 flex items-center justify-center">
+                    <div className="shrink-0 w-9 h-9 rounded-sm bg-cedar/10 flex items-center justify-center">
                       <Mail className="h-4 w-4 text-cedar" aria-hidden />
                     </div>
                     <div className="flex-1 min-w-0">
@@ -109,14 +109,14 @@ const Contact = () => {
                   <div className="border-t border-border/30" aria-hidden />
 
                   <div className="flex items-start gap-4 px-5 py-5">
-                    <div className="shrink-0 w-10 h-10 rounded-sm bg-cedar/10 flex items-center justify-center">
+                    <div className="shrink-0 w-9 h-9 rounded-sm bg-cedar/10 flex items-center justify-center">
                       <MapPin className="h-4 w-4 text-cedar" aria-hidden />
                     </div>
                     <div className="flex-1">
                       <p className="text-[10px] tracking-[0.2em] uppercase text-muted-foreground/60 mb-1">Service Areas</p>
                       <p className="text-foreground font-medium">Calgary, Edmonton &amp; surrounding Alberta</p>
                       <p className="text-xs text-muted-foreground mt-1">
-                        Including {CONTACT.cities.slice(0, 4).join(", ")} + more
+                        Including {CONTACT.cities.slice(0, 3).join(", ")} + more towns
                       </p>
                     </div>
                   </div>
