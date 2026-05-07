@@ -50,7 +50,7 @@ const About = () => {
               headingId="story-heading"
               heading="A small crew that takes the work seriously."
             />
-            <div className="space-y-6 mt-8">
+            <div className="space-y-6 mt-8 max-w-[62ch]">
               <p className={BODY.lead}>
                 Creek Construction is a locally owned, residential-exterior contractor working
                 across the Calgary and Edmonton metros. We build decks, fences, sheds, pergolas —
