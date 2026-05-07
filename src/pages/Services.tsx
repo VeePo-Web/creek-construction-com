@@ -110,7 +110,7 @@ const Services = () => {
                           </button>
                         ))}
                         {items.length % 2 === 1 && (
-                          <div className="hidden sm:block border-b border-border/20" aria-hidden />
+                          <div className="hidden sm:block border-b border-cedar/8" aria-hidden />
                         )}
                       </div>
                     </div>
