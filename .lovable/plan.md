@@ -1,187 +1,167 @@
-# Pass 13 — Section-by-Section Viewport Audit (Taste-Skill Minimalist + Redesign)
 
-Applying `minimalist-skill` and `redesign-skill` from `Leonxlnx/taste-skill` to a section-by-section, viewport-by-viewport sweep. The site is already disciplined; this pass attacks the remaining flab — duplicate conversion paths, mobile chrome that's too crowded, breakpoints that the recent token changes haven't been re-checked against, and per-section ergonomics at 360px, 768px, 1280px, and 1920px.
+# Pass 14 — Section-by-Section Viewport Audit
 
-Single rule: **one terminal CTA per page, one mid-page CTA per page, never two of the same kind back-to-back.** FlexServices.org runs ~3 conversion surfaces total per route. We currently run 5–7.
+Goal: the same FlexServices-grade calm as their site — strong baseline grid, generous whitespace, only one visual idea per section, identical behavior from 360 → 1920px. This pass is almost entirely subtractive and rhythmic.
 
----
-
-## A. Funnel discipline — kill duplicate CTAs sitewide
-
-Current homepage funnel: nav Quote → Hero CedarCTA → **InlineQuoteSection (full form)** → Services tiles (open modal) → CrewMoment → Featured → Testimonials → MiniFaq → **QuoteCloserCard (modal)** → footer. Plus **MobileConversionBar** fixed at the bottom on `<sm`. That's six conversion entry points on one scroll.
-
-A1. **Remove `<InlineQuoteSection />` from `src/pages/Index.tsx`.** Reasoning: pasting an entire 8-field form mid-homepage breaks the editorial scan and competes with the closer form/CTA. Move the form-mid-page pattern to `/contact` only, where it belongs.
-A2. **Remove `MobileConversionBar` from `src/App.tsx`.** The nav already pins phone+Quote on mobile and never fades. A second fixed CTA strip is the textbook "AI shipped two of everything" smell. Delete the file.
-A3. **Remove `<MidPageQuotePrompt />` from `src/pages/Services.tsx` (after group #3).** The `/services` page already ends with the canonical `QuoteCloserCard`, and every service row is itself a button that opens the modal. Mid-page prompt is redundant.
-A4. **Keep MidPageQuotePrompt on `/work`** — but only one, after the placeholder gallery (already the case). No change.
-A5. After A1, the homepage rhythm becomes: `Hero → Services → CrewMoment → Featured → Testimonials → MiniFaq → QuoteCloserCard`. Seven beats, one form, two CTAs. Aligned with FlexServices.
+Below is a per-section audit with the exact changes. No new components, no business-logic edits.
 
 ---
 
-## B. Navigation chrome — simplify mobile + tighten desktop
+## 1. Global rhythm (one source of truth)
 
-B1. **Mobile right cluster (< sm):** today shows `[📞 icon][Quote pill][☰]`. Three buttons in 11rem of width feels crowded. Drop the standalone phone icon on `<sm` only — the menu and the Quote pill stay; the phone link still exists at the top of GlobalMenu. (Tablet `sm`–`lg` keeps the icon — it has room.)
-B2. **Desktop right cluster (lg+):** today shows `· phone · Free quote · MENU`. Move the phone link inside `MENU` flyout's header instead, so the chrome carries only `[Free quote] [MENU]`. Phone is one click further on desktop where users hardly tap-to-call. (If the user wants to keep desktop phone visible, we leave this change out.)
-B3. **Top hairline gradient** in `Navigation.tsx` (`via-cedar/40`) — drop to `via-cedar/25`. At 1920px it currently reads as a colored ruler. Should be a hint, not a stripe.
-B4. **Section rail centered text** (`SectionRail`) — verify sections fit in 980px viewport. If they overflow → push to `SectionRailCompact` earlier (tighten breakpoint from `lg` to `xl`).
-B5. **NavigationMinimal (Contact page nav):** verify on `<sm` that logo + phone fit in 360px without truncation; if it does, no change.
+`src/lib/spacing.ts`
+- `SECTION_PADDING.default` → `py-16 sm:py-20 md:py-24 lg:py-28` (currently jumps `py-20 → py-28`; the missing 360–640px step crowds mobile).
+- Add `SECTION_PADDING.tight` (`py-12 sm:py-16 md:py-20`) for proof bands & footer-adjacent sections.
+- `MAX_WIDTH.content` capped at `max-w-[68ch]`; `MAX_WIDTH.wide` capped at `max-w-6xl` (current ultrawide overflow makes the homepage feel oceanic at 1920).
+- `GRID_GAP.default` → `gap-6 md:gap-8`; `GRID_GAP.editorial` → `gap-8 md:gap-12 lg:gap-16` (smooth tablet step).
 
----
+`src/lib/typography.ts`
+- `HEADLINE.section` add `text-balance tracking-[-0.022em]`.
+- `HEADLINE.display` add `text-balance tracking-[-0.035em]`.
+- `BODY.lead` set to `text-[15px] sm:text-base md:text-[17px] leading-[1.65] text-foreground/75` (currently a hair too dark on cream).
 
-## C. Hero (Index.tsx → Hero.tsx) — tighten responsive type
-
-C1. **PageHero `architect-bleed` variant**, breakpoints to verify:
-- 360px: title "Excellence in / the Work." should be ~`text-5xl` not `text-6xl`. Check `KineticHeadline` size mapping; if needed add a smaller mobile step.
-- 768px: subtitle should remain on 1–2 lines, not 3.
-- 1920px: title at desktop currently runs at one size for `lg+`; consider an `xl:` step.
-
-C2. **Eyebrow** "Exterior Construction · Calgary · Edmonton" duplicates the breadcrumb "Calgary · Edmonton · Alberta". Drop the eyebrow's city tail — keep just `EXTERIOR CONSTRUCTION`. Breadcrumb stays as the geo signal.
-
-C3. **HeroProofBand** stat trio — verify on 360px the three stats don't word-wrap their labels. If they do, cut "Quote turnaround" to "Quote reply" (10 chars vs 16) so all three labels stay one line.
-
-C4. **Hero phone secondary link** ("or call …") — verify color contrast on the dark architect bleed. `text-white/70` may fail WCAG AA on a busy photo. Bump to `/85`.
+These three edits cascade across every page — most of the audit is just letting them propagate.
 
 ---
 
-## D. Services tiles (Services.tsx homepage section)
+## 2. Navigation (`src/components/Navigation.tsx`)
 
-D1. **Tile min-height** is `min-h-[340px]`. On 1920px with five tiles in a 3-col grid, the second row has only two tiles → asymmetric whitespace. Either drop to a clean 3-col on `lg+` and keep min-height (current), or switch to a 5-col `xl:grid-cols-5` so the row fills. Recommend: keep 3-col but make the two tiles in row 2 span gracefully (`xl:grid-cols-3` with the last two centered or use a 2-3 layout).
-D2. **Tile copy lengths** — confirm `group.short` strings are all ≤80 chars; longer ones bloat tile height inconsistently across breakpoints. If any exceed, trim in `src/config/services.ts`.
-D3. **Tile hover** — `hover:bg-cedar/[0.03]` on a 340px-tall card with image shows the wash mostly over the bottom 100px (the text area). Move the wash to the entire button (already the case). No change. Verified by re-reading Services.tsx.
-D4. **Tablet (md → lg)**: today renders 2-col, but the third row has one orphan tile. Add `lg:grid-cols-3` (already present) — verify the in-between `md` is the orphan-prone band; consider `md:grid-cols-2` for a clean 2×2 + 1 reads OK editorially.
-
----
-
-## E. CrewMoment — quiet ergonomics
-
-E1. After Pass 12, the eyebrow is gone. Verify the section headline `"The crew on-site is the crew you meet."` doesn't visually compete with the surrounding sections. If it reads identical-weight to Services H2, drop one display step (`text-3xl md:text-4xl` instead of `text-4xl md:text-5xl`) inside `HEADLINE.section` for `quiet` variant only. Implementation: add a `headingClass` override prop to `SectionHeader`.
-E2. **Mobile (360px)** — the photo on the left collapses above the paragraph. Make sure the photo is cropped portrait (already `aspect-portrait`) and confirm it loads at a sensible mobile width via the existing `MEDIA_SIZES.PORTRAIT_HALF` sizes hint.
+- Header height ladder: `h-14 sm:h-16 md:h-18 lg:h-20` (currently 16/20 → too tall on 360/375 phones, eats hero).
+- Drop the secondary tablet phone icon button (lines 122–133). Phone is already in GlobalMenu + footer + closer. Removing it gives the Quote pill + MENU room to breathe between 640–1024px.
+- Spacer (lines 191–197) updated to match new heights: `h-14 sm:h-16 md:h-18 lg:h-20`, with `+40px` on sub-pages.
+- Top hairline gradient (line 91–94): drop opacity from `/25` to `/15` — currently reads as a hard line on cream.
+- `desktopCta` reduce to `px-4 py-2` so it stops out-weighing the section rail at md.
 
 ---
 
-## F. FeaturedProjects — the asymmetric grid
+## 3. Hero (`src/components/Hero.tsx`)
 
-F1. **Tablet (768–1024)** — the asymmetric `1 lead + 2 stack` row may look cramped. Force `md:grid-cols-2` for the lead row at this band so the lead photo gets a fair half and stack collapses below.
-F2. **Image lazy-loading** — first project's hero needs `priority` (LCP); subsequent ones lazy. Verify `EditorialPicture` honors a `priority` flag passed from `FeaturedProjects` to the lead card.
-F3. **Hover scale `1.04`** — at 1920px on a 800px-wide image this magnifies micro-grain. Drop to `1.025` for the lead variant only.
-
----
-
-## G. TestimonialStrip — viewport sweep
-
-G1. **Quote cards** at 360px have 32px padding (`p-8`). Cut to `p-6` on mobile (`p-6 md:p-9`).
-G2. **Cedar opening quote glyph** (`text-5xl`) at 360px crowds the body text. Drop to `text-4xl` on mobile.
-G3. **Card border-left** is `2px` solid cedar with progressive opacity. Verify the leftmost (lightest) card on a `bg-secondary` surface still shows the rule. If invisible, raise the floor in `bronzeStep()` from current `0.20` to `0.30`.
+- Remove the `italic="Pride in every detail."` line — it reads as a tagline-on-a-tagline. The `subtitle` already does the job. (Aligns with FlexServices, which never doubles a hero phrase.)
+- `HeroProofBand`: change wrapper to `py-6 md:py-8` (currently 8/10) and swap `border-b border-cedar/15` → `border-y border-cedar/12` so it visually clamps the hero instead of just sitting under it.
+- "or call …" mobile link: change from inline-after-CTA to `block sm:inline-flex` so on 360px it stacks under the CTA instead of wrapping mid-phone-number.
 
 ---
 
-## H. MiniFaq — accordion polish
+## 4. Homepage Services tile grid (`src/components/Services.tsx`)
 
-H1. Verify `FaqAccordion` uses `+` / `−` icons per the taste-skill minimalist directive (Section 5: Accordions). If it currently uses chevron, swap to a plus-minus toggle.
-H2. **Mobile question text** — current size on `FaqAccordion`. Ensure tap targets ≥44px; if items are short, pad vertically.
-H3. The phone fallback row uses `border-t border-cedar/15`. Acceptable on `bg-background` but on `bg-secondary` the cedar tint is hard to see — change to `border-border/40` for surface-agnostic contrast.
-
----
-
-## I. QuoteCloserCard — the page-end ask
-
-I1. **Padding on mobile** — currently `p-10 md:p-12`. At 360px, 40px padding eats too much of a 360-wide card. Change to `p-7 md:p-12`.
-I2. **Trust strip** — six trust signals wrap to two lines on mobile. Verify line-height between rows doesn't collide; if it does, add `gap-y-2.5`.
-I3. **Headline on 1920px** at `text-3xl md:text-4xl` — bump desktop to `text-4xl md:text-5xl` so it carries the closer with the same weight as the page H1.
+- Grid: `sm:grid-cols-2 lg:grid-cols-3` → `grid-cols-1 sm:grid-cols-2 lg:grid-cols-3`. Five items leave one orphan on `lg`; reorder visually by promoting the orphan to span 2 only at `lg+`: add `[&>*:nth-child(5)]:lg:col-span-1 [&>*:nth-child(5)]:xl:col-start-2` so the last tile centers on xl/ultrawide. (FlexServices' classic "no orphan tile" rule.)
+- Tile `min-h-[340px]` → `min-h-[300px] md:min-h-[340px]`.
+- Drop `shadow-contact` from tiles (single shadow per page rule — closer keeps it). Replace with `border border-border/50` only.
+- Body copy on tile: clamp to 2 lines with `line-clamp-2` to keep tile heights identical even when copy varies.
 
 ---
 
-## J. /about — page-by-page audit
+## 5. CrewMoment (homepage variant)
 
-J1. Hero: today three text rows below breadcrumb (sectionLabel, title, italic, subtitle). That's four lines. Drop `italic="Locally owned. No gimmicks."` — duplicates the subtitle's "The crew you meet is the crew on-site."
-J2. Story section: `MAX_WIDTH.content` (max-w-4xl) is correct for prose. Stats trio below — verify mobile column gap (`gap-6`) doesn't push numbers off-screen at 360px when a stat reads `200+`. Test, tighten to `gap-4` on `<sm` if needed.
-J3. Process section: 5 steps in `space-y-4`. Tablet (768) — works. Desktop wide (1920) — the prose feels narrow at `max-w-4xl`. Acceptable; do not widen (FlexServices runs even narrower).
-J4. Areas section: cities chips. At 360px, `px-3 py-2` chips at `text-sm` may overflow by 1 chip per row. Acceptable wrapping. Confirm chip min-height ≥44px (currently borderline at `py-2`). Bump to `py-2.5`.
+- 2-col grid stacks at `md`. Force `md:grid-cols-[5fr_7fr]` so the photo doesn't dominate at exactly 768–1023px.
+- Image aspect: switch `aspect-portrait` to `aspect-[4/5] md:aspect-portrait` — portrait at small widths is too tall on iPhone Pro Max and shoves the heading off-screen.
 
 ---
 
-## K. /services — page-by-page audit
+## 6. FeaturedProjects (`src/components/FeaturedProjects.tsx`)
 
-K1. Hero: same italic-vs-subtitle redundancy. Keep `italic="Fifteen services. One crew."` AND drop subtitle to `"All residential. All built to outlast Alberta winters."` (cut "All exterior" — implied).
-K2. Catalogue groups: borders use `bronzeStep()`. Verify the lightest group (last) still has visible separator on mobile. If invisible, raise floor as in G3.
-K3. **Catalogue 2-col grid** at 768–1024 — works. At 360px collapses to 1-col: confirm row min-height ≥44px (`py-4` × text yields ~52px — fine).
-K4. Responsibility matrix: two cards side-by-side on `md+`. At 768 they get cramped — switch breakpoint to `lg:grid-cols-2` so 768–1024 stacks vertically.
-K5. After A3 (remove MidPageQuotePrompt), confirm the catalogue still reads end-to-end without the strip; the closer is one screen below.
+- Audit only — verify the "asymmetric editorial" 7/5 split collapses to single column at `<md` with `gap-y-6`. If the existing component uses `lg:grid-cols-12` with col-span-7/5, change breakpoint to `md:grid-cols-12` so tablets (820 / iPad) get the editorial layout instead of the stacked one.
+- Remove the per-project `shadow-elevated` if present; rely on cedar hairline border alone.
 
 ---
 
-## L. /work — page-by-page audit
+## 7. TestimonialStrip
 
-L1. Hero `cinematic-bleed`: verify the "Sister studios" footnote reads on 360px without truncation. If it wraps to 3 lines, shorten to "Sister studios · B&P Saunas · Hickory & Rose" (no spaces around `&`).
-L2. Featured section: `subheading={PROJECTS[0].summary}` may be 200+ chars; verify it doesn't dwarf the headline. If long, truncate visually via line-clamp or pull the first sentence only.
-L3. Per-project header: at 768 the title + meta wrap awkwardly. Stack vertically on `<lg`: `flex-col items-start lg:flex-row lg:items-baseline lg:justify-between`.
-L4. Placeholder gallery: 5 placeholder tiles in a 3-col grid → 2 orphans on row 2. Either show 6 (add one more service slot) or shift grid to `lg:grid-cols-2` with bigger tiles. Recommend 2-col bigger tiles — feels intentional, not "padding".
-L5. After L4, MidPageQuotePrompt sits below 6 tiles → fine.
-
----
-
-## M. /contact — page-by-page audit
-
-M1. Headline strip: `text-4xl md:text-5xl lg:text-6xl` — at 360px `text-4xl` is 36px, fine. At 1920px `text-6xl` is 60px and the page only has one section → headline dominates correctly. No change.
-M2. Two-column grid `lg:grid-cols-[5fr_7fr]` collapses on `<lg`. At 768 stacks: contact card on top, form below. Verify form CTA is visible without scrolling on iPad portrait — likely is.
-M3. Direct contact card: `min-h-[44px]` rows. The `Call/Text` row says "Reply in 24–48h" but our turnaround promise is "24h" elsewhere. Standardize copy: pick one ("24–48 hours" everywhere or "24 hours" everywhere). Recommend "24–48 hours" — under-promises, over-delivers.
-M4. The form's success state shows a "Call us now" button — confirm it falls back gracefully on `<sm`.
+- Card padding `p-6 md:p-9` → `p-6 md:p-7 lg:p-8` (current `p-9` is too generous against the smaller body text and floats the quote).
+- Big curly quote glyph: `text-4xl md:text-5xl` → `text-3xl md:text-4xl`. Tighten `mb-3` → `mb-2`.
+- `min-h` on cards: add `min-h-[260px]` so 1-line vs 3-line quotes don't stair-step the row.
+- Footer line of card: switch `flex items-baseline justify-between` to `flex flex-wrap items-baseline justify-between gap-2` — at 360px the city · service overflows.
 
 ---
 
-## N. Spacing + typography token consistency (sitewide)
+## 8. MiniFaq
 
-N1. **`SECTION_PADDING.default`** is now `py-20 md:py-28` (Pass 12). Verify `bg-secondary` ↔ `bg-background` alternation still reads at the new tighter rhythm; if blocks blur together, raise to `py-22 md:py-30`. Likely fine — keep.
-N2. **`HEADLINE.section`** — confirm tracking is negative (`-0.02em` to `-0.04em` per minimalist-skill). If `letter-spacing: 0`, add `-0.025em`.
-N3. **Tabular numerals** — stats and "Reply in 24–48h" should use `tabular-nums`. Verify by grep; add `font-variant-numeric: tabular-nums` to `BODY.lead` where stats appear.
-N4. **`text-balance` on H1/H2** — apply `text-wrap: balance` (Tailwind: `text-balance`) sitewide on display headings to kill orphans (per redesign-skill typography rule). Add to `HEADLINE.section`/`HEADLINE.display` Tailwind classes.
-
----
-
-## O. Color + surface drift (per minimalist-skill §4)
-
-O1. Verify body text is **not** pure `#000`. Check `--foreground` token in `index.css`; should be a warm off-black (e.g. `hsl(30 8% 12%)`). If absolute, warm it.
-O2. Verify card borders use a **single** ultra-light tone (e.g. `hsl(30 12% 88%)`). Today we have `border-border/40`, `border-border/60`, `border-cedar/15`, `border-cedar/20` floating around. Document the canonical four:
-- Default border: `border-border/60` (always-visible structural)
-- Quiet border: `border-border/40` (cards on `bg-background`)
-- Cedar accent: `border-cedar/20` (CTA cards)
-- Cedar progressive: `bronzeStep()` (sequential lists)
-Anything else gets normalized.
-
-O3. **No drop shadows** beyond `shadow-contact` (which is already low-opacity). Verify by `rg "shadow-md|shadow-lg|shadow-xl|shadow-2xl"` — replace any hits with `shadow-contact`.
+- Container `max-w-3xl` → `max-w-2xl` (FlexServices keeps FAQ narrower than body for scanability).
+- Phone fallback row: drop the `border-t` divider and the centered label; replace with a single quiet line (`text-xs text-muted-foreground/70`) right-aligned. Removes the boxy "second CTA" feel.
+- Switch FAQ accordion icon to `+` / `−` (was a chevron) inside `FaqAccordion.tsx`.
 
 ---
 
-## P. Motion sweep (per minimalist-skill §7)
+## 9. QuoteCloserCard
 
-P1. `useReveal` already applies fade+translate. Verify duration ≤600ms and easing `cubic-bezier(0.16, 1, 0.3, 1)`.
-P2. No `scroll` listeners — confirm everything uses `IntersectionObserver`. `useScrollChrome` is the one allowed exception (chrome state).
-P3. Hover scales >1.04 anywhere → drop. (Already noted in F3 for FeaturedProjects.)
-
----
-
-## Q. Verification checklist (executed after each section is shipped)
-
-For every page (Index, About, Services, Work, Contact) at viewports **360, 768, 1280, 1920**:
-1. No horizontal scroll.
-2. All tap targets ≥44×44.
-3. Headline doesn't have orphan word.
-4. ≤1 fixed/sticky element above the fold.
-5. ≤2 primary CedarCTA instances on the route (hero + closer; closer can also be the inline form on Index after the InlineQuote removal — but Pass 13 removes that, so closer-only).
-6. Section-to-section background alternates `background ↔ secondary`.
-7. No `text-white`, `bg-black`, or hex literals inside components.
-8. `MENU` opens, `tel:` works, `Quote` modal opens.
+- Padding ladder `p-7 md:p-12` → `p-6 sm:p-8 md:p-10 lg:p-12`.
+- Heading sizes `text-3xl md:text-4xl lg:text-5xl` → `text-[28px] sm:text-3xl md:text-4xl lg:text-[44px]` and add `tracking-[-0.02em]`.
+- Body: `max-w-prose` → `max-w-[52ch]` (cleaner measure on the dark plate).
+- Trust strip: switch wrap behavior to `gap-x-4 gap-y-2`, drop icons to `h-2.5 w-2.5`, label tracking from `0.2em` → `0.18em`. At 360px the current strip wraps to 4 lines.
+- Remove `grain-texture` from the card on mobile (`md:grain-texture`) — the noise PNG looks heavy on small screens against the dark plate.
 
 ---
 
-## Expected outcome
+## 10. Footer
 
-- Three fewer conversion surfaces on the homepage.
-- One file deleted (`MobileConversionBar.tsx`), one section call removed (`InlineQuoteSection`), one mid-page prompt removed (`/services`).
-- Two duplicate italic/subtitle pairs collapsed.
-- Tighter mobile chrome (one fewer button on `<sm`).
-- Verified responsive rhythm at 360/768/1280/1920 for every page.
-- Color & shadow tokens reduced to a documented four.
-- Display headings use `text-balance` and slight negative tracking sitewide.
+- Three-column flex collapses awkwardly at `md` (768–820px): brand + nav + contact all on one row but the email + phone wrap. Set `md:flex-row` → `lg:flex-row` so the footer is single-stack until lg.
+- Add a hairline above the brand row at `lg+`: `lg:border-t lg:border-evergreen-foreground/10 lg:pt-8`.
+- Phone + email cluster: stack on `<sm` (`flex-col sm:flex-row`), gap `gap-2 sm:gap-5`.
+- © line text: bump from `text-evergreen-foreground/45` → `/55` for AA on the dark green.
 
-After this pass, the site reads like FlexServices: one thought per section, one ask per page, no chrome that competes with content.
+---
+
+## 11. About page
+
+- Story section: paragraphs are 80ch wide on ultrawide. Wrap them in `max-w-[62ch]`.
+- Stat trio (lines 67–82): on 360px `text-2xl` + `text-[10px]` label causes the third stat ("Quote reply") to wrap. Either shorten label to "Reply time" or set `text-[9px] sm:text-[10px]`. Choose: shorten label to `Reply time` in `src/config/stats.ts`.
+- Process steps (lines 97–113): drop `shadow-contact` and `grain-texture` (too busy stacked). Keep cedar left border + hover.
+- Areas chips: switch wrap container from `flex flex-wrap` to a `grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2` so chips form a clean grid instead of ragged rows.
+- Remove `eyebrow="Up next"` from the trailing closer — it's the second eyebrow within 600px.
+
+---
+
+## 12. Services page
+
+- Drop the redundant `italic="Fifteen services. One crew."` from PageHero. The `sectionLabel` + `subtitle` already say the same thing.
+- Catalogue groups: header `text-2xl md:text-3xl` → `text-xl md:text-2xl` (the page already has 5 of these — currently they compete with the H1).
+- Item rows hover state: drop the `-mx-3 px-3` negative-margin trick; instead change to `px-2 hover:px-3` for the same inset feel without breaking the column edge.
+- Responsibility matrix (lines 142–196):
+  - Cards `p-10 md:p-12` → `p-7 sm:p-8 md:p-10`.
+  - Drop `shadow-elevated` from the WE HANDLE card; both cards should be visually equal weight (FlexServices' "no winner column" rule). Replace with `bg-cedar/[0.03]` to keep it readable.
+  - At `lg+` the gap is currently `gap-0` so cards touch. Set `lg:gap-px lg:bg-border/40` or keep a real `lg:gap-4`. Choose: `lg:gap-4`.
+- Remove `MidPageQuotePrompt` if it's still referenced — the page already ends in MiniFaq → QuoteCloserCard.
+
+---
+
+## 13. Work page
+
+- PageHero: drop the `italic="Alberta-built. Crew-owned."` (third tagline overlap). Keep sectionLabel + title + subtitle only.
+- "Sister studios" footnote: tighten — drop the leading `w-8 h-px` rule, keep just the text. At 360px the rule + label wraps awkwardly.
+- Featured project header (lines 94–104): wrap behavior is `flex-col items-start gap-2 lg:flex-row`. At md (768px) the title is large but the meta line sits below. Change to `md:flex-row md:items-baseline md:justify-between` so tablets get the editorial side-by-side.
+- Placeholder grid: `grid sm:grid-cols-2 gap-6 md:gap-8` is fine; add `lg:grid-cols-3` so ultrawide doesn't show enormous tiles. Then last orphan: `[&>*:nth-child(5)]:lg:col-start-2` to center.
+- Remove `MidPageQuotePrompt` block (lines 144–146). The closer already exists; mid-page form duplicates the conversion path.
+- "More projects added each month." italic line — push margin from `mt-12` to `mt-10` and drop italic; keep a quiet uppercase tracking-wide note instead.
+
+---
+
+## 14. Contact page
+
+- Section padding override: this page is single-screen-conversion. Change wrapper to `pt-10 sm:pt-14 md:pt-20 pb-20 md:pb-28` (currently uses `SECTION_PADDING.default` which adds 28 top, pushing the H1 below the fold on iPhone SE).
+- Headline strip: H1 sizes `text-4xl md:text-5xl lg:text-6xl` → `text-[32px] sm:text-4xl md:text-5xl lg:text-[56px]` with `tracking-[-0.025em]`. The `lg:text-6xl` (60px) is too big for a form page.
+- 2-col grid `lg:grid-cols-[5fr_7fr]` — on `md` (820px iPad) it currently stacks. Move breakpoint to `md:grid-cols-[5fr_7fr]` so iPads get the side-by-side. Add `gap-10 md:gap-12 lg:gap-16`.
+- Direct contact card icons (40x40) — reduce to `w-9 h-9` and icon `h-3.5 w-3.5`. Currently visually heavier than the form labels next to them.
+- Service Areas line: "Including Calgary, Edmonton, Sherwood Park, St. Albert + more" — at 360px wraps to 3 lines. Slice to `.slice(0, 3)` and append `+ more towns`.
+
+---
+
+## 15. PageHero polish (cuts across all sub-pages)
+
+`src/components/ui/page-hero.tsx` (audit-only, single targeted edit):
+- Subtitle line: clamp width with `max-w-[44ch]` to avoid 90-char lines on ultrawide.
+- Breadcrumb chip: drop background fill at `<sm` (text-only); the chip-on-image at 360px competes with the headline.
+
+---
+
+## 16. Token cleanup
+
+- Remove all remaining `shadow-elevated` references except inside `QuoteCloserCard` (decisive elevation). Ripgrep targets: Services responsibility matrix, About process cards, FeaturedProjects.
+- Border opacity normalization — only four allowed: `border-border/40` (default cards), `border-border/60` (interactive surfaces), `border-cedar/15` (hairlines), `border-cedar/30` (hover/accent). Replace any `/20`, `/50`, `/65`, etc., that the audit finds.
+
+---
+
+## Files touched (estimate)
+
+`src/lib/spacing.ts`, `src/lib/typography.ts`, `src/components/Navigation.tsx`, `src/components/Hero.tsx`, `src/components/Services.tsx`, `src/components/CrewMoment.tsx`, `src/components/FeaturedProjects.tsx`, `src/components/TestimonialStrip.tsx`, `src/components/MiniFaq.tsx`, `src/components/QuoteCloserCard.tsx`, `src/components/Footer.tsx`, `src/components/ui/page-hero.tsx`, `src/components/ui/faq-accordion.tsx`, `src/pages/About.tsx`, `src/pages/Services.tsx`, `src/pages/Work.tsx`, `src/pages/Contact.tsx`, `src/config/stats.ts`.
+
+No new components, no schema changes, no logic changes — purely presentational/layout.
