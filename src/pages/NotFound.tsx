@@ -14,10 +14,10 @@ const NotFound = () => {
   }, [location.pathname]);
 
   return (
-    <main className="min-h-screen bg-background flex flex-col" aria-label="Page not found — Creek Construction">
+    <main id="main-content" className="min-h-screen bg-background flex flex-col" aria-label="Page not found — Creek Construction">
       <Navigation />
 
-      <section className="relative flex-1 flex items-center justify-center overflow-hidden bg-evergreen text-evergreen-foreground py-32">
+      <section className="relative flex-1 flex items-center justify-center overflow-hidden bg-evergreen text-evergreen-foreground py-24 md:py-32">
         <div
           className="absolute inset-0 opacity-90"
           style={{
@@ -26,26 +26,26 @@ const NotFound = () => {
           }}
         />
 
-        <div className="relative z-10 text-center max-w-2xl mx-auto px-6">
-          <div className="flex items-center justify-center gap-4 mb-10">
-            <div className="w-12 h-px bg-evergreen-foreground/15" />
+        <div className="relative z-10 text-center max-w-2xl mx-auto px-5 sm:px-6 md:px-10">
+          <div className="flex items-center justify-center gap-3 sm:gap-4 mb-10 flex-wrap">
+            <div className="w-10 sm:w-12 h-px bg-evergreen-foreground/15" />
             <span className="text-[11px] tracking-[0.25em] text-evergreen-foreground/40 tabular-nums">404</span>
             <div className="w-8 h-px bg-cedar/40" />
             <span className="text-[10px] tracking-[0.25em] uppercase text-evergreen-foreground/40">Off the map</span>
-            <div className="w-12 h-px bg-evergreen-foreground/15" />
+            <div className="w-10 sm:w-12 h-px bg-evergreen-foreground/15" />
           </div>
 
-          <h1 className="font-serif text-evergreen-foreground mb-6" style={{ fontSize: "clamp(2.5rem, 5vw, 4rem)" }}>
+          <h1 className="font-serif text-evergreen-foreground mb-6 leading-[1.05] tracking-[-0.02em] text-balance" style={{ fontSize: "clamp(2.25rem, 5vw, 4rem)" }}>
             Nothing here.
           </h1>
 
-          <p className="text-lg text-evergreen-foreground/60 italic font-serif mb-10">
+          <p className="text-base md:text-lg text-evergreen-foreground/65 italic font-serif mb-10 text-balance">
             That page doesn’t exist — but the work does.
           </p>
 
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
-            <CedarCTA to="/">Back to Home</CedarCTA>
-            <CedarCTA to="/services" variant="secondary">Browse Services</CedarCTA>
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-6">
+            <CedarCTA to="/">Back to home</CedarCTA>
+            <CedarCTA to="/services" variant="secondary">Browse services</CedarCTA>
           </div>
         </div>
       </section>
