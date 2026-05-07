@@ -48,7 +48,7 @@ const Services = () => {
         sectionLabel="EXTERIOR CONSTRUCTION"
         title={["Built outside.", "Built to last."]}
         italic="Fifteen services. One crew."
-        subtitle="All residential. All exterior. All built to outlast Alberta winters."
+        subtitle="All residential. All built to outlast Alberta winters."
         skipToId="all-services-heading"
         queries={[
           { service: "decks", shot_type: ["hero", "elevation", "wide"], min_quality: "reference", kind: "image" },
@@ -139,7 +139,7 @@ const Services = () => {
               heading="What we handle. What you handle."
             />
 
-            <div className="mt-12 grid md:grid-cols-2 gap-0">
+            <div className="mt-12 grid lg:grid-cols-2 gap-6 lg:gap-0">
               <div
                 aria-label="What we handle"
                 className="p-10 md:p-12 border border-cedar/20 rounded-sm h-full shadow-elevated"
