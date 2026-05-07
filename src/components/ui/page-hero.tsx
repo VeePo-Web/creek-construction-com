@@ -841,7 +841,7 @@ const ArchitectBleed = (props: ArchitectBleedProps) => {
       />
 
       {/* ── Top: hairline + uppercase eyebrow ── */}
-      <div className="container mx-auto px-6 relative z-10 pt-28 md:pt-32">
+      <div className="container mx-auto px-5 sm:px-6 md:px-10 relative z-10 pt-28 md:pt-32">
         <div
           className="flex items-center gap-4 hero-provenance-enter"
           style={{ ["--kinetic-delay" as never]: "200ms" }}
