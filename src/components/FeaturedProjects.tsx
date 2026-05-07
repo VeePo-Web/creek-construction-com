@@ -63,7 +63,7 @@ const ProjectCard = ({ project, variant, index }: ProjectCardProps) => {
               height={variant === "lead" ? 2000 : variant === "stack" ? 1200 : 2133}
               sizes={sizes}
               wrapperClassName={`${aspectClass} w-full rounded-sm`}
-              className="transition-transform duration-[1.2s] group-hover:scale-[1.04]"
+              className={`transition-transform duration-[1.2s] ${variant === "lead" ? "group-hover:scale-[1.025]" : "group-hover:scale-[1.04]"}`}
               cedarHover
             />
           ) : (

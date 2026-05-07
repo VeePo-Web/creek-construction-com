@@ -6,7 +6,6 @@ import QuoteCloserCard from "@/components/QuoteCloserCard";
 import SectionHeader from "@/components/SectionHeader";
 import PageHero from "@/components/ui/page-hero";
 import MiniFaq from "@/components/MiniFaq";
-import MidPageQuotePrompt from "@/components/MidPageQuotePrompt";
 import { Check, Minus } from "lucide-react";
 import { useDocumentTitle } from "@/hooks/useDocumentTitle";
 import { SERVICE_GROUPS, getItemsForGroup } from "@/config/services";
@@ -49,7 +48,7 @@ const Services = () => {
         sectionLabel="EXTERIOR CONSTRUCTION"
         title={["Built outside.", "Built to last."]}
         italic="Fifteen services. One crew."
-        subtitle="All residential. All exterior. All built to outlast Alberta winters."
+        subtitle="All residential. All built to outlast Alberta winters."
         skipToId="all-services-heading"
         queries={[
           { service: "decks", shot_type: ["hero", "elevation", "wide"], min_quality: "reference", kind: "image" },
@@ -118,8 +117,6 @@ const Services = () => {
                       </div>
                     </div>
 
-                    {/* Mid-catalogue CTA strip — keeps the funnel within ~1 viewport at all times */}
-                    {gIdx === 2 && <MidPageQuotePrompt />}
                   </div>
                 );
               })}
@@ -142,7 +139,7 @@ const Services = () => {
               heading="What we handle. What you handle."
             />
 
-            <div className="mt-12 grid md:grid-cols-2 gap-0">
+            <div className="mt-12 grid lg:grid-cols-2 gap-6 lg:gap-0">
               <div
                 aria-label="What we handle"
                 className="p-10 md:p-12 border border-cedar/20 rounded-sm h-full shadow-elevated"

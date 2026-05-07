@@ -31,7 +31,6 @@ const About = () => {
         
         sectionLabel="OUR STORY"
         title={["Built on the", "work itself."]}
-        italic="Locally owned. No gimmicks."
         subtitle="Calgary and Edmonton. The crew you meet is the crew on-site."
         ambientClipQuery={{ kind: "video", min_quality: "portfolio" }}
         triptychQueries={[
@@ -66,7 +65,7 @@ const About = () => {
 
             {/* Inline stat trio — quiet, no border, no CTA */}
             <div
-              className="mt-12 pt-8 border-t border-cedar/15 grid grid-cols-3 gap-6"
+              className="mt-12 pt-8 border-t border-cedar/15 grid grid-cols-3 gap-4 sm:gap-6"
               role="group"
               aria-label="Creek by the numbers"
             >
@@ -129,7 +128,7 @@ const About = () => {
               {CONTACT.cities.map((city, i) => (
                 <span
                   key={city}
-                  className="text-sm text-muted-foreground border rounded-sm px-3 py-2 hover:text-foreground hover:bg-cedar/[0.04] hover:border-cedar/60 transition-[color,background-color,border-color] duration-300 grain-texture shadow-contact"
+                  className="text-sm text-muted-foreground border rounded-sm px-3 py-2.5 inline-flex items-center min-h-[44px] hover:text-foreground hover:bg-cedar/[0.04] hover:border-cedar/60 transition-[color,background-color,border-color] duration-300 grain-texture shadow-contact"
                   style={{ borderColor: `hsl(var(--cedar) / ${bronzeStep(i, CONTACT.cities.length)})` }}
                 >
                   {city}
