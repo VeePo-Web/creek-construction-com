@@ -47,7 +47,6 @@ const Services = () => {
         breadcrumb={[{ label: "Home", to: "/" }, { label: "Services" }]}
         sectionLabel="EXTERIOR CONSTRUCTION"
         title={["Built outside.", "Built to last."]}
-        subtitle="Fifteen services. One crew. All built to outlast Alberta winters."
         skipToId="all-services-heading"
         queries={[
           { service: "decks", shot_type: ["hero", "elevation", "wide"], min_quality: "reference", kind: "image" },
