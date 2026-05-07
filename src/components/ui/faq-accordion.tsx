@@ -31,13 +31,13 @@ const FaqAccordion = ({ items, className }: FaqAccordionProps) => {
           <AccordionItem
             key={i}
             value={`faq-${i}`}
-            className="grain-texture border px-6 transition-[border-color,background-color] duration-500 shadow-contact hover:border-cedar/30 data-[state=open]:border-cedar/40 data-[state=open]:bg-cedar/[0.03] rounded-sm bg-background"
+            className="grain-texture border px-6 transition-[border-color,background-color] duration-500 hover:border-cedar/30 data-[state=open]:border-cedar/40 data-[state=open]:bg-cedar/[0.03] rounded-sm bg-background"
             style={{
               borderColor: `hsl(var(--cedar) / ${borderOp})`,
               borderLeft: `3px solid hsl(var(--cedar) / ${accentOp})`,
             }}
           >
-            <AccordionTrigger className="text-left text-base md:text-lg font-light text-foreground hover:no-underline py-5 hover:text-cedar transition-colors duration-500">
+            <AccordionTrigger className="text-left text-base md:text-lg font-normal text-foreground hover:no-underline py-5 hover:text-cedar transition-colors duration-500 focus-visible:ring-offset-background">
               <span className="flex items-center gap-4">
                 <span className="text-[11px] tracking-[0.2em] text-cedar/40 tabular-nums">
                   {String(i + 1).padStart(2, "0")}
