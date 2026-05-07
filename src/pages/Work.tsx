@@ -65,7 +65,7 @@ const Work = () => {
       {/* Featured editorial galleries — real photographed projects */}
       {PROJECTS.length > 0 && (
         <section id="section-featured" className={`${SECTION_PADDING.default}`} aria-labelledby="featured-heading">
-          <div className="container mx-auto px-6">
+          <div className="container mx-auto px-5 sm:px-6">
             <div className={`${MAX_WIDTH.wide} mx-auto`}>
               <SectionHeader
                 label="FEATURED PROJECT"
