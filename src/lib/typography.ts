@@ -55,14 +55,14 @@ export const HEADLINE = {
    * Display — section opener larger than `section`, e.g. About hero.
    */
   display:
-    "font-serif text-foreground text-4xl md:text-5xl lg:text-6xl leading-[1.05] tracking-tight text-balance",
+    "font-serif text-foreground text-4xl md:text-5xl lg:text-6xl leading-[1.05] tracking-[-0.035em] text-balance",
 
   /**
    * Section — the standard <h2> for a homepage section.
    * Same scale as `display` here; reserved for semantic distinction.
    */
   section:
-    "font-serif text-foreground text-3xl md:text-4xl lg:text-5xl leading-[1.1] tracking-tight text-balance",
+    "font-serif text-foreground text-3xl md:text-4xl lg:text-5xl leading-[1.1] tracking-[-0.022em] text-balance",
 
   /**
    * Sub — within-section heading, <h3>. Quieter than section.
@@ -100,7 +100,7 @@ export const EYEBROW = {
 export const BODY = {
   /** Lead paragraph — sits directly under a section heading. */
   lead:
-    "font-sans text-foreground/80 text-lg md:text-xl leading-relaxed text-balance",
+    "font-sans text-foreground/75 text-[15px] sm:text-base md:text-[17px] leading-[1.65] text-balance",
 
   /** Default body copy. */
   default:

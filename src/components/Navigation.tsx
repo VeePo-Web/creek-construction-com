@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useLocation } from "react-router-dom";
-import { Phone } from "lucide-react";
+
 
 import { useQuoteModal } from "@/components/quote/QuoteModalProvider";
 import { CONTACT } from "@/config/contact";
@@ -64,7 +64,7 @@ const Navigation = ({ transparent: _transparent }: NavigationProps) => {
   // Full desktop Quote CTA.
   const desktopCta = cn(
     BUTTON.primary.base,
-    "px-5 py-2.5 text-[10px] gap-2",
+    "px-4 py-2 text-[10px] gap-2",
     BUTTON.primary.hover,
     BUTTON.primary.focus,
     BUTTON.primary.transition,
@@ -87,13 +87,13 @@ const Navigation = ({ transparent: _transparent }: NavigationProps) => {
         )}
         role="banner"
       >
-        {/* Top hairline — a tiny editorial cap that signals "brand frame". */}
+        {/* Top hairline — quieter on cream */}
         <span
           aria-hidden
-          className="block h-px w-full bg-gradient-to-r from-transparent via-cedar/25 to-transparent"
+          className="block h-px w-full bg-gradient-to-r from-transparent via-cedar/15 to-transparent"
         />
 
-        <div className="container mx-auto px-3 sm:px-4 md:px-6 h-16 md:h-20 flex items-center justify-between gap-2 md:gap-4">
+        <div className="container mx-auto px-3 sm:px-4 md:px-6 h-14 sm:h-16 md:h-[4.5rem] lg:h-20 flex items-center justify-between gap-2 md:gap-4">
           {/* Left — brand */}
           <BrandMark className="shrink-0" />
 
@@ -115,22 +115,7 @@ const Navigation = ({ transparent: _transparent }: NavigationProps) => {
               Mobile: [📞] [Quote-pill] [☰]
               Tablet/Desktop: [phone link] [Quote CTA] [☰ MENU] */}
           <div className="flex items-center gap-1 md:gap-2 shrink-0">
-            {/* Tablet (sm to lg) phone icon — keeps "call us" one tap away
-                where horizontal real estate allows. Hidden on `<sm` to give
-                the Quote pill + menu room to breathe (the phone link is also
-                pinned at the top of GlobalMenu and in the footer). */}
-            <a
-              href={`tel:${CONTACT.phoneTel}`}
-              className={cn(
-                "hidden sm:inline-flex lg:hidden items-center justify-center w-11 h-11 rounded-sm",
-                "border border-cedar/20 hover:border-cedar/50 hover:bg-cedar/5",
-                "text-cedar transition-colors duration-300",
-                "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cedar focus-visible:ring-offset-2",
-              )}
-              aria-label={`Call ${CONTACT.phone}`}
-            >
-              <Phone className="h-4 w-4" aria-hidden />
-            </a>
+            {/* Tablet phone icon removed — phone lives in GlobalMenu, footer, and closer */}
 
             {/* Desktop-only (lg+) phone link with the number spelled out */}
             <a
@@ -191,8 +176,8 @@ const Navigation = ({ transparent: _transparent }: NavigationProps) => {
       <div
         aria-hidden
         className={cn(
-          "md:h-20",
-          getRouteBreadcrumb(location.pathname) ? "h-[6.5rem]" : "h-16",
+          "sm:h-16 md:h-[4.5rem] lg:h-20",
+          getRouteBreadcrumb(location.pathname) ? "h-[6rem]" : "h-14",
         )}
       />
 

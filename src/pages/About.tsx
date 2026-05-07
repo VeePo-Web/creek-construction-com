@@ -50,7 +50,7 @@ const About = () => {
               headingId="story-heading"
               heading="A small crew that takes the work seriously."
             />
-            <div className="space-y-6 mt-8">
+            <div className="space-y-6 mt-8 max-w-[62ch]">
               <p className={BODY.lead}>
                 Creek Construction is a locally owned, residential-exterior contractor working
                 across the Calgary and Edmonton metros. We build decks, fences, sheds, pergolas —
@@ -99,7 +99,7 @@ const About = () => {
                 <div
                   key={i}
                   role="listitem"
-                  className="flex items-start gap-5 pl-6 py-5 rounded-sm transition-[background-color,transform] duration-300 hover:bg-cedar/[0.03] hover:translate-x-1 grain-texture shadow-contact border border-border/40 bg-background"
+                  className="flex items-start gap-5 pl-6 py-5 rounded-sm transition-[background-color,transform] duration-300 hover:bg-cedar/[0.03] hover:translate-x-1 border border-border/40 bg-background"
                   style={{ borderLeft: `2px solid hsl(var(--cedar) / ${bronzeStep(i, STEPS.length)})` }}
                 >
                   <span className="text-cedar/30 text-xs tabular-nums mt-1.5 font-medium">
@@ -124,11 +124,11 @@ const About = () => {
               headingId="areas-heading"
               heading="Calgary, Edmonton, and the towns in between."
             />
-            <div className="flex flex-wrap gap-2 mt-10">
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 mt-10">
               {CONTACT.cities.map((city, i) => (
                 <span
                   key={city}
-                  className="text-sm text-muted-foreground border rounded-sm px-3 py-2.5 inline-flex items-center min-h-[44px] hover:text-foreground hover:bg-cedar/[0.04] hover:border-cedar/60 transition-[color,background-color,border-color] duration-300 grain-texture shadow-contact"
+                  className="text-sm text-muted-foreground border rounded-sm px-3 py-2.5 inline-flex items-center justify-center min-h-[44px] hover:text-foreground hover:bg-cedar/[0.04] hover:border-cedar/30 transition-[color,background-color,border-color] duration-300"
                   style={{ borderColor: `hsl(var(--cedar) / ${bronzeStep(i, CONTACT.cities.length)})` }}
                 >
                   {city}
@@ -142,7 +142,7 @@ const About = () => {
         </div>
       </section>
 
-      <QuoteCloserCard eyebrow="Up next" background="secondary" />
+      <QuoteCloserCard background="secondary" />
 
       <Footer />
     </main>

@@ -8,7 +8,7 @@ import PageHero from "@/components/ui/page-hero";
 import ProjectTile from "@/components/ui/project-tile";
 import ProjectGallery from "@/components/ProjectGallery";
 import TestimonialStrip from "@/components/TestimonialStrip";
-import MidPageQuotePrompt from "@/components/MidPageQuotePrompt";
+
 import { ProjectsJsonLd } from "@/components/JsonLd";
 import { useDocumentTitle } from "@/hooks/useDocumentTitle";
 import { Hammer, Fence, Paintbrush, Home, Trees, type LucideIcon } from "lucide-react";
@@ -51,27 +51,19 @@ const Work = () => {
       <PageHero
         variant="cinematic-bleed"
         breadcrumb={[{ label: "Home", to: "/" }, { label: "Our Work" }]}
-        
         sectionLabel="SELECTED WORK"
         title={["The work", "speaks first."]}
-        italic="Alberta-built. Crew-owned."
         subtitle="Selected projects across Calgary, Edmonton, and the towns in between."
         query={{ shot_type: ["hero", "elevation", "wide"], min_quality: "reference", kind: "image" }}
         videoQuery={{ kind: "video", min_quality: "portfolio" }}
-        
         height="84vh"
         minHeight="640px"
       >
-        {/* Primary CTA — every PageHero must carry one (funnel contract). */}
         <div className="flex flex-col gap-5">
           <CedarCTA />
-          {/* Sister studios — quiet editorial footnote */}
-          <div className="flex items-center gap-3 text-evergreen-foreground/45">
-            <div className="w-8 h-px bg-evergreen-foreground/30" />
-            <span className="text-[10px] tracking-[0.25em] uppercase">
-              Sister studios · B&amp;P Saunas · Hickory&nbsp;&amp;&nbsp;Rose
-            </span>
-          </div>
+          <span className="text-[10px] tracking-[0.25em] uppercase text-evergreen-foreground/45">
+            Sister studios · B&amp;P Saunas · Hickory&nbsp;&amp;&nbsp;Rose
+          </span>
         </div>
       </PageHero>
 
@@ -91,7 +83,7 @@ const Work = () => {
                 {PROJECTS.map((project, idx) => (
                   <article key={project.slug} aria-labelledby={`project-${project.slug}-heading`}>
                     {idx > 0 && (
-                      <header className="mb-6 flex flex-col items-start gap-2 lg:flex-row lg:items-baseline lg:justify-between lg:gap-6 flex-wrap">
+                      <header className="mb-6 flex flex-col items-start gap-2 md:flex-row md:items-baseline md:justify-between md:gap-6 flex-wrap">
                         <h2
                           id={`project-${project.slug}-heading`}
                           className="font-serif text-3xl md:text-4xl text-foreground"
@@ -123,7 +115,7 @@ const Work = () => {
               subheading="Click any category to request a quote for similar work."
             />
 
-            <div className="grid sm:grid-cols-2 gap-6 md:gap-8 mt-12" role="list">
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 mt-12 [&>*:nth-child(5)]:lg:col-start-2" role="list">
               {PLACEHOLDERS.map((w, i) => (
                 <ProjectTile
                   key={i}
@@ -141,13 +133,9 @@ const Work = () => {
               ))}
             </div>
 
-            <div className="mt-20">
-              <MidPageQuotePrompt heading="Start a quote for a similar build." />
-            </div>
-
             <div className="mt-12 text-center">
-              <p className="text-sm text-muted-foreground italic">
-                More projects added each month.
+              <p className="text-[10px] tracking-[0.25em] uppercase text-muted-foreground/60">
+                More projects added each month
               </p>
             </div>
           </div>

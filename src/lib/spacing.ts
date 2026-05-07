@@ -21,7 +21,9 @@
 
 export const SECTION_PADDING = {
   /** Standard homepage section (Hero, Services, About, etc.). */
-  default: "py-20 md:py-28",
+  default: "py-16 sm:py-20 md:py-24 lg:py-28",
+  /** Tight — proof bands, footer-adjacent sections. */
+  tight: "py-12 sm:py-16 md:py-20",
   /** Slimmer — for trust strips and inline rows. */
   strip: "py-12 md:py-16",
   /** Hero — extra top breathing because of the nav. */
@@ -51,9 +53,9 @@ export const MAX_WIDTH = {
   /** Prose — long-form article body. */
   prose: "max-w-prose",
   /** Content — standard section measure. */
-  content: "max-w-4xl",
+  content: "max-w-[68ch]",
   /** Wide — landing-page section grids. */
-  wide: "max-w-7xl",
+  wide: "max-w-6xl",
   /** Bleed — full viewport. */
   full: "max-w-none",
 } as const;
@@ -83,9 +85,9 @@ export const GRID_GAP = {
   /** Default — card grids. */
   default: "gap-6 md:gap-8",
   /** Generous — 2-column hero layouts. */
-  generous: "gap-12 md:gap-16",
+  generous: "gap-10 md:gap-14",
   /** Editorial — large 2-column sections. */
-  editorial: "gap-16 md:gap-20",
+  editorial: "gap-8 md:gap-12 lg:gap-16",
 } as const;
 
 // ─────────────────────────────────────────────────────────────────────

@@ -7,7 +7,7 @@ import { useDocumentTitle } from "@/hooks/useDocumentTitle";
 import { Phone, Mail, MapPin } from "lucide-react";
 import { CONTACT } from "@/config/contact";
 import { bronzeStep } from "@/lib/colors";
-import { SECTION_PADDING, MAX_WIDTH, GRID_GAP } from "@/lib/spacing";
+import { MAX_WIDTH } from "@/lib/spacing";
 
 /**
  * Contact — single-screen conversion page.
@@ -37,7 +37,7 @@ const Contact = () => {
 
       <section
         id="section-contact"
-        className={`${SECTION_PADDING.default}`}
+        className="pt-10 sm:pt-14 md:pt-20 pb-20 md:pb-28"
         aria-labelledby="contact-heading"
       >
         <div className="container mx-auto px-6">
@@ -49,7 +49,7 @@ const Contact = () => {
               </p>
               <h1
                 id="contact-heading"
-                className="font-serif text-4xl md:text-5xl lg:text-6xl text-foreground leading-[1.05] tracking-tight"
+                className="font-serif text-[32px] sm:text-4xl md:text-5xl lg:text-[56px] text-foreground leading-[1.05] tracking-[-0.025em] text-balance"
               >
                 Tell us what you’re building.
               </h1>
@@ -58,7 +58,7 @@ const Contact = () => {
               </p>
             </div>
 
-            <div className={`grid lg:grid-cols-[5fr_7fr] ${GRID_GAP.editorial} items-start`}>
+            <div className="grid md:grid-cols-[5fr_7fr] gap-10 md:gap-12 lg:gap-16 items-start">
               {/* LEFT — direct contact card */}
               <div>
                 <SectionHeader
@@ -78,8 +78,8 @@ const Contact = () => {
                     href={`tel:${CONTACT.phoneTel}`}
                     className="flex items-center gap-4 px-5 py-5 min-h-[44px] hover:bg-cedar/[0.03] transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cedar focus-visible:ring-inset group/row"
                   >
-                    <div className="shrink-0 w-10 h-10 rounded-sm bg-cedar/10 flex items-center justify-center">
-                      <Phone className="h-4 w-4 text-cedar" aria-hidden />
+                    <div className="shrink-0 w-9 h-9 rounded-sm bg-cedar/10 flex items-center justify-center">
+                      <Phone className="h-3.5 w-3.5 text-cedar" aria-hidden />
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className="text-[10px] tracking-[0.2em] uppercase text-muted-foreground/60">Call or Text · Reply in 24–48&nbsp;hours</p>
@@ -95,8 +95,8 @@ const Contact = () => {
                     href={`mailto:${CONTACT.email}`}
                     className="flex items-center gap-4 px-5 py-5 min-h-[44px] hover:bg-cedar/[0.03] transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cedar focus-visible:ring-inset group/row"
                   >
-                    <div className="shrink-0 w-10 h-10 rounded-sm bg-cedar/10 flex items-center justify-center">
-                      <Mail className="h-4 w-4 text-cedar" aria-hidden />
+                    <div className="shrink-0 w-9 h-9 rounded-sm bg-cedar/10 flex items-center justify-center">
+                      <Mail className="h-3.5 w-3.5 text-cedar" aria-hidden />
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className="text-[10px] tracking-[0.2em] uppercase text-muted-foreground/60">Email</p>
@@ -109,14 +109,14 @@ const Contact = () => {
                   <div className="border-t border-border/30" aria-hidden />
 
                   <div className="flex items-start gap-4 px-5 py-5">
-                    <div className="shrink-0 w-10 h-10 rounded-sm bg-cedar/10 flex items-center justify-center">
-                      <MapPin className="h-4 w-4 text-cedar" aria-hidden />
+                    <div className="shrink-0 w-9 h-9 rounded-sm bg-cedar/10 flex items-center justify-center">
+                      <MapPin className="h-3.5 w-3.5 text-cedar" aria-hidden />
                     </div>
                     <div className="flex-1">
                       <p className="text-[10px] tracking-[0.2em] uppercase text-muted-foreground/60 mb-1">Service Areas</p>
                       <p className="text-foreground font-medium">Calgary, Edmonton &amp; surrounding Alberta</p>
                       <p className="text-xs text-muted-foreground mt-1">
-                        Including {CONTACT.cities.slice(0, 4).join(", ")} + more
+                        Including {CONTACT.cities.slice(0, 3).join(", ")} + more towns
                       </p>
                     </div>
                   </div>

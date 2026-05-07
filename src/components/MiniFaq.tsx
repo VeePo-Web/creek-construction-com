@@ -42,7 +42,7 @@ const MiniFaq = ({
   const { ref, cls, style } = useReveal();
 
   const inner = (
-    <div ref={ref} className={`max-w-3xl mx-auto ${cls}`} style={style}>
+    <div ref={ref} className={`max-w-2xl mx-auto ${cls}`} style={style}>
       <SectionHeader
         variant="quiet"
         label={eyebrow}
@@ -53,17 +53,15 @@ const MiniFaq = ({
       />
       <FaqAccordion items={items} className="mt-10" />
       {showPhoneFallback && (
-        <div className="mt-10 pt-6 border-t border-border/40 text-center">
-          <p className="text-sm text-muted-foreground">
-            Have more questions?{" "}
-            <a
-              href={`tel:${CONTACT.phoneTel}`}
-              className="inline-flex items-center gap-1.5 text-cedar hover:text-cedar-hover font-medium transition-colors"
-            >
-              <Phone className="h-3.5 w-3.5" aria-hidden /> Call {CONTACT.phone}
-            </a>
-          </p>
-        </div>
+        <p className="mt-8 text-xs text-muted-foreground/70 text-right">
+          Have more questions?{" "}
+          <a
+            href={`tel:${CONTACT.phoneTel}`}
+            className="inline-flex items-center gap-1.5 text-cedar hover:text-cedar-hover font-medium transition-colors"
+          >
+            <Phone className="h-3 w-3" aria-hidden /> Call {CONTACT.phone}
+          </a>
+        </p>
       )}
       {showCta && (
         <div className="mt-10 flex justify-center">

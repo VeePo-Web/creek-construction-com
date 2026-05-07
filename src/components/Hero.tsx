@@ -24,9 +24,9 @@ const STATS: StatItem[] = [
 const HeroProofBand = () => (
   <section
     aria-label="Creek Construction credentials"
-    className="border-b border-cedar/15 bg-background"
+    className="border-y border-cedar/12 bg-background"
   >
-    <div className="container mx-auto px-6 py-8 md:py-10">
+    <div className="container mx-auto px-6 py-6 md:py-8">
       <StatTrio items={STATS} variant="inline" />
     </div>
   </section>
@@ -40,7 +40,6 @@ const Hero = () => {
         breadcrumb={[{ label: "Calgary · Edmonton · Alberta" }]}
         sectionLabel="Exterior Construction"
         title={["Excellence in", "the Work."]}
-        italic="Pride in every detail."
         subtitle="Decks, fencing, sheds, painting and siding — built to last across Alberta."
         query={{
           shot_type: ["hero", "elevation", "wide"],
@@ -48,9 +47,7 @@ const Hero = () => {
           kind: "image",
         }}
       >
-        {/* Solid cedar pill — the most important conversion button on the site
-            should look primary, not secondary. Reads cleanly against the B/W plate. */}
-        <div className="flex flex-wrap items-center gap-x-6 gap-y-3">
+        <div className="flex flex-col sm:flex-row sm:flex-wrap sm:items-center gap-x-6 gap-y-3">
           <CedarCTA />
           <a
             href={`tel:${CONTACT.phoneTel}`}
