@@ -10,12 +10,13 @@ import { LocalBusinessJsonLd } from "@/components/JsonLd";
 import CrewMoment from "@/components/CrewMoment";
 import TestimonialStrip from "@/components/TestimonialStrip";
 import MiniFaq from "@/components/MiniFaq";
-import InlineQuoteSection from "@/components/InlineQuoteSection";
 
 /**
- * Homepage rhythm (Pass 10 — minimalism audit):
- *   Hero → InlineQuote → Services → CrewMoment → Featured → Testimonials → MiniFaq → Closer
- * One mid-page form anchor (InlineQuote), one terminal CTA (Closer). Supporting strips carry no CTA.
+ * Homepage rhythm (Pass 13 — funnel discipline):
+ *   Hero → Services → CrewMoment → Featured → Testimonials → MiniFaq → Closer
+ * One terminal CTA (Closer). Mid-page InlineQuote was removed: pasting an
+ * 8-field form mid-homepage breaks the editorial scan and competes with
+ * the closer. The full form lives on /contact.
  */
 const Index = () => {
   useDocumentTitle(
@@ -33,7 +34,6 @@ const Index = () => {
       <Navigation />
 
       <Hero />
-      <InlineQuoteSection background="secondary" />
       <Services />
       <CrewMoment background="secondary" />
       <FeaturedProjects background="background" />

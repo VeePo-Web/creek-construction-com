@@ -6,7 +6,6 @@ import QuoteCloserCard from "@/components/QuoteCloserCard";
 import SectionHeader from "@/components/SectionHeader";
 import PageHero from "@/components/ui/page-hero";
 import MiniFaq from "@/components/MiniFaq";
-import MidPageQuotePrompt from "@/components/MidPageQuotePrompt";
 import { Check, Minus } from "lucide-react";
 import { useDocumentTitle } from "@/hooks/useDocumentTitle";
 import { SERVICE_GROUPS, getItemsForGroup } from "@/config/services";
@@ -118,8 +117,6 @@ const Services = () => {
                       </div>
                     </div>
 
-                    {/* Mid-catalogue CTA strip — keeps the funnel within ~1 viewport at all times */}
-                    {gIdx === 2 && <MidPageQuotePrompt />}
                   </div>
                 );
               })}
