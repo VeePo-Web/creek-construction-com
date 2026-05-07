@@ -83,7 +83,7 @@ const Work = () => {
                 {PROJECTS.map((project, idx) => (
                   <article key={project.slug} aria-labelledby={`project-${project.slug}-heading`}>
                     {idx > 0 && (
-                      <header className="mb-6 flex flex-col items-start gap-2 lg:flex-row lg:items-baseline lg:justify-between lg:gap-6 flex-wrap">
+                      <header className="mb-6 flex flex-col items-start gap-2 md:flex-row md:items-baseline md:justify-between md:gap-6 flex-wrap">
                         <h2
                           id={`project-${project.slug}-heading`}
                           className="font-serif text-3xl md:text-4xl text-foreground"
