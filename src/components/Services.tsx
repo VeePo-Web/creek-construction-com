@@ -50,7 +50,7 @@ const Services = () => {
                   onClick={() => openModal(groupItemIds)}
                   role="listitem"
                   aria-label={`Get my free quote — ${group.title}`}
-                  className="group w-full text-left flex flex-col items-stretch overflow-hidden rounded-sm transition-[background-color] duration-300 hover:bg-cedar/[0.03] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cedar focus-visible:ring-offset-2 cursor-pointer min-h-[300px] md:min-h-[340px] border border-border/40"
+                  className="group w-full text-left flex flex-col items-stretch overflow-hidden rounded-sm transition-[background-color] duration-300 hover:bg-cedar/[0.03] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cedar focus-visible:ring-offset-2 cursor-pointer min-h-[280px] lg:min-h-[320px] border border-border/40"
                   style={{
                     borderLeftWidth: "3px",
                     borderLeftColor: `hsl(var(--cedar) / ${opacity})`,
