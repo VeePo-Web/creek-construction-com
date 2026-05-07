@@ -53,9 +53,9 @@ export const MAX_WIDTH = {
   /** Prose — long-form article body. */
   prose: "max-w-prose",
   /** Content — standard section measure. */
-  content: "max-w-4xl",
+  content: "max-w-[68ch]",
   /** Wide — landing-page section grids. */
-  wide: "max-w-7xl",
+  wide: "max-w-6xl",
   /** Bleed — full viewport. */
   full: "max-w-none",
 } as const;
