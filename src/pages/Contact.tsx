@@ -7,7 +7,7 @@ import { useDocumentTitle } from "@/hooks/useDocumentTitle";
 import { Phone, Mail, MapPin } from "lucide-react";
 import { CONTACT } from "@/config/contact";
 import { bronzeStep } from "@/lib/colors";
-import { SECTION_PADDING, MAX_WIDTH, GRID_GAP } from "@/lib/spacing";
+import { MAX_WIDTH } from "@/lib/spacing";
 
 /**
  * Contact — single-screen conversion page.
