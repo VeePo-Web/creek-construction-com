@@ -81,7 +81,7 @@ const ProjectCard = ({ project, variant, index }: ProjectCardProps) => {
             </div>
           )}
 
-          <div className="mt-5 flex items-baseline justify-between gap-4">
+          <div className="mt-6 flex items-baseline justify-between gap-4">
             <div className="flex items-center gap-3 min-w-0">
               <span className="text-[10px] tracking-[0.25em] uppercase text-cedar/70 tabular-nums shrink-0">
                 {String(index + 1).padStart(2, "0")}
@@ -160,7 +160,7 @@ const FeaturedProjects = ({ background = "background" }: FeaturedProjectsProps =
       className={`${SECTION_PADDING.default} ${background === "secondary" ? "bg-secondary" : "bg-background"} relative`}
       aria-labelledby="featured-heading"
     >
-      <div className="container mx-auto px-6">
+      <div className="container mx-auto px-5 sm:px-6">
         <div ref={ref} className={`max-w-7xl mx-auto ${cls}`} style={style}>
           <div className="mb-16">
             <SectionHeader
@@ -177,7 +177,7 @@ const FeaturedProjects = ({ background = "background" }: FeaturedProjectsProps =
           {has6 ? (
             <>
               {/* Row 1 — asymmetric 60/40: lead + 2 stacked */}
-              <div className="grid md:grid-cols-5 gap-6 md:gap-8 mb-8 md:mb-10">
+              <div className="grid md:grid-cols-5 gap-6 md:gap-8 mb-10 md:mb-14">
                 <div className="md:col-span-3">
                   <ProjectCard project={lead} variant="lead" index={0} />
                 </div>

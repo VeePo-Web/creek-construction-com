@@ -53,7 +53,7 @@ const MiniFaq = ({
       />
       <FaqAccordion items={items} className="mt-10" />
       {showPhoneFallback && (
-        <p className="mt-8 text-xs text-muted-foreground/70 text-right">
+        <p className="mt-8 pt-6 border-t border-cedar/12 text-xs text-muted-foreground/70 text-left">
           Have more questions?{" "}
           <a
             href={`tel:${CONTACT.phoneTel}`}
@@ -79,7 +79,7 @@ const MiniFaq = ({
       className={`${SECTION_PADDING.default} ${background === "secondary" ? "bg-secondary" : "bg-background"}`}
       aria-labelledby={headingId}
     >
-      <div className="container mx-auto px-6">{inner}</div>
+      <div className="container mx-auto px-5 sm:px-6">{inner}</div>
     </section>
   );
 };

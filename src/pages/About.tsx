@@ -43,7 +43,7 @@ const About = () => {
       </PageHero>
 
       <section id="section-story" className={`${SECTION_PADDING.default}`} aria-labelledby="story-heading">
-        <div className="container mx-auto px-6">
+        <div className="container mx-auto px-5 sm:px-6">
           <div className={`${MAX_WIDTH.content} mx-auto`}>
             <SectionHeader
               label="WHO WE ARE"
@@ -65,7 +65,7 @@ const About = () => {
 
             {/* Inline stat trio — quiet, no border, no CTA */}
             <div
-              className="mt-12 pt-8 border-t border-cedar/15 grid grid-cols-3 gap-4 sm:gap-6"
+              className="mt-12 pt-8 border-t border-cedar/15 grid grid-cols-3 gap-6 md:gap-10"
               role="group"
               aria-label="Creek by the numbers"
             >
@@ -85,7 +85,7 @@ const About = () => {
       </section>
 
       <section id="section-process" className={`${SECTION_PADDING.default} bg-secondary`} aria-labelledby="process-heading">
-        <div className="container mx-auto px-6">
+        <div className="container mx-auto px-5 sm:px-6">
           <div className={`${MAX_WIDTH.content} mx-auto`}>
             <SectionHeader
               label="HOW WE WORK"
@@ -99,7 +99,7 @@ const About = () => {
                 <div
                   key={i}
                   role="listitem"
-                  className="flex items-start gap-5 pl-6 py-5 rounded-sm transition-[background-color,transform] duration-300 hover:bg-cedar/[0.03] hover:translate-x-1 border border-border/40 bg-background"
+                  className="flex items-start gap-4 sm:gap-5 pl-4 sm:pl-6 py-4 sm:py-5 rounded-sm transition-[background-color,transform] duration-300 hover:bg-cedar/[0.03] hover:translate-x-1 border border-border/40 bg-background"
                   style={{ borderLeft: `2px solid hsl(var(--cedar) / ${bronzeStep(i, STEPS.length)})` }}
                 >
                   <span className="text-cedar/30 text-xs tabular-nums mt-1.5 font-medium">
@@ -117,14 +117,14 @@ const About = () => {
       </section>
 
       <section id="section-areas" className={`${SECTION_PADDING.default}`} aria-labelledby="areas-heading">
-        <div className="container mx-auto px-6">
+        <div className="container mx-auto px-5 sm:px-6">
           <div className={`${MAX_WIDTH.content} mx-auto`}>
             <SectionHeader
               label="WHERE WE WORK"
               headingId="areas-heading"
               heading="Calgary, Edmonton, and the towns in between."
             />
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 mt-10">
+            <div className="grid grid-cols-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2 mt-10">
               {CONTACT.cities.map((city, i) => (
                 <span
                   key={city}

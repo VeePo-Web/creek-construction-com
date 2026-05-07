@@ -47,7 +47,7 @@ const QuoteCloserCard = ({
         <p className="text-[10px] tracking-[0.25em] uppercase text-cedar/80 mb-4">
           {eyebrow}
         </p>
-        <h2 className="font-serif text-evergreen-foreground text-[28px] sm:text-3xl md:text-4xl lg:text-[44px] leading-[1.1] tracking-[-0.02em] text-balance mb-5">
+        <h2 className="font-serif text-evergreen-foreground text-[28px] sm:text-3xl md:text-4xl lg:text-[44px] leading-[1.1] tracking-[-0.02em] text-balance mb-5 max-w-[20ch] md:max-w-[28ch] lg:max-w-[34ch]">
           {heading}
         </h2>
         <p className="text-evergreen-foreground/70 leading-relaxed mb-8 max-w-[52ch]">
@@ -57,7 +57,7 @@ const QuoteCloserCard = ({
         <CedarCTA preselectServices={preselectServices}>Get my free quote</CedarCTA>
 
         <div
-          className="mt-8 pt-6 border-t border-evergreen-foreground/10 flex flex-wrap items-center gap-x-4 gap-y-2"
+          className="mt-8 pt-6 border-t border-evergreen-foreground/10 flex flex-wrap items-center gap-x-5 gap-y-2.5"
           aria-label="Trust signals"
         >
           {TRUST_SIGNALS.map(({ icon: Icon, label }) => (
@@ -82,7 +82,7 @@ const QuoteCloserCard = ({
       className={`${SECTION_PADDING.default} ${background === "secondary" ? "bg-secondary" : "bg-background"}`}
       aria-label="Request a quote"
     >
-      <div className="container mx-auto px-6">
+      <div className="container mx-auto px-5 sm:px-6">
         <div className="max-w-4xl mx-auto">{card}</div>
       </div>
     </section>

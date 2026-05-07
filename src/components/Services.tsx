@@ -26,7 +26,7 @@ const Services = () => {
       className={`${SECTION_PADDING.default} bg-background`}
       aria-labelledby="services-heading"
     >
-      <div className="container mx-auto px-6">
+      <div className="container mx-auto px-5 sm:px-6">
         <div ref={ref} className={`${MAX_WIDTH.wide} mx-auto ${cls}`} style={style}>
           <div className="mb-16">
             <SectionHeader
@@ -38,7 +38,7 @@ const Services = () => {
             />
           </div>
 
-          <div className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 ${GRID_GAP.default} [&>*:nth-child(5)]:lg:col-start-2`} role="list">
+          <div className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 ${GRID_GAP.default} sm:[&>*:nth-child(5)]:col-span-2 sm:[&>*:nth-child(5)]:max-w-[calc(50%-1rem)] sm:[&>*:nth-child(5)]:mx-auto lg:[&>*:nth-child(5)]:col-span-1 lg:[&>*:nth-child(5)]:max-w-none lg:[&>*:nth-child(5)]:col-start-2 lg:[&>*:nth-child(5)]:mx-0`} role="list">
             {SERVICE_GROUPS.map((group, i) => {
               const Icon = group.icon;
               const opacity = bronzeStep(i, SERVICE_GROUPS.length);
@@ -50,7 +50,7 @@ const Services = () => {
                   onClick={() => openModal(groupItemIds)}
                   role="listitem"
                   aria-label={`Get my free quote — ${group.title}`}
-                  className="group w-full text-left flex flex-col items-stretch overflow-hidden rounded-sm transition-[background-color] duration-300 hover:bg-cedar/[0.03] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cedar focus-visible:ring-offset-2 cursor-pointer min-h-[300px] md:min-h-[340px] border border-border/40"
+                  className="group w-full text-left flex flex-col items-stretch overflow-hidden rounded-sm transition-[background-color] duration-300 hover:bg-cedar/[0.03] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cedar focus-visible:ring-offset-2 cursor-pointer min-h-[280px] lg:min-h-[320px] border border-border/40"
                   style={{
                     borderLeftWidth: "3px",
                     borderLeftColor: `hsl(var(--cedar) / ${opacity})`,
@@ -70,7 +70,7 @@ const Services = () => {
                     fallbackCaption={`${group.title} · new work coming`}
                   />
 
-                  <div className="p-6 flex flex-col flex-1">
+                  <div className="p-5 md:p-6 flex flex-col flex-1">
                     <Icon
                       className="h-5 w-5 text-cedar/70 mb-3 transition-colors duration-300 group-hover:text-cedar"
                       aria-hidden

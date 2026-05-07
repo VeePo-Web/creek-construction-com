@@ -26,7 +26,7 @@ const HeroProofBand = () => (
     aria-label="Creek Construction credentials"
     className="border-y border-cedar/12 bg-background"
   >
-    <div className="container mx-auto px-6 py-6 md:py-8">
+    <div className="container mx-auto px-5 sm:px-6 py-7 md:py-8 lg:py-10">
       <StatTrio items={STATS} variant="inline" />
     </div>
   </section>
@@ -47,11 +47,11 @@ const Hero = () => {
           kind: "image",
         }}
       >
-        <div className="flex flex-col sm:flex-row sm:flex-wrap sm:items-center gap-x-6 gap-y-3">
+        <div className="flex flex-col sm:flex-row sm:items-center gap-x-6 gap-y-3">
           <CedarCTA />
           <a
             href={`tel:${CONTACT.phoneTel}`}
-            className="inline-flex items-center gap-2 text-[11px] tracking-[0.22em] uppercase text-white/85 hover:text-white transition-colors min-h-[44px] px-2"
+            className="hidden sm:inline-flex items-center gap-2 text-[11px] tracking-[0.22em] uppercase text-white/85 hover:text-white transition-colors min-h-[44px] px-2"
           >
             or call {CONTACT.phone}
           </a>

@@ -64,7 +64,7 @@ const Navigation = ({ transparent: _transparent }: NavigationProps) => {
   // Full desktop Quote CTA.
   const desktopCta = cn(
     BUTTON.primary.base,
-    "px-4 py-2 text-[10px] gap-2",
+    "px-4 py-2.5 text-[11px] tracking-[0.18em] gap-2",
     BUTTON.primary.hover,
     BUTTON.primary.focus,
     BUTTON.primary.transition,
@@ -87,11 +87,13 @@ const Navigation = ({ transparent: _transparent }: NavigationProps) => {
         )}
         role="banner"
       >
-        {/* Top hairline — quieter on cream */}
-        <span
-          aria-hidden
-          className="block h-px w-full bg-gradient-to-r from-transparent via-cedar/15 to-transparent"
-        />
+        {/* Top hairline — only when scrolled, to avoid double-line at rest */}
+        {isScrolled && (
+          <span
+            aria-hidden
+            className="block h-px w-full bg-gradient-to-r from-transparent via-cedar/15 to-transparent"
+          />
+        )}
 
         <div className="container mx-auto px-3 sm:px-4 md:px-6 h-14 sm:h-16 md:h-[4.5rem] lg:h-20 flex items-center justify-between gap-2 md:gap-4">
           {/* Left — brand */}
@@ -114,7 +116,7 @@ const Navigation = ({ transparent: _transparent }: NavigationProps) => {
           {/* Right cluster — never fades, never hides on mobile.
               Mobile: [📞] [Quote-pill] [☰]
               Tablet/Desktop: [phone link] [Quote CTA] [☰ MENU] */}
-          <div className="flex items-center gap-1 md:gap-2 shrink-0">
+          <div className="flex items-center gap-1.5 md:gap-2.5 shrink-0">
             {/* Tablet phone icon removed — phone lives in GlobalMenu, footer, and closer */}
 
             {/* Desktop-only (lg+) phone link with the number spelled out */}

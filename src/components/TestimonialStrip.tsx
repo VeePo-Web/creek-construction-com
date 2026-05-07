@@ -54,7 +54,7 @@ const TestimonialStrip = ({
         {items.map((t, i) => (
           <li
             key={t.firstName + i}
-            className="flex flex-col p-6 md:p-7 lg:p-8 min-h-[260px] bg-background border border-border/40 rounded-sm transition-[background-color,border-color] duration-300 hover:bg-cedar/[0.03] hover:border-cedar/30"
+            className="flex flex-col p-6 lg:p-8 md:min-h-[260px] bg-background border border-border/40 rounded-sm transition-[background-color,border-color] duration-300 hover:bg-cedar/[0.03] hover:border-cedar/30"
             style={{
               borderLeft: `2px solid hsl(var(--cedar) / ${Math.max(bronzeStep(i, items.length), 0.3)})`,
             }}
@@ -97,7 +97,7 @@ const TestimonialStrip = ({
       className={`${SECTION_PADDING.default} ${background === "secondary" ? "bg-secondary" : "bg-background"}`}
       aria-labelledby={headingId}
     >
-      <div className="container mx-auto px-6">{inner}</div>
+      <div className="container mx-auto px-5 sm:px-6">{inner}</div>
     </section>
   );
 };

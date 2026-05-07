@@ -47,7 +47,6 @@ const Services = () => {
         breadcrumb={[{ label: "Home", to: "/" }, { label: "Services" }]}
         sectionLabel="EXTERIOR CONSTRUCTION"
         title={["Built outside.", "Built to last."]}
-        subtitle="Fifteen services. One crew. All built to outlast Alberta winters."
         skipToId="all-services-heading"
         queries={[
           { service: "decks", shot_type: ["hero", "elevation", "wide"], min_quality: "reference", kind: "image" },
@@ -64,7 +63,7 @@ const Services = () => {
         className={`${SECTION_PADDING.default}`}
         aria-labelledby="all-services-heading"
       >
-        <div className="container mx-auto px-6">
+        <div className="container mx-auto px-5 sm:px-6">
           <div className={`${MAX_WIDTH.content} mx-auto`}>
             <SectionHeader
               label="THE FULL MENU"
@@ -97,7 +96,7 @@ const Services = () => {
                             key={item.id}
                             type="button"
                             onClick={() => openModal([item.id])}
-                            className="group flex items-baseline justify-between gap-4 py-4 text-left border-b border-border/40 transition-colors duration-300 hover:bg-cedar/[0.03] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cedar focus-visible:ring-offset-2 rounded-sm px-3 -mx-3 min-h-[44px]"
+                            className="group flex items-baseline justify-between gap-4 py-4 text-left border-b border-cedar/12 transition-colors duration-300 hover:bg-cedar/[0.03] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cedar focus-visible:ring-offset-2 rounded-sm px-3 -mx-3 min-h-[44px]"
                             aria-label={`Get my free quote for ${item.title}`}
                           >
                             <div className="flex-1 min-w-0">
@@ -111,7 +110,7 @@ const Services = () => {
                           </button>
                         ))}
                         {items.length % 2 === 1 && (
-                          <div className="hidden sm:block border-b border-border/20" aria-hidden />
+                          <div className="hidden sm:block border-b border-cedar/8" aria-hidden />
                         )}
                       </div>
                     </div>
@@ -130,7 +129,7 @@ const Services = () => {
         className={`${SECTION_PADDING.default} bg-secondary`}
         aria-labelledby="contract-heading"
       >
-        <div className="container mx-auto px-6">
+        <div className="container mx-auto px-5 sm:px-6">
           <div className={`${MAX_WIDTH.content} mx-auto`}>
             <SectionHeader
               label="HOW WE SPLIT THE WORK"
@@ -144,9 +143,9 @@ const Services = () => {
                 className="p-7 sm:p-8 md:p-10 border border-cedar/30 rounded-sm h-full"
                 style={{ background: BACKDROP.bronzeWash }}
               >
-                <div className="flex items-baseline justify-between mb-8">
+                <div className="flex items-baseline justify-between gap-2 flex-wrap mb-8">
                   <h3 className="text-minimal text-cedar">WE HANDLE</h3>
-                  <span className="text-[11px] tracking-[0.2em] text-cedar/50 tabular-nums">
+                  <span className="text-[10px] tracking-[0.2em] text-cedar/50 tabular-nums">
                     {String(WE_HANDLE.length).padStart(2, "0")} ITEMS
                   </span>
                 </div>
@@ -169,9 +168,9 @@ const Services = () => {
                 aria-label="What you handle"
                 className="p-7 sm:p-8 md:p-10 border border-border/40 rounded-sm h-full bg-background"
               >
-                <div className="flex items-baseline justify-between mb-8">
+                <div className="flex items-baseline justify-between gap-2 flex-wrap mb-8">
                   <h3 className="text-minimal text-muted-foreground">YOU HANDLE</h3>
-                  <span className="text-[11px] tracking-[0.2em] text-muted-foreground/40 tabular-nums">
+                  <span className="text-[10px] tracking-[0.2em] text-muted-foreground/40 tabular-nums">
                     {String(YOU_HANDLE.length).padStart(2, "0")} ITEMS
                   </span>
                 </div>

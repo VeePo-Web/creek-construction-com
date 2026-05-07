@@ -40,16 +40,16 @@ const Contact = () => {
         className="pt-10 sm:pt-14 md:pt-20 pb-20 md:pb-28"
         aria-labelledby="contact-heading"
       >
-        <div className="container mx-auto px-6">
+        <div className="container mx-auto px-5 sm:px-6">
           <div className={`${MAX_WIDTH.wide} mx-auto`}>
             {/* Headline strip */}
-            <div className="text-center max-w-3xl mx-auto mb-12 md:mb-16">
+            <div className="text-center max-w-3xl mx-auto mb-10 md:mb-14">
               <p className="text-[10px] tracking-[0.25em] uppercase text-cedar mb-4">
                 GET A FREE QUOTE
               </p>
               <h1
                 id="contact-heading"
-                className="font-serif text-[32px] sm:text-4xl md:text-5xl lg:text-[56px] text-foreground leading-[1.05] tracking-[-0.025em] text-balance"
+                className="font-serif text-[32px] sm:text-4xl lg:text-[56px] text-foreground leading-[1.05] tracking-[-0.025em] text-balance"
               >
                 Tell us what you’re building.
               </h1>
@@ -58,7 +58,7 @@ const Contact = () => {
               </p>
             </div>
 
-            <div className="grid md:grid-cols-[5fr_7fr] gap-10 md:gap-12 lg:gap-16 items-start">
+            <div className="grid lg:grid-cols-[5fr_7fr] gap-10 md:gap-12 lg:gap-16 items-start">
               {/* LEFT — direct contact card */}
               <div>
                 <SectionHeader
@@ -70,7 +70,7 @@ const Contact = () => {
                 />
 
                 <aside
-                  className="mt-8 rounded-sm border border-border/40 grain-texture shadow-contact overflow-hidden"
+                  className="mt-8 rounded-sm border border-border/40 grain-texture overflow-hidden"
                   style={{ borderLeft: `2px solid hsl(var(--cedar) / ${bronzeStep(0, ROW_COUNT)})` }}
                   aria-label="Direct contact details"
                 >

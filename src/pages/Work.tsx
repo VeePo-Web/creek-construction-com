@@ -59,18 +59,13 @@ const Work = () => {
         height="84vh"
         minHeight="640px"
       >
-        <div className="flex flex-col gap-5">
-          <CedarCTA />
-          <span className="text-[10px] tracking-[0.25em] uppercase text-evergreen-foreground/45">
-            Sister studios · B&amp;P Saunas · Hickory&nbsp;&amp;&nbsp;Rose
-          </span>
-        </div>
+        <CedarCTA />
       </PageHero>
 
       {/* Featured editorial galleries — real photographed projects */}
       {PROJECTS.length > 0 && (
         <section id="section-featured" className={`${SECTION_PADDING.default}`} aria-labelledby="featured-heading">
-          <div className="container mx-auto px-6">
+          <div className="container mx-auto px-5 sm:px-6">
             <div className={`${MAX_WIDTH.wide} mx-auto`}>
               <SectionHeader
                 label="FEATURED PROJECT"
@@ -106,7 +101,7 @@ const Work = () => {
 
       {/* Service-category placeholder grid — replaced as real photos arrive */}
       <section id="section-gallery" className={`${SECTION_PADDING.default} bg-secondary`} aria-labelledby="gallery-heading">
-        <div className="container mx-auto px-6">
+        <div className="container mx-auto px-5 sm:px-6">
           <div className={`${MAX_WIDTH.wide} mx-auto`}>
             <SectionHeader
               label="MORE WORK"
@@ -115,7 +110,7 @@ const Work = () => {
               subheading="Click any category to request a quote for similar work."
             />
 
-            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 mt-12 [&>*:nth-child(5)]:lg:col-start-2" role="list">
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 mt-12 md:[&>*:nth-child(5)]:hidden lg:[&>*:nth-child(5)]:block lg:[&>*:nth-child(5)]:col-start-2" role="list">
               {PLACEHOLDERS.map((w, i) => (
                 <ProjectTile
                   key={i}

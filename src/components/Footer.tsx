@@ -23,8 +23,8 @@ const Footer = () => {
       role="contentinfo"
       className="bg-evergreen text-evergreen-foreground"
     >
-      <div className="container mx-auto px-6 py-10 md:py-12">
-        <div className="max-w-6xl mx-auto flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6 lg:border-t lg:border-evergreen-foreground/10 lg:pt-8">
+      <div className="container mx-auto px-5 sm:px-6 py-10 md:py-12">
+        <div className="max-w-6xl mx-auto flex flex-col xl:flex-row xl:items-center xl:justify-between gap-5 lg:gap-8 xl:border-t xl:border-evergreen-foreground/10 xl:pt-8">
           <Link to="/" className="flex items-center gap-3 group">
             <img src={logo} alt="" width={36} height={36} className="h-9 w-9 object-contain" />
             <span className="font-serif text-base leading-none group-hover:text-cedar transition-colors">
@@ -47,7 +47,7 @@ const Footer = () => {
             </ul>
           </nav>
 
-          <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-5 text-sm">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:gap-6 text-sm">
             <a
               href={`tel:${CONTACT.phoneTel}`}
               className="text-evergreen-foreground/80 hover:text-cedar transition-colors"
