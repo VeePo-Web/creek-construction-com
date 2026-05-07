@@ -70,7 +70,7 @@ const Contact = () => {
                 />
 
                 <aside
-                  className="mt-8 rounded-sm border border-border/40 grain-texture shadow-contact overflow-hidden"
+                  className="mt-8 rounded-sm border border-border/40 grain-texture overflow-hidden"
                   style={{ borderLeft: `2px solid hsl(var(--cedar) / ${bronzeStep(0, ROW_COUNT)})` }}
                   aria-label="Direct contact details"
                 >
