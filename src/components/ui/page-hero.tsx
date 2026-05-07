@@ -865,7 +865,7 @@ const ArchitectBleed = (props: ArchitectBleedProps) => {
       </div>
 
       {/* ── Middle: oversized light serif headline ── */}
-      <div className="container mx-auto px-6 relative z-10 flex-1 flex items-center">
+      <div className="container mx-auto px-5 sm:px-6 md:px-10 relative z-10 flex-1 flex items-center">
         <div className="max-w-[14ch] sm:max-w-[18ch] md:max-w-[20ch]">
           <h1
             aria-label={[...lines, props.italic].filter(Boolean).join(" ")}
