@@ -177,7 +177,7 @@ const FeaturedProjects = ({ background = "background" }: FeaturedProjectsProps =
           {has6 ? (
             <>
               {/* Row 1 — asymmetric 60/40: lead + 2 stacked */}
-              <div className="grid md:grid-cols-5 gap-6 md:gap-8 mb-8 md:mb-10">
+              <div className="grid md:grid-cols-5 gap-6 md:gap-8 mb-10 md:mb-14">
                 <div className="md:col-span-3">
                   <ProjectCard project={lead} variant="lead" index={0} />
                 </div>
