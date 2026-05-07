@@ -26,7 +26,7 @@ const Services = () => {
       className={`${SECTION_PADDING.default} bg-background`}
       aria-labelledby="services-heading"
     >
-      <div className="container mx-auto px-6">
+      <div className="container mx-auto px-5 sm:px-6">
         <div ref={ref} className={`${MAX_WIDTH.wide} mx-auto ${cls}`} style={style}>
           <div className="mb-16">
             <SectionHeader
