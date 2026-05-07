@@ -24,7 +24,7 @@ const Footer = () => {
       className="bg-evergreen text-evergreen-foreground"
     >
       <div className="container mx-auto px-6 py-10 md:py-12">
-        <div className="max-w-6xl mx-auto flex flex-col md:flex-row md:items-center md:justify-between gap-6">
+        <div className="max-w-6xl mx-auto flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6 lg:border-t lg:border-evergreen-foreground/10 lg:pt-8">
           <Link to="/" className="flex items-center gap-3 group">
             <img src={logo} alt="" width={36} height={36} className="h-9 w-9 object-contain" />
             <span className="font-serif text-base leading-none group-hover:text-cedar transition-colors">
@@ -47,7 +47,7 @@ const Footer = () => {
             </ul>
           </nav>
 
-          <div className="flex items-center gap-5 text-sm">
+          <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-5 text-sm">
             <a
               href={`tel:${CONTACT.phoneTel}`}
               className="text-evergreen-foreground/80 hover:text-cedar transition-colors"
@@ -56,7 +56,7 @@ const Footer = () => {
             </a>
             <a
               href={`mailto:${CONTACT.email}`}
-              className="text-evergreen-foreground/80 hover:text-cedar transition-colors hidden sm:inline"
+              className="text-evergreen-foreground/80 hover:text-cedar transition-colors"
             >
               {CONTACT.email}
             </a>
@@ -64,7 +64,7 @@ const Footer = () => {
         </div>
 
         <div className="max-w-6xl mx-auto mt-8 pt-6 border-t border-evergreen-foreground/10 text-center">
-          <p className="text-xs text-evergreen-foreground/45">
+          <p className="text-xs text-evergreen-foreground/55">
             © {new Date().getFullYear()} Creek Construction · Calgary · Edmonton
           </p>
         </div>
