@@ -79,7 +79,7 @@ const Contact = () => {
                     className="flex items-center gap-4 px-5 py-5 min-h-[44px] hover:bg-cedar/[0.03] transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cedar focus-visible:ring-inset group/row"
                   >
                     <div className="shrink-0 w-9 h-9 rounded-sm bg-cedar/10 flex items-center justify-center">
-                      <Phone className="h-4 w-4 text-cedar" aria-hidden />
+                      <Phone className="h-3.5 w-3.5 text-cedar" aria-hidden />
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className="text-[10px] tracking-[0.2em] uppercase text-muted-foreground/60">Call or Text · Reply in 24–48&nbsp;hours</p>
@@ -96,7 +96,7 @@ const Contact = () => {
                     className="flex items-center gap-4 px-5 py-5 min-h-[44px] hover:bg-cedar/[0.03] transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cedar focus-visible:ring-inset group/row"
                   >
                     <div className="shrink-0 w-9 h-9 rounded-sm bg-cedar/10 flex items-center justify-center">
-                      <Mail className="h-4 w-4 text-cedar" aria-hidden />
+                      <Mail className="h-3.5 w-3.5 text-cedar" aria-hidden />
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className="text-[10px] tracking-[0.2em] uppercase text-muted-foreground/60">Email</p>
@@ -110,7 +110,7 @@ const Contact = () => {
 
                   <div className="flex items-start gap-4 px-5 py-5">
                     <div className="shrink-0 w-9 h-9 rounded-sm bg-cedar/10 flex items-center justify-center">
-                      <MapPin className="h-4 w-4 text-cedar" aria-hidden />
+                      <MapPin className="h-3.5 w-3.5 text-cedar" aria-hidden />
                     </div>
                     <div className="flex-1">
                       <p className="text-[10px] tracking-[0.2em] uppercase text-muted-foreground/60 mb-1">Service Areas</p>
