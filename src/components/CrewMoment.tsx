@@ -40,7 +40,7 @@ const CrewMoment = ({
 
   const inner = (
     <div ref={ref} className={`${MAX_WIDTH.wide} mx-auto ${cls}`} style={style}>
-      <div className={`grid md:grid-cols-[5fr_7fr] ${GRID_GAP.editorial} items-center`}>
+      <div className={`grid lg:grid-cols-[5fr_7fr] ${GRID_GAP.editorial} items-center`}>
         <MediaSlot
           query={{
             shot_type: ["process", "detail", "interior"],
@@ -48,7 +48,7 @@ const CrewMoment = ({
             min_quality: "reference",
           }}
           sizes={MEDIA_SIZES.PORTRAIT_HALF}
-          wrapperClassName="aspect-[4/5] md:aspect-portrait w-full rounded-sm overflow-hidden"
+          wrapperClassName="aspect-[4/5] md:aspect-[3/4] lg:aspect-portrait w-full rounded-sm overflow-hidden"
           cedarHover
           fallbackVariant="cedar"
           fallbackCaption="On the boards · Alberta"
