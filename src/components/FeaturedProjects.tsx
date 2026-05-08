@@ -162,7 +162,7 @@ const FeaturedProjects = ({ background = "background" }: FeaturedProjectsProps =
       className={`${SECTION_PADDING.default} ${background === "secondary" ? "bg-secondary" : "bg-background"} relative`}
       aria-labelledby="featured-heading"
     >
-      <div className="container mx-auto px-5 sm:px-6">
+      <div className="container mx-auto max-w-[1440px] px-5 sm:px-6">
         <div ref={ref} className={`max-w-7xl mx-auto ${cls}`} style={style}>
           <div className="mb-12 md:mb-16">
             <SectionHeader
