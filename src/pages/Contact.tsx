@@ -45,11 +45,11 @@ const Contact = () => {
             {/* Headline strip */}
             <div className="text-center max-w-3xl mx-auto mb-10 md:mb-14">
               <p className="text-[10px] tracking-[0.25em] uppercase text-cedar mb-4">
-                GET A FREE QUOTE
+                FREE QUOTE
               </p>
               <h1
                 id="contact-heading"
-                className="font-serif text-[32px] sm:text-4xl lg:text-[56px] text-foreground leading-[1.05] tracking-[-0.025em] text-balance"
+                className="font-serif text-[32px] sm:text-4xl md:text-[44px] lg:text-[56px] text-foreground leading-[1.05] lg:leading-[1.02] tracking-[-0.025em] text-pretty"
               >
                 Tell us what you’re building.
               </h1>
