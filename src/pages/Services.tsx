@@ -79,7 +79,7 @@ const Services = () => {
                   <div key={group.id} className="contents">
                     <div aria-labelledby={`group-${group.id}`}>
                       <div
-                        className="pb-4 mb-6 border-b"
+                        className="pb-3 mb-5 md:pb-4 md:mb-6 border-b"
                         style={{ borderBottomColor: `hsl(var(--cedar) / ${opacity})` }}
                       >
                         <h3
