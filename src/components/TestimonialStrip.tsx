@@ -94,7 +94,8 @@ const TestimonialStrip = ({
   return (
     <section
       id="section-testimonials"
-      className={`${SECTION_PADDING.default} ${background === "secondary" ? "bg-secondary" : "bg-background"} ${topRule ? "border-t border-cedar/8" : ""}`}
+      className={`${SECTION_PADDING.default} ${background === "secondary" ? "bg-secondary" : "bg-background"} ${topRule ? "border-t border-transparent" : ""}`}
+      style={topRule ? { borderImage: "linear-gradient(90deg, transparent 0%, hsl(var(--cedar) / 0.28) 50%, transparent 100%) 1" } : undefined}
       aria-labelledby={headingId}
     >
       <div className="container mx-auto px-5 sm:px-6">{inner}</div>
