@@ -50,7 +50,7 @@ const Services = () => {
                   onClick={() => openModal(groupItemIds)}
                   role="listitem"
                   aria-label={`Get my free quote — ${group.title}`}
-                  className="group w-full text-left flex flex-col items-stretch overflow-hidden rounded-sm transition-[background-color] duration-300 hover:bg-cedar/[0.03] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cedar focus-visible:ring-offset-2 cursor-pointer min-h-[280px] lg:min-h-[320px] border border-border/40"
+                  className="group w-full text-left flex flex-col items-stretch overflow-hidden rounded-sm transition-[background-color] duration-300 hover:bg-cedar/[0.03] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cedar focus-visible:ring-offset-2 cursor-pointer border border-border/40"
                   style={{
                     borderLeftWidth: "3px",
                     borderLeftColor: `hsl(var(--cedar) / ${opacity})`,
@@ -64,7 +64,7 @@ const Services = () => {
                     }}
                     sizes={MEDIA_SIZES.THIRD}
                     wrapperClassName="w-full aspect-hero relative overflow-hidden"
-                    className="transition-transform duration-[1.2s] group-hover:scale-[1.04]"
+                    className="transition-transform duration-[1.2s] group-hover:scale-[1.025]"
                     fallbackVariant="stone"
                     fallbackIcon={Icon}
                     fallbackCaption={`${group.title} · Alberta`}
@@ -76,7 +76,7 @@ const Services = () => {
                       aria-hidden
                       strokeWidth={1.5}
                     />
-                    <h3 className="font-serif text-2xl text-foreground mb-2 transition-colors duration-300 group-hover:text-cedar">
+                    <h3 className="font-serif text-2xl text-foreground mb-3 transition-colors duration-300 group-hover:text-cedar">
                       {group.title}
                     </h3>
                     <p className="text-sm text-muted-foreground leading-relaxed line-clamp-2">
