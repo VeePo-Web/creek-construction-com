@@ -26,8 +26,10 @@ const HeroProofBand = () => (
     aria-label="Creek Construction credentials"
     className="border-b border-cedar/12 bg-background"
   >
-    <div className="container mx-auto px-5 sm:px-6 py-7 md:py-8 lg:py-10">
-      <StatTrio items={STATS} variant="inline" />
+    <div className="container mx-auto max-w-[1440px] px-5 sm:px-6 py-7 md:py-8 lg:py-10">
+      <div className="max-w-5xl mx-auto">
+        <StatTrio items={STATS} variant="inline" />
+      </div>
     </div>
   </section>
 );
