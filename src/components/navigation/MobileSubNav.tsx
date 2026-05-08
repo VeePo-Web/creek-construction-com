@@ -80,7 +80,7 @@ const MobileSubNav = ({ faded = false }: MobileSubNavProps) => {
           )}
         >
           <ChevronLeft className="h-3.5 w-3.5" aria-hidden />
-          <span className="text-cedar">{meta.label}</span>
+          <span className="text-cedar">{meta.parent ?? meta.label}</span>
         </Link>
 
         {/* Right — section anchors. Horizontally scrollable with fade mask
