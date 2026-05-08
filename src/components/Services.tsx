@@ -38,7 +38,7 @@ const Services = () => {
             />
           </div>
 
-          <div className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 ${GRID_GAP.default} sm:[&>*:nth-child(5)]:col-span-2 sm:[&>*:nth-child(5)]:max-w-[calc(50%-1rem)] sm:[&>*:nth-child(5)]:mx-auto lg:[&>*:nth-child(5)]:col-span-1 lg:[&>*:nth-child(5)]:max-w-none lg:[&>*:nth-child(5)]:col-start-2 lg:[&>*:nth-child(5)]:mx-0`} role="list">
+          <div className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 ${GRID_GAP.default} sm:[&>*:nth-child(5)]:max-w-[calc(50%-1rem)] sm:[&>*:nth-child(5)]:mx-auto lg:[&>*:nth-child(5)]:max-w-none lg:[&>*:nth-child(5)]:col-start-2 lg:[&>*:nth-child(5)]:mx-0`} role="list">
             {SERVICE_GROUPS.map((group, i) => {
               const Icon = group.icon;
               const opacity = bronzeStep(i, SERVICE_GROUPS.length);
