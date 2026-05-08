@@ -1,66 +1,65 @@
-# Pass 20 — Sub-Page Mobile Hero Cleanup + Wayfinding Affordance
+# Pass 21 — Sub-Page Hero Void (Final Fix) + Cross-Viewport Polish
 
-A 390×844 audit across `/services`, `/work`, `/about`, `/contact` surfaces three classes of friction that together break the "simple, clean, minimalistic" promise on every sub-page hero. Pass 20 is a focused presentation pass that fixes them.
+Pass 20 closed most of the mobile sub-page issues, but a desktop screenshot at 1366×768 of `/services` exposes the true root cause of the lingering "black void above the hero photo" — and shows it's worst on desktop, not mobile.
 
 ```text
-   What the audit shows on /services and /work (mobile, top of page)
+   /services at 1366×768 (current state)
 
-   ┌────────────────────────────────────┐  ← header chrome (h-14)
-   │  CREEK   QUOTE  ☰                  │
-   ├────────────────────────────────────┤  ← MobileSubNav (h-10)
-   │  ‹ SERVICES   CATALOGUE · CONTRACT · F…│  REVIEWS / FAQ truncated, no fade
-   ├────────────────────────────────────┤
-   │                                    │
-   │                                    │  ← ~150px of dead black void
-   │                                    │     (hero scrim with no content)
-   │                                    │
-   ├────────────────────────────────────┤
-   │  [hero photograph begins here]     │
-   │  …                                 │
+   ┌──────────────────────────────────────────────────┐  cream chrome
+   │  CREEK   HOME / SERVICES …   (780)   QUOTE   ☰   │
+   ├──────────────────────────────────────────────────┤
+   │░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░│  ← ~150 px of pure
+   │░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░│     black above the
+   │░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░│     triptych — the
+   ├────────┬────────────┬────────────┬────────────┐  │     grid row collapses
+   │ deck A │ man+wood B │  shed C    │  …        │  │     to its (zero-height)
+   │        │            │            │           │  │     auto content.
 ```
+
+The fix is one change in `HeroTriptych`, plus carry-on cleanup on tablet, and 4 more cross-viewport polish items.
 
 Scope is presentational only. No data, schema, or business logic.
 
-## A. Sub-page hero — remove the dead black void above the photo
+## A. Triptych grid no longer collapses (root cause of /services void)
 
-**Root cause.** `ServicePortrait` (`/services`) and `CinematicBleed` (`/work`) reserve `min-h-[78–82vh] / 620px+` and use `flex items-end` so content sticks to the bottom. The chrome (h-14) + sub-nav (h-10) overlay the top 96px of the section, but the hero composition (`HeroTriptych` for `/services`, single photo for `/work`) doesn't extend to the very top — leaving a long black gap below the sub-nav before the imagery starts. On `/about` (`evergreen-typographic`) the photograph fills the section so the bug doesn't appear there.
+**Diagnosis.** `HeroTriptych`'s outer `<div className="absolute inset-0 grid">` only declares `grid-template-columns`. With no `grid-template-rows` and no row-defining child (every column's media is `<img absolute inset-0>` which contributes 0 to flow height), the implicit row collapses. `TriptychColumn`'s `h-full` then resolves against that 0-height row, so the column box shrinks. The columns end up vertically centered inside the section because `flex items-end` on the section pulls everything bottom-anchored, leaving a tall void above the columns.
 
-1. **Pull the hero photo to true full-bleed** in `ServicePortrait` and `CinematicBleed`. Add `top: 0` / `inset-0` confirmation and verify the `<HeroTriptych>` and `<img>` elements are explicitly `absolute inset-0 w-full h-full object-cover` with no parent that pads the top.
-2. **Add a top scrim band** (`<div className="absolute inset-x-0 top-0 h-32 md:h-40 pointer-events-none" style={{ background: "linear-gradient(180deg, hsl(0 0% 0% / 0.55), transparent)" }} />`) so the chrome + sub-nav sits over a graded photo wash instead of a void. This matches the architect-bleed treatment.
-3. **Cap mobile hero height** on these variants to `min-h-[68vh]` (was 78vh / 620px+) so the photo dominates the fold without forcing the user to scroll past dead space. Tablet stays `md:min-h-[78vh]`, desktop `lg:min-h-[720px]`.
-4. **Apply the same `max-w-[1440px]`** container cap inside both variants for parity with Pass 19's site-wide editorial baseline.
+1. **Add `grid-template-rows: 1fr`** (or `grid-auto-rows: 1fr`) and `h-full` on the grid container in `src/components/media/HeroTriptych.tsx`. This guarantees the single grid row spans the full section height, and every `TriptychColumn` then truly fills `inset-0`.
+2. **Belt-and-suspenders:** make `TriptychColumn`'s root `relative h-full min-h-full w-full` so any browser quirks can't shrink the cell below the grid row height.
+3. **Mobile-only branch.** The `<div className="md:hidden absolute inset-0">` wrapper is fine (already `inset-0`), but its child `TriptychColumn` was inheriting `bg-secondary` and a `relative` box that was sized by the column's intrinsic 0 height. With change #2 applied universally, the mobile single-image branch will also fully fill the section — closing the residual ~40 px gap visible on `/services` mobile.
+4. **Verify no ripple effect on the homepage** (`Hero.tsx` does NOT use HeroTriptych — it uses `architect-bleed`), so the change is scoped to the two sub-pages that consume it: `/services` and `/about`.
 
-## B. MobileSubNav — fix the right-edge clipping
+## B. Sub-page hero subtitle — final legibility pass
 
-**Root cause.** The right-side anchor list uses `overflow-x-auto no-scrollbar -mr-1` so longer chip-sets ("FEATURED · GALLERY · REVIEWS", "CATALOGUE · CONTRACT · FAQ") visibly truncate without any fade or scroll affordance — users see "REVIE…" or "F…" and assume it's broken layout, not scrollable.
+5. **`/work` subtitle** ("Selected projects across Calgary, Edmonton, and the towns in between.") is italic serif over a bright daylight photo. Pass 20 already added `not-italic md:italic font-sans md:font-serif text-balance` on mobile. Extend the `cinematicTop` scrim usage:
+   - In `CinematicBleed`, swap the bottom-only scrim for a **two-stop scrim**: keep the bottom heavy gradient AND add `SCRIM.cinematicTop` over the upper 40% so eyebrow + headline read clean regardless of photo brightness.
+   - Bump subtitle color from `text-evergreen-foreground/90` to `text-white/95` and add `text-shadow: 0 1px 6px hsl(0 0% 0% / 0.55)` (via inline style) for guaranteed contrast on bright photos.
+6. **`/services` subtitle** sits over the deck-photo light wood — same prescription: ensure the bottom scrim h-[78%] applies on mobile (already added) and tighten subtitle to `font-sans md:font-serif text-base md:text-lg leading-snug`.
 
-5. **Add a fade mask** on the right edge of the scroll container: `mask-image: linear-gradient(to right, black calc(100% - 24px), transparent)` (with `WebkitMaskImage` fallback). The fade signals "more content here" without adding chrome.
-6. **Increase right padding** to `pr-3` on the scroll container so the last chip can breathe past the fade boundary.
-7. **Snap-scroll** the chip strip with `scroll-snap-type: x proximity` and `scroll-snap-align: end` per chip so a swipe lands cleanly on the next chip.
-8. **Honor active section.** When `useActiveSection` returns an anchor that's outside the visible scroll window, programmatically scroll the active chip into view (`scrollIntoView({ inline: "center", block: "nearest", behavior: "smooth" })`) inside a `useEffect` keyed on `active`.
+## C. Sub-bar / chip rail consistency
 
-## C. Hero subtitle legibility on bright photos
+7. **`/work` chip rail** ("FEATURED · GALLERY · REVIEWS") and `/services` ("CATALOGUE · CONTRACT · FAQ") now display correctly thanks to the fade mask, but the active-chip auto-scroll uses `scrollIntoView({ inline: "center" })` which on iOS Safari can scroll the parent page instead of just the inner scroller. Wrap the call in `requestAnimationFrame` and pass an explicit `block: "nearest"` plus prefer `el.parentElement?.scrollTo({ left: el.offsetLeft - el.parentElement.clientWidth/2 + el.clientWidth/2, behavior: "smooth" })` so only the chip strip scrolls.
+8. **Sub-bar parent route chevron.** "‹ SERVICES" / "‹ OUR WORK" should not duplicate the route the user is on. Change the back chip label semantics: use the parent's label (e.g. "‹ Home") on routes where the breadcrumb already reads as the current page. The `route-meta.ts` registry already supplies `parentLabel`; consume that here instead of `meta.label`.
 
-**Root cause.** `CinematicBleed` and `ServicePortrait` render the subtitle as `text-lg italic font-serif text-evergreen-foreground/90` with only `TEXT.onDark.legibleShadow`. On `/work` ("Selected projects across Calgary…") the italic serif against a sun-lit photograph reads as visual noise — the editorial italic was conceived against the architect's deep scrim, not a bright daylight image.
+## D. Tablet (820 × 1180) audit fixes
 
-9. **Strengthen the bottom scrim** in `CinematicBleed` from `h-[68%]` → `h-[78%] md:h-[72%]` and bump the gradient bottom-stop opacity from current to `0.66` so subtitles ride on a denser dark wash.
-10. **Subtitle treatment** stays italic serif on desktop, but on mobile drop italic and switch to `font-sans text-base/relaxed text-white/85 not-italic` so legibility wins over flourish at small sizes. Implement via `class="italic md:italic font-serif"` + responsive override.
-11. **Add `text-balance`** to the subtitle so the line break is centered rather than orphaning a single word ("between." on /work currently dangles alone visually).
+9. **Tablet sub-nav.** At 820, MobileSubNav still applies (it's `md:hidden`, where md=768). Tailwind's `md` is 768, so 820 is `md+`. That means at 820 we should see the desktop nav. Confirm and, if MobileSubNav appears at 820 due to a custom breakpoint, raise its hide threshold to `lg:hidden` so tablets get the proper desktop chrome.
+10. **Hero on tablet.** ServicePortrait min-h tier `md:min-h-[78vh]` at 820×1180 = ~920 px hero — too tall for a portrait tablet. Add an `md:min-h-[640px] lg:min-h-[720px]` clamp so portrait tablets don't dedicate the entire fold to the hero photo.
 
-## D. Sub-page hero — shared rhythm with the homepage architect
+## E. Cross-page micro-polish
 
-12. **Section padding parity.** `/services` uses `pb-20 md:pb-24 pt-24 md:pt-28 lg:pt-32` while `/work` uses `pb-14 md:pb-20 lg:pb-24`. Standardize both to `pt-28 md:pt-36 pb-16 md:pb-24 lg:pb-28` so the hero rhythm is identical across sub-pages.
-13. **BronzeRule + headline gap.** The `mb-6` between BronzeRule and KineticHeadline reads tight on mobile where the rule is narrow. Bump to `mb-5 md:mb-7`.
-14. **Caption rail (CinematicBleed).** The bottom caption sits at `mt-10 pt-6 border-t` — on a 390 viewport this caption stacks below already-tight CTA stack and feels disconnected. Switch to `mt-8 pt-5` and reduce border opacity to `border-evergreen-foreground/10` for a quieter mark.
-
-## E. Homepage mobile hero — micro-pass
-
-15. **Eyebrow rule width.** "EXTERIOR CONSTRUCTION" sits next to a `w-10 md:w-16` rule. At 390 the rule is ~32% of the eyebrow width — visually balanced. Keep, but lift the eyebrow's letter-spacing slightly (`0.22em` → `0.24em`) for editorial precision at large clamps.
-16. **Sub-photo caption position.** "SHEDS · A CALGARY DRIVEWAY" sits centered at the bottom of the hero on mobile. Right-align it (`text-right`) so it mirrors the desktop layout and reads as provenance metadata instead of as a centered marketing tagline.
+11. **Footer mobile.** The footer link row (`Home · Services · Work · About · Contact`) is centered with `gap-x-7` at md+ but on mobile collapses to `gap-x-4`. At 360 px viewports the labels touch the edge. Wrap in `flex-wrap justify-center gap-y-2` and reduce mobile gap to `gap-x-5` for cleaner stacking.
+12. **QuoteCloserCard mobile bottom padding.** The trust strip sits 32 px above the cream surface end; the card itself ends abruptly into the footer. Add `pb-12 md:pb-16 lg:pb-20` on the closer's outer wrapper so the card visually breathes before the footer rule.
+13. **Body line-length cap on About / Services prose blocks.** Long paragraphs run to 90+ characters on tablet. Wrap prose with `max-w-[68ch]` on `<p>` to enforce editorial line-length.
+14. **Service catalogue rows on `/services`.** "Check ✓" icons sit at `h-4 w-4` and use `text-cedar`; on mobile they overlap the row text vertical baseline. Add `mt-0.5 shrink-0` to align icons with the cap-height of the first text line.
 
 ## F. Files touched
 
-- `src/components/ui/page-hero.tsx` — `CinematicBleed`, `ServicePortrait` (top scrim, full-bleed verification, height cap, padding parity, container cap, subtitle responsive treatment, caption-rail tightening, BronzeRule gap), `ArchitectBleed` (eyebrow letter-spacing tweak, mobile caption alignment).
-- `src/components/navigation/MobileSubNav.tsx` — fade mask, scroll-snap, active-chip scrollIntoView, padding.
+- `src/components/media/HeroTriptych.tsx` — grid row sizing fix (#1, #2), no behavior change for callers.
+- `src/components/ui/page-hero.tsx` — `CinematicBleed` two-stop scrim + subtitle text-shadow (#5), `ServicePortrait` subtitle leading (#6), `ServicePortrait` tablet min-h clamp (#10).
+- `src/components/navigation/MobileSubNav.tsx` — local `scrollTo` math instead of `scrollIntoView` (#7), parent-label consumption (#8), tablet hide threshold check (#9 — likely no-op).
+- `src/components/Footer.tsx` — link-row wrap (#11).
+- `src/components/QuoteCloserCard.tsx` — bottom padding (#12).
+- `src/pages/About.tsx`, `src/pages/Services.tsx` — prose `max-w-[68ch]` (#13), service row icon alignment (#14).
 
 No new files. No deletions. No schema. No business logic.
