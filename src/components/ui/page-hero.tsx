@@ -445,10 +445,14 @@ const CinematicBleed = (props: CinematicBleedProps) => {
 
   return (
     <section
-      className={cn("relative overflow-hidden flex items-end", props.className)}
+      className={cn(
+        "relative overflow-hidden flex items-end",
+        "min-h-[68vh] md:min-h-[78vh] lg:min-h-[720px] xl:min-h-[780px]",
+        props.className,
+      )}
       style={{
-        height: props.height ?? "82vh",
-        minHeight: props.minHeight ?? "620px",
+        ...(props.height ? { height: props.height } : null),
+        ...(props.minHeight ? { minHeight: props.minHeight } : null),
         contain: "layout style paint",
       }}
       aria-label={lines.join(" ")}
@@ -498,17 +502,21 @@ const CinematicBleed = (props: CinematicBleedProps) => {
       {/* Cinematic vignette stack */}
       <div className="absolute inset-0" style={{ background: BACKDROP.cinematicVignette }} aria-hidden />
       <div className="absolute inset-0 pointer-events-none" style={{ background: BACKDROP.cinematicRadial }} aria-hidden />
-      {/* Bottom-anchored scrim — content lives at the bottom (flex items-end),
-          so the heavy black needs to live there too. Covers the eyebrow →
-          headline → subtitle → provenance band in ≥45% black. */}
+      {/* Top scrim — keeps fixed chrome legible over photography (no dead void). */}
       <div
-        className="absolute inset-x-0 bottom-0 h-[68%] pointer-events-none"
+        className="absolute inset-x-0 top-0 h-32 md:h-40 pointer-events-none"
+        style={{ background: "linear-gradient(180deg, hsl(0 0% 0% / 0.55), transparent)" }}
+        aria-hidden
+      />
+      {/* Bottom-anchored scrim — heavier so subtitle reads on bright photos. */}
+      <div
+        className="absolute inset-x-0 bottom-0 h-[78%] md:h-[72%] pointer-events-none"
         style={{ background: SCRIM.bottom }}
         aria-hidden
       />
 
       {/* Content */}
-      <div className="container mx-auto px-5 sm:px-6 md:px-10 relative z-10 pb-14 md:pb-20 lg:pb-24">
+      <div className="container mx-auto max-w-[1440px] px-5 sm:px-6 md:px-10 relative z-10 pt-28 md:pt-36 pb-16 md:pb-24 lg:pb-28">
         <div className="max-w-3xl">
           {/* Breadcrumb intentionally omitted — HeaderBreadcrumb in the
               chrome owns sub-page wayfinding so the hero photo stays clean. */}
@@ -517,7 +525,7 @@ const CinematicBleed = (props: CinematicBleedProps) => {
             numeral={props.numeral}
             label={props.sectionLabel}
             variant="onDark"
-            className="mb-6 hero-rule-draw"
+            className="mb-5 md:mb-7 hero-rule-draw"
           />
 
           <KineticHeadline
@@ -530,7 +538,8 @@ const CinematicBleed = (props: CinematicBleedProps) => {
           {props.subtitle && (
             <p
               className={cn(
-                "mt-6 text-lg md:text-xl italic font-serif max-w-xl",
+                "mt-6 max-w-xl text-base md:text-xl leading-relaxed md:leading-normal",
+                "not-italic md:italic font-sans md:font-serif text-balance",
                 "text-evergreen-foreground/90",
                 TEXT.onDark.legibleShadow,
               )}
@@ -550,7 +559,7 @@ const CinematicBleed = (props: CinematicBleedProps) => {
 
           {captionLine && (
             <div
-              className="mt-10 pt-6 border-t border-evergreen-foreground/15 hero-provenance-enter"
+              className="mt-8 pt-5 border-t border-evergreen-foreground/10 hero-provenance-enter"
               style={{ ["--kinetic-delay" as never]: "1700ms" }}
             >
               <p className="text-[10px] tracking-[0.25em] uppercase text-evergreen-foreground/60 tabular-nums">
@@ -585,7 +594,7 @@ const ServicePortrait = (props: ServicePortraitProps) => {
     <section
       className={cn(
         "relative overflow-hidden text-evergreen-foreground",
-        "min-h-[78vh] md:min-h-[82vh] flex items-end",
+        "min-h-[68vh] md:min-h-[78vh] lg:min-h-[720px] xl:min-h-[780px] flex items-end",
         props.className,
       )}
       aria-label={lines.join(" ")}
@@ -593,7 +602,7 @@ const ServicePortrait = (props: ServicePortraitProps) => {
       <HeroTriptych
         queries={triptychQueries}
         rhythm="equal"
-        scrim="left"
+        scrim="bottom"
         priority
         fallbackCaptions={[
           "Decks · Calgary",
@@ -602,7 +611,9 @@ const ServicePortrait = (props: ServicePortraitProps) => {
         ]}
       />
 
-      <div className="container mx-auto px-5 sm:px-6 md:px-10 relative z-10 pb-20 md:pb-24 pt-24 md:pt-28 lg:pt-32">
+      {/* Top scrim provided by HeroTriptych (SCRIM.topNav + SCRIM.mobileTop). */}
+
+      <div className="container mx-auto max-w-[1440px] px-5 sm:px-6 md:px-10 relative z-10 pt-28 md:pt-36 pb-16 md:pb-24 lg:pb-28">
         <div className="max-w-3xl">
           {/* Breadcrumb intentionally omitted — see CinematicBleed for the
               same rationale. HeaderBreadcrumb owns sub-page wayfinding. */}
@@ -611,7 +622,7 @@ const ServicePortrait = (props: ServicePortraitProps) => {
             numeral={props.numeral}
             label={props.sectionLabel}
             variant="onDark"
-            className="mb-6 hero-rule-draw"
+            className="mb-5 md:mb-7 hero-rule-draw"
           />
 
           <KineticHeadline
@@ -624,7 +635,9 @@ const ServicePortrait = (props: ServicePortraitProps) => {
           {props.subtitle && (
             <p
               className={cn(
-                "mt-6 text-lg italic font-serif max-w-xl text-evergreen-foreground/90",
+                "mt-6 max-w-xl text-base md:text-lg leading-relaxed",
+                "not-italic md:italic font-sans md:font-serif text-balance",
+                "text-evergreen-foreground/90",
                 TEXT.onDark.legibleShadow,
               )}
             >
@@ -855,7 +868,7 @@ const ArchitectBleed = (props: ArchitectBleedProps) => {
             className="text-[10px] md:text-[11px] uppercase tabular-nums"
             style={{
               color: "hsl(0 0% 100% / 0.82)",
-              letterSpacing: "0.22em",
+              letterSpacing: "0.24em",
               fontFamily: "var(--font-sans, 'DM Sans', system-ui, sans-serif)",
             }}
           >
@@ -962,7 +975,7 @@ const ArchitectBleed = (props: ArchitectBleedProps) => {
           </div>
 
           {captionLine && (
-            <div className="md:col-span-5 lg:col-span-5 md:text-right md:mt-2">
+            <div className="md:col-span-5 lg:col-span-5 text-right md:mt-2">
               <div
                 className="inline-flex items-center gap-3 hero-provenance-enter"
                 style={{ ["--kinetic-delay" as never]: "1600ms" }}
