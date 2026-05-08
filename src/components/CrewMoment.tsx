@@ -51,7 +51,7 @@ const CrewMoment = ({
             min_quality: "reference",
           }}
           sizes={MEDIA_SIZES.PORTRAIT_HALF}
-          wrapperClassName="aspect-[5/4] sm:aspect-[4/5] md:aspect-[3/4] lg:aspect-portrait w-full rounded-sm overflow-hidden"
+          wrapperClassName="aspect-[5/4] sm:aspect-[4/5] w-full rounded-sm overflow-hidden"
           cedarHover
           fallbackVariant="cedar"
           fallbackCaption="On the boards · Alberta"
@@ -74,7 +74,7 @@ const CrewMoment = ({
           </div>
           {showStats && (
             <div
-              className="mt-10 pt-8 border-t border-cedar/15 grid grid-cols-3 gap-4"
+              className="mt-10 pt-8 border-t border-cedar/15 grid grid-cols-3 gap-6 md:gap-8"
               role="group"
               aria-label="Creek by the numbers"
             >

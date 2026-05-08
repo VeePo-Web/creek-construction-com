@@ -37,7 +37,7 @@ const QuoteCloserCard = ({
 }: QuoteCloserCardProps) => {
   const card = (
     <div
-      className="rounded-sm overflow-hidden relative md:grain-texture before:content-[''] before:absolute before:left-0 before:top-0 before:bottom-0 before:w-[2px] md:before:w-[3px] before:bg-cedar"
+      className="rounded-sm overflow-hidden relative md:grain-texture before:content-[''] before:absolute before:left-0 before:top-0 before:bottom-0 before:w-[3px] before:bg-cedar"
       style={{
         background: BACKDROP.evergreenCard,
       }}
@@ -46,7 +46,7 @@ const QuoteCloserCard = ({
         <p className="text-[10px] tracking-[0.25em] uppercase text-cedar/80 mb-4">
           {eyebrow}
         </p>
-        <h2 className="font-serif text-evergreen-foreground text-[28px] sm:text-3xl md:text-4xl lg:text-[44px] 2xl:text-5xl leading-[1.1] tracking-[-0.02em] text-pretty mb-5 max-w-[20ch] md:max-w-[28ch] lg:max-w-[34ch]">
+        <h2 className="font-serif text-evergreen-foreground text-3xl sm:text-4xl md:text-[40px] lg:text-5xl xl:text-[56px] leading-[1.1] tracking-[-0.02em] text-pretty mb-5 max-w-[22ch]">
           {heading}
         </h2>
         <p className="text-evergreen-foreground/70 leading-relaxed mb-8 max-w-[52ch]">
@@ -56,15 +56,20 @@ const QuoteCloserCard = ({
         <CedarCTA preselectServices={preselectServices}>Get my free quote</CedarCTA>
 
         <div
-          className="mt-8 pt-6 border-t border-evergreen-foreground/10 flex flex-wrap items-center gap-x-4 gap-y-2 md:gap-x-5 md:gap-y-2.5"
+          className="mt-8 pt-6 flex flex-wrap items-center gap-x-5 md:gap-x-6 gap-y-2.5"
+          style={{
+            borderTop: "1px solid transparent",
+            borderImage:
+              "linear-gradient(90deg, hsl(var(--cedar) / 0) 0%, hsl(var(--cedar) / 0.22) 50%, hsl(var(--cedar) / 0) 100%) 1",
+          }}
           aria-label="Trust signals"
         >
           {TRUST_SIGNALS.map(({ icon: Icon, label }) => (
             <span
               key={label}
-              className="inline-flex items-center gap-1.5 text-[10px] tracking-[0.18em] uppercase text-evergreen-foreground/55"
+              className="inline-flex items-center gap-1.5 min-h-[20px] text-[10px] tracking-[0.18em] uppercase text-evergreen-foreground/55"
             >
-              <Icon className="h-2 w-2 md:h-2.5 md:w-2.5 text-cedar/80" aria-hidden strokeWidth={1.6} />
+              <Icon className="h-2.5 w-2.5 text-cedar/80" aria-hidden strokeWidth={1.6} />
               {label}
             </span>
           ))}
