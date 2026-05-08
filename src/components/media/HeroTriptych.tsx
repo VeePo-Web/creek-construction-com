@@ -115,9 +115,10 @@ const HeroTriptych = ({
 
       {/* ≥ md: 3-column triptych. < md: vertical stack 40/30/30. < sm: hide cols B/C. */}
       <div
-        className="absolute inset-0 grid"
+        className="absolute inset-0 grid h-full w-full"
         style={{
           gridTemplateColumns: RHYTHM_COLS[rhythm],
+          gridTemplateRows: "1fr",
         }}
       >
         {columns.map((col, i) => (
