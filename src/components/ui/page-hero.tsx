@@ -865,21 +865,27 @@ const ArchitectBleed = (props: ArchitectBleedProps) => {
       </div>
 
       {/* ── Middle: oversized light serif headline ── */}
-      <div className="container mx-auto px-5 sm:px-6 md:px-10 relative z-10 flex-1 flex items-center">
-        <div className="max-w-[14ch] sm:max-w-[18ch] md:max-w-[20ch]">
+      <div className="container mx-auto max-w-[1440px] px-5 sm:px-6 md:px-10 relative z-10 flex-1 flex items-center justify-start">
+        {/*
+          NOTE: max-w in `ch` resolves against the parent's body font (~16px),
+          NOT the heading's ~108px serif. So `max-w-[20ch]` was clipping
+          "Excellence" at md/lg/xl. We constrain in `ch` only on mobile (where
+          the heading is ~34px and ch≈body), and use viewport-relative caps
+          everywhere else as a safety net.
+        */}
+        <div className="max-w-[14ch] sm:max-w-none sm:w-auto md:max-w-[80vw] lg:max-w-[68vw] xl:max-w-[60vw]">
           <h1
             aria-label={[...lines, props.italic].filter(Boolean).join(" ")}
             className="font-serif"
             style={{
               color: "hsl(0 0% 100%)",
               fontWeight: 400,
-              // Floor lowered so the longest word ("Excellence" at ~10 chars in
-              // DM Serif Display) fits a 360–414px viewport without clipping.
-              fontSize: "clamp(2.125rem, 8.5vw, 8.25rem)",
+              // Tightened top of clamp from 8.25rem→7.25rem so "Excellence"
+              // reliably fits the column at lg/xl with breathing room.
+              fontSize: "clamp(2rem, 7.6vw, 7.25rem)",
               lineHeight: 0.96,
               letterSpacing: "-0.012em",
               hyphens: "manual",
-              wordBreak: "keep-all",
             }}
           >
             {lines.map((line, i) => (
