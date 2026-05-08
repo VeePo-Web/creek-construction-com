@@ -96,7 +96,7 @@ const Services = () => {
                             key={item.id}
                             type="button"
                             onClick={() => openModal([item.id])}
-                            className="group flex items-baseline justify-between gap-4 py-4 text-left border-b border-cedar/12 transition-colors duration-300 hover:bg-cedar/[0.03] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cedar focus-visible:ring-offset-2 rounded-sm px-3 -mx-3 min-h-[44px]"
+                            className="group flex items-baseline justify-between gap-4 py-5 text-left border-b border-cedar/15 transition-colors duration-300 hover:bg-cedar/[0.03] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cedar focus-visible:ring-offset-2 rounded-sm px-3 -mx-3 min-h-[44px]"
                             aria-label={`Get my free quote for ${item.title}`}
                           >
                             <div className="flex-1 min-w-0">
