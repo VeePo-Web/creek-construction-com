@@ -155,7 +155,7 @@ const HeroTriptych = ({
           delayMs={0}
           priority={priority}
           guttersDrawn={guttersDrawn}
-          className="h-full"
+          className="h-full min-h-full w-full"
         />
       </div>
 
