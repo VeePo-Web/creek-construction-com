@@ -178,6 +178,7 @@ const Navigation = ({ transparent: _transparent }: NavigationProps) => {
       <div
         aria-hidden
         className={cn(
+          "bg-background",
           "sm:h-16 md:h-[4.5rem] lg:h-20",
           getRouteBreadcrumb(location.pathname) ? "h-[6rem]" : "h-14",
         )}
