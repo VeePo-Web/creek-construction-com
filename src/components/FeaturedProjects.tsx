@@ -33,9 +33,9 @@ const ProjectCard = ({ project, variant, index }: ProjectCardProps) => {
   // Ratio per slot — lead is 4:5, stacked are 4:3, row are 3:4
   const aspectClass =
     variant === "lead"
-      ? "aspect-editorial"
+      ? "aspect-[4/5]"
       : variant === "stack"
-        ? "aspect-detail"
+        ? "aspect-[5/4]"
         : "aspect-portrait";
 
   const sizes =
@@ -46,7 +46,9 @@ const ProjectCard = ({ project, variant, index }: ProjectCardProps) => {
         : MEDIA_SIZES.THIRD;
 
   const headingSize =
-    variant === "lead" ? "text-2xl md:text-3xl" : "text-xl md:text-2xl";
+    variant === "lead"
+      ? "text-2xl md:text-3xl lg:text-[32px] xl:text-[36px]"
+      : "text-xl md:text-2xl";
 
   return (
     <article className="group h-full flex flex-col">
