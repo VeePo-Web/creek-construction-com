@@ -611,12 +611,7 @@ const ServicePortrait = (props: ServicePortraitProps) => {
         ]}
       />
 
-      {/* Top scrim — keeps fixed chrome legible over photography (no dead void). */}
-      <div
-        className="absolute inset-x-0 top-0 h-32 md:h-40 pointer-events-none z-[1]"
-        style={{ background: "linear-gradient(180deg, hsl(0 0% 0% / 0.55), transparent)" }}
-        aria-hidden
-      />
+      {/* Top scrim provided by HeroTriptych (SCRIM.topNav + SCRIM.mobileTop). */}
 
       <div className="container mx-auto max-w-[1440px] px-5 sm:px-6 md:px-10 relative z-10 pt-28 md:pt-36 pb-16 md:pb-24 lg:pb-28">
         <div className="max-w-3xl">
