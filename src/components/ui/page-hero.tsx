@@ -602,7 +602,7 @@ const ServicePortrait = (props: ServicePortraitProps) => {
       <HeroTriptych
         queries={triptychQueries}
         rhythm="equal"
-        scrim="left"
+        scrim="bottom"
         priority
         fallbackCaptions={[
           "Decks · Calgary",
