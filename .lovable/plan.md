@@ -1,82 +1,80 @@
-# Pass 16 — Micro-Typography, Motion Choreography & Primitive Harmonization
+# Pass 17 — Page-Level Cohesion & Editorial Friction
 
-Pass 15 fixed structural rhythm. This pass targets the **smaller half** of "world-class" — the things you only notice at 200% zoom or in a Loom recording: orphan words, heading optical balance, hero variant consistency, motion rest states across breakpoints, primitive shadows, and the seven remaining FlexServices-grade nits.
+Pass 16 polished primitives. Pass 17 zooms back out: walks each route end-to-end on a 390px viewport (the user's current preview) and a 1440px desktop, and removes the **friction points** that survive between sections — the small jolts a designer feels but can't articulate. Plus the page-level micro-fixes that didn't fit Pass 16's primitive scope.
 
-Strict scope: presentational + primitive-level. No schema, no data, no new components, no logic. Every change is reversible from a single search-replace.
+Strict scope: presentational + page-level. No schema, no data, no new components, no logic.
 
-## A. Hero variants — internal consistency sweep
+## A. Homepage `/` — section-to-section seams
 
-The site uses 4 PageHero variants. Each has its own scrim weight, padding, eyebrow style, and headline scale. Right now they look cousins, not siblings.
+The homepage sequence is `Hero → Services → CrewMoment(secondary) → Featured(background) → Testimonials(secondary) → MiniFaq(background) → Closer(secondary) → Footer(evergreen)`. Seven background flips. That's three too many.
 
-1. **Container padding** — every variant still hard-codes `container mx-auto px-6` (6 occurrences across `page-hero.tsx`). Switch to `px-5 sm:px-6 md:px-10` so heroes match the new site-wide gutter token.
-2. **EvergreenTypographic subtitle** — uses `text-lg italic font-serif` while CinematicBleed uses `text-lg md:text-xl italic font-serif`. Unify to `text-base md:text-lg italic font-serif text-evergreen-foreground/85` across all variants. Italic serif subtitle is a Creek signature; size variance breaks the family.
-3. **ServicePortrait pt-32** — top padding is set to `pt-32` (128px). On a 640px-tall viewport the eyebrow sits below the fold. Reduce to `pt-24 md:pt-28 lg:pt-32`.
-4. **CinematicBleed `pb-16 md:pb-20`** — bumps to `pb-14 md:pb-20 lg:pb-24` so the caption rail clears the iOS safe-area inset.
-5. **ArchitectBleed bottom row** — `gap-y-10 gap-x-8` between subtitle column and caption rail. At `md` (where the layout becomes 12-col), `gap-x-8` collides with the long phone CTA. Bump to `gap-x-10 lg:gap-x-12`.
-6. **Architect headline `clamp(2.125rem, 8.5vw, 8.25rem)`** — at the floor (340px viewport ≈ 29px) the line "Excellence in" still wraps to "Ex‑cellence". Add `hyphens: manual` and a soft hyphen via `-webkit-hyphens: none; word-break: keep-all` so the wrap point is always between words.
-7. **Architect subtitle font-size `clamp(0.95rem, 1.05vw, 1.0625rem)`** — at lg+ desktop this is barely larger than the eyebrow (11px). Bump max to `1.125rem` so the hierarchy reads from across the room.
+1. **Background rhythm collapse.** Two adjacent `bg-secondary` blocks across the whole page is fine; alternating every section creates a zebra. Re-paint to: `Hero → Services(background) → CrewMoment(background, no flip) → Featured(secondary) → Testimonials(secondary, no flip) → MiniFaq(background) → Closer(secondary) → Footer`. Net: 4 transitions instead of 7. Where two adjacent sections share a background, add a **hairline separator** (`border-t border-cedar/8`) to the second so the eye still feels the boundary.
+2. **HeroProofBand** sits between the architect-bleed hero and Services. Right now its border is `border-y border-cedar/12` — symmetric. The top edge collides visually with the hero's bottom scrim (which is already a dark-to-light gradient). Change to `border-b border-cedar/12` only, and let the hero's gradient do the top edge.
+3. **Services 5th-tile orphan rule** — `sm:[&>*:nth-child(5)]:col-span-2 sm:[&>*:nth-child(5)]:max-w-[calc(50%-1rem)] sm:[&>*:nth-child(5)]:mx-auto`. At 640–1023px, this centers the orphan, which is correct, but `col-span-2` + `max-w-[calc(50%-1rem)]` overlaps the gap math. At 768px the tile is visibly narrower than the row above. Drop `col-span-2`; keep the max-width + mx-auto. Simpler, identical visual.
+4. **Featured `mb-16` between header and grid** — too large at mobile (cuts the eye). Switch to `mb-12 md:mb-16`. Same pattern at the closing "See all work" link (`mt-16` → `mt-12 md:mt-16`).
+5. **Featured "See all work" pill** — currently text-link with `gap-3`. Pad it like a real link button: `inline-flex items-center gap-3 px-4 py-3 border border-cedar/15 rounded-sm hover:border-cedar/30 hover:bg-cedar/[0.04]`. It's the page's lone secondary CTA — give it presence.
+6. **CrewMoment image aspect** — currently `aspect-[4/5] md:aspect-[3/4] lg:aspect-portrait`. On a 390px viewport, 4/5 with the heading column stacked below creates a long, dominant image. Add `sm:aspect-[5/4]` so the small-mobile composition is wider-than-tall (better for "neighbor's deck" feel).
+7. **TestimonialStrip → MiniFaq seam** — both quiet, both background-flat. Add 1 row of breathing — `pt-24 md:pt-28` only on the MiniFaq section to create a deliberate "objection-handling" beat. Done by passing a className override or by tweaking SECTION_PADDING for this single instance.
 
-## B. Micro-typography polish (sitewide)
+## B. `/services` — page choreography
 
-The brand memory mandates curly quotes and DM Serif. Current state is 95% compliant; the last 5% is what separates editorial from "edited".
+8. **Catalogue group spacing** — `space-y-16` between the five groups. At 390px that's 64px of empty space between two adjacent menu cards — too much. Make it `space-y-12 md:space-y-16`.
+9. **Group header bar** — currently `pb-4 mb-6 border-b` with a per-group bronze opacity. Change to `pb-3 mb-5 md:pb-4 md:mb-6` so the eyebrow row tightens against the items.
+10. **Catalogue items `py-4`** — too tight on touch and too tight against the 0.5px hairline. Bump to `py-5` and the hairline to `border-cedar/15` (in our consolidated 4-step ramp).
+11. **Responsibility matrix** — `gap-6 lg:gap-4` is unusual (gap *shrinks* at lg). Make it `gap-6 lg:gap-8` so the lg+ split has the same breathing as the cards' own padding (`md:p-10`).
+12. **WE HANDLE / YOU HANDLE eyebrows** — `text-minimal text-cedar` (left) vs `text-minimal text-muted-foreground` (right). The contrast difference reads as "left is more important" — which is intentional. But **the count badge on the right** (`tabular-nums text-muted-foreground/40`) is so faint it's invisible in low light. Bump to `/55`.
 
-8. **Hanging punctuation** — testimonial cards open with `&ldquo;` as a separate `<span>` block above the quote. Move to `text-indent: -0.55em` on the `<p>` itself so the quote optically aligns with the rest of the card edge (real hanging punctuation, not a shoulder-mark). Adjust both `TestimonialStrip.tsx` and any other quote consumer.
-9. **Soft hyphens in long city names** — "Sherwood Park", "Strathcona County" wrap awkwardly in 2-col mobile chip grid. Add `hyphens-auto` to the chip span and `lang="en-CA"` on the chips container so browsers know which dictionary to use.
-10. **Tabular numerals on stats + numerals** — already on stat values, missing on the project index numerals (`01`, `02`, …) in `FeaturedProjects.tsx` lead/stack/row meta lines. Add `tabular-nums` everywhere a `padStart(2, "0")` count appears. Audit: `FeaturedProjects.tsx`, `Work.tsx` headers, `services` matrix counts, `Process` step numbers in `About.tsx`. Already tabular in some — confirm uniform.
-11. **Drop `font-light` on small body** — `FaqAccordion.tsx` trigger uses `font-light text-foreground` at 16px. DM Sans light at 16px is the worst rendering weight for Windows ClearType. Switch to `font-normal`.
-12. **Title-case to sentence-case audit** — eyebrow labels are inconsistently cased: `WHAT WE BUILD`, `THE FULL MENU`, `HOW WE WORK`, `WE HANDLE`, `YOU HANDLE`, `OR FILL THIS OUT`, `DIRECT`, `GET A FREE QUOTE`. Three of these (`OR FILL THIS OUT`, `DIRECT`, `GET A FREE QUOTE`) read like UI labels, not editorial eyebrows. Rename: `OR FILL THIS OUT` → `THE FORM`; `DIRECT` → `DIRECT LINE`; `GET A FREE QUOTE` → `FREE QUOTE`.
-13. **Curly-quote audit** — `data/projects.ts`, `config/testimonials.ts`, `config/faqs.ts`, `config/services.ts` all hand-write copy. Run a one-shot `'` → `’`, `"…"` → `“…”` sweep. Limit scope to those four files plus `src/pages/About.tsx` paragraph content.
+## C. `/work` — projects + placeholder grid
 
-## C. Motion choreography across breakpoints
+13. **PLACEHOLDER orphan rule** — `md:[&>*:nth-child(5)]:hidden lg:[&>*:nth-child(5)]:block lg:[&>*:nth-child(5)]:col-start-2`. This hides the 5th tile at md (768–1023). On a tablet you literally see 4 tiles where 6 exist. Either: (a) keep all six visible at md by making the grid 2-column and dropping the hide rule, or (b) only hide at md if total is exactly 5. Since `PLACEHOLDERS` is a fixed set, audit count and pick option (a) — `sm:grid-cols-2 lg:grid-cols-3` with no hide.
+14. **"More projects added each month"** — center microcopy is fine, but the spacing `mt-12` is too generous; tighten to `mt-10 md:mt-12`.
 
-Motion currently fires at the same speed regardless of viewport. On mobile the user is reading at 1.5× their face-distance and the framer slides feel laggy.
+## D. `/about` — story page
 
-14. **`useReveal` duration scaling** — currently fixed `0.6s`. Switch to `0.45s` on mobile (`< sm`), `0.6s` on `sm-md`, `0.75s` on `lg+`. Implement via a CSS variable `--reveal-duration: 450ms; @media (min-width: 640px) { 600ms } @media (min-width: 1024px) { 750ms }` consumed by the existing reveal classes.
-15. **`prefers-reduced-motion`** — confirm every `transition-*` token in `src/lib/motion.ts` has a reduced-motion override. Add a global `@media (prefers-reduced-motion: reduce) { *, *::before, *::after { transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; } }` to `src/index.css` — if missing.
-16. **Hover-scale on touch** — `transition-transform group-hover:scale-[1.04]` fires on iOS as soon as the user taps. Add `@media (hover: hover) { ... }` gate via Tailwind's `hover:` modifier already does this — confirm `group-hover:` in `Services.tsx`, `FeaturedProjects.tsx`, `ProjectTile.tsx`, `MediaSlot` is using `hover:` not `:hover` raw. Tailwind handles it; just audit.
-17. **Hero Ken Burns — pause on `prefers-reduced-motion`** — `hero-kenburns` class in `index.css` runs an infinite scale animation. Add `@media (prefers-reduced-motion: reduce)` block that sets `animation: none`.
+15. **Story stat trio** — three custom-rendered `<div>` blocks instead of `StatTrio` primitive. Reduces consistency. Refactor to `<StatTrio variant="inline" items={STATS_TRIO} />`. (StatTrio.inline was just bumped to `text-[10px]` in Pass 16 — perfect alignment.)
+16. **Process step row `pl-4 sm:pl-6 py-4 sm:py-5`** — combined with the numeric eyebrow at `text-xs`, the numeral feels lost. Bump numeral to `text-[13px]` and add `mr-1` so the gap reads.
+17. **Process step `hover:translate-x-1`** — translate causes a 4px reflow against the next item (which has `space-y-4`). Switch to `hover:pl-5 sm:hover:pl-7` (same visual, no transform). Already doing similar on ProjectTile description.
+18. **City chips grid** — `grid-cols-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5`. The duplicated `sm:grid-cols-3` is a no-op. Drop. Add `xl:grid-cols-6` for the 1440+ desktop.
+19. **City chip hover** — `hover:bg-cedar/[0.04]` is great, but the chip already has a per-chip border opacity. On hover the border swaps to `hover:border-cedar/30`, which looks fine for the first chip (which already has a low opacity) but visually *darkens* mid-list chips (e.g. chip 4 of 12). Cap the bronze step at 0.25 so the hover state is always brighter than rest.
+20. **"Not on the list?" italic line** — `mt-6 italic`. Add `pt-6 border-t border-cedar/8` for an editorial-rail feel that matches the other "footer of section" lines on the page.
 
-## D. Shadow + border token cleanup (carry-forward from Pass 14)
+## E. `/contact` — single-screen funnel
 
-18. Remaining `shadow-contact` references that don't earn the elevation:
-    - `src/components/ui/faq-accordion.tsx` line 34 — accordions are flat in FlexServices style. Drop.
-    - `src/components/ui/project-tile.tsx` line 183 — description plate. Drop, keep only on hover via `group-hover:shadow-[0_2px_8px_rgba(0,0,0,0.04)]`.
-    - `src/components/ui/stat-trio.tsx` line 73 — `card` variant. Keep (cards earn elevation).
-    - `src/components/quote/QuoteFormInline.tsx` lines 202/225 — form shells. Keep — the form is the page's primary action surface.
-    - `src/components/ui/card-premium.tsx` — keep, primitive name says "premium".
-19. **`shadow-elevated` on `ProjectTile`** — the hover-elevation `group-hover:shadow-elevated` jumps the tile in z. Replace with a softer `group-hover:shadow-[0_8px_24px_-12px_hsl(var(--cedar)/0.18)]` (a cedar-tinted shadow, not generic black).
-20. **Border opacity audit** — sitewide we use `/40`, `/30`, `/20`, `/15`, `/12`, `/[0.04]`. Six steps is too many and creates the "almost-but-not-quite" feel. Consolidate to a 4-step ramp: `/8` (whisper), `/15` (rule), `/30` (active), `/50` (focus). Files affected: `Services.tsx` (tile borders), `TestimonialStrip.tsx` (cards), `Footer.tsx` (hairlines), `MiniFaq.tsx` (phone fallback rule), `About.tsx` (process cards), `Contact.tsx` (info card rows).
+21. **Eyebrow renames** (carry-forward from Pass 16 #12):
+    - `GET A FREE QUOTE` → `FREE QUOTE`
+    - `DIRECT` → `DIRECT LINE`
+    - `OR FILL THIS OUT` → `THE FORM`
+22. **Headline `text-[32px] sm:text-4xl lg:text-[56px]`** — at 390px, 32px is correct, but `sm:text-4xl` (36px) at 640–1023px is cramped against `lg:text-[56px]` (56px). Add `md:text-[44px]` step. Also tighten leading at the largest size: add `lg:leading-[1.02]` so the two-line wrap of "Tell us what you're building" reads as one breath.
+23. **Direct contact card row icons** — `w-9 h-9` boxes at `bg-cedar/10`. The 14px Phone icon inside a 36px box has too much air. Either reduce box to `w-8 h-8` or bump icon to `h-4 w-4`. Pick the latter — the row is the page's primary trust signal.
+24. **Form column SectionHeader subhead** — "Phone and name are all we strictly need." reads slightly defensive. Reword to "Just your phone and name to start." (Affirmative, removes "strictly".)
+25. **Form column container** — `mt-8` after the header. The form card itself has `p-6 sm:p-8` internal padding. Reduce mt to `mt-6 md:mt-8`.
 
-## E. Primitive-level
+## F. Cross-page chrome
 
-21. **`BronzeRule`** — currently the rule has fixed widths via a `width` variant ("short" | "long"). On a 320px viewport the "long" width can overflow when paired with a numeral. Add a `clamp()` upper bound and switch the underlying span to `width: clamp(2rem, 12vw, 4rem)` for short, `clamp(3rem, 18vw, 6rem)` for long.
-22. **`SectionHeader` h2 `mb-4`** — too tight when there's no subheading underneath (heading sits directly on the body). Change to `mb-4 [&:last-child]:mb-8` so a subhead-less header still gets breathing room.
-23. **`StatTrio.inline`** — label uses `text-[9px] tracking-[0.18em]` — sub-10px tracked-out text fails WCAG AAA legibility. Bump to `text-[10px] tracking-[0.2em]`.
-24. **`KineticHeadline`** — uses `clip-path: inset()` reveal. On Safari 14- the clip-path animation triggers a full-section repaint each frame. Add `will-change: clip-path` to the `.kinetic-line` class only during animation (clear afterward via `animationend`). If too invasive, accept and move on.
-25. **`FaqAccordion` plus icon** — Pass 14 added a custom + → − transition. Confirm rotation origin is `transform-origin: center center` (default — correct). Confirm the vertical bar's transform timing matches the parent's data-state transition (currently 300ms — bump to 400ms to match Creek's standard easing).
+26. **`SkipToContent` order** — in `Index.tsx`, `SkipToContent` precedes `Navigation`. The skip link should render **before** the nav so it's the first focusable. Already correct in Index. Verify Services/Work/About/Contact match (Services + Work currently have `<Navigation />` before `<SkipToContent />` — flip).
+27. **`<main>` aria-label vs id** — every page has `aria-label="..."` but no `id`. Add `id="main-content"` to all five pages so the skip link can also fall back to the main element if its primary target is hidden.
+28. **`PageHero` `breadcrumb` prop on Services** — passes `breadcrumb={[{ label: "Home", to: "/" }, { label: "Services" }]}`. The service-portrait variant doesn't render breadcrumbs (handled by HeaderBreadcrumb in chrome). The dead prop is harmless but misleading. Remove from Services, Work, About hero calls.
+29. **`PageHero` Services `sectionLabel="EXTERIOR CONSTRUCTION"`** vs Hero `sectionLabel="Exterior Construction"`. One is uppercase'd at the source, the other relies on the eyebrow's `uppercase` class. The eyebrow class always uppercases, so the stored string should always be sentence case. Lowercase Services + Work + About to match Hero.
 
-## F. Image art-direction
+## G. Closing card + footer transition
 
-26. **`MediaSlot` `aspect-hero`** on Services tiles — the photo is letterboxed because tile container forces `aspect-hero` (16:9-ish) regardless of source. Switch to `aspect-[5/4]` (more editorial) on tiles, keep `aspect-hero` on the homepage Featured grid.
-27. **EditorialPicture `cedarHover`** — fires a cedar tint on hover. The tint amount (`mix-blend-mode: multiply, opacity: 0.15`) is too strong on dark photos. Switch to `opacity: 0.08` and add `mix-blend-mode: soft-light` for warmer interaction.
-28. **LQIP fallback** — `ArchitectBleed` paints a 24px-blurred LQIP. On Chromium-mobile the blur radius creates a grey halo around the image after fade-in. Reduce blur to `18px` and add `transform: scale(1.04)` (currently 1.06) so edges don't peek post-fade.
+30. **QuoteCloserCard heading default** — `"Send us your project details."` is functional but could be warmer. Change default to `"Tell us about your project."` Match the contact page voice. (Pages that override stay overridden.)
+31. **QuoteCloserCard body default `"It takes 30 seconds — just your name and phone..."` ** — now contradicts the contact page's "Just your phone and name". Align: `"It takes about 30 seconds — your phone and name to start. We reply within 24–48 hours."`
+32. **Closer → Footer seam** — closer ends with cedar accents on evergreen, footer starts with evergreen. The user sees evergreen → evergreen with no edge. Add a `pt-px bg-evergreen-foreground/5` 1-line top wash to the footer first row, OR add `mb-0 pb-0` discipline to the closer when followed by footer. Simpler: in `Footer.tsx`, change the existing `xl:border-t` to **always render** as a faint hairline (`border-t border-evergreen-foreground/8`) on the inner content row.
+33. **Footer link list** — currently `flex flex-wrap gap-x-6 gap-y-2`. At 320px those five links wrap to two rows uneven. Switch to `gap-x-5 gap-y-1.5` and add `justify-center xl:justify-start` so the wrap balances.
 
-## G. Accessibility rounding
+## H. Image seams + media polish
 
-29. **Focus rings** — `focus-visible:ring-2 focus-visible:ring-cedar focus-visible:ring-offset-2` is correct, but `ring-offset-color` defaults to white. On `bg-secondary` (cream) the offset shows as a tiny halo. Add `focus-visible:ring-offset-background` to every focusable that sits on `bg-secondary` (Services tiles, About city chips, About process cards, FAQ triggers).
-30. **Skip-to-content** — currently styled `focus:bg-cedar focus:text-cedar-foreground`. Confirm tab-stop is the very first interactive in every page. Audit `Index.tsx`, `About.tsx`, `Services.tsx`, `Work.tsx`, `Contact.tsx` — Pass 13 standardized the targets, Pass 16 verifies focus order isn't intercepted by `Navigation.tsx` (which now renders before SkipToContent in most pages — should be after).
-31. **`aria-current="page"`** — `Navigation.tsx` SectionRail / GlobalMenu — add `aria-current="page"` to the active route link so screen-reader users know where they are.
-32. **`<main>` landmarks** — every page wraps in `<main>` (good). Add `id="main-content"` to each so SkipLink can target it as a fallback.
+34. **Hero LQIP cleared via `onLoad`** — works, but the `transition-opacity duration-700` on the LQIP fades over the same 700ms as the photo. They cross-fade in opposite directions and produce a subtle grey middle frame. Stagger: LQIP `duration-500` (faster fadeout), photo `duration-900` (slower fadein) so the photo is fully present when the LQIP finishes leaving.
+35. **MediaSlot service tile fallback caption** — `"${group.title} · new work coming"` is honest but reads like a placeholder marker on a finished site. Change to `"${group.title} · Alberta"` so the fallback feels location-anchored instead of WIP.
 
-## H. Sitewide micro-fixes
+## I. Sitewide micro-fixes
 
-33. **404 page** — `NotFound.tsx` (58 lines) hasn't been touched in this audit cycle. Confirm it inherits the same chrome (Navigation + Footer) and uses `PageHero` (or at least `EYEBROW + HEADLINE.display`). Apply a one-shot polish.
-34. **StyleGuide page** — 2022-line monster. Don't touch UX; just confirm it still builds after the token changes (the page references many tokens directly).
-35. **Container `px-3 sm:px-4 md:px-6` in `Navigation.tsx`** — out of step with the new `px-5 sm:px-6 md:px-10` site standard. Change to `px-4 sm:px-5 md:px-8` (nav stays slightly tighter than body — the chrome reads as a ribbon).
-36. **`SECTION_PADDING.default = "py-16 sm:py-20 md:py-24 lg:py-28"`** — at `lg` (1024px), 28 (112px) is right; at `xl` (1440), it's too cramped against the wider headlines. Add an `xl:py-32` step.
+36. **`text-balance` overuse** — the heading on every section uses it. On 1-line headings it's a no-op (cost nothing). On 3+-line wrapped headings it occasionally yanks "in" or "the" to a top line, breaking visual hierarchy. Audit Hero subtitle, MiniFaq heading, QuoteCloserCard heading, Contact h1. Keep `text-balance`, but where the heading is intentionally rhythmic (e.g. "Tell us what you're building.") add `text-pretty` instead — gives the browser permission to leave a longer last line.
+37. **Smart-quote audit pass** — sweep `'` → `’` in `src/data/projects.ts`, `src/config/testimonials.ts`, `src/config/faqs.ts`, `src/config/services.ts`, `src/config/process.ts`, `src/config/trust-signals.ts`. (Pass 16 listed but didn't execute — execute now.)
 
 ## Files touched
 
-`src/components/ui/page-hero.tsx`, `src/components/ui/faq-accordion.tsx`, `src/components/ui/project-tile.tsx`, `src/components/ui/stat-trio.tsx`, `src/components/ui/bronze-rule.tsx`, `src/components/SectionHeader.tsx`, `src/components/Navigation.tsx`, `src/components/TestimonialStrip.tsx`, `src/components/MiniFaq.tsx`, `src/components/Footer.tsx`, `src/components/FeaturedProjects.tsx`, `src/components/CrewMoment.tsx`, `src/components/Services.tsx`, `src/components/Hero.tsx`, `src/components/QuoteCloserCard.tsx`, `src/components/media/EditorialPicture.tsx` (cedar-hover only), `src/lib/spacing.ts` (xl step), `src/lib/typography.ts` (StatTrio inline), `src/lib/motion.ts` (reduced-motion guard), `src/index.css` (Ken Burns reduced-motion guard, kinetic will-change), `src/pages/About.tsx`, `src/pages/Services.tsx`, `src/pages/Work.tsx`, `src/pages/Contact.tsx`, `src/pages/Index.tsx`, `src/pages/NotFound.tsx`, `src/data/projects.ts`, `src/config/testimonials.ts`, `src/config/faqs.ts`, `src/config/services.ts`.
+`src/pages/Index.tsx`, `src/pages/Services.tsx`, `src/pages/Work.tsx`, `src/pages/About.tsx`, `src/pages/Contact.tsx`, `src/components/Hero.tsx`, `src/components/Services.tsx`, `src/components/CrewMoment.tsx`, `src/components/FeaturedProjects.tsx`, `src/components/MiniFaq.tsx`, `src/components/QuoteCloserCard.tsx`, `src/components/Footer.tsx`, `src/components/ui/page-hero.tsx` (LQIP timing only), `src/components/Services.tsx` (5th-tile rule), `src/data/projects.ts`, `src/config/testimonials.ts`, `src/config/faqs.ts`, `src/config/services.ts`, `src/config/process.ts`.
 
-No new files. No deletions. No schema changes. No business-logic edits.
+No new files. No deletions. No schema. No business logic.
