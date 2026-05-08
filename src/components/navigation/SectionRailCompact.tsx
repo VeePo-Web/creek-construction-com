@@ -84,9 +84,9 @@ const SectionRailCompact = ({
           type="button"
           onClick={onOverflow}
           className={cn(
-            "px-2.5 py-2 text-[10px] tracking-[0.2em] uppercase font-medium",
+            "px-2.5 py-2 text-[10px] tracking-[0.2em] uppercase font-normal",
             "text-foreground/55 hover:text-cedar transition-colors duration-300",
-            "min-h-[44px] flex items-center gap-1",
+            "min-h-[44px] flex items-center gap-1.5",
             "focus-visible:outline-none focus-visible:text-cedar",
           )}
           aria-label={`Show ${overflow} more page sections`}

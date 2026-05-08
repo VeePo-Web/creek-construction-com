@@ -758,7 +758,7 @@ const ArchitectBleed = (props: ArchitectBleedProps) => {
       id="section-hero"
       className={cn(
         "relative overflow-hidden flex flex-col justify-between",
-        "min-h-[78vh] sm:min-h-[84vh] md:min-h-screen",
+        "min-h-[78vh] sm:min-h-[84vh] md:min-h-[78vh] lg:min-h-[760px] xl:min-h-[820px] 2xl:min-h-[900px]",
         props.className,
       )}
       style={{ backgroundColor: "hsl(0 0% 4%)", contain: "layout style paint" }}
@@ -841,7 +841,7 @@ const ArchitectBleed = (props: ArchitectBleedProps) => {
       />
 
       {/* ── Top: hairline + uppercase eyebrow ── */}
-      <div className="container mx-auto px-5 sm:px-6 md:px-10 relative z-10 pt-20 sm:pt-24 md:pt-32">
+      <div className="container mx-auto max-w-[1440px] px-5 sm:px-6 md:px-10 relative z-10 pt-20 sm:pt-24 md:pt-32">
         <div
           className="flex items-center gap-4 hero-provenance-enter"
           style={{ ["--kinetic-delay" as never]: "200ms" }}
@@ -865,21 +865,27 @@ const ArchitectBleed = (props: ArchitectBleedProps) => {
       </div>
 
       {/* ── Middle: oversized light serif headline ── */}
-      <div className="container mx-auto px-5 sm:px-6 md:px-10 relative z-10 flex-1 flex items-center">
-        <div className="max-w-[14ch] sm:max-w-[18ch] md:max-w-[20ch]">
+      <div className="container mx-auto max-w-[1440px] px-5 sm:px-6 md:px-10 relative z-10 flex-1 flex items-center justify-start">
+        {/*
+          NOTE: max-w in `ch` resolves against the parent's body font (~16px),
+          NOT the heading's ~108px serif. So `max-w-[20ch]` was clipping
+          "Excellence" at md/lg/xl. We constrain in `ch` only on mobile (where
+          the heading is ~34px and ch≈body), and use viewport-relative caps
+          everywhere else as a safety net.
+        */}
+        <div className="max-w-[14ch] sm:max-w-none sm:w-auto md:max-w-[80vw] lg:max-w-[68vw] xl:max-w-[60vw]">
           <h1
             aria-label={[...lines, props.italic].filter(Boolean).join(" ")}
             className="font-serif"
             style={{
               color: "hsl(0 0% 100%)",
               fontWeight: 400,
-              // Floor lowered so the longest word ("Excellence" at ~10 chars in
-              // DM Serif Display) fits a 360–414px viewport without clipping.
-              fontSize: "clamp(2.125rem, 8.5vw, 8.25rem)",
+              // Tightened top of clamp from 8.25rem→7.25rem so "Excellence"
+              // reliably fits the column at lg/xl with breathing room.
+              fontSize: "clamp(2rem, 7.6vw, 7.25rem)",
               lineHeight: 0.96,
               letterSpacing: "-0.012em",
               hyphens: "manual",
-              wordBreak: "keep-all",
             }}
           >
             {lines.map((line, i) => (
@@ -919,9 +925,9 @@ const ArchitectBleed = (props: ArchitectBleedProps) => {
       </div>
 
       {/* ── Bottom: hairline, subtitle, CTA row, caption rail ── */}
-      <div className="container mx-auto px-5 sm:px-6 md:px-10 relative z-10 pb-14 md:pb-20 lg:pb-24">
-        <div className="grid md:grid-cols-12 gap-y-10 gap-x-10 lg:gap-x-12 items-end">
-          <div className="md:col-span-8 lg:col-span-7">
+      <div className="container mx-auto max-w-[1440px] px-5 sm:px-6 md:px-10 relative z-10 pb-14 md:pb-20 lg:pb-24">
+        <div className="grid md:grid-cols-12 gap-y-10 md:gap-y-12 gap-x-10 lg:gap-x-12 items-end">
+          <div className="md:col-span-7 lg:col-span-7">
             <span
               aria-hidden
               className="block h-px w-12 mb-6 hero-provenance-enter"
@@ -956,7 +962,7 @@ const ArchitectBleed = (props: ArchitectBleedProps) => {
           </div>
 
           {captionLine && (
-            <div className="md:col-span-4 lg:col-span-5 md:text-right">
+            <div className="md:col-span-5 lg:col-span-5 md:text-right md:mt-2">
               <div
                 className="inline-flex items-center gap-3 hero-provenance-enter"
                 style={{ ["--kinetic-delay" as never]: "1600ms" }}
@@ -967,7 +973,7 @@ const ArchitectBleed = (props: ArchitectBleedProps) => {
                   style={{ backgroundColor: "hsl(0 0% 100% / 0.45)" }}
                 />
                 <span
-                  className="text-[10px] md:text-[11px] uppercase tabular-nums"
+                  className="text-[10px] md:text-[11px] uppercase tabular-nums whitespace-nowrap"
                   style={{
                     color: "hsl(0 0% 100% / 0.7)",
                     letterSpacing: "0.22em",
