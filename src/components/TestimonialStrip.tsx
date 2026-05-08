@@ -35,6 +35,7 @@ const TestimonialStrip = ({
   background = "background",
   showCta = false,
   headingId = "testimonials-heading",
+  topRule = false,
 }: TestimonialStripProps) => {
   const { ref, cls, style } = useReveal();
 
