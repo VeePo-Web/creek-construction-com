@@ -132,7 +132,7 @@ const Contact = () => {
                   subheading="Just your phone and name to start."
                   disableMotion
                 />
-                <div className="mt-8">
+                <div className="mt-6 md:mt-8">
                   <QuoteFormInline />
                 </div>
               </div>
