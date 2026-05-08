@@ -81,7 +81,7 @@ const QuoteCloserCard = ({
       className={`${SECTION_PADDING.default} ${background === "secondary" ? "bg-secondary" : "bg-background"}`}
       aria-label="Request a quote"
     >
-      <div className="container mx-auto px-5 sm:px-6">
+      <div className="container mx-auto max-w-[1440px] px-5 sm:px-6">
         <div className="max-w-4xl mx-auto">{card}</div>
       </div>
     </section>
