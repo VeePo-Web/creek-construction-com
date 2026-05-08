@@ -20,6 +20,16 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Anchor offset — keep #section-* targets clear of the fixed chrome */
+section[id^="section-"] {
+  scroll-margin-top: 5rem;
+}
+@media (min-width: 768px) {
+  section[id^="section-"] { scroll-margin-top: 6rem; }
+}
+@media (min-width: 1024px) {
+  section[id^="section-"] { scroll-margin-top: 7rem; }
+}
 @layer base {
   :root {
     color-scheme: light;
