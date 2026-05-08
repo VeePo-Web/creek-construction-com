@@ -187,9 +187,9 @@ export const SCRIM = {
    */
   cinematicTop:
     "linear-gradient(180deg, hsl(20 10% 6% / 0.78) 0%, hsl(20 10% 6% / 0.55) 26%, hsl(20 10% 6% / 0.28) 52%, hsl(20 10% 6% / 0.10) 72%, transparent 88%)",
-  /** Universal nav legibility band — first 96px from the top. */
+  /** Universal nav legibility band — softened so it never reads as a horizon line over photos. */
   topNav:
-    "linear-gradient(180deg, hsl(150 30% 6% / 0.55) 0%, transparent 100%)",
+    "linear-gradient(180deg, hsl(150 30% 6% / 0.42) 0%, hsl(150 30% 6% / 0.18) 60%, transparent 100%)",
   /** Hairline bottom fade into the next section's cream. */
   bottomFade:
     "linear-gradient(180deg, transparent 0%, hsl(var(--secondary)) 100%)",
