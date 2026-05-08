@@ -1,69 +1,71 @@
-# Pass 24 — Editorial Polish & Conversion Surface Tightening
+# Pass 25 — Hero variant audit, gallery rhythm, mid-page polish
 
-Focus on the next layer of detail: the closer card (every page ends here), the crew/testimonial rhythm, hero CTAs, and the small nicks left in chrome and tiles. Light-mode only, tokens-first.
+Each prior pass tightened global chrome and shared modules. Pass 25 walks the hero variants (the largest visual surface on every route), normalizes the project gallery, and resolves the small inconsistencies left in CedarCTA, the mid-page beats, and the form.
 
-## A. QuoteCloserCard (the universal terminal CTA)
+## A. PageHero variants — equalize the editorial scale
 
-1. **Heading scale ladder** — current `text-[28px] sm:text-3xl md:text-4xl lg:text-[44px] 2xl:text-5xl` skips `xl`. Replace with token: `text-3xl sm:text-4xl md:text-[40px] lg:text-5xl xl:text-[56px]` and cap headline measure to `max-w-[22ch]` across all bp.
-2. **Trust strip** — gap is too tight at 320px (icons collide with labels when wrapped). Bump `gap-x-4` → `gap-x-5 md:gap-x-6` and `gap-y-2.5`. Add `min-h-[20px]` to each chip to align baselines.
-3. **Card padding** — `p-6 sm:p-8 md:p-10 lg:p-12` is right, but the cedar accent bar `before:w-[2px]` should be `w-[3px]` on all bp (currently desktop-only thicker).
-4. **Trust-strip divider** — `border-evergreen-foreground/10` is a solid line under a soft gradient surface; replace with a fading hairline using `borderImage` matching the footer pattern (cedar 0 → 0.22 → 0).
+1. **`evergreen-typographic` subtitle** — `mt-5 md:mt-6 text-lg italic font-serif max-w-xl` doesn't match the `cinematic-bleed` / `service-portrait` standard set in Pass 22 (`mt-6 max-w-[44ch] … text-balance`). Unify on the cinematic spec; drop italic on mobile, keep on md+.
+2. **`evergreen-typographic` content padding** — `py-24 md:py-32` is locked, but the section has `min-h-[68vh] md:min-h-[78vh]` plus `flex items-center` — the headline drifts off-center on tall viewports. Anchor with `pt-28 md:pt-36 pb-16 md:pb-24 lg:pb-28` (matches the other variants).
+3. **`editorial-split` subtitle** — `text-lg md:text-xl` + `max-w-xl/2xl` is wider than cinematic peers. Cap to `max-w-[48ch]` with `text-base md:text-lg` for consistency.
+4. **`cinematic-bleed` double top scrim** — line 506 (`linear-gradient … 0.55, transparent`) at `h-32 md:h-40` overlaps with `SCRIM.topNav` from the chrome. The Pass 22 cleanup says the upper scrim was *supposed* to be removed; the file still ships both. Delete the local top scrim — `SCRIM.topNav` already covers the chrome legibility budget.
+5. **Hero `z-index` hierarchy** — content uses `z-10`, ambient clip uses `z-[6]`, spine uses `z-[5]`. Promote spine + ambient clip to `z-[8]`/`z-[9]` so they don't read as "behind a second layer of fog" when the scrim opacity stacks.
+6. **`hero-rule-draw` margin variance** — `mb-6` in evergreen, `mb-6 md:mb-9 lg:mb-10` in cinematic/portrait. Standardize on the cinematic ladder across all three; the eyebrow→headline gap should match site-wide.
 
-## B. CrewMoment
+## B. ProjectGallery (Work page)
 
-5. **Image aspect** — currently `aspect-[5/4] sm:aspect-[4/5] md:aspect-[3/4] lg:aspect-portrait` flips between landscape/portrait at 375 → 640 → 768 → 1024 (jarring on resize). Lock to `aspect-[4/5]` from sm up; mobile stays `aspect-[5/4]` so it doesn't dominate the fold.
-6. **Heading id collision risk** — `headingId="crew-heading"` is shared with anchor; verify Home + About don't both render it. Add a `data-section="crew"` and a unique id per page (Home: `crew-heading`, About: `about-crew-heading`).
-7. **Stats row inside CrewMoment** — when `showStats`, the 3-up grid uses `gap-4` which collapses on 320px. Use `gap-6 md:gap-8`, and right-align numerals to a `tabular-nums w-fit` block.
+7. **Rounded radius drift** — uses `rounded-sm` everywhere (4px) which clashes with the editorial cinematic aspect. Bump to `rounded-[6px]` to match `EditorialPicture` defaults, with `overflow-hidden` retained.
+8. **Gap consistency** — currently `gap-4 md:gap-5`. Unify with FeaturedProjects (`gap-6 md:gap-8`) so both galleries feel like one system.
+9. **Single-photo cap** — `maxHeight: "80vh"` is fine on desktop but caps too aggressively on mobile portrait. Switch to `max-h-[72svh] md:max-h-[80vh]` (svh prevents iOS chrome jump).
+10. **Masonry fallback (4+)** — `columns-1 md:columns-2 lg:columns-3` is fine, but `mb-4 md:mb-5` is set inline; mirror the new `gap-6 md:gap-8` for visual parity.
 
-## C. TestimonialStrip
+## C. CedarCTA polish
 
-8. **Quote hanging indent** — `textIndent: "-0.32em"` is correct visually but wraps incorrectly on 2nd line. Switch to `text-indent: -0.4em; padding-left: 0.4em;` so subsequent lines align flush.
-9. **Card min-height** — `lg:min-h-[260px]` only fires at lg; quotes of varying length jitter at md. Add `md:min-h-[240px]` and `sm:min-h-[200px]`.
-10. **Attribution row** — wrap on small screens currently produces an orphan city/service. Force the meta line to a new row at `<sm` via `flex-col sm:flex-row sm:items-baseline sm:justify-between`.
+11. **Button padding ladder** — primary uses `px-10 py-5` always. On mobile (375px), this is too wide for the column; drop to `px-8 py-4 sm:px-10 sm:py-5`. Keeps min touch target (44px) with comfortable rhythm.
+12. **Secondary variant** — animated underline `w-4 → w-10` is good, but the `gap-2` looks tight. Bump to `gap-3` for breath, and reduce underline target from `w-10` → `w-8` to feel less cartoony.
+13. **Loading/disabled state** — no spinner or disabled affordance; if openModal is gated (auth, rate limit), nothing visible. Add `disabled:opacity-60 disabled:cursor-not-allowed` and accept an optional `loading?: boolean` prop that swaps the arrow for an inline spinner.
 
-## D. Hero (homepage)
+## D. Form (QuoteFormInline) — visited indirectly via Contact
 
-11. **CTA + tel link gap** — `gap-x-6 gap-y-3` collapses awkwardly at 360px (CTA full-width, then "or call" hugs left). Add `sm:items-center`, and bump the tel link to `text-white/90` with `tracking-[0.2em]` (matches hero subtitle).
-12. **HeroProofBand padding** — `py-7 md:py-8 lg:py-10` is asymmetric. Token to `py-8 md:py-10` and add a `divide-x divide-cedar/10` between the three stat cells on `sm+`.
+14. Inputs likely use generic shadcn defaults. Audit `h`, focus rings, label tracking — should match the `ring-cedar/40 ring-offset-2`, `h-12`, label `tracking-[0.14em] uppercase` standard. (Read the file in implementation.)
+15. Submit button — should reuse CedarCTA primary, not a custom shadcn Button.
 
-## E. Service tiles (homepage)
+## E. Homepage rhythm — the inter-section seam
 
-13. **`min-h-[280px] lg:min-h-[320px]`** — competes with `aspect-hero` image. Drop the min-height; the tile naturally sizes from its image + content. This eliminates extra whitespace under tiles with short captions.
-14. **`hover:scale-[1.04]`** on image is too aggressive — drop to `1.025` to match FeaturedProjects' lead.
-15. **Icon line-height** — `mb-3` after icon, `mb-2` after h3 is uneven. Use `mb-3` consistently between icon → title and title → blurb.
+16. **`CrewMoment topRule`** — currently `border-t border-cedar/8`. Replace with the same fading hairline gradient used in the closer card / footer to unify all section seams.
+17. **`TestimonialStrip topRule`** — same. Currently `border-t border-cedar/8`.
+18. **MiniFaq generous-top override** — Pass 23 removed `!important`. Verify the `pt-24 md:pt-28` actually wins given Tailwind class ordering with `SECTION_PADDING.default` ("py-16 sm:py-20 md:py-24 lg:py-28 xl:py-32"). The base class includes `py-*` which sets both `pt` and `pb`; our extra `pt-24 md:pt-28` may lose specificity. Either keep `!important` OR switch the base to a `pb-*` only token + explicit `pt-*`.
 
-## F. Services page — Responsibility matrix
+## F. Services page — small calibration
 
-16. **Cards at `lg:grid-cols-2`** — at `md` (768) they stack full-width which is correct, but the WE/YOU bronze gradient bars become invisible because card width is too wide for the bar to read. Move accent from `border-left` to a top-left chip: `WE` and `YOU` mini-pills above the heading.
-17. **List item rows** — `py-2.5 pl-3` + `border-left:2px` = visually noisy at scale. Replace with a 3-col grid: `[icon] [task] [note]`, divider only between rows (`border-b border-cedar/8`), no per-row left bar.
+19. **Catalogue heading "THE FULL MENU"** — eyebrow + headline is inside `MAX_WIDTH.content` (`max-w-[68ch]`) which is narrower than the catalogue itself; the headline reads cramped. Move just the heading to `max-w-3xl` while keeping the catalogue grid in content width.
+20. **Group title border opacity ladder** — `bronzeStep(gIdx, len)` produces opacities `0.20 → 0.65` across 5 groups. Visually, the first group's underline is barely visible (0.20). Floor it at 0.30 for legibility.
 
-## G. About — Process steps
+## G. About page — closing italic + cities tile
 
-18. **Card border + per-row left bar + hover pl-bump** — three competing affordances. Drop the outer `border` and keep only the bronze left bar; remove `hover:pl-` shift (replace with `hover:bg-cedar/[0.04]` only — quieter).
-19. **Numeral typography** — `text-[13px] tabular-nums mt-1.5 mr-1` looks weak. Promote to `font-serif text-base text-cedar/45 mt-0.5 w-8 shrink-0`.
+21. **Cities tile contrast** — `text-muted-foreground` over a cedar-tinted hover background is fine, but the resting border is `Math.min(bronzeStep(...), 0.25)` — first cities get ~0.05 border which is invisible at 1px. Floor at 0.18.
+22. **Closing italic line** — currently `text-sm text-muted-foreground/70 mt-6 pt-6 border-t border-cedar/8 italic`. Promote the typography to `font-serif italic text-base text-foreground/65`, center it, max-w-[48ch] with `text-balance`. Adds weight without adding noise.
 
-## H. Contact
+## H. Work page — featured header
 
-20. **Form heading "It takes about 30 seconds."** — duplicates the closer copy used elsewhere. Change to "Tell us a few details." (the headline already says "Tell us what you're building"); subhead becomes "Just your phone and name to start."
-21. **Aside icon chips** — `w-9 h-9` cedar-tinted squares look like buttons. Reduce to `w-8 h-8`, `bg-transparent`, with cedar icon at full color (treat as wayfinding glyph, not button).
+23. **`PROJECTS[0].title + "."`** — the heading appends a literal period. If the title already ends in punctuation this double-stops. Use `.replace(/\.$/, "") + "."` or simply trust the data and drop the appended dot.
+24. **Project meta line** — `flex flex-col items-start gap-2 md:flex-row md:items-baseline md:justify-between md:gap-6 flex-wrap` — `flex-wrap` on a `flex-col` does nothing. Drop it.
 
 ## I. Mobile-only fixes
 
-22. **MobileSubNav active chip** — when active it changes color but no underline; add a `before:` pseudo-element bottom hairline `bg-cedar h-px w-4` for spatial cue.
-23. **Hero CTA cluster on `< sm`** — stack vertically with the tel link visible (currently `hidden sm:inline-flex` hides it on mobile, leaving the hero with one solitary CTA). Show "or call NUMBER" below the CTA on mobile too, smaller.
+25. **Hero `evergreen-typographic` mobile spine** — `hidden md:block` so spine is desktop-only. Confirmed; keep but verify the `top-1/2 -translate-y-1/2` doesn't intersect a tall mobile menu trigger when the menu is open. (Spine is hidden on `<md` so this is fine; just document.)
+26. **`StickyMobileCTA` / MobileQuoteFAB** — exists per CedarCTA's `data-quote-cta` sentinel. Audit: currently appears? Z-index? Verify it never overlaps MobileSubNav (z-40). FAB should sit z-30 with `bottom-4 left-4 right-4` safe-area-inset padding, AND only render when no `[data-quote-cta]` is in the viewport.
 
-## J. Global polish
+## J. Token sweep
 
-24. **Section anchor offset** — when jumping to `#section-*`, the fixed chrome (h-16/h-[4.5rem]/h-20 + MobileSubNav 40px) overlaps the heading. Add `scroll-mt-20 md:scroll-mt-24 lg:scroll-mt-28` to all `id="section-*"` sections via a single utility class on `<main>` using `[&_section[id^="section-"]]:scroll-mt-*`.
-25. **Page-level `<main>` background** — Index uses bare `min-h-screen overflow-x-clip` without `bg-background`; if Hero ever fails to render, the page shows browser default. Add `bg-background` everywhere for safety.
-26. **Curly-quotes audit** — sweep all `.tsx` for straight `'` and `"` inside JSX text and replace with curly equivalents (the memory rule).
+27. **`text-minimal`** — used in CedarCTA secondary, FeaturedProjects "See all work", responsibility matrix headers. Define this once in `src/lib/typography.ts` (likely already exists) and verify all callers pull from the same place — no inline reimplementations.
+28. **Curly-quote rule** — `it's`, `we're`, `won't` etc. in JSX text. Quick `rg` for `'\w` inside `.tsx` and replace with `’` per the memory rule.
 
-## K. Light QA loop
+## K. QA checklist (no implementation)
 
-27. After edits, screenshot Home / Services / Work / About / Contact at 375 / 768 / 1366. Verify: closer card looks identical structure across pages, stat row alignment, hero CTA cluster on mobile, no horizontal scroll, anchor jumps land below chrome.
+29. After edits: screenshot Home, Services, Work, About, Contact at 375 / 768 / 1366. Verify hero subtitle width parity, gallery gap parity, no duplicate scrims on Work, MiniFaq top padding visibly larger when `topPad="generous"`, footer + closer + crew share the same fading hairline.
 
 ## Files to touch
 
-`QuoteCloserCard.tsx`, `CrewMoment.tsx`, `TestimonialStrip.tsx`, `Hero.tsx`, `Services.tsx` (homepage component), `pages/Services.tsx`, `pages/About.tsx`, `pages/Contact.tsx`, `pages/Index.tsx`, `pages/Work.tsx`, `MobileSubNav.tsx`, `Footer.tsx` (consistency check), and a tailwind utility helper if needed for the section-anchor scroll-margin.
+`src/components/ui/page-hero.tsx`, `src/components/ProjectGallery.tsx`, `src/components/CedarCTA.tsx`, `src/components/quote/QuoteFormInline.tsx` (read first), `src/components/CrewMoment.tsx`, `src/components/TestimonialStrip.tsx`, `src/components/MiniFaq.tsx`, `src/pages/Services.tsx`, `src/pages/About.tsx`, `src/pages/Work.tsx`, plus a possible touch-up to `src/lib/typography.ts` if `text-minimal` needs a home.
 
-No schema, no business logic, no component deletions. All color via tokens, all spacing via `src/lib/spacing.ts` where a token exists.
+No schema, no business logic, no component deletions. Light-mode only, tokens-first.
