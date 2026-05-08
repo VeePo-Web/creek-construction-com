@@ -594,7 +594,7 @@ const ServicePortrait = (props: ServicePortraitProps) => {
     <section
       className={cn(
         "relative overflow-hidden text-evergreen-foreground",
-        "min-h-[78vh] md:min-h-[82vh] flex items-end",
+        "min-h-[68vh] md:min-h-[78vh] lg:min-h-[720px] xl:min-h-[780px] flex items-end",
         props.className,
       )}
       aria-label={lines.join(" ")}
@@ -611,7 +611,14 @@ const ServicePortrait = (props: ServicePortraitProps) => {
         ]}
       />
 
-      <div className="container mx-auto px-5 sm:px-6 md:px-10 relative z-10 pb-20 md:pb-24 pt-24 md:pt-28 lg:pt-32">
+      {/* Top scrim — keeps fixed chrome legible over photography (no dead void). */}
+      <div
+        className="absolute inset-x-0 top-0 h-32 md:h-40 pointer-events-none z-[1]"
+        style={{ background: "linear-gradient(180deg, hsl(0 0% 0% / 0.55), transparent)" }}
+        aria-hidden
+      />
+
+      <div className="container mx-auto max-w-[1440px] px-5 sm:px-6 md:px-10 relative z-10 pt-28 md:pt-36 pb-16 md:pb-24 lg:pb-28">
         <div className="max-w-3xl">
           {/* Breadcrumb intentionally omitted — see CinematicBleed for the
               same rationale. HeaderBreadcrumb owns sub-page wayfinding. */}
@@ -620,7 +627,7 @@ const ServicePortrait = (props: ServicePortraitProps) => {
             numeral={props.numeral}
             label={props.sectionLabel}
             variant="onDark"
-            className="mb-6 hero-rule-draw"
+            className="mb-5 md:mb-7 hero-rule-draw"
           />
 
           <KineticHeadline
@@ -633,7 +640,9 @@ const ServicePortrait = (props: ServicePortraitProps) => {
           {props.subtitle && (
             <p
               className={cn(
-                "mt-6 text-lg italic font-serif max-w-xl text-evergreen-foreground/90",
+                "mt-6 max-w-xl text-base md:text-lg leading-relaxed",
+                "not-italic md:italic font-sans md:font-serif text-balance",
+                "text-evergreen-foreground/90",
                 TEXT.onDark.legibleShadow,
               )}
             >
