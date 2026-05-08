@@ -20,6 +20,8 @@ interface MiniFaqProps {
   showPhoneFallback?: boolean;
   /** Override heading id (only needed if two FAQs share one page). */
   headingId?: string;
+  /** Add extra top padding for an "objection-handling beat". */
+  topPad?: "default" | "generous";
 }
 
 /**
