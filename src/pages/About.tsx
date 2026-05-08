@@ -65,20 +65,11 @@ const About = () => {
 
             {/* Inline stat trio — quiet, no border, no CTA */}
             <div
-              className="mt-12 pt-8 border-t border-cedar/15 grid grid-cols-3 gap-6 md:gap-10"
+              className="mt-12 pt-8 border-t border-cedar/15"
               role="group"
               aria-label="Creek by the numbers"
             >
-              {STATS_TRIO.map((s) => (
-                <div key={s.label}>
-                  <p className="font-serif text-2xl md:text-3xl text-foreground leading-none tabular-nums">
-                    {s.value}
-                  </p>
-                  <p className="text-[10px] tracking-[0.2em] uppercase text-muted-foreground/70 mt-2 leading-tight">
-                    {s.label}
-                  </p>
-                </div>
-              ))}
+              <StatTrio items={STATS_TRIO} variant="inline" />
             </div>
           </div>
         </div>
