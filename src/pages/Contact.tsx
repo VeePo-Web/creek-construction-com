@@ -128,7 +128,7 @@ const Contact = () => {
                 <SectionHeader
                   label="THE FORM"
                   headingId="form-heading"
-                  heading="It takes about 30 seconds."
+                  heading="Tell us a few details."
                   subheading="Just your phone and name to start."
                   disableMotion
                 />
