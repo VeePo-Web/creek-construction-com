@@ -62,7 +62,7 @@ const Contact = () => {
               {/* LEFT — direct contact card */}
               <div>
                 <SectionHeader
-                  label="DIRECT"
+                  label="DIRECT LINE"
                   headingId="direct-heading"
                   heading="Reach us directly."
                   subheading="The fastest way is the phone."
