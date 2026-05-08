@@ -758,7 +758,7 @@ const ArchitectBleed = (props: ArchitectBleedProps) => {
       id="section-hero"
       className={cn(
         "relative overflow-hidden flex flex-col justify-between",
-        "min-h-[88vh] md:min-h-screen",
+        "min-h-[78vh] sm:min-h-[84vh] md:min-h-screen",
         props.className,
       )}
       style={{ backgroundColor: "hsl(0 0% 4%)", contain: "layout style paint" }}
