@@ -40,10 +40,10 @@ interface HeroTriptychProps {
   className?: string;
 }
 
-const RHYTHM_COLS: Record<TriptychRhythm, string> = {
-  equal: "minmax(0,1fr) minmax(0,1fr) minmax(0,1fr)",
-  asymmetric: "minmax(0,40fr) minmax(0,30fr) minmax(0,30fr)",
-  cinematic: "minmax(0,60fr) minmax(0,20fr) minmax(0,20fr)",
+const RHYTHM_FLEX: Record<TriptychRhythm, [number, number, number]> = {
+  equal: [1, 1, 1],
+  asymmetric: [40, 30, 30],
+  cinematic: [60, 20, 20],
 };
 
 const RHYTHM_PRELOAD_SIZE: Record<TriptychRhythm, string> = {
