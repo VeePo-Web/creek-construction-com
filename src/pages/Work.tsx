@@ -51,7 +51,7 @@ const Work = () => {
       <PageHero
         variant="cinematic-bleed"
         breadcrumb={[{ label: "Home", to: "/" }, { label: "Our Work" }]}
-        sectionLabel="SELECTED WORK"
+        sectionLabel="Selected Work"
         title={["The work", "speaks first."]}
         subtitle="Selected projects across Calgary, Edmonton, and the towns in between."
         query={{ shot_type: ["hero", "elevation", "wide"], min_quality: "reference", kind: "image" }}
