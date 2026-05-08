@@ -445,10 +445,14 @@ const CinematicBleed = (props: CinematicBleedProps) => {
 
   return (
     <section
-      className={cn("relative overflow-hidden flex items-end", props.className)}
+      className={cn(
+        "relative overflow-hidden flex items-end",
+        "min-h-[68vh] md:min-h-[78vh] lg:min-h-[720px] xl:min-h-[780px]",
+        props.className,
+      )}
       style={{
-        height: props.height ?? "82vh",
-        minHeight: props.minHeight ?? "620px",
+        ...(props.height ? { height: props.height } : null),
+        ...(props.minHeight ? { minHeight: props.minHeight } : null),
         contain: "layout style paint",
       }}
       aria-label={lines.join(" ")}
