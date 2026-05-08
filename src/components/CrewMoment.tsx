@@ -17,6 +17,8 @@ interface CrewMomentProps {
   headingId?: string;
   /** Render the 3-up stat row beneath the paragraphs. */
   showStats?: boolean;
+  /** Faint hairline at the section top — used when adjacent to a same-bg section. */
+  topRule?: boolean;
 }
 
 /**
