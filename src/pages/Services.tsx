@@ -71,7 +71,7 @@ const Services = () => {
               heading="Everything we build."
             />
 
-            <div className="mt-16 space-y-16">
+            <div className="mt-16 space-y-12 md:space-y-16">
               {SERVICE_GROUPS.map((group, gIdx) => {
                 const items = getItemsForGroup(group.id);
                 const opacity = bronzeStep(gIdx, SERVICE_GROUPS.length);
