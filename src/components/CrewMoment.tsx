@@ -51,7 +51,7 @@ const CrewMoment = ({
             min_quality: "reference",
           }}
           sizes={MEDIA_SIZES.PORTRAIT_HALF}
-          wrapperClassName="aspect-[4/5] md:aspect-[3/4] lg:aspect-portrait w-full rounded-sm overflow-hidden"
+          wrapperClassName="aspect-[5/4] sm:aspect-[4/5] md:aspect-[3/4] lg:aspect-portrait w-full rounded-sm overflow-hidden"
           cedarHover
           fallbackVariant="cedar"
           fallbackCaption="On the boards · Alberta"
