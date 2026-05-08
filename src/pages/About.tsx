@@ -102,10 +102,10 @@ const About = () => {
                 <div
                   key={i}
                   role="listitem"
-                  className="flex items-start gap-4 sm:gap-5 pl-4 sm:pl-6 py-4 sm:py-5 rounded-sm transition-[background-color,padding-left] duration-300 hover:bg-cedar/[0.03] hover:pl-5 sm:hover:pl-7 border border-border/40 bg-background"
+                  className="flex items-start gap-4 sm:gap-5 pl-4 sm:pl-6 py-4 sm:py-5 rounded-sm transition-colors duration-300 hover:bg-cedar/[0.04] bg-background"
                   style={{ borderLeft: `2px solid hsl(var(--cedar) / ${bronzeStep(i, STEPS.length)})` }}
                 >
-                  <span className="text-cedar/30 text-[13px] tabular-nums mt-1.5 mr-1 font-medium">
+                  <span className="font-serif text-base text-cedar/45 tabular-nums mt-0.5 w-8 shrink-0">
                     {String(i + 1).padStart(2, "0")}
                   </span>
                   <div>
