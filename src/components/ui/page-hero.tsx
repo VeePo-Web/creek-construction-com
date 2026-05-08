@@ -925,9 +925,9 @@ const ArchitectBleed = (props: ArchitectBleedProps) => {
       </div>
 
       {/* ── Bottom: hairline, subtitle, CTA row, caption rail ── */}
-      <div className="container mx-auto px-5 sm:px-6 md:px-10 relative z-10 pb-14 md:pb-20 lg:pb-24">
-        <div className="grid md:grid-cols-12 gap-y-10 gap-x-10 lg:gap-x-12 items-end">
-          <div className="md:col-span-8 lg:col-span-7">
+      <div className="container mx-auto max-w-[1440px] px-5 sm:px-6 md:px-10 relative z-10 pb-14 md:pb-20 lg:pb-24">
+        <div className="grid md:grid-cols-12 gap-y-10 md:gap-y-12 gap-x-10 lg:gap-x-12 items-end">
+          <div className="md:col-span-7 lg:col-span-7">
             <span
               aria-hidden
               className="block h-px w-12 mb-6 hero-provenance-enter"
@@ -962,7 +962,7 @@ const ArchitectBleed = (props: ArchitectBleedProps) => {
           </div>
 
           {captionLine && (
-            <div className="md:col-span-4 lg:col-span-5 md:text-right">
+            <div className="md:col-span-5 lg:col-span-5 md:text-right md:mt-2">
               <div
                 className="inline-flex items-center gap-3 hero-provenance-enter"
                 style={{ ["--kinetic-delay" as never]: "1600ms" }}
@@ -973,7 +973,7 @@ const ArchitectBleed = (props: ArchitectBleedProps) => {
                   style={{ backgroundColor: "hsl(0 0% 100% / 0.45)" }}
                 />
                 <span
-                  className="text-[10px] md:text-[11px] uppercase tabular-nums"
+                  className="text-[10px] md:text-[11px] uppercase tabular-nums whitespace-nowrap"
                   style={{
                     color: "hsl(0 0% 100% / 0.7)",
                     letterSpacing: "0.22em",
