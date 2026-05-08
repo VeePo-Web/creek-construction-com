@@ -137,7 +137,7 @@ const Services = () => {
               heading="What we handle. What you handle."
             />
 
-            <div className="mt-12 grid lg:grid-cols-2 gap-6 lg:gap-4">
+            <div className="mt-12 grid lg:grid-cols-2 gap-6 lg:gap-8">
               <div
                 aria-label="What we handle"
                 className="p-7 sm:p-8 md:p-10 border border-cedar/30 rounded-sm h-full"
