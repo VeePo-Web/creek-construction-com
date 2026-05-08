@@ -28,8 +28,8 @@ interface QuoteCloserCardProps {
  */
 const QuoteCloserCard = ({
   eyebrow = "What's next",
-  heading = "Send us your project details.",
-  body = "It takes 30 seconds — just your name and phone. Tell us what you're building and we'll be in touch within 24–48 hours.",
+  heading = "Tell us about your project.",
+  body = "It takes about 30 seconds — your phone and name to start. We reply within 24–48 hours.",
   preselectServices,
   asSection = true,
   id = "section-closer",
