@@ -1,3 +1,4 @@
+import { useEffect, useRef } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { ChevronLeft } from "lucide-react";
 
@@ -18,12 +19,13 @@ interface MobileSubNavProps {
  * `SectionRail` (both `md+` only).
  *
  *   ┌─────────────────────────────────────────────────┐
- *   │ ← Services         CATALOGUE  ·  FAQ            │
+ *   │ ← Services         CATALOGUE  ·  FAQ  …▸        │
  *   └─────────────────────────────────────────────────┘
  *
+ * Right-side chip strip is horizontally scrollable with a fade-mask
+ * affordance, scroll-snapping, and auto-centering of the active chip.
+ *
  * Renders nothing on `/`, on routes without a breadcrumb, and at md+.
- * Section anchors live on the right; the back chip on the left always
- * points at the parent route from `route-meta.ts`.
  */
 const MobileSubNav = ({ faded = false }: MobileSubNavProps) => {
   const { pathname } = useLocation();
@@ -31,7 +33,22 @@ const MobileSubNav = ({ faded = false }: MobileSubNavProps) => {
   const sections = getPageSections(pathname);
   const active = useActiveSection(sections);
 
+  const scrollerRef = useRef<HTMLDivElement | null>(null);
+  const chipRefs = useRef<Record<string, HTMLAnchorElement | null>>({});
+
+  // Center the active chip in the scroll viewport whenever it changes.
+  useEffect(() => {
+    if (!active) return;
+    const el = chipRefs.current[active];
+    if (el && typeof el.scrollIntoView === "function") {
+      el.scrollIntoView({ inline: "center", block: "nearest", behavior: "smooth" });
+    }
+  }, [active]);
+
   if (!meta) return null;
+
+  // Right-edge fade mask — signals "swipe for more" without adding chrome.
+  const fadeMask = "linear-gradient(to right, black calc(100% - 24px), transparent)";
 
   return (
     <nav
@@ -49,7 +66,7 @@ const MobileSubNav = ({ faded = false }: MobileSubNavProps) => {
         <Link
           to={meta.parentPath}
           className={cn(
-            "group/back inline-flex items-center gap-1 -ml-1 px-2 h-9 rounded-sm",
+            "group/back inline-flex items-center gap-1 -ml-1 px-2 h-9 rounded-sm shrink-0",
             "text-[10px] tracking-[0.22em] uppercase font-medium",
             "text-foreground/55 active:text-cedar transition-colors duration-200",
             "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cedar",
@@ -59,23 +76,32 @@ const MobileSubNav = ({ faded = false }: MobileSubNavProps) => {
           <span className="text-cedar">{meta.label}</span>
         </Link>
 
-        {/* Right — section anchors. Horizontally scrollable so they never
-            wrap or collide with the back chip on narrow phones. */}
+        {/* Right — section anchors. Horizontally scrollable with fade mask
+            and snap so the user understands more is hidden off-screen. */}
         {sections.length >= 2 && (
           <div
-            className="flex items-center gap-0 overflow-x-auto no-scrollbar -mr-1"
-            style={{ scrollbarWidth: "none" }}
+            ref={scrollerRef}
+            className="flex items-center gap-0 overflow-x-auto no-scrollbar pr-3 -mr-3 min-w-0"
+            style={{
+              scrollbarWidth: "none",
+              scrollSnapType: "x proximity",
+              maskImage: fadeMask,
+              WebkitMaskImage: fadeMask,
+            }}
           >
             {sections.map((section, i) => {
               const isActive = active === section.anchor;
               return (
-                <span key={section.anchor} className="flex items-center shrink-0">
+                <span key={section.anchor} className="flex items-center shrink-0" style={{ scrollSnapAlign: "end" }}>
                   {i > 0 && (
                     <span aria-hidden className="mx-1 text-foreground/25 text-[9px]">
                       ·
                     </span>
                   )}
                   <a
+                    ref={(node) => {
+                      chipRefs.current[section.anchor] = node;
+                    }}
                     href={`#${section.anchor}`}
                     onClick={(e) => {
                       e.preventDefault();
