@@ -546,9 +546,10 @@ const CinematicBleed = (props: CinematicBleedProps) => {
               className={cn(
                 "mt-6 max-w-xl text-base md:text-xl leading-relaxed md:leading-normal",
                 "not-italic md:italic font-sans md:font-serif text-balance",
-                "text-evergreen-foreground/90",
+                "text-white/95 md:text-evergreen-foreground/90",
                 TEXT.onDark.legibleShadow,
               )}
+              style={{ textShadow: "0 1px 6px hsl(0 0% 0% / 0.55)" }}
             >
               {props.subtitle}
             </p>
