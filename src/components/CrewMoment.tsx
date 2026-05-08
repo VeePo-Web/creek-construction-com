@@ -37,6 +37,7 @@ const CrewMoment = ({
   headingId = "crew-heading",
   showStats = false,
   showCta = false,
+  topRule = false,
 }: CrewMomentProps & { showCta?: boolean }) => {
   const { ref, cls, style } = useReveal();
 
