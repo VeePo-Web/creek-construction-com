@@ -18,6 +18,8 @@ interface TestimonialStripProps {
   showCta?: boolean;
   /** Override heading id (only needed if two strips share one page). */
   headingId?: string;
+  /** Faint hairline at section top — used when adjacent to a same-bg section. */
+  topRule?: boolean;
 }
 
 /**
