@@ -71,7 +71,7 @@ const Footer = () => {
         </div>
 
         <div className="max-w-6xl mx-auto mt-8 pt-6 border-t border-evergreen-foreground/10 text-center">
-          <p className="text-xs text-evergreen-foreground/55">
+          <p className="text-xs text-evergreen-foreground/55 tabular-nums">
             © {new Date().getFullYear()} Creek Construction · Calgary · Edmonton
           </p>
         </div>
