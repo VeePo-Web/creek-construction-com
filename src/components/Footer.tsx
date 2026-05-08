@@ -33,7 +33,7 @@ const Footer = () => {
           </Link>
 
           <nav aria-label="Footer">
-            <ul className="flex flex-wrap items-center justify-center xl:justify-start gap-x-5 lg:gap-x-7 xl:gap-x-8 gap-y-1.5 text-sm">
+            <ul className="flex flex-wrap items-center justify-center xl:justify-start gap-x-5 lg:gap-x-7 xl:gap-x-8 gap-y-2 text-sm">
               {links.map((l) => (
                 <li key={l.to}>
                   <Link

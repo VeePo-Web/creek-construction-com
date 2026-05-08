@@ -40,10 +40,10 @@ interface HeroTriptychProps {
   className?: string;
 }
 
-const RHYTHM_COLS: Record<TriptychRhythm, string> = {
-  equal: "minmax(0,1fr) minmax(0,1fr) minmax(0,1fr)",
-  asymmetric: "minmax(0,40fr) minmax(0,30fr) minmax(0,30fr)",
-  cinematic: "minmax(0,60fr) minmax(0,20fr) minmax(0,20fr)",
+const RHYTHM_FLEX: Record<TriptychRhythm, [number, number, number]> = {
+  equal: [1, 1, 1],
+  asymmetric: [40, 30, 30],
+  cinematic: [60, 20, 20],
 };
 
 const RHYTHM_PRELOAD_SIZE: Record<TriptychRhythm, string> = {
@@ -113,13 +113,9 @@ const HeroTriptych = ({
     >
       {/* ─── Photographic columns ─── */}
 
-      {/* ≥ md: 3-column triptych. < md: vertical stack 40/30/30. < sm: hide cols B/C. */}
-      <div
-        className="absolute inset-0 grid"
-        style={{
-          gridTemplateColumns: RHYTHM_COLS[rhythm],
-        }}
-      >
+      {/* ≥ md: 3-column triptych using flex (bulletproof full-height stretch).
+          < md: hidden — replaced by the single-image branch below. */}
+      <div className="absolute inset-0 hidden md:flex flex-row items-stretch h-full w-full">
         {columns.map((col, i) => (
           <TriptychColumn
             key={i}
@@ -130,14 +126,11 @@ const HeroTriptych = ({
             delayMs={col.delayMs}
             priority={priority && i === 0}
             guttersDrawn={guttersDrawn}
-            // Tailwind handles the responsive collapse — mobile stacks to rows.
-            className={cn(
-              // Default desktop: column visible
-              "relative h-full",
-              // sm-md: stack vertically, hide grid layout's column placement
-              i === 1 && "max-md:hidden",
-              i === 2 && "max-md:hidden",
-            )}
+            className="relative h-full self-stretch"
+            style={{
+              flex: `${RHYTHM_FLEX[rhythm][i]} 1 0%`,
+              minWidth: 0,
+            }}
           />
         ))}
       </div>
@@ -154,7 +147,7 @@ const HeroTriptych = ({
           delayMs={0}
           priority={priority}
           guttersDrawn={guttersDrawn}
-          className="h-full"
+          className="h-full min-h-full w-full"
         />
       </div>
 
@@ -217,6 +210,7 @@ interface TriptychColumnProps {
   priority?: boolean;
   guttersDrawn: boolean;
   className?: string;
+  style?: React.CSSProperties;
 }
 
 const TriptychColumn = ({
@@ -228,6 +222,7 @@ const TriptychColumn = ({
   priority,
   guttersDrawn,
   className,
+  style,
 }: TriptychColumnProps) => {
   const [loaded, setLoaded] = useState(false);
   const imgRef = useRef<HTMLImageElement | null>(null);
@@ -238,19 +233,20 @@ const TriptychColumn = ({
     if (node?.complete && node.naturalWidth > 0) setLoaded(true);
   }, [media?.url]);
 
+  const gutterStyle =
+    column > 0
+      ? {
+          boxShadow: guttersDrawn
+            ? "inset 1px 0 0 hsl(var(--cedar) / 0.18)"
+            : "inset 0 0 0 hsl(var(--cedar) / 0)",
+          transition: "box-shadow 700ms ease-out",
+        }
+      : undefined;
+
   return (
     <div
       className={cn("relative overflow-hidden bg-secondary", className)}
-      style={
-        column > 0
-          ? {
-              boxShadow: guttersDrawn
-                ? "inset 1px 0 0 hsl(var(--cedar) / 0.18)"
-                : "inset 0 0 0 hsl(var(--cedar) / 0)",
-              transition: "box-shadow 700ms ease-out",
-            }
-          : undefined
-      }
+      style={{ ...gutterStyle, ...style }}
     >
       {media ? (
         <>

@@ -508,6 +508,12 @@ const CinematicBleed = (props: CinematicBleedProps) => {
         style={{ background: "linear-gradient(180deg, hsl(0 0% 0% / 0.55), transparent)" }}
         aria-hidden
       />
+      {/* Upper soft scrim — guarantees eyebrow + headline contrast on bright photos. */}
+      <div
+        className="absolute inset-x-0 top-0 h-[42%] pointer-events-none"
+        style={{ background: SCRIM.cinematicTop }}
+        aria-hidden
+      />
       {/* Bottom-anchored scrim — heavier so subtitle reads on bright photos. */}
       <div
         className="absolute inset-x-0 bottom-0 h-[78%] md:h-[72%] pointer-events-none"
@@ -540,9 +546,10 @@ const CinematicBleed = (props: CinematicBleedProps) => {
               className={cn(
                 "mt-6 max-w-xl text-base md:text-xl leading-relaxed md:leading-normal",
                 "not-italic md:italic font-sans md:font-serif text-balance",
-                "text-evergreen-foreground/90",
+                "text-white/95 md:text-evergreen-foreground/90",
                 TEXT.onDark.legibleShadow,
               )}
+              style={{ textShadow: "0 1px 6px hsl(0 0% 0% / 0.55)" }}
             >
               {props.subtitle}
             </p>
@@ -594,7 +601,7 @@ const ServicePortrait = (props: ServicePortraitProps) => {
     <section
       className={cn(
         "relative overflow-hidden text-evergreen-foreground",
-        "min-h-[68vh] md:min-h-[78vh] lg:min-h-[720px] xl:min-h-[780px] flex items-end",
+        "min-h-[68vh] md:min-h-[640px] lg:min-h-[720px] xl:min-h-[780px] flex items-end",
         props.className,
       )}
       aria-label={lines.join(" ")}
@@ -635,11 +642,12 @@ const ServicePortrait = (props: ServicePortraitProps) => {
           {props.subtitle && (
             <p
               className={cn(
-                "mt-6 max-w-xl text-base md:text-lg leading-relaxed",
+                "mt-6 max-w-xl text-base md:text-lg leading-snug md:leading-relaxed",
                 "not-italic md:italic font-sans md:font-serif text-balance",
-                "text-evergreen-foreground/90",
+                "text-white/95 md:text-evergreen-foreground/90",
                 TEXT.onDark.legibleShadow,
               )}
+              style={{ textShadow: "0 1px 6px hsl(0 0% 0% / 0.55)" }}
             >
               {props.subtitle}
             </p>

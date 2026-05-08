@@ -37,12 +37,19 @@ const MobileSubNav = ({ faded = false }: MobileSubNavProps) => {
   const chipRefs = useRef<Record<string, HTMLAnchorElement | null>>({});
 
   // Center the active chip in the scroll viewport whenever it changes.
+  // Use direct scrollTo math (instead of scrollIntoView) so iOS Safari
+  // never scrolls the document — only the inner chip strip.
   useEffect(() => {
     if (!active) return;
     const el = chipRefs.current[active];
-    if (el && typeof el.scrollIntoView === "function") {
-      el.scrollIntoView({ inline: "center", block: "nearest", behavior: "smooth" });
-    }
+    const parent = scrollerRef.current;
+    if (!el || !parent) return;
+    const id = window.requestAnimationFrame(() => {
+      const targetLeft =
+        el.offsetLeft - parent.clientWidth / 2 + el.clientWidth / 2;
+      parent.scrollTo({ left: Math.max(0, targetLeft), behavior: "smooth" });
+    });
+    return () => window.cancelAnimationFrame(id);
   }, [active]);
 
   if (!meta) return null;
@@ -73,7 +80,7 @@ const MobileSubNav = ({ faded = false }: MobileSubNavProps) => {
           )}
         >
           <ChevronLeft className="h-3.5 w-3.5" aria-hidden />
-          <span className="text-cedar">{meta.label}</span>
+          <span className="text-cedar">{meta.parent ?? meta.label}</span>
         </Link>
 
         {/* Right — section anchors. Horizontally scrollable with fade mask
