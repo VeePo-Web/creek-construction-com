@@ -124,18 +124,18 @@ const About = () => {
               headingId="areas-heading"
               heading="Calgary, Edmonton, and the towns in between."
             />
-            <div className="grid grid-cols-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2 mt-10">
+            <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2 mt-10">
               {CONTACT.cities.map((city, i) => (
                 <span
                   key={city}
                   className="text-sm text-muted-foreground border rounded-sm px-3 py-2.5 inline-flex items-center justify-center min-h-[44px] hover:text-foreground hover:bg-cedar/[0.04] hover:border-cedar/30 transition-[color,background-color,border-color] duration-300"
-                  style={{ borderColor: `hsl(var(--cedar) / ${bronzeStep(i, CONTACT.cities.length)})` }}
+                  style={{ borderColor: `hsl(var(--cedar) / ${Math.min(bronzeStep(i, CONTACT.cities.length), 0.25)})` }}
                 >
                   {city}
                 </span>
               ))}
             </div>
-            <p className="text-sm text-muted-foreground/70 mt-6 italic">
+            <p className="text-sm text-muted-foreground/70 mt-6 pt-6 border-t border-cedar/8 italic">
               Not on the list? Ask anyway — we’ll let you know if we can travel.
             </p>
           </div>
