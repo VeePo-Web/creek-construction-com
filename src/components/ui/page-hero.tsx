@@ -980,7 +980,7 @@ const ArchitectBleed = (props: ArchitectBleedProps) => {
           </div>
 
           {captionLine && (
-            <div className="md:col-span-5 lg:col-span-5 md:text-right md:mt-2">
+            <div className="md:col-span-5 lg:col-span-5 text-right md:mt-2">
               <div
                 className="inline-flex items-center gap-3 hero-provenance-enter"
                 style={{ ["--kinetic-delay" as never]: "1600ms" }}
