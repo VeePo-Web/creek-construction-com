@@ -70,7 +70,18 @@ const About = () => {
               role="group"
               aria-label="Creek by the numbers"
             >
-              <StatTrio items={STATS_TRIO} variant="inline" />
+              <StatTrio
+                variant="inline"
+                items={STATS_TRIO.map((s) => {
+                  const m = /^(\d+)(.*)$/.exec(s.value.trim());
+                  return {
+                    value: m ? Number(m[1]) : 0,
+                    suffix: m ? m[2] : undefined,
+                    label: s.label,
+                    static: !m,
+                  };
+                })}
+              />
             </div>
           </div>
         </div>
