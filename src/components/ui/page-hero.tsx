@@ -540,7 +540,7 @@ const CinematicBleed = (props: CinematicBleedProps) => {
           {props.subtitle && (
             <p
               className={cn(
-                "mt-6 max-w-xl text-base md:text-xl leading-relaxed md:leading-normal",
+                "mt-6 max-w-[44ch] text-base md:text-xl leading-relaxed md:leading-normal",
                 "not-italic md:italic font-sans md:font-serif text-balance",
                 "text-white/95 md:text-evergreen-foreground/90",
                 TEXT.onDark.legibleShadow,
