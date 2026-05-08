@@ -155,7 +155,7 @@ const HeroTriptych = ({
 
       {/* Top nav-legibility scrim — always on. */}
       <div
-        className="absolute inset-x-0 top-0 h-24 pointer-events-none"
+        className="absolute inset-x-0 top-0 h-16 md:h-20 pointer-events-none"
         style={{ background: SCRIM.topNav }}
       />
 
@@ -276,6 +276,7 @@ const TriptychColumn = ({
               animationDelay: `${delayMs}ms`,
               animationDuration: "16s",
               opacity: loaded ? 1 : 0,
+              objectPosition: "center 38%",
             }}
             loading={priority ? "eager" : "lazy"}
             {...(priority ? ({ fetchpriority: "high" } as Record<string, string>) : {})}
