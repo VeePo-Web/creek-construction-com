@@ -133,8 +133,8 @@ const HeroTriptych = ({
             guttersDrawn={guttersDrawn}
             // Tailwind handles the responsive collapse — mobile stacks to rows.
             className={cn(
-              // Default desktop: column visible
-              "relative h-full",
+              // Default desktop: column visible, fully fill the grid row.
+              "relative h-full min-h-full w-full",
               // sm-md: stack vertically, hide grid layout's column placement
               i === 1 && "max-md:hidden",
               i === 2 && "max-md:hidden",
