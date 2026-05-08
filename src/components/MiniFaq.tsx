@@ -41,6 +41,7 @@ const MiniFaq = ({
   showCta = false,
   showPhoneFallback = true,
   headingId = "faq-heading",
+  topPad = "default",
 }: MiniFaqProps) => {
   const { ref, cls, style } = useReveal();
 
