@@ -57,18 +57,18 @@ const TestimonialStrip = ({
         {items.map((t, i) => (
           <li
             key={t.firstName + i}
-            className="flex flex-col p-6 lg:p-8 lg:min-h-[260px] bg-background border border-border/40 rounded-sm transition-[background-color,border-color] duration-300 hover:bg-cedar/[0.03] hover:border-cedar/30"
+            className="flex flex-col p-6 lg:p-8 sm:min-h-[200px] md:min-h-[240px] lg:min-h-[260px] bg-background border border-border/40 rounded-sm transition-[background-color,border-color] duration-300 hover:bg-cedar/[0.03] hover:border-cedar/30"
             style={{
               borderLeft: `2px solid hsl(var(--cedar) / ${Math.max(bronzeStep(i, items.length), 0.3)})`,
             }}
           >
             <p
               className="font-serif text-lg md:text-xl text-foreground leading-snug flex-1"
-              style={{ textIndent: "-0.32em" }}
+              style={{ textIndent: "-0.4em", paddingLeft: "0.4em" }}
             >
               <span aria-hidden className="text-cedar/35">&ldquo;</span>{t.quote}<span aria-hidden className="text-cedar/35">&rdquo;</span>
             </p>
-            <div className="mt-8 pt-5 border-t border-border/40 flex flex-wrap items-baseline justify-between gap-2">
+            <div className="mt-8 pt-5 border-t border-border/40 flex flex-col sm:flex-row sm:items-baseline sm:justify-between gap-y-1 gap-x-2">
               <p className="text-sm text-foreground">
                 <span className="text-cedar/70 mr-1.5">—</span>
                 {t.firstName}
