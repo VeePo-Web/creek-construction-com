@@ -601,7 +601,7 @@ const ServicePortrait = (props: ServicePortraitProps) => {
     <section
       className={cn(
         "relative overflow-hidden text-evergreen-foreground",
-        "min-h-[68vh] md:min-h-[78vh] lg:min-h-[720px] xl:min-h-[780px] flex items-end",
+        "min-h-[68vh] md:min-h-[640px] lg:min-h-[720px] xl:min-h-[780px] flex items-end",
         props.className,
       )}
       aria-label={lines.join(" ")}
