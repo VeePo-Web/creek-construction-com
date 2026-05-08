@@ -20,6 +20,8 @@ interface MiniFaqProps {
   showPhoneFallback?: boolean;
   /** Override heading id (only needed if two FAQs share one page). */
   headingId?: string;
+  /** Add extra top padding for an "objection-handling beat". */
+  topPad?: "default" | "generous";
 }
 
 /**
@@ -39,6 +41,7 @@ const MiniFaq = ({
   showCta = false,
   showPhoneFallback = true,
   headingId = "faq-heading",
+  topPad = "default",
 }: MiniFaqProps) => {
   const { ref, cls, style } = useReveal();
 
@@ -77,7 +80,7 @@ const MiniFaq = ({
   return (
     <section
       id="section-faq"
-      className={`${SECTION_PADDING.default} ${background === "secondary" ? "bg-secondary" : "bg-background"}`}
+      className={`${SECTION_PADDING.default} ${background === "secondary" ? "bg-secondary" : "bg-background"} ${topPad === "generous" ? "!pt-24 md:!pt-28" : ""}`}
       aria-labelledby={headingId}
     >
       <div className="container mx-auto px-5 sm:px-6">{inner}</div>

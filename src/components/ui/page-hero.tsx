@@ -774,7 +774,7 @@ const ArchitectBleed = (props: ArchitectBleedProps) => {
           {item.lqip && (
             <div
               aria-hidden
-              className="absolute inset-0 transition-opacity duration-700"
+              className="absolute inset-0 transition-opacity duration-500"
               style={{
                 backgroundImage: `url(${item.lqip.startsWith("data:") ? item.lqip : `data:image/jpeg;base64,${item.lqip}`})`,
                 backgroundSize: "cover",
@@ -806,7 +806,7 @@ const ArchitectBleed = (props: ArchitectBleedProps) => {
             alt={item.alt}
             width={item.width ?? 1920}
             height={item.height ?? 1080}
-            className="absolute inset-0 w-full h-full object-cover hero-kenburns transition-opacity duration-700"
+            className="absolute inset-0 w-full h-full object-cover hero-kenburns transition-opacity duration-[900ms]"
             loading="eager"
             {...({ fetchpriority: "high" } as Record<string, string>)}
             decoding="sync"

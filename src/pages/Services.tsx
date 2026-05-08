@@ -38,14 +38,14 @@ const Services = () => {
   const { openModal } = useQuoteModal();
 
   return (
-    <main className="min-h-screen bg-background" aria-label="Services — Creek Construction">
-      <Navigation />
+    <main id="main-content" className="min-h-screen bg-background" aria-label="Services — Creek Construction">
       <SkipToContent target="section-catalogue" />
+      <Navigation />
 
       <PageHero
         variant="service-portrait"
         breadcrumb={[{ label: "Home", to: "/" }, { label: "Services" }]}
-        sectionLabel="EXTERIOR CONSTRUCTION"
+        sectionLabel="Exterior Construction"
         title={["Built outside.", "Built to last."]}
         skipToId="all-services-heading"
         queries={[
@@ -71,7 +71,7 @@ const Services = () => {
               heading="Everything we build."
             />
 
-            <div className="mt-16 space-y-16">
+            <div className="mt-16 space-y-12 md:space-y-16">
               {SERVICE_GROUPS.map((group, gIdx) => {
                 const items = getItemsForGroup(group.id);
                 const opacity = bronzeStep(gIdx, SERVICE_GROUPS.length);
@@ -79,7 +79,7 @@ const Services = () => {
                   <div key={group.id} className="contents">
                     <div aria-labelledby={`group-${group.id}`}>
                       <div
-                        className="pb-4 mb-6 border-b"
+                        className="pb-3 mb-5 md:pb-4 md:mb-6 border-b"
                         style={{ borderBottomColor: `hsl(var(--cedar) / ${opacity})` }}
                       >
                         <h3
@@ -96,7 +96,7 @@ const Services = () => {
                             key={item.id}
                             type="button"
                             onClick={() => openModal([item.id])}
-                            className="group flex items-baseline justify-between gap-4 py-4 text-left border-b border-cedar/12 transition-colors duration-300 hover:bg-cedar/[0.03] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cedar focus-visible:ring-offset-2 rounded-sm px-3 -mx-3 min-h-[44px]"
+                            className="group flex items-baseline justify-between gap-4 py-5 text-left border-b border-cedar/15 transition-colors duration-300 hover:bg-cedar/[0.03] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cedar focus-visible:ring-offset-2 rounded-sm px-3 -mx-3 min-h-[44px]"
                             aria-label={`Get my free quote for ${item.title}`}
                           >
                             <div className="flex-1 min-w-0">
@@ -137,7 +137,7 @@ const Services = () => {
               heading="What we handle. What you handle."
             />
 
-            <div className="mt-12 grid lg:grid-cols-2 gap-6 lg:gap-4">
+            <div className="mt-12 grid lg:grid-cols-2 gap-6 lg:gap-8">
               <div
                 aria-label="What we handle"
                 className="p-7 sm:p-8 md:p-10 border border-cedar/30 rounded-sm h-full"
@@ -170,7 +170,7 @@ const Services = () => {
               >
                 <div className="flex items-baseline justify-between gap-2 flex-wrap mb-8">
                   <h3 className="text-minimal text-muted-foreground">YOU HANDLE</h3>
-                  <span className="text-[10px] tracking-[0.2em] text-muted-foreground/40 tabular-nums">
+                  <span className="text-[10px] tracking-[0.2em] text-muted-foreground/55 tabular-nums">
                     {String(YOU_HANDLE.length).padStart(2, "0")} ITEMS
                   </span>
                 </div>

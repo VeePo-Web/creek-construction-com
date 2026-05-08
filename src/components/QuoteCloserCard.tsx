@@ -28,8 +28,8 @@ interface QuoteCloserCardProps {
  */
 const QuoteCloserCard = ({
   eyebrow = "What's next",
-  heading = "Send us your project details.",
-  body = "It takes 30 seconds — just your name and phone. Tell us what you're building and we'll be in touch within 24–48 hours.",
+  heading = "Tell us about your project.",
+  body = "It takes about 30 seconds — your phone and name to start. We reply within 24–48 hours.",
   preselectServices,
   asSection = true,
   id = "section-closer",
@@ -47,7 +47,7 @@ const QuoteCloserCard = ({
         <p className="text-[10px] tracking-[0.25em] uppercase text-cedar/80 mb-4">
           {eyebrow}
         </p>
-        <h2 className="font-serif text-evergreen-foreground text-[28px] sm:text-3xl md:text-4xl lg:text-[44px] leading-[1.1] tracking-[-0.02em] text-balance mb-5 max-w-[20ch] md:max-w-[28ch] lg:max-w-[34ch]">
+        <h2 className="font-serif text-evergreen-foreground text-[28px] sm:text-3xl md:text-4xl lg:text-[44px] leading-[1.1] tracking-[-0.02em] text-pretty mb-5 max-w-[20ch] md:max-w-[28ch] lg:max-w-[34ch]">
           {heading}
         </h2>
         <p className="text-evergreen-foreground/70 leading-relaxed mb-8 max-w-[52ch]">

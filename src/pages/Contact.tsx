@@ -31,7 +31,7 @@ const Contact = () => {
   const ROW_COUNT = 3;
 
   return (
-    <main className="min-h-screen bg-background" aria-label="Contact — Creek Construction">
+    <main id="main-content" className="min-h-screen bg-background" aria-label="Contact — Creek Construction">
       <NavigationMinimal />
       <SkipToContent target="section-contact" />
 
@@ -45,11 +45,11 @@ const Contact = () => {
             {/* Headline strip */}
             <div className="text-center max-w-3xl mx-auto mb-10 md:mb-14">
               <p className="text-[10px] tracking-[0.25em] uppercase text-cedar mb-4">
-                GET A FREE QUOTE
+                FREE QUOTE
               </p>
               <h1
                 id="contact-heading"
-                className="font-serif text-[32px] sm:text-4xl lg:text-[56px] text-foreground leading-[1.05] tracking-[-0.025em] text-balance"
+                className="font-serif text-[32px] sm:text-4xl md:text-[44px] lg:text-[56px] text-foreground leading-[1.05] lg:leading-[1.02] tracking-[-0.025em] text-pretty"
               >
                 Tell us what you’re building.
               </h1>
@@ -62,7 +62,7 @@ const Contact = () => {
               {/* LEFT — direct contact card */}
               <div>
                 <SectionHeader
-                  label="DIRECT"
+                  label="DIRECT LINE"
                   headingId="direct-heading"
                   heading="Reach us directly."
                   subheading="The fastest way is the phone."
@@ -79,7 +79,7 @@ const Contact = () => {
                     className="flex items-center gap-4 px-5 py-5 min-h-[44px] hover:bg-cedar/[0.03] transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cedar focus-visible:ring-inset group/row"
                   >
                     <div className="shrink-0 w-9 h-9 rounded-sm bg-cedar/10 flex items-center justify-center">
-                      <Phone className="h-3.5 w-3.5 text-cedar" aria-hidden />
+                      <Phone className="h-4 w-4 text-cedar" aria-hidden />
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className="text-[10px] tracking-[0.2em] uppercase text-muted-foreground/60">Call or Text · Reply in 24–48&nbsp;hours</p>
@@ -96,7 +96,7 @@ const Contact = () => {
                     className="flex items-center gap-4 px-5 py-5 min-h-[44px] hover:bg-cedar/[0.03] transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cedar focus-visible:ring-inset group/row"
                   >
                     <div className="shrink-0 w-9 h-9 rounded-sm bg-cedar/10 flex items-center justify-center">
-                      <Mail className="h-3.5 w-3.5 text-cedar" aria-hidden />
+                      <Mail className="h-4 w-4 text-cedar" aria-hidden />
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className="text-[10px] tracking-[0.2em] uppercase text-muted-foreground/60">Email</p>
@@ -110,7 +110,7 @@ const Contact = () => {
 
                   <div className="flex items-start gap-4 px-5 py-5">
                     <div className="shrink-0 w-9 h-9 rounded-sm bg-cedar/10 flex items-center justify-center">
-                      <MapPin className="h-3.5 w-3.5 text-cedar" aria-hidden />
+                      <MapPin className="h-4 w-4 text-cedar" aria-hidden />
                     </div>
                     <div className="flex-1">
                       <p className="text-[10px] tracking-[0.2em] uppercase text-muted-foreground/60 mb-1">Service Areas</p>
@@ -126,13 +126,13 @@ const Contact = () => {
               {/* RIGHT — the actual form */}
               <div>
                 <SectionHeader
-                  label="OR FILL THIS OUT"
+                  label="THE FORM"
                   headingId="form-heading"
                   heading="It takes about 30 seconds."
-                  subheading="Phone and name are all we strictly need."
+                  subheading="Just your phone and name to start."
                   disableMotion
                 />
-                <div className="mt-8">
+                <div className="mt-6 md:mt-8">
                   <QuoteFormInline />
                 </div>
               </div>

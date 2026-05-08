@@ -17,6 +17,8 @@ interface CrewMomentProps {
   headingId?: string;
   /** Render the 3-up stat row beneath the paragraphs. */
   showStats?: boolean;
+  /** Faint hairline at the section top — used when adjacent to a same-bg section. */
+  topRule?: boolean;
 }
 
 /**
@@ -35,6 +37,7 @@ const CrewMoment = ({
   headingId = "crew-heading",
   showStats = false,
   showCta = false,
+  topRule = false,
 }: CrewMomentProps & { showCta?: boolean }) => {
   const { ref, cls, style } = useReveal();
 
@@ -48,7 +51,7 @@ const CrewMoment = ({
             min_quality: "reference",
           }}
           sizes={MEDIA_SIZES.PORTRAIT_HALF}
-          wrapperClassName="aspect-[4/5] md:aspect-[3/4] lg:aspect-portrait w-full rounded-sm overflow-hidden"
+          wrapperClassName="aspect-[5/4] sm:aspect-[4/5] md:aspect-[3/4] lg:aspect-portrait w-full rounded-sm overflow-hidden"
           cedarHover
           fallbackVariant="cedar"
           fallbackCaption="On the boards · Alberta"
@@ -102,7 +105,7 @@ const CrewMoment = ({
   return (
     <section
       id="section-crew"
-      className={`${SECTION_PADDING.default} ${background === "secondary" ? "bg-secondary" : "bg-background"}`}
+      className={`${SECTION_PADDING.default} ${background === "secondary" ? "bg-secondary" : "bg-background"} ${topRule ? "border-t border-cedar/8" : ""}`}
       aria-labelledby={headingId}
     >
       <div className="container mx-auto px-5 sm:px-6">{inner}</div>

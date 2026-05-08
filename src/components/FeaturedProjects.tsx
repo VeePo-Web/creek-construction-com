@@ -162,7 +162,7 @@ const FeaturedProjects = ({ background = "background" }: FeaturedProjectsProps =
     >
       <div className="container mx-auto px-5 sm:px-6">
         <div ref={ref} className={`max-w-7xl mx-auto ${cls}`} style={style}>
-          <div className="mb-16">
+          <div className="mb-12 md:mb-16">
             <SectionHeader
               numeral="V"
               label="FEATURED PROJECTS"
@@ -219,10 +219,10 @@ const FeaturedProjects = ({ background = "background" }: FeaturedProjectsProps =
             </div>
           )}
 
-          <div className="mt-16 flex justify-center">
+          <div className="mt-12 md:mt-16 flex justify-center">
             <Link
               to="/work"
-              className="text-minimal text-cedar hover:text-cedar-hover transition-colors duration-300 group/link inline-flex items-center gap-3 min-h-[44px] py-2 px-3 rounded-sm hover:bg-cedar/[0.04]"
+              className="text-minimal text-cedar hover:text-cedar-hover transition-[color,background-color,border-color] duration-300 group/link inline-flex items-center gap-3 min-h-[44px] py-3 px-4 rounded-sm border border-cedar/15 hover:border-cedar/30 hover:bg-cedar/[0.04] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cedar focus-visible:ring-offset-2"
             >
               <span>See all work</span>
               <ArrowRight

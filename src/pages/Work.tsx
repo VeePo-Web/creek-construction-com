@@ -43,15 +43,15 @@ const Work = () => {
   const totalCount = PROJECTS.length + PLACEHOLDERS.length;
 
   return (
-    <main className="min-h-screen bg-background" aria-label="Our Work — Creek Construction">
+    <main id="main-content" className="min-h-screen bg-background" aria-label="Our Work — Creek Construction">
       <ProjectsJsonLd />
-      <Navigation />
       <SkipToContent target={PROJECTS.length > 0 ? "section-featured" : "section-gallery"} />
+      <Navigation />
 
       <PageHero
         variant="cinematic-bleed"
         breadcrumb={[{ label: "Home", to: "/" }, { label: "Our Work" }]}
-        sectionLabel="SELECTED WORK"
+        sectionLabel="Selected Work"
         title={["The work", "speaks first."]}
         subtitle="Selected projects across Calgary, Edmonton, and the towns in between."
         query={{ shot_type: ["hero", "elevation", "wide"], min_quality: "reference", kind: "image" }}
@@ -110,7 +110,7 @@ const Work = () => {
               subheading="Click any category to request a quote for similar work."
             />
 
-            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 mt-12 md:[&>*:nth-child(5)]:hidden lg:[&>*:nth-child(5)]:block lg:[&>*:nth-child(5)]:col-start-2" role="list">
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 mt-12" role="list">
               {PLACEHOLDERS.map((w, i) => (
                 <ProjectTile
                   key={i}
@@ -128,7 +128,7 @@ const Work = () => {
               ))}
             </div>
 
-            <div className="mt-12 text-center">
+            <div className="mt-10 md:mt-12 text-center">
               <p className="text-[10px] tracking-[0.25em] uppercase text-muted-foreground/60">
                 More projects added each month
               </p>

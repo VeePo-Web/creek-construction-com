@@ -26,6 +26,7 @@ const Index = () => {
 
   return (
     <main
+      id="main-content"
       className="min-h-screen"
       aria-label="Creek Construction — residential exterior construction in Alberta"
     >
@@ -35,10 +36,10 @@ const Index = () => {
 
       <Hero />
       <Services />
-      <CrewMoment background="secondary" />
-      <FeaturedProjects background="background" />
-      <TestimonialStrip background="secondary" />
-      <MiniFaq background="background" />
+      <CrewMoment background="background" topRule />
+      <FeaturedProjects background="secondary" />
+      <TestimonialStrip background="secondary" topRule />
+      <MiniFaq background="background" topPad="generous" />
       <QuoteCloserCard id="section-contact" background="secondary" />
       <Footer />
     </main>

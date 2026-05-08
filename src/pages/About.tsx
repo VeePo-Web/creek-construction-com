@@ -20,16 +20,16 @@ const About = () => {
   );
 
   return (
-    <main className="min-h-screen bg-background" aria-label="About — Creek Construction">
-      <Navigation />
+    <main id="main-content" className="min-h-screen bg-background" aria-label="About — Creek Construction">
       <SkipToContent target="section-story" />
+      <Navigation />
 
 
       <PageHero
         variant="evergreen-typographic"
         breadcrumb={[{ label: "Home", to: "/" }, { label: "About" }]}
         
-        sectionLabel="OUR STORY"
+        sectionLabel="Our Story"
         title={["Built on the", "work itself."]}
         subtitle="Calgary and Edmonton. The crew you meet is the crew on-site."
         ambientClipQuery={{ kind: "video", min_quality: "portfolio" }}
@@ -99,10 +99,10 @@ const About = () => {
                 <div
                   key={i}
                   role="listitem"
-                  className="flex items-start gap-4 sm:gap-5 pl-4 sm:pl-6 py-4 sm:py-5 rounded-sm transition-[background-color,transform] duration-300 hover:bg-cedar/[0.03] hover:translate-x-1 border border-border/40 bg-background"
+                  className="flex items-start gap-4 sm:gap-5 pl-4 sm:pl-6 py-4 sm:py-5 rounded-sm transition-[background-color,padding-left] duration-300 hover:bg-cedar/[0.03] hover:pl-5 sm:hover:pl-7 border border-border/40 bg-background"
                   style={{ borderLeft: `2px solid hsl(var(--cedar) / ${bronzeStep(i, STEPS.length)})` }}
                 >
-                  <span className="text-cedar/30 text-xs tabular-nums mt-1.5 font-medium">
+                  <span className="text-cedar/30 text-[13px] tabular-nums mt-1.5 mr-1 font-medium">
                     {String(i + 1).padStart(2, "0")}
                   </span>
                   <div>
@@ -124,18 +124,18 @@ const About = () => {
               headingId="areas-heading"
               heading="Calgary, Edmonton, and the towns in between."
             />
-            <div className="grid grid-cols-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2 mt-10">
+            <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2 mt-10">
               {CONTACT.cities.map((city, i) => (
                 <span
                   key={city}
                   className="text-sm text-muted-foreground border rounded-sm px-3 py-2.5 inline-flex items-center justify-center min-h-[44px] hover:text-foreground hover:bg-cedar/[0.04] hover:border-cedar/30 transition-[color,background-color,border-color] duration-300"
-                  style={{ borderColor: `hsl(var(--cedar) / ${bronzeStep(i, CONTACT.cities.length)})` }}
+                  style={{ borderColor: `hsl(var(--cedar) / ${Math.min(bronzeStep(i, CONTACT.cities.length), 0.25)})` }}
                 >
                   {city}
                 </span>
               ))}
             </div>
-            <p className="text-sm text-muted-foreground/70 mt-6 italic">
+            <p className="text-sm text-muted-foreground/70 mt-6 pt-6 border-t border-cedar/8 italic">
               Not on the list? Ask anyway — we’ll let you know if we can travel.
             </p>
           </div>
