@@ -24,7 +24,7 @@ const STATS: StatItem[] = [
 const HeroProofBand = () => (
   <section
     aria-label="Creek Construction credentials"
-    className="border-y border-cedar/12 bg-background"
+    className="border-b border-cedar/12 bg-background"
   >
     <div className="container mx-auto px-5 sm:px-6 py-7 md:py-8 lg:py-10">
       <StatTrio items={STATS} variant="inline" />
