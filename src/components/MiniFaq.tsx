@@ -80,7 +80,7 @@ const MiniFaq = ({
   return (
     <section
       id="section-faq"
-      className={`${SECTION_PADDING.default} ${background === "secondary" ? "bg-secondary" : "bg-background"} ${topPad === "generous" ? "!pt-24 md:!pt-28" : ""}`}
+      className={`${SECTION_PADDING.default} ${background === "secondary" ? "bg-secondary" : "bg-background"} ${topPad === "generous" ? "pt-24 md:pt-28" : ""}`}
       aria-labelledby={headingId}
     >
       <div className="container mx-auto px-5 sm:px-6">{inner}</div>

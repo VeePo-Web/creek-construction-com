@@ -23,15 +23,8 @@ const Footer = () => {
       role="contentinfo"
       className="bg-evergreen text-evergreen-foreground"
     >
-      <div className="container mx-auto max-w-[1440px] px-5 sm:px-6 py-10 md:py-12">
-        <div
-          className="max-w-6xl mx-auto flex flex-col xl:flex-row xl:items-center xl:justify-between gap-5 lg:gap-8 pt-8"
-          style={{
-            borderTop: "1px solid transparent",
-            borderImage:
-              "linear-gradient(90deg, hsl(var(--cedar) / 0) 0%, hsl(var(--cedar) / 0.35) 50%, hsl(var(--cedar) / 0) 100%) 1",
-          }}
-        >
+      <div className="container mx-auto max-w-[1440px] px-5 sm:px-6 py-12 md:py-14">
+        <div className="max-w-6xl mx-auto flex flex-col xl:flex-row xl:items-center xl:justify-between gap-8 lg:gap-10">
           <Link to="/" className="flex items-center gap-3 group">
             <img src={logo} alt="" width={36} height={36} className="h-9 w-9 object-contain" />
             <span className="font-serif text-base leading-none group-hover:text-cedar transition-colors">
@@ -40,7 +33,7 @@ const Footer = () => {
           </Link>
 
           <nav aria-label="Footer">
-            <ul className="flex flex-wrap items-center justify-center xl:justify-start gap-x-5 lg:gap-x-7 xl:gap-x-8 gap-y-2 text-sm">
+            <ul className="flex flex-wrap items-center justify-center xl:justify-start gap-x-6 lg:gap-x-8 gap-y-2 text-sm">
               {links.map((l) => (
                 <li key={l.to}>
                   <Link
@@ -54,7 +47,7 @@ const Footer = () => {
             </ul>
           </nav>
 
-          <div className="flex flex-col sm:flex-row sm:items-center sm:gap-6 text-sm">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:gap-6 gap-y-2 text-sm">
             <a
               href={`tel:${CONTACT.phoneTel}`}
               className="text-evergreen-foreground/80 hover:text-cedar transition-colors tabular-nums"
@@ -70,7 +63,14 @@ const Footer = () => {
           </div>
         </div>
 
-        <div className="max-w-6xl mx-auto mt-8 pt-6 border-t border-evergreen-foreground/10 text-center">
+        <div
+          className="max-w-6xl mx-auto mt-10 pt-6 text-center"
+          style={{
+            borderTop: "1px solid transparent",
+            borderImage:
+              "linear-gradient(90deg, hsl(var(--cedar) / 0) 0%, hsl(var(--cedar) / 0.28) 50%, hsl(var(--cedar) / 0) 100%) 1",
+          }}
+        >
           <p className="text-xs text-evergreen-foreground/55 tabular-nums">
             © {new Date().getFullYear()} Creek Construction · Calgary · Edmonton
           </p>

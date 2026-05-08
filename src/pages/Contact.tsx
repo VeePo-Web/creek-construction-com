@@ -82,7 +82,7 @@ const Contact = () => {
                       <Phone className="h-4 w-4 text-cedar" aria-hidden />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="text-[10px] tracking-[0.2em] uppercase text-muted-foreground/60">Call or Text · Reply in 24–48&nbsp;hours</p>
+                      <p className="text-[10px] tracking-[0.2em] uppercase text-muted-foreground/75">Call or Text · Reply in 24–48&nbsp;hours</p>
                       <p className="text-foreground font-medium group-hover/row:text-cedar transition-colors duration-200">
                         {CONTACT.phone}
                       </p>
@@ -99,7 +99,7 @@ const Contact = () => {
                       <Mail className="h-4 w-4 text-cedar" aria-hidden />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="text-[10px] tracking-[0.2em] uppercase text-muted-foreground/60">Email</p>
+                      <p className="text-[10px] tracking-[0.2em] uppercase text-muted-foreground/75">Email</p>
                       <p className="text-foreground font-medium group-hover/row:text-cedar transition-colors duration-200 truncate">
                         {CONTACT.email}
                       </p>
@@ -113,7 +113,7 @@ const Contact = () => {
                       <MapPin className="h-4 w-4 text-cedar" aria-hidden />
                     </div>
                     <div className="flex-1">
-                      <p className="text-[10px] tracking-[0.2em] uppercase text-muted-foreground/60 mb-1">Service Areas</p>
+                      <p className="text-[10px] tracking-[0.2em] uppercase text-muted-foreground/75 mb-1">Service Areas</p>
                       <p className="text-foreground font-medium">Calgary, Edmonton &amp; surrounding Alberta</p>
                       <p className="text-xs text-muted-foreground mt-1">
                         Including {CONTACT.cities.slice(0, 3).join(", ")} + more towns

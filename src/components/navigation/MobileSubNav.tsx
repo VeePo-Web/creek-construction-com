@@ -55,7 +55,7 @@ const MobileSubNav = ({ faded = false }: MobileSubNavProps) => {
   if (!meta) return null;
 
   // Right-edge fade mask — signals "swipe for more" without adding chrome.
-  const fadeMask = "linear-gradient(to right, black calc(100% - 24px), transparent)";
+  const fadeMask = "linear-gradient(to right, black calc(100% - 32px), transparent)";
 
   return (
     <nav
