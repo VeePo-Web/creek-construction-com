@@ -132,13 +132,16 @@ const About = () => {
                 <span
                   key={city}
                   className="text-sm text-muted-foreground border rounded-sm px-3 py-2.5 inline-flex items-center justify-center min-h-[44px] hover:text-foreground hover:bg-cedar/[0.04] hover:border-cedar/30 transition-[color,background-color,border-color] duration-300"
-                  style={{ borderColor: `hsl(var(--cedar) / ${Math.min(bronzeStep(i, CONTACT.cities.length), 0.25)})` }}
+                  style={{ borderColor: `hsl(var(--cedar) / ${Math.max(0.18, Math.min(bronzeStep(i, CONTACT.cities.length), 0.32))})` }}
                 >
                   {city}
                 </span>
               ))}
             </div>
-            <p className="text-sm text-muted-foreground/70 mt-6 pt-6 border-t border-cedar/8 italic">
+            <p
+              className="font-serif italic text-base text-foreground/65 text-balance text-center max-w-[48ch] mx-auto mt-10 pt-6 border-t border-transparent"
+              style={{ borderImage: "linear-gradient(90deg, transparent 0%, hsl(var(--cedar) / 0.28) 50%, transparent 100%) 1" }}
+            >
               Not on the list? Ask anyway — we’ll let you know if we can travel.
             </p>
           </div>

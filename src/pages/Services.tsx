@@ -65,16 +65,18 @@ const Services = () => {
       >
         <div className="container mx-auto px-5 sm:px-6">
           <div className={`${MAX_WIDTH.content} mx-auto`}>
-            <SectionHeader
-              label="THE FULL MENU"
-              headingId="all-services-heading"
-              heading="Everything we build."
-            />
+            <div className="max-w-3xl">
+              <SectionHeader
+                label="THE FULL MENU"
+                headingId="all-services-heading"
+                heading="Everything we build."
+              />
+            </div>
 
             <div className="mt-16 space-y-12 md:space-y-16">
               {SERVICE_GROUPS.map((group, gIdx) => {
                 const items = getItemsForGroup(group.id);
-                const opacity = bronzeStep(gIdx, SERVICE_GROUPS.length);
+                const opacity = Math.max(0.32, bronzeStep(gIdx, SERVICE_GROUPS.length));
                 return (
                   <div key={group.id} aria-labelledby={`group-${group.id}`}>
                     <div
