@@ -155,7 +155,7 @@ const HeroTriptych = ({
 
       {/* Top nav-legibility scrim — always on. */}
       <div
-        className="absolute inset-x-0 top-0 h-24 pointer-events-none"
+        className="absolute inset-x-0 top-0 h-16 md:h-20 pointer-events-none"
         style={{ background: SCRIM.topNav }}
       />
 
