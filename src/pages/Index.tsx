@@ -27,7 +27,7 @@ const Index = () => {
   return (
     <main
       id="main-content"
-      className="min-h-screen overflow-x-clip"
+      className='min-h-screen overflow-x-clip bg-background [&_section[id^="section-"]]:scroll-mt-20 md:[&_section[id^="section-"]]:scroll-mt-24 lg:[&_section[id^="section-"]]:scroll-mt-28'
       aria-label="Creek Construction — residential exterior construction in Alberta"
     >
       <SkipToContent target="section-services" />
