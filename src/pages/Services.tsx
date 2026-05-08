@@ -170,7 +170,7 @@ const Services = () => {
               >
                 <div className="flex items-baseline justify-between gap-2 flex-wrap mb-8">
                   <h3 className="text-minimal text-muted-foreground">YOU HANDLE</h3>
-                  <span className="text-[10px] tracking-[0.2em] text-muted-foreground/40 tabular-nums">
+                  <span className="text-[10px] tracking-[0.2em] text-muted-foreground/55 tabular-nums">
                     {String(YOU_HANDLE.length).padStart(2, "0")} ITEMS
                   </span>
                 </div>
