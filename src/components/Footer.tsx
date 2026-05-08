@@ -57,7 +57,7 @@ const Footer = () => {
           <div className="flex flex-col sm:flex-row sm:items-center sm:gap-6 text-sm">
             <a
               href={`tel:${CONTACT.phoneTel}`}
-              className="text-evergreen-foreground/80 hover:text-cedar transition-colors"
+              className="text-evergreen-foreground/80 hover:text-cedar transition-colors tabular-nums"
             >
               {CONTACT.phone}
             </a>
