@@ -53,7 +53,7 @@ const Hero = () => {
           <CedarCTA />
           <a
             href={`tel:${CONTACT.phoneTel}`}
-            className="hidden sm:inline-flex items-center gap-2 text-[11px] tracking-[0.22em] uppercase text-white/85 hover:text-white transition-colors min-h-[44px] px-2 tabular-nums"
+            className="inline-flex items-center gap-2 text-[11px] tracking-[0.2em] uppercase text-white/90 hover:text-white transition-colors min-h-[44px] px-2 tabular-nums"
           >
             or call {CONTACT.phone}
           </a>
