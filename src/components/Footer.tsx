@@ -23,7 +23,7 @@ const Footer = () => {
       role="contentinfo"
       className="bg-evergreen text-evergreen-foreground"
     >
-      <div className="container mx-auto px-5 sm:px-6 py-10 md:py-12">
+      <div className="container mx-auto max-w-[1440px] px-5 sm:px-6 py-10 md:py-12">
         <div className="max-w-6xl mx-auto flex flex-col xl:flex-row xl:items-center xl:justify-between gap-5 lg:gap-8 border-t border-evergreen-foreground/10 pt-8">
           <Link to="/" className="flex items-center gap-3 group">
             <img src={logo} alt="" width={36} height={36} className="h-9 w-9 object-contain" />
