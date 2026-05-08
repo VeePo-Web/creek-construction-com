@@ -873,7 +873,7 @@ const ArchitectBleed = (props: ArchitectBleedProps) => {
             className="text-[10px] md:text-[11px] uppercase tabular-nums"
             style={{
               color: "hsl(0 0% 100% / 0.82)",
-              letterSpacing: "0.22em",
+              letterSpacing: "0.24em",
               fontFamily: "var(--font-sans, 'DM Sans', system-ui, sans-serif)",
             }}
           >
