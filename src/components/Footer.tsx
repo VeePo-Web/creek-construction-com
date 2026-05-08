@@ -24,7 +24,14 @@ const Footer = () => {
       className="bg-evergreen text-evergreen-foreground"
     >
       <div className="container mx-auto max-w-[1440px] px-5 sm:px-6 py-10 md:py-12">
-        <div className="max-w-6xl mx-auto flex flex-col xl:flex-row xl:items-center xl:justify-between gap-5 lg:gap-8 border-t border-evergreen-foreground/10 pt-8">
+        <div
+          className="max-w-6xl mx-auto flex flex-col xl:flex-row xl:items-center xl:justify-between gap-5 lg:gap-8 pt-8"
+          style={{
+            borderTop: "1px solid transparent",
+            borderImage:
+              "linear-gradient(90deg, hsl(var(--cedar) / 0) 0%, hsl(var(--cedar) / 0.35) 50%, hsl(var(--cedar) / 0) 100%) 1",
+          }}
+        >
           <Link to="/" className="flex items-center gap-3 group">
             <img src={logo} alt="" width={36} height={36} className="h-9 w-9 object-contain" />
             <span className="font-serif text-base leading-none group-hover:text-cedar transition-colors">
