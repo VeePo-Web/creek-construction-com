@@ -128,7 +128,7 @@ const Work = () => {
               ))}
             </div>
 
-            <div className="mt-12 text-center">
+            <div className="mt-10 md:mt-12 text-center">
               <p className="text-[10px] tracking-[0.25em] uppercase text-muted-foreground/60">
                 More projects added each month
               </p>
