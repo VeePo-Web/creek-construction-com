@@ -508,12 +508,8 @@ const CinematicBleed = (props: CinematicBleedProps) => {
         style={{ background: "linear-gradient(180deg, hsl(0 0% 0% / 0.55), transparent)" }}
         aria-hidden
       />
-      {/* Upper soft scrim — guarantees eyebrow + headline contrast on bright photos. */}
-      <div
-        className="absolute inset-x-0 top-0 h-[42%] pointer-events-none"
-        style={{ background: SCRIM.cinematicTop }}
-        aria-hidden
-      />
+      {/* Upper scrim removed in Pass 22 — softer SCRIM.topNav now provides
+          enough chrome legibility without darkening the upper sky. */}
       {/* Bottom-anchored scrim — heavier so subtitle reads on bright photos. */}
       <div
         className="absolute inset-x-0 bottom-0 h-[78%] md:h-[72%] pointer-events-none"
