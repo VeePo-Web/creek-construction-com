@@ -29,7 +29,7 @@ const About = () => {
         variant="evergreen-typographic"
         breadcrumb={[{ label: "Home", to: "/" }, { label: "About" }]}
         
-        sectionLabel="OUR STORY"
+        sectionLabel="Our Story"
         title={["Built on the", "work itself."]}
         subtitle="Calgary and Edmonton. The crew you meet is the crew on-site."
         ambientClipQuery={{ kind: "video", min_quality: "portfolio" }}
