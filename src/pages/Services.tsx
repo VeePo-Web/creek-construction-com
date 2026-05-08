@@ -76,45 +76,42 @@ const Services = () => {
                 const items = getItemsForGroup(group.id);
                 const opacity = bronzeStep(gIdx, SERVICE_GROUPS.length);
                 return (
-                  <div key={group.id} className="contents">
-                    <div aria-labelledby={`group-${group.id}`}>
-                      <div
-                        className="pb-3 mb-5 md:pb-4 md:mb-6 border-b"
-                        style={{ borderBottomColor: `hsl(var(--cedar) / ${opacity})` }}
+                  <div key={group.id} aria-labelledby={`group-${group.id}`}>
+                    <div
+                      className="pb-3 mb-5 md:pb-4 md:mb-6 border-b"
+                      style={{ borderBottomColor: `hsl(var(--cedar) / ${opacity})` }}
+                    >
+                      <h3
+                        id={`group-${group.id}`}
+                        className="font-serif text-xl md:text-2xl text-foreground"
                       >
-                        <h3
-                          id={`group-${group.id}`}
-                          className="font-serif text-xl md:text-2xl text-foreground"
-                        >
-                          {group.title}
-                        </h3>
-                      </div>
-
-                      <div className="grid sm:grid-cols-2 gap-x-6">
-                        {items.map((item) => (
-                          <button
-                            key={item.id}
-                            type="button"
-                            onClick={() => openModal([item.id])}
-                            className="group flex items-baseline justify-between gap-4 py-5 text-left border-b border-cedar/15 transition-colors duration-300 hover:bg-cedar/[0.03] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cedar focus-visible:ring-offset-2 rounded-sm px-3 -mx-3 min-h-[44px]"
-                            aria-label={`Get my free quote for ${item.title}`}
-                          >
-                            <div className="flex-1 min-w-0">
-                              <p className="text-base text-foreground transition-colors duration-300 group-hover:text-cedar">
-                                {item.title}
-                              </p>
-                              {item.short && (
-                                <p className="text-xs text-muted-foreground mt-0.5">{item.short}</p>
-                              )}
-                            </div>
-                          </button>
-                        ))}
-                        {items.length % 2 === 1 && (
-                          <div className="hidden sm:block border-b border-cedar/8" aria-hidden />
-                        )}
-                      </div>
+                        {group.title}
+                      </h3>
                     </div>
 
+                    <div className="grid sm:grid-cols-2 gap-x-6">
+                      {items.map((item) => (
+                        <button
+                          key={item.id}
+                          type="button"
+                          onClick={() => openModal([item.id])}
+                          className="group flex items-baseline justify-between gap-4 py-4 md:py-5 text-left border-b border-cedar/12 transition-colors duration-300 hover:bg-cedar/[0.03] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cedar focus-visible:ring-offset-2 rounded-sm px-3 -mx-3 min-h-[44px]"
+                          aria-label={`Get my free quote for ${item.title}`}
+                        >
+                          <div className="flex-1 min-w-0">
+                            <p className="text-base text-foreground transition-colors duration-300 group-hover:text-cedar">
+                              {item.title}
+                            </p>
+                            {item.short && (
+                              <p className="text-xs text-muted-foreground mt-1">{item.short}</p>
+                            )}
+                          </div>
+                        </button>
+                      ))}
+                      {items.length % 2 === 1 && (
+                        <div className="hidden sm:block border-b border-cedar/12" aria-hidden />
+                      )}
+                    </div>
                   </div>
                 );
               })}
