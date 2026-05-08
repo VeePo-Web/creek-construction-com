@@ -171,7 +171,7 @@ const EvergreenTypographic = (props: EvergreenTypographicProps) => {
   return (
     <section
       className={cn(
-        "relative overflow-hidden text-evergreen-foreground py-24 md:py-32 min-h-[68vh] md:min-h-[78vh] flex items-center",
+        "relative overflow-hidden text-evergreen-foreground min-h-[68vh] md:min-h-[78vh] flex items-end",
         props.className,
       )}
       aria-label={lines.join(" ")}
@@ -192,7 +192,7 @@ const EvergreenTypographic = (props: EvergreenTypographicProps) => {
       {/* Spine — left vertical bronze hairline */}
       <div
         aria-hidden
-        className="hidden md:block absolute left-6 top-1/2 -translate-y-1/2 w-px bg-cedar/30 z-[5]"
+        className="hidden md:block absolute left-6 top-1/2 -translate-y-1/2 w-px bg-cedar/30 z-[8]"
         style={{ height: "calc(100% - 8rem)" }}
       />
 
@@ -200,7 +200,7 @@ const EvergreenTypographic = (props: EvergreenTypographicProps) => {
       {showAmbient && ambient.item && (
         <div
           aria-hidden
-          className="hidden lg:block absolute top-10 right-10 w-[260px] aspect-[4/3] rounded-[8px] overflow-hidden z-[6]"
+          className="hidden lg:block absolute top-10 right-10 w-[260px] aspect-[4/3] rounded-[8px] overflow-hidden z-[9]"
           style={{
             border: "1px solid hsl(var(--cedar) / 0.25)",
             opacity: 0.4,
@@ -217,7 +217,7 @@ const EvergreenTypographic = (props: EvergreenTypographicProps) => {
         </div>
       )}
 
-      <div className="container mx-auto px-5 sm:px-6 md:px-10 relative z-10">
+      <div className="container mx-auto px-5 sm:px-6 md:px-10 relative z-10 pt-28 md:pt-36 pb-16 md:pb-24 lg:pb-28">
         <div className="max-w-2xl">
           {/* Breadcrumb intentionally omitted — HeaderBreadcrumb in the chrome
               owns sub-page wayfinding (v3.1). The `breadcrumb` prop is still
@@ -227,7 +227,7 @@ const EvergreenTypographic = (props: EvergreenTypographicProps) => {
             numeral={props.numeral}
             label={props.sectionLabel}
             variant="onDark"
-            className="mb-6 hero-rule-draw"
+            className="mb-6 md:mb-9 lg:mb-10 hero-rule-draw"
           />
 
           <KineticHeadline
@@ -240,10 +240,12 @@ const EvergreenTypographic = (props: EvergreenTypographicProps) => {
           {props.subtitle && (
             <p
               className={cn(
-                "mt-5 md:mt-6 text-lg italic font-serif max-w-xl",
-                "text-evergreen-foreground/95",
+                "mt-6 max-w-[44ch] text-base md:text-lg leading-snug md:leading-relaxed",
+                "not-italic md:italic font-sans md:font-serif text-balance",
+                "text-white/95 md:text-evergreen-foreground/90",
                 TEXT.onDark.legibleShadow,
               )}
+              style={{ textShadow: "0 1px 6px hsl(0 0% 0% / 0.55)" }}
             >
               {props.subtitle}
             </p>
@@ -350,9 +352,8 @@ const EditorialSplit = (props: EditorialSplitProps) => {
             {props.subtitle && (
               <p
                 className={cn(
-                  "mt-5 md:mt-6 text-lg md:text-xl text-evergreen-foreground/90",
+                  "mt-6 text-base md:text-lg max-w-[48ch] text-balance text-evergreen-foreground/90",
                   TEXT.onDark.legibleShadow,
-                  hasMedia ? "max-w-xl" : "max-w-2xl",
                 )}
               >
                 {props.subtitle}
@@ -502,14 +503,8 @@ const CinematicBleed = (props: CinematicBleedProps) => {
       {/* Cinematic vignette stack */}
       <div className="absolute inset-0" style={{ background: BACKDROP.cinematicVignette }} aria-hidden />
       <div className="absolute inset-0 pointer-events-none" style={{ background: BACKDROP.cinematicRadial }} aria-hidden />
-      {/* Top scrim — keeps fixed chrome legible over photography (no dead void). */}
-      <div
-        className="absolute inset-x-0 top-0 h-32 md:h-40 pointer-events-none"
-        style={{ background: "linear-gradient(180deg, hsl(0 0% 0% / 0.55), transparent)" }}
-        aria-hidden
-      />
-      {/* Upper scrim removed in Pass 22 — softer SCRIM.topNav now provides
-          enough chrome legibility without darkening the upper sky. */}
+      {/* Top scrim removed — SCRIM.topNav from the chrome already covers
+          fixed-header legibility without darkening the upper sky. */}
       {/* Bottom-anchored scrim — heavier so subtitle reads on bright photos. */}
       <div
         className="absolute inset-x-0 bottom-0 h-[78%] md:h-[72%] pointer-events-none"
