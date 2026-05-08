@@ -638,7 +638,7 @@ const ServicePortrait = (props: ServicePortraitProps) => {
           {props.subtitle && (
             <p
               className={cn(
-                "mt-6 max-w-xl text-base md:text-lg leading-snug md:leading-relaxed",
+                "mt-6 max-w-[44ch] text-base md:text-lg leading-snug md:leading-relaxed",
                 "not-italic md:italic font-sans md:font-serif text-balance",
                 "text-white/95 md:text-evergreen-foreground/90",
                 TEXT.onDark.legibleShadow,
