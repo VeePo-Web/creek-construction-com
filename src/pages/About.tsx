@@ -12,6 +12,7 @@ import { SECTION_PADDING, MAX_WIDTH } from "@/lib/spacing";
 import { BODY } from "@/lib/typography";
 import { CREEK_PROCESS as STEPS } from "@/config/process";
 import { STATS_TRIO } from "@/config/stats";
+import StatTrio from "@/components/ui/stat-trio";
 
 const About = () => {
   useDocumentTitle(
@@ -20,7 +21,7 @@ const About = () => {
   );
 
   return (
-    <main id="main-content" className="min-h-screen bg-background" aria-label="About — Creek Construction">
+    <main id="main-content" className="min-h-screen overflow-x-clip bg-background" aria-label="About — Creek Construction">
       <SkipToContent target="section-story" />
       <Navigation />
 
@@ -65,20 +66,22 @@ const About = () => {
 
             {/* Inline stat trio — quiet, no border, no CTA */}
             <div
-              className="mt-12 pt-8 border-t border-cedar/15 grid grid-cols-3 gap-6 md:gap-10"
+              className="mt-12 pt-8 border-t border-cedar/15"
               role="group"
               aria-label="Creek by the numbers"
             >
-              {STATS_TRIO.map((s) => (
-                <div key={s.label}>
-                  <p className="font-serif text-2xl md:text-3xl text-foreground leading-none tabular-nums">
-                    {s.value}
-                  </p>
-                  <p className="text-[10px] tracking-[0.2em] uppercase text-muted-foreground/70 mt-2 leading-tight">
-                    {s.label}
-                  </p>
-                </div>
-              ))}
+              <StatTrio
+                variant="inline"
+                items={STATS_TRIO.map((s) => {
+                  const m = /^(\d+)(.*)$/.exec(s.value.trim());
+                  return {
+                    value: m ? Number(m[1]) : 0,
+                    suffix: m ? m[2] : undefined,
+                    label: s.label,
+                    static: !m,
+                  };
+                })}
+              />
             </div>
           </div>
         </div>

@@ -27,7 +27,7 @@ interface QuoteCloserCardProps {
  * CedarCTA → trust strip. Trust language is owned here and nowhere else.
  */
 const QuoteCloserCard = ({
-  eyebrow = "What's next",
+  eyebrow = "What’s next",
   heading = "Tell us about your project.",
   body = "It takes about 30 seconds — your phone and name to start. We reply within 24–48 hours.",
   preselectServices,
@@ -37,10 +37,9 @@ const QuoteCloserCard = ({
 }: QuoteCloserCardProps) => {
   const card = (
     <div
-      className="rounded-sm overflow-hidden relative md:grain-texture"
+      className="rounded-sm overflow-hidden relative md:grain-texture before:content-[''] before:absolute before:left-0 before:top-0 before:bottom-0 before:w-[2px] md:before:w-[3px] before:bg-cedar"
       style={{
         background: BACKDROP.evergreenCard,
-        borderLeft: "3px solid hsl(var(--cedar))",
       }}
     >
       <div className="relative z-10 p-6 sm:p-8 md:p-10 lg:p-12">
@@ -57,7 +56,7 @@ const QuoteCloserCard = ({
         <CedarCTA preselectServices={preselectServices}>Get my free quote</CedarCTA>
 
         <div
-          className="mt-8 pt-6 border-t border-evergreen-foreground/10 flex flex-wrap items-center gap-x-5 gap-y-2.5"
+          className="mt-8 pt-6 border-t border-evergreen-foreground/10 flex flex-wrap items-center gap-x-4 gap-y-2 md:gap-x-5 md:gap-y-2.5"
           aria-label="Trust signals"
         >
           {TRUST_SIGNALS.map(({ icon: Icon, label }) => (
@@ -65,7 +64,7 @@ const QuoteCloserCard = ({
               key={label}
               className="inline-flex items-center gap-1.5 text-[10px] tracking-[0.18em] uppercase text-evergreen-foreground/55"
             >
-              <Icon className="h-2.5 w-2.5 text-cedar/80" aria-hidden strokeWidth={1.6} />
+              <Icon className="h-2 w-2 md:h-2.5 md:w-2.5 text-cedar/80" aria-hidden strokeWidth={1.6} />
               {label}
             </span>
           ))}

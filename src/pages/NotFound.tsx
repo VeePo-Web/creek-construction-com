@@ -14,7 +14,7 @@ const NotFound = () => {
   }, [location.pathname]);
 
   return (
-    <main id="main-content" className="min-h-screen bg-background flex flex-col" aria-label="Page not found — Creek Construction">
+    <main id="main-content" className="min-h-screen overflow-x-clip bg-background flex flex-col" aria-label="Page not found — Creek Construction">
       <Navigation />
 
       <section className="relative flex-1 flex items-center justify-center overflow-hidden bg-evergreen text-evergreen-foreground py-24 md:py-32">

@@ -758,7 +758,7 @@ const ArchitectBleed = (props: ArchitectBleedProps) => {
       id="section-hero"
       className={cn(
         "relative overflow-hidden flex flex-col justify-between",
-        "min-h-[88vh] md:min-h-screen",
+        "min-h-[78vh] sm:min-h-[84vh] md:min-h-screen",
         props.className,
       )}
       style={{ backgroundColor: "hsl(0 0% 4%)", contain: "layout style paint" }}
@@ -841,7 +841,7 @@ const ArchitectBleed = (props: ArchitectBleedProps) => {
       />
 
       {/* ── Top: hairline + uppercase eyebrow ── */}
-      <div className="container mx-auto px-5 sm:px-6 md:px-10 relative z-10 pt-28 md:pt-32">
+      <div className="container mx-auto px-5 sm:px-6 md:px-10 relative z-10 pt-20 sm:pt-24 md:pt-32">
         <div
           className="flex items-center gap-4 hero-provenance-enter"
           style={{ ["--kinetic-delay" as never]: "200ms" }}
@@ -932,10 +932,9 @@ const ArchitectBleed = (props: ArchitectBleedProps) => {
             />
             {props.subtitle && (
               <p
-                className="hero-provenance-enter"
+                className="hero-provenance-enter max-w-[28ch] sm:max-w-[42ch] md:max-w-[46ch]"
                 style={{
                   color: "hsl(0 0% 100% / 0.82)",
-                  maxWidth: "46ch",
                   fontSize: "clamp(0.95rem, 1.05vw, 1.125rem)",
                   lineHeight: 1.55,
                   ["--kinetic-delay" as never]: "1200ms",

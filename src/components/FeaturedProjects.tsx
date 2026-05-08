@@ -82,16 +82,16 @@ const ProjectCard = ({ project, variant, index }: ProjectCardProps) => {
           )}
 
           <div className="mt-6 flex items-baseline justify-between gap-4">
-            <div className="flex items-center gap-3 min-w-0">
+            <div className="flex items-center gap-3 min-w-0 flex-1">
               <span className="text-[10px] tracking-[0.25em] uppercase text-cedar/70 tabular-nums shrink-0">
                 {String(index + 1).padStart(2, "0")}
               </span>
-              <span className="text-[10px] tracking-[0.2em] uppercase text-muted-foreground/60 truncate">
+              <span className="text-[10px] tracking-[0.2em] uppercase text-muted-foreground/60 truncate min-w-0">
                 {project.location ?? "Alberta"} · {project.service}
               </span>
             </div>
             {project.year && (
-              <span className="text-[10px] tracking-[0.2em] text-muted-foreground/40 tabular-nums">
+              <span className="text-[10px] tracking-[0.2em] text-muted-foreground/40 tabular-nums whitespace-nowrap shrink-0">
                 {project.year}
               </span>
             )}
