@@ -67,7 +67,7 @@ const Services = () => {
                     className="transition-transform duration-[1.2s] group-hover:scale-[1.04]"
                     fallbackVariant="stone"
                     fallbackIcon={Icon}
-                    fallbackCaption={`${group.title} · new work coming`}
+                    fallbackCaption={`${group.title} · Alberta`}
                   />
 
                   <div className="p-5 md:p-6 flex flex-col flex-1">
