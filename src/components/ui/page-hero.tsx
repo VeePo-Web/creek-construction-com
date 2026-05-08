@@ -527,7 +527,7 @@ const CinematicBleed = (props: CinematicBleedProps) => {
             numeral={props.numeral}
             label={props.sectionLabel}
             variant="onDark"
-            className="mb-5 md:mb-7 hero-rule-draw"
+            className="mb-6 md:mb-9 lg:mb-10 hero-rule-draw"
           />
 
           <KineticHeadline
