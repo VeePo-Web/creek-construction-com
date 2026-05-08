@@ -113,14 +113,9 @@ const HeroTriptych = ({
     >
       {/* ─── Photographic columns ─── */}
 
-      {/* ≥ md: 3-column triptych. < md: vertical stack 40/30/30. < sm: hide cols B/C. */}
-      <div
-        className="absolute inset-0 grid h-full w-full"
-        style={{
-          gridTemplateColumns: RHYTHM_COLS[rhythm],
-          gridTemplateRows: "1fr",
-        }}
-      >
+      {/* ≥ md: 3-column triptych using flex (bulletproof full-height stretch).
+          < md: hidden — replaced by the single-image branch below. */}
+      <div className="absolute inset-0 hidden md:flex flex-row items-stretch h-full w-full">
         {columns.map((col, i) => (
           <TriptychColumn
             key={i}
@@ -131,14 +126,11 @@ const HeroTriptych = ({
             delayMs={col.delayMs}
             priority={priority && i === 0}
             guttersDrawn={guttersDrawn}
-            // Tailwind handles the responsive collapse — mobile stacks to rows.
-            className={cn(
-              // Default desktop: column visible, fully fill the grid row.
-              "relative h-full min-h-full w-full",
-              // sm-md: stack vertically, hide grid layout's column placement
-              i === 1 && "max-md:hidden",
-              i === 2 && "max-md:hidden",
-            )}
+            className="relative h-full self-stretch"
+            style={{
+              flex: `${RHYTHM_FLEX[rhythm][i]} 1 0%`,
+              minWidth: 0,
+            }}
           />
         ))}
       </div>
