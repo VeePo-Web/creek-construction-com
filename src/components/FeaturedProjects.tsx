@@ -162,7 +162,7 @@ const FeaturedProjects = ({ background = "background" }: FeaturedProjectsProps =
     >
       <div className="container mx-auto px-5 sm:px-6">
         <div ref={ref} className={`max-w-7xl mx-auto ${cls}`} style={style}>
-          <div className="mb-16">
+          <div className="mb-12 md:mb-16">
             <SectionHeader
               numeral="V"
               label="FEATURED PROJECTS"
