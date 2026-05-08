@@ -43,7 +43,7 @@ const Work = () => {
   const totalCount = PROJECTS.length + PLACEHOLDERS.length;
 
   return (
-    <main className="min-h-screen bg-background" aria-label="Our Work — Creek Construction">
+    <main id="main-content" className="min-h-screen bg-background" aria-label="Our Work — Creek Construction">
       <ProjectsJsonLd />
       <SkipToContent target={PROJECTS.length > 0 ? "section-featured" : "section-gallery"} />
       <Navigation />

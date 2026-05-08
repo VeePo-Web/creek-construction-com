@@ -38,7 +38,7 @@ const Services = () => {
   const { openModal } = useQuoteModal();
 
   return (
-    <main className="min-h-screen bg-background" aria-label="Services — Creek Construction">
+    <main id="main-content" className="min-h-screen bg-background" aria-label="Services — Creek Construction">
       <SkipToContent target="section-catalogue" />
       <Navigation />
 

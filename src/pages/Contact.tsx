@@ -31,7 +31,7 @@ const Contact = () => {
   const ROW_COUNT = 3;
 
   return (
-    <main className="min-h-screen bg-background" aria-label="Contact — Creek Construction">
+    <main id="main-content" className="min-h-screen bg-background" aria-label="Contact — Creek Construction">
       <NavigationMinimal />
       <SkipToContent target="section-contact" />
 

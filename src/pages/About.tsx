@@ -20,7 +20,7 @@ const About = () => {
   );
 
   return (
-    <main className="min-h-screen bg-background" aria-label="About — Creek Construction">
+    <main id="main-content" className="min-h-screen bg-background" aria-label="About — Creek Construction">
       <SkipToContent target="section-story" />
       <Navigation />
 
