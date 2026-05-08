@@ -210,6 +210,7 @@ interface TriptychColumnProps {
   priority?: boolean;
   guttersDrawn: boolean;
   className?: string;
+  style?: React.CSSProperties;
 }
 
 const TriptychColumn = ({
@@ -221,6 +222,7 @@ const TriptychColumn = ({
   priority,
   guttersDrawn,
   className,
+  style,
 }: TriptychColumnProps) => {
   const [loaded, setLoaded] = useState(false);
   const imgRef = useRef<HTMLImageElement | null>(null);
@@ -231,19 +233,20 @@ const TriptychColumn = ({
     if (node?.complete && node.naturalWidth > 0) setLoaded(true);
   }, [media?.url]);
 
+  const gutterStyle =
+    column > 0
+      ? {
+          boxShadow: guttersDrawn
+            ? "inset 1px 0 0 hsl(var(--cedar) / 0.18)"
+            : "inset 0 0 0 hsl(var(--cedar) / 0)",
+          transition: "box-shadow 700ms ease-out",
+        }
+      : undefined;
+
   return (
     <div
       className={cn("relative overflow-hidden bg-secondary", className)}
-      style={
-        column > 0
-          ? {
-              boxShadow: guttersDrawn
-                ? "inset 1px 0 0 hsl(var(--cedar) / 0.18)"
-                : "inset 0 0 0 hsl(var(--cedar) / 0)",
-              transition: "box-shadow 700ms ease-out",
-            }
-          : undefined
-      }
+      style={{ ...gutterStyle, ...style }}
     >
       {media ? (
         <>
