@@ -276,6 +276,7 @@ const TriptychColumn = ({
               animationDelay: `${delayMs}ms`,
               animationDuration: "16s",
               opacity: loaded ? 1 : 0,
+              objectPosition: "center 38%",
             }}
             loading={priority ? "eager" : "lazy"}
             {...(priority ? ({ fetchpriority: "high" } as Record<string, string>) : {})}
