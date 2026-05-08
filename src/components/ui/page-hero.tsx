@@ -932,10 +932,9 @@ const ArchitectBleed = (props: ArchitectBleedProps) => {
             />
             {props.subtitle && (
               <p
-                className="hero-provenance-enter"
+                className="hero-provenance-enter max-w-[28ch] sm:max-w-[42ch] md:max-w-[46ch]"
                 style={{
                   color: "hsl(0 0% 100% / 0.82)",
-                  maxWidth: "46ch",
                   fontSize: "clamp(0.95rem, 1.05vw, 1.125rem)",
                   lineHeight: 1.55,
                   ["--kinetic-delay" as never]: "1200ms",
