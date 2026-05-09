@@ -1,5 +1,4 @@
 import CedarCTA from "@/components/CedarCTA";
-import { TRUST_SIGNALS } from "@/config/trust-signals";
 import { BACKDROP } from "@/lib/colors";
 import { SECTION_PADDING } from "@/lib/spacing";
 
@@ -54,26 +53,6 @@ const QuoteCloserCard = ({
         </p>
 
         <CedarCTA preselectServices={preselectServices}>Get my free quote</CedarCTA>
-
-        <div
-          className="mt-8 pt-6 flex flex-wrap items-center gap-x-5 md:gap-x-6 gap-y-2.5"
-          style={{
-            borderTop: "1px solid transparent",
-            borderImage:
-              "linear-gradient(90deg, hsl(var(--cedar) / 0) 0%, hsl(var(--cedar) / 0.22) 50%, hsl(var(--cedar) / 0) 100%) 1",
-          }}
-          aria-label="Trust signals"
-        >
-          {TRUST_SIGNALS.map(({ icon: Icon, label }) => (
-            <span
-              key={label}
-              className="inline-flex items-center gap-1.5 min-h-[20px] text-[10px] tracking-[0.18em] uppercase text-evergreen-foreground/55"
-            >
-              <Icon className="h-2.5 w-2.5 text-cedar/80" aria-hidden strokeWidth={1.6} />
-              {label}
-            </span>
-          ))}
-        </div>
       </div>
     </div>
   );

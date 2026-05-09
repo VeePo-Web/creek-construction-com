@@ -24,7 +24,8 @@ const FloatingQuoteCTA = () => {
       if (pending) return;
       pending = true;
       raf = requestAnimationFrame(() => {
-        setShow(window.scrollY > 120);
+        const threshold = window.innerHeight * 0.6;
+        setShow(window.scrollY > threshold);
         pending = false;
       });
     };
@@ -36,7 +37,9 @@ const FloatingQuoteCTA = () => {
     };
   }, []);
 
-  if (pathname === "/contact") return null;
+  // Hide on the homepage (closer is the conversion anchor) and /contact.
+  // Hide on mobile to avoid stacking with the bottom QuickNav bar.
+  if (pathname === "/" || pathname === "/contact") return null;
 
   return (
     <button
@@ -44,8 +47,7 @@ const FloatingQuoteCTA = () => {
       onClick={() => openModal()}
       aria-label="Get a free quote"
       className={cn(
-        "fixed bottom-5 right-5 md:bottom-8 md:right-8 z-40",
-        "group inline-flex items-center gap-2.5",
+        "group hidden md:inline-flex items-center gap-2.5 fixed bottom-8 right-8 z-40",
         "bg-evergreen text-evergreen-foreground",
         "border-l-[3px] border-cedar",
         "pl-4 pr-5 py-3 md:pl-5 md:pr-6 md:py-3.5",

@@ -15,18 +15,18 @@ const BrandStatement = () => {
   return (
     <section
       aria-label="Creek Construction philosophy"
-      className={`${SECTION_PADDING.default} bg-background`}
+      className={`${SECTION_PADDING.calm} bg-background`}
     >
       <div className="container mx-auto max-w-[1440px] container-x">
         <div
           ref={ref}
-          className={`max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-12 gap-6 md:gap-10 ${cls}`}
+          className={`max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-12 gap-6 md:gap-12 ${cls}`}
           style={style}
         >
-          <p className="md:col-span-3 text-[11px] uppercase tracking-[0.25em] text-muted-foreground">
+          <p className="md:col-span-3 text-[11px] uppercase tracking-[0.22em] text-cedar/65">
             Est. 2019 · Alberta
           </p>
-          <p className="md:col-span-9 font-serif text-3xl md:text-5xl lg:text-6xl text-foreground leading-[1.05] tracking-[-0.035em] text-balance">
+          <p className="md:col-span-9 font-serif text-[clamp(1.875rem,4.2vw,3.5rem)] text-foreground/90 leading-[1.05] tracking-[-0.035em] text-balance">
             How we work shows up in the work itself. We don’t subcontract the build,
             we don’t surprise on price, and we’d rather do fewer projects exceptionally
             well.

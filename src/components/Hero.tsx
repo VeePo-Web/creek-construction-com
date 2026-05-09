@@ -2,70 +2,38 @@ import CedarCTA from "@/components/CedarCTA";
 import { CONTACT } from "@/config/contact";
 import PageHero from "@/components/ui/page-hero";
 
-import StatTrio, { type StatItem } from "@/components/ui/stat-trio";
-
 /**
  * Hero — homepage opener.
  *
- * Architect-bleed treatment (hero-only B/W override). The hero stays
- * radically minimal: one quiet photograph, eyebrow, oversized headline,
- * subtitle and the primary site CTA. Stats + trust chips live in a
- * SINGLE post-hero section (one paint root, internal hairline divider)
- * so the eye reads "hero → one trust band → content."
+ * Pass 31: stripped to Fly4Me-grade calm. One photograph, eyebrow,
+ * 2-line serif headline, single sentence, primary CTA + ghost call link.
+ * Stat trio moved off the hero — proof now lives in the dedicated
+ * sub-pages and the closer.
  */
-
-const STATS: StatItem[] = [
-  { value: 7, suffix: "+", label: "Years on tools" },
-  { value: 200, suffix: "+", label: "Projects built" },
-  { value: 48, suffix: "h", label: "Quote reply" },
-];
-
-/** Post-hero proof band: stats only. Trust language lives in the closer. */
-const HeroProofBand = () => (
-  <section
-    aria-label="Creek Construction credentials"
-    className="border-b border-transparent bg-background"
-    style={{
-      borderImage:
-        "linear-gradient(90deg, transparent 0%, hsl(var(--cedar) / 0.22) 50%, transparent 100%) 1",
-    }}
-  >
-    <div className="container mx-auto max-w-[1440px] px-5 sm:px-6 py-8 md:py-10">
-      <div className="max-w-5xl mx-auto">
-        <StatTrio items={STATS} variant="inline" />
-      </div>
-    </div>
-  </section>
-);
-
 const Hero = () => {
   return (
-    <>
-      <PageHero
-        variant="architect-bleed"
-        breadcrumb={[{ label: "Calgary · Edmonton · Alberta" }]}
-        sectionLabel="Exterior Construction"
-        title={["Excellence in", "the Work."]}
-        subtitle="Decks, fencing, sheds, painting and siding — built to last across Alberta."
-        query={{
-          shot_type: ["hero", "elevation", "wide"],
-          min_quality: "reference",
-          kind: "image",
-        }}
-      >
-        <div className="flex flex-col sm:flex-row sm:items-center gap-x-6 gap-y-3">
-          <CedarCTA />
-          <a
-            href={`tel:${CONTACT.phoneTel}`}
-            className="inline-flex items-center gap-2 text-[11px] tracking-[0.2em] uppercase text-white/90 hover:text-white transition-colors min-h-[44px] px-2 tabular-nums whitespace-nowrap"
-          >
-            or call {CONTACT.phone}
-          </a>
-        </div>
-      </PageHero>
-
-      <HeroProofBand />
-    </>
+    <PageHero
+      variant="architect-bleed"
+      breadcrumb={[{ label: "Calgary · Edmonton · Alberta" }]}
+      sectionLabel="Exterior Construction"
+      title={["Excellence in", "the Work."]}
+      subtitle="Decks, fencing, sheds, painting and siding — built to last across Alberta."
+      query={{
+        shot_type: ["hero", "elevation", "wide"],
+        min_quality: "reference",
+        kind: "image",
+      }}
+    >
+      <div className="flex flex-col sm:flex-row sm:items-center gap-x-6 gap-y-3">
+        <CedarCTA />
+        <a
+          href={`tel:${CONTACT.phoneTel}`}
+          className="inline-flex items-center gap-2 text-[11px] tracking-[0.22em] uppercase text-white/85 hover:text-white transition-colors min-h-[44px] px-2 tabular-nums whitespace-nowrap"
+        >
+          or call {CONTACT.phone}
+        </a>
+      </div>
+    </PageHero>
   );
 };
 
