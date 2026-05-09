@@ -1,71 +1,65 @@
-# Pass 25 — Hero variant audit, gallery rhythm, mid-page polish
+# Pass 26 — NotFound, FeaturedProjects, Contact, MidPageQuotePrompt, and the global radius/typography sweep
 
-Each prior pass tightened global chrome and shared modules. Pass 25 walks the hero variants (the largest visual surface on every route), normalizes the project gallery, and resolves the small inconsistencies left in CedarCTA, the mid-page beats, and the form.
+Pass 25 unified hero + gallery + section seams. Pass 26 attacks the remaining "almost-canonical" surfaces — the 404, the FeaturedProjects gallery, the Contact info card, the MidPageQuotePrompt — plus a global rounded-radius + truncation + tabular-nums sweep. These are the surfaces FlexServices nails by being relentlessly consistent; we're 90% there and the last 10% is what reads as "premium" vs. "good".
 
-## A. PageHero variants — equalize the editorial scale
+## A. NotFound (`src/pages/NotFound.tsx`) — bring it onto the same editorial chassis
 
-1. **`evergreen-typographic` subtitle** — `mt-5 md:mt-6 text-lg italic font-serif max-w-xl` doesn't match the `cinematic-bleed` / `service-portrait` standard set in Pass 22 (`mt-6 max-w-[44ch] … text-balance`). Unify on the cinematic spec; drop italic on mobile, keep on md+.
-2. **`evergreen-typographic` content padding** — `py-24 md:py-32` is locked, but the section has `min-h-[68vh] md:min-h-[78vh]` plus `flex items-center` — the headline drifts off-center on tall viewports. Anchor with `pt-28 md:pt-36 pb-16 md:pb-24 lg:pb-28` (matches the other variants).
-3. **`editorial-split` subtitle** — `text-lg md:text-xl` + `max-w-xl/2xl` is wider than cinematic peers. Cap to `max-w-[48ch]` with `text-base md:text-lg` for consistency.
-4. **`cinematic-bleed` double top scrim** — line 506 (`linear-gradient … 0.55, transparent`) at `h-32 md:h-40` overlaps with `SCRIM.topNav` from the chrome. The Pass 22 cleanup says the upper scrim was *supposed* to be removed; the file still ships both. Delete the local top scrim — `SCRIM.topNav` already covers the chrome legibility budget.
-5. **Hero `z-index` hierarchy** — content uses `z-10`, ambient clip uses `z-[6]`, spine uses `z-[5]`. Promote spine + ambient clip to `z-[8]`/`z-[9]` so they don't read as "behind a second layer of fog" when the scrim opacity stacks.
-6. **`hero-rule-draw` margin variance** — `mb-6` in evergreen, `mb-6 md:mb-9 lg:mb-10` in cinematic/portrait. Standardize on the cinematic ladder across all three; the eyebrow→headline gap should match site-wide.
+Currently it ships a custom evergreen radial + custom 404 rule + raw `<h1 style={{fontSize: clamp(...)}}>`. None of it composes from the design system.
 
-## B. ProjectGallery (Work page)
+1. **Replace the entire hero** with `PageHero variant="evergreen-typographic"`, sectionLabel `"404 · Off the map"`, title `["Nothing here.", "But the work does."]`, subtitle copy moved to the variant's subtitle slot. Drop the manual `radial-gradient` and the manual 404 rule — the BronzeRule + triptych backdrop carry the same weight, branded.
+2. **CTA cluster** — keep `<CedarCTA to="/">Back to home</CedarCTA>` + `<CedarCTA to="/services" variant="secondary">Browse services</CedarCTA>` as PageHero children. Spacing already handled by hero.
+3. **Section anchor** — give the wrapper section the canonical `id="section-not-found"` so it gets the new global `scroll-mt` and feels first-party.
+4. **Drop `flex-col flex-1` from `<main>`** — PageHero owns its own min-height now; the dual-flex layout is what produced the "stuck mid-screen" 404 on tall viewports.
 
-7. **Rounded radius drift** — uses `rounded-sm` everywhere (4px) which clashes with the editorial cinematic aspect. Bump to `rounded-[6px]` to match `EditorialPicture` defaults, with `overflow-hidden` retained.
-8. **Gap consistency** — currently `gap-4 md:gap-5`. Unify with FeaturedProjects (`gap-6 md:gap-8`) so both galleries feel like one system.
-9. **Single-photo cap** — `maxHeight: "80vh"` is fine on desktop but caps too aggressively on mobile portrait. Switch to `max-h-[72svh] md:max-h-[80vh]` (svh prevents iOS chrome jump).
-10. **Masonry fallback (4+)** — `columns-1 md:columns-2 lg:columns-3` is fine, but `mb-4 md:mb-5` is set inline; mirror the new `gap-6 md:gap-8` for visual parity.
+## B. FeaturedProjects (`src/components/FeaturedProjects.tsx`)
 
-## C. CedarCTA polish
+5. **Radius drift** — every `rounded-sm` (4px) here clashes with ProjectGallery's new `rounded-[6px]` from Pass 25. Promote to `rounded-[6px]` everywhere (image wrapper, focus ring, "See all work" button) so the two galleries match.
+6. **Hover scale ladder** — line 68 still uses two different scales depending on variant (`1.025` for lead vs `1.04` for stack/row). Pass 25 standardized Services tiles to `1.025`. Apply the same here: every variant `group-hover:scale-[1.025]`.
+7. **Headline size ladder** — the lead heading goes `text-2xl md:text-3xl lg:text-[32px] xl:text-[36px]` while the stack/row ones top out at `text-xl md:text-2xl`. The lead at xl is only 4px bigger than stack — hierarchy disappears on desktop. Spread the ladder: lead `text-2xl md:text-3xl lg:text-[34px] xl:text-[40px]`, others `text-lg md:text-xl lg:text-[22px]`.
+8. **Eyebrow row tabular-nums alignment** — the index numeral, location · service, and year all read in three slots. The first uses `tabular-nums`, the third uses `tabular-nums`, the middle (location · service) uses neither. Add a single `tabular-nums` to the row container so the dot separators don't drift between cards.
+9. **Truncation collision** — line 91 has `truncate min-w-0` on the location/service span. When location is short and service is long ("decks") this looks fine, but when location is "Sherwood Park" the truncation eats the service. Switch to two-line wrap on `<sm`: `flex-wrap` + `whitespace-normal sm:whitespace-nowrap sm:truncate`.
+10. **Placeholder gradient color** — hardcoded `hsl(150 25% 14%)` etc. Replace with the existing `BACKDROP.evergreenGradient` token (or add it if missing) so the dark-mode-cousin colors stay sourced from one file. Light-mode-only is fine; just don't hardcode.
+11. **"See all work" button radius + padding** — `rounded-sm` → `rounded-[6px]`; the button is `border + bg-cedar/[0.04]` already which reads as a pill on most viewports. Add `tracking-[0.18em]` to match the secondary CedarCTA exactly.
 
-11. **Button padding ladder** — primary uses `px-10 py-5` always. On mobile (375px), this is too wide for the column; drop to `px-8 py-4 sm:px-10 sm:py-5`. Keeps min touch target (44px) with comfortable rhythm.
-12. **Secondary variant** — animated underline `w-4 → w-10` is good, but the `gap-2` looks tight. Bump to `gap-3` for breath, and reduce underline target from `w-10` → `w-8` to feel less cartoony.
-13. **Loading/disabled state** — no spinner or disabled affordance; if openModal is gated (auth, rate limit), nothing visible. Add `disabled:opacity-60 disabled:cursor-not-allowed` and accept an optional `loading?: boolean` prop that swaps the arrow for an inline spinner.
+## C. Contact (`src/pages/Contact.tsx`)
 
-## D. Form (QuoteFormInline) — visited indirectly via Contact
+12. **Hero h1 scale** — `text-[32px] sm:text-4xl md:text-[44px] lg:text-[56px]` is one rung shy of the cinematic hero ladder (`xl:text-[64px]`). Add `xl:text-[64px]` so the headline lands at parity with home/services on large desktops.
+13. **Headline tracking** — uses `tracking-[-0.025em]` while the cinematic hero uses `tracking-[-0.02em]`. Match the cinematic value site-wide for consistent letter-spacing.
+14. **Subhead lift** — currently `mt-5 text-base md:text-lg text-muted-foreground`. Promote to `mt-6 text-base md:text-lg text-muted-foreground text-balance max-w-[44ch] mx-auto` to match the new hero subtitle spec from Pass 25.
+15. **Eyebrow ("FREE QUOTE")** — currently raw `<p>`. Replace with `<BronzeRule label="FREE QUOTE" variant="onLight" />` so the eyebrow renders the bronze hairline like every other page hero.
+16. **Direct contact card** — `rounded-sm` → `rounded-[6px]`. The bronze left-bar is good. The three rows currently divide via `border-t border-border/30`; replace with a fading hairline (linear-gradient borderImage at 0.20 mid) for editorial parity with the section seams from Pass 25.
+17. **Phone row hierarchy** — the phone number renders as `text-foreground font-medium`. Bump to `font-serif text-lg` (it's the single most important conversion target on the page); leave email and area at sans body.
+18. **Service Areas row "Including … + more towns"** — drop the literal `+ more towns` and replace with an em-dash phrasing per the typography memory: `"Including {first three cities} — and the towns in between."`
+19. **Section vertical rhythm** — `pt-10 sm:pt-14 md:pt-20 pb-20 md:pb-28` is a custom ladder. Use `SECTION_PADDING.default` for `pb-*` and explicit smaller `pt-*` only (since NavigationMinimal is shorter than full nav). Cleans the spacing tokens.
 
-14. Inputs likely use generic shadcn defaults. Audit `h`, focus rings, label tracking — should match the `ring-cedar/40 ring-offset-2`, `h-12`, label `tracking-[0.14em] uppercase` standard. (Read the file in implementation.)
-15. Submit button — should reuse CedarCTA primary, not a custom shadcn Button.
+## D. MidPageQuotePrompt (`src/components/MidPageQuotePrompt.tsx`)
 
-## E. Homepage rhythm — the inter-section seam
+20. **Border + bg combo too loud** — `border-cedar/20 bg-cedar/[0.04]` reads as a "callout box". The rest of the editorial system uses borderless cedar-tinted strips with a left bar. Replace with `border-l-[3px] border-cedar/40 bg-cedar/[0.03] rounded-r-[6px] rounded-l-none px-6 md:px-8 py-7`.
+21. **Heading scale** — `text-xl md:text-2xl` is timid against the surrounding catalogue. Bump to `text-2xl md:text-3xl` with `text-balance max-w-[28ch]`.
+22. **CTA gap** — on `<sm` the CTA stacks below; add `mt-2 sm:mt-0` so the gap respects the prompt baseline rather than the flex-gap.
 
-16. **`CrewMoment topRule`** — currently `border-t border-cedar/8`. Replace with the same fading hairline gradient used in the closer card / footer to unify all section seams.
-17. **`TestimonialStrip topRule`** — same. Currently `border-t border-cedar/8`.
-18. **MiniFaq generous-top override** — Pass 23 removed `!important`. Verify the `pt-24 md:pt-28` actually wins given Tailwind class ordering with `SECTION_PADDING.default` ("py-16 sm:py-20 md:py-24 lg:py-28 xl:py-32"). The base class includes `py-*` which sets both `pt` and `pb`; our extra `pt-24 md:pt-28` may lose specificity. Either keep `!important` OR switch the base to a `pb-*` only token + explicit `pt-*`.
+## E. Global radius sweep
 
-## F. Services page — small calibration
+23. `rg "rounded-sm" src/components src/pages | rg -v "//"` — there are likely 30–60 hits. The new editorial radius is `rounded-[6px]` for image surfaces and `rounded-sm` (2–4px) only for chips/pills. Audit and migrate image/card surfaces to `rounded-[6px]`. Specifically Hero, FeaturedProjects ProjectCards, ProjectGallery (done), QuoteCloserCard image area, CrewMoment MediaSlot, MidPageQuotePrompt, Contact direct card, MiniFaq cards, NotFound — anywhere an image or media-bearing card sits.
 
-19. **Catalogue heading "THE FULL MENU"** — eyebrow + headline is inside `MAX_WIDTH.content` (`max-w-[68ch]`) which is narrower than the catalogue itself; the headline reads cramped. Move just the heading to `max-w-3xl` while keeping the catalogue grid in content width.
-20. **Group title border opacity ladder** — `bronzeStep(gIdx, len)` produces opacities `0.20 → 0.65` across 5 groups. Visually, the first group's underline is barely visible (0.20). Floor it at 0.30 for legibility.
+## F. Tabular-nums + curly-quote sweep
 
-## G. About page — closing italic + cities tile
+24. **Tabular-nums** — every metadata strip with numerals (years, dates, indexes, addresses) should ship `tabular-nums`. Sweep `rg "[0-9]{4}" src/components src/pages -l` and confirm. CrewMoment stat row, FeaturedProjects index, Work meta line, About cities counter (if exists) — all need it.
+25. **Curly quotes** — `rg "[a-zA-Z]'[a-z]" src/{components,pages}` and replace `'` → `’` in JSX text. Same for straight `"…"` → `"…"`. Do NOT touch JS string literals (props, hrefs, classNames, alt text identifiers); only visible JSX text.
 
-21. **Cities tile contrast** — `text-muted-foreground` over a cedar-tinted hover background is fine, but the resting border is `Math.min(bronzeStep(...), 0.25)` — first cities get ~0.05 border which is invisible at 1px. Floor at 0.18.
-22. **Closing italic line** — currently `text-sm text-muted-foreground/70 mt-6 pt-6 border-t border-cedar/8 italic`. Promote the typography to `font-serif italic text-base text-foreground/65`, center it, max-w-[48ch] with `text-balance`. Adds weight without adding noise.
+## G. Section anchor IDs sanity
 
-## H. Work page — featured header
+26. **Verify every page-level `<section>` has `id="section-*"`** so the global `scroll-mt` from Pass 24 catches it. NotFound currently has none. About story/process/areas — confirm. Work featured/gallery — confirm. Services catalogue/responsibility — confirm.
 
-23. **`PROJECTS[0].title + "."`** — the heading appends a literal period. If the title already ends in punctuation this double-stops. Use `.replace(/\.$/, "") + "."` or simply trust the data and drop the appended dot.
-24. **Project meta line** — `flex flex-col items-start gap-2 md:flex-row md:items-baseline md:justify-between md:gap-6 flex-wrap` — `flex-wrap` on a `flex-col` does nothing. Drop it.
+## H. Skip-to-content + landmark hygiene
 
-## I. Mobile-only fixes
+27. **`SkipToContent target` audits** — Contact uses `section-contact`, Work uses dynamic `section-featured`/`section-gallery`. Verify each target id exists in the rendered DOM (no dead anchors). For NotFound, add `target="section-not-found"`.
+28. **`<main>` `aria-label`** — every page already has one. Audit the wording to match the canonical pattern: `"<Page name> — Creek Construction"`. NotFound says "Page not found — Creek Construction" (good). Index says? Verify and align.
 
-25. **Hero `evergreen-typographic` mobile spine** — `hidden md:block` so spine is desktop-only. Confirmed; keep but verify the `top-1/2 -translate-y-1/2` doesn't intersect a tall mobile menu trigger when the menu is open. (Spine is hidden on `<md` so this is fine; just document.)
-26. **`StickyMobileCTA` / MobileQuoteFAB** — exists per CedarCTA's `data-quote-cta` sentinel. Audit: currently appears? Z-index? Verify it never overlaps MobileSubNav (z-40). FAB should sit z-30 with `bottom-4 left-4 right-4` safe-area-inset padding, AND only render when no `[data-quote-cta]` is in the viewport.
+## I. Light QA
 
-## J. Token sweep
-
-27. **`text-minimal`** — used in CedarCTA secondary, FeaturedProjects "See all work", responsibility matrix headers. Define this once in `src/lib/typography.ts` (likely already exists) and verify all callers pull from the same place — no inline reimplementations.
-28. **Curly-quote rule** — `it's`, `we're`, `won't` etc. in JSX text. Quick `rg` for `'\w` inside `.tsx` and replace with `’` per the memory rule.
-
-## K. QA checklist (no implementation)
-
-29. After edits: screenshot Home, Services, Work, About, Contact at 375 / 768 / 1366. Verify hero subtitle width parity, gallery gap parity, no duplicate scrims on Work, MiniFaq top padding visibly larger when `topPad="generous"`, footer + closer + crew share the same fading hairline.
+29. After edits: screenshot 404, Contact, Work-with-featured at 375 / 768 / 1366. Verify the 404 hero feels like the rest of the site (BronzeRule eyebrow, triptych backdrop, CedarCTA cluster), the FeaturedProjects gallery shares ProjectGallery's gap+radius DNA, and Contact's direct card uses fading hairlines + bronze-rule eyebrow.
 
 ## Files to touch
 
-`src/components/ui/page-hero.tsx`, `src/components/ProjectGallery.tsx`, `src/components/CedarCTA.tsx`, `src/components/quote/QuoteFormInline.tsx` (read first), `src/components/CrewMoment.tsx`, `src/components/TestimonialStrip.tsx`, `src/components/MiniFaq.tsx`, `src/pages/Services.tsx`, `src/pages/About.tsx`, `src/pages/Work.tsx`, plus a possible touch-up to `src/lib/typography.ts` if `text-minimal` needs a home.
-
-No schema, no business logic, no component deletions. Light-mode only, tokens-first.
+`src/pages/NotFound.tsx`, `src/components/FeaturedProjects.tsx`, `src/pages/Contact.tsx`, `src/components/MidPageQuotePrompt.tsx`, plus radius/quote sweep across `src/components/**` and `src/pages/**`. No schema, no business logic, no component deletions. Tokens-first, light-mode only.
