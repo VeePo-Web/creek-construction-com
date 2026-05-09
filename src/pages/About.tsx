@@ -7,12 +7,9 @@ import SectionHeader from "@/components/SectionHeader";
 import PageHero from "@/components/ui/page-hero";
 import { useDocumentTitle } from "@/hooks/useDocumentTitle";
 import { CONTACT } from "@/config/contact";
-import { bronzeStep } from "@/lib/colors";
 import { SECTION_PADDING, MAX_WIDTH } from "@/lib/spacing";
 import { BODY } from "@/lib/typography";
 import { CREEK_PROCESS as STEPS } from "@/config/process";
-import { STATS_TRIO } from "@/config/stats";
-import StatTrio from "@/components/ui/stat-trio";
 
 const About = () => {
   useDocumentTitle(
@@ -50,8 +47,9 @@ const About = () => {
               label="WHO WE ARE"
               headingId="story-heading"
               heading="A small crew that takes the work seriously."
+              align="center"
             />
-            <div className="space-y-6 mt-8 max-w-[62ch]">
+            <div className="space-y-6 mt-10 max-w-[62ch] mx-auto text-center">
               <p className={BODY.lead}>
                 Creek Construction is a locally owned, residential-exterior contractor working
                 across the Calgary and Edmonton metros. We build decks, fences, sheds, pergolas —
@@ -59,33 +57,11 @@ const About = () => {
               </p>
               <p className={BODY.lead}>
                 We don’t subcontract the build. The crew you meet at the quote is the crew on-site
-                doing the work. That’s how we keep quality consistent, and it’s why we’d rather do
-                fewer projects exceptionally well than chase volume.
+                doing the work.
               </p>
-            </div>
-
-            {/* Inline stat trio — quiet, no border, no CTA */}
-            <div
-              className="mt-12 pt-8 border-t border-transparent"
-              style={{
-                borderImage:
-                  "linear-gradient(90deg, transparent 0%, hsl(var(--cedar) / 0.22) 50%, transparent 100%) 1",
-              }}
-              role="group"
-              aria-label="Creek by the numbers"
-            >
-              <StatTrio
-                variant="inline"
-                items={STATS_TRIO.map((s) => {
-                  const m = /^(\d+)(.*)$/.exec(s.value.trim());
-                  return {
-                    value: m ? Number(m[1]) : 0,
-                    suffix: m ? m[2] : undefined,
-                    label: s.label,
-                    static: !m,
-                  };
-                })}
-              />
+              <p className="font-serif italic text-xl md:text-2xl text-foreground/70 text-balance pt-6">
+                “We don’t subcontract, and that decides everything else.”
+              </p>
             </div>
           </div>
         </div>
@@ -99,21 +75,21 @@ const About = () => {
               headingId="process-heading"
               heading="The Creek Process."
               subheading="Five steps. Nothing surprising along the way."
+              align="center"
             />
 
-            <div className="space-y-4 mt-12" role="list">
+            <div className="space-y-3 mt-12 max-w-[62ch] mx-auto" role="list">
               {STEPS.map((s, i) => (
                 <div
                   key={i}
                   role="listitem"
-                  className="flex items-start gap-4 sm:gap-5 pl-4 sm:pl-6 py-4 sm:py-5 rounded-[6px] transition-[background-color,box-shadow] duration-300 hover:bg-cedar/[0.04] hover:shadow-[0_1px_2px_hsl(var(--cedar)/0.08)] bg-background"
-                  style={{ borderLeft: `2px solid hsl(var(--cedar) / ${bronzeStep(i, STEPS.length)})` }}
+                  className="flex items-start gap-4 sm:gap-5 pl-4 sm:pl-5 py-4 sm:py-5 rounded-[4px] transition-colors duration-300 hover:bg-cedar/[0.035] bg-background border-l-2 border-cedar/16"
                 >
-                  <span className="font-serif text-lg text-cedar/55 tabular-nums mt-0.5 w-8 shrink-0">
+                  <span className="font-mono text-[11px] tracking-[0.22em] text-cedar/45 tabular-nums mt-1 w-9 shrink-0">
                     {String(i + 1).padStart(2, "0")}
                   </span>
                   <div>
-                    <h4 className="text-lg font-medium text-foreground mb-1.5">{s.title}</h4>
+                    <h4 className="text-base font-medium text-foreground mb-1.5">{s.title}</h4>
                     <p className="text-muted-foreground text-sm leading-relaxed">{s.desc}</p>
                   </div>
                 </div>
@@ -130,22 +106,19 @@ const About = () => {
               label="WHERE WE WORK"
               headingId="areas-heading"
               heading="Calgary, Edmonton, and the towns in between."
+              align="center"
             />
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2 mt-10">
-              {CONTACT.cities.map((city, i) => (
+              {CONTACT.cities.map((city) => (
                 <span
                   key={city}
-                  className="text-sm text-muted-foreground border rounded-[4px] px-3 py-2.5 inline-flex items-center justify-center min-h-[44px] hover:text-foreground hover:bg-cedar/[0.04] hover:border-cedar/30 hover:shadow-[0_1px_2px_hsl(var(--cedar)/0.08)] transition-[color,background-color,border-color,box-shadow] duration-300"
-                  style={{ borderColor: `hsl(var(--cedar) / ${Math.max(0.16, Math.min(bronzeStep(i, CONTACT.cities.length), 0.22))})` }}
+                  className="text-[11px] tracking-[0.18em] uppercase text-muted-foreground border border-cedar/14 rounded-[4px] px-3 py-2.5 inline-flex items-center justify-center min-h-[44px] hover:text-foreground hover:bg-cedar/[0.035] hover:border-cedar/30 transition-colors duration-300"
                 >
                   {city}
                 </span>
               ))}
             </div>
-            <p
-              className="font-serif italic text-base text-foreground/65 text-balance text-center max-w-[48ch] mx-auto mt-10 pt-6 border-t border-transparent"
-              style={{ borderImage: "linear-gradient(90deg, transparent 0%, hsl(var(--cedar) / 0.28) 50%, transparent 100%) 1" }}
-            >
+            <p className="text-xs text-muted-foreground/70 text-center max-w-[48ch] mx-auto mt-8">
               Not on the list? Ask anyway — we’ll let you know if we can travel.
             </p>
           </div>

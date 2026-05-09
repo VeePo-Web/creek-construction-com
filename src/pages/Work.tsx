@@ -40,8 +40,6 @@ const Work = () => {
   );
   const { openModal } = useQuoteModal();
 
-  const totalCount = PROJECTS.length + PLACEHOLDERS.length;
-
   return (
     <main id="main-content" className="min-h-screen overflow-x-clip bg-background" aria-label="Our Work — Creek Construction">
       <ProjectsJsonLd />
@@ -78,19 +76,16 @@ const Work = () => {
                 {PROJECTS.map((project, idx) => (
                   <article key={project.slug} aria-labelledby={`project-${project.slug}-heading`}>
                     {idx > 0 && (
-                      <header className="mb-6 flex flex-col items-start gap-3 md:flex-row md:items-baseline md:justify-between md:gap-8">
+                      <header className="mb-6 pt-10 hairline flex flex-col items-start gap-2 md:flex-row md:items-baseline md:justify-between md:gap-8">
                         <h2
                           id={`project-${project.slug}-heading`}
                           className="font-serif text-3xl md:text-4xl text-foreground"
                         >
                           {project.title}
                         </h2>
-                        <div className="flex items-center gap-3 shrink-0">
-                          <span aria-hidden className="h-px w-6 bg-cedar/40" />
-                          <p className="text-[10px] tracking-[0.22em] uppercase text-cedar/80 tabular-nums">
-                            {project.location} · {formatStatus(project.status)} · {project.year}
-                          </p>
-                        </div>
+                        <p className="text-[10px] tracking-[0.22em] uppercase text-cedar/70 tabular-nums shrink-0">
+                          {project.location} · {formatStatus(project.status)} · {project.year}
+                        </p>
                       </header>
                     )}
                     <ProjectGallery project={project} priority={idx === 0} />
@@ -110,10 +105,11 @@ const Work = () => {
               label="MORE WORK"
               headingId="gallery-heading"
               heading="Across every service."
-              subheading="Click any category to request a quote for similar work."
+              subheading="Photography in progress — click any category to request a quote."
+              align="center"
             />
 
-            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 mt-12" role="list">
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 mt-12" role="list">
               {PLACEHOLDERS.map((w, i) => (
                 <ProjectTile
                   key={i}
@@ -129,12 +125,6 @@ const Work = () => {
                   onClick={() => openModal([w.service])}
                 />
               ))}
-            </div>
-
-            <div className="mt-10 md:mt-12 text-center">
-              <p className="text-[10px] tracking-[0.25em] uppercase text-muted-foreground/60">
-                More projects added each month
-              </p>
             </div>
           </div>
         </div>

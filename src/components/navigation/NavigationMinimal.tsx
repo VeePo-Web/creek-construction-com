@@ -20,18 +20,10 @@ const NavigationMinimal = () => {
       <header
         className={cn(
           "fixed top-0 inset-x-0 z-50",
-          "bg-background/95 backdrop-blur-[8px] border-b border-transparent shadow-[0_1px_0_0_rgba(0,0,0,0.04)]",
+          "bg-background/95 backdrop-blur-[8px] border-b border-cedar/12 shadow-[0_1px_0_0_rgba(0,0,0,0.04)]",
         )}
-        style={{
-          borderImage:
-            "linear-gradient(90deg, transparent 0%, hsl(var(--cedar) / 0.22) 50%, transparent 100%) 1",
-        }}
         role="banner"
       >
-        <span
-          aria-hidden
-          className="block h-px w-full bg-gradient-to-r from-transparent via-cedar/40 to-transparent"
-        />
         <div className="container mx-auto px-3 sm:px-4 md:px-6 h-16 md:h-20 flex items-center justify-between gap-2 md:gap-4">
           <BrandMark className="shrink-0" />
 

@@ -10,7 +10,7 @@ import { Check, Minus } from "lucide-react";
 import { useDocumentTitle } from "@/hooks/useDocumentTitle";
 import { SERVICE_GROUPS, getItemsForGroup } from "@/config/services";
 import { useQuoteModal } from "@/components/quote/QuoteModalProvider";
-import { BACKDROP, bronzeStep } from "@/lib/colors";
+
 import { SECTION_PADDING, MAX_WIDTH } from "@/lib/spacing";
 import { FAQS_SERVICES } from "@/config/faqs";
 
@@ -73,19 +73,13 @@ const Services = () => {
               />
             </div>
 
-            <div className="mt-16 space-y-12 md:space-y-16">
+            <div className="mt-16 space-y-10 md:space-y-14">
               {SERVICE_GROUPS.map((group, gIdx) => {
                 const items = getItemsForGroup(group.id);
-                const opacity = Math.max(0.32, bronzeStep(gIdx, SERVICE_GROUPS.length));
                 return (
-                  <div key={group.id} aria-labelledby={`group-${group.id}`}>
-                    <div
-                      className="pb-3 mb-5 md:pb-4 md:mb-6 border-b border-transparent flex items-baseline gap-3"
-                      style={{
-                        borderImage: `linear-gradient(90deg, hsl(var(--cedar) / ${opacity}) 0%, hsl(var(--cedar) / ${opacity * 0.4}) 100%) 1`,
-                      }}
-                    >
-                      <span className="text-[11px] tracking-[0.22em] text-cedar/40 tabular-nums">
+                  <div key={group.id} aria-labelledby={`group-${group.id}`} className={gIdx > 0 ? "pt-10 md:pt-14 hairline" : ""}>
+                    <div className="mb-4 md:mb-6 flex items-baseline gap-3">
+                      <span className="font-mono text-[11px] tracking-[0.22em] text-cedar/45 tabular-nums">
                         {String(gIdx + 1).padStart(2, "0")}
                       </span>
                       <h3
@@ -102,11 +96,7 @@ const Services = () => {
                           key={item.id}
                           type="button"
                           onClick={() => openModal([item.id])}
-                          className="group flex items-baseline justify-between gap-4 py-4 md:py-5 text-left border-b border-transparent transition-colors duration-300 hover:bg-cedar/[0.03] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cedar focus-visible:ring-offset-2 rounded-[4px] px-4 sm:px-5 -mx-4 sm:-mx-5 min-h-[44px]"
-                          style={{
-                            borderImage:
-                              "linear-gradient(90deg, hsl(var(--cedar) / 0.18) 0%, hsl(var(--cedar) / 0.05) 100%) 1",
-                          }}
+                          className="group flex items-baseline justify-between gap-4 py-3.5 md:py-4 text-left border-b border-cedar/8 transition-colors duration-300 hover:bg-cedar/[0.035] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cedar focus-visible:ring-offset-2 rounded-[4px] px-3 sm:px-4 -mx-3 sm:-mx-4 min-h-[44px]"
                           aria-label={`Get my free quote for ${item.title}`}
                         >
                           <div className="flex-1 min-w-0">
@@ -117,24 +107,8 @@ const Services = () => {
                               <p className="text-xs text-muted-foreground mt-1">{item.short}</p>
                             )}
                           </div>
-                          <span
-                            aria-hidden
-                            className="shrink-0 text-cedar/60 opacity-0 -translate-x-1 transition-all duration-300 group-hover:opacity-100 group-hover:translate-x-0"
-                          >
-                            →
-                          </span>
                         </button>
                       ))}
-                      {items.length % 2 === 1 && (
-                        <div
-                          className="hidden sm:block border-b border-transparent"
-                          style={{
-                            borderImage:
-                              "linear-gradient(90deg, hsl(var(--cedar) / 0.18) 0%, hsl(var(--cedar) / 0.05) 100%) 1",
-                          }}
-                          aria-hidden
-                        />
-                      )}
                     </div>
                   </div>
                 );
@@ -156,13 +130,13 @@ const Services = () => {
               label="HOW WE SPLIT THE WORK"
               headingId="contract-heading"
               heading="What we handle. What you handle."
+              align="center"
             />
 
             <div className="mt-12 grid lg:grid-cols-2 gap-6 lg:gap-8">
               <div
                 aria-label="What we handle"
-                className="p-7 sm:p-8 md:p-10 border border-cedar/30 rounded-[6px] h-full"
-                style={{ background: BACKDROP.bronzeWash }}
+                className="p-7 sm:p-8 md:p-10 border border-cedar/15 border-t-2 border-t-cedar rounded-[6px] h-full bg-background"
               >
                 <div className="flex items-baseline justify-between gap-2 flex-wrap mb-8">
                   <h3 className="text-minimal text-cedar">WE HANDLE</h3>
@@ -170,15 +144,14 @@ const Services = () => {
                     {String(WE_HANDLE.length).padStart(2, "0")} ITEMS
                   </span>
                 </div>
-                <div className="space-y-3" role="list">
+                <div className="space-y-2.5" role="list">
                   {WE_HANDLE.map((item, i) => (
                     <div
                       key={i}
                       role="listitem"
-                      className="flex items-start gap-3 py-2.5 pl-3 rounded-[4px] transition-colors duration-300 hover:bg-cedar/[0.05]"
-                      style={{ borderLeft: `2px solid hsl(var(--cedar) / ${bronzeStep(i, WE_HANDLE.length)})` }}
+                      className="flex items-start gap-3 py-2"
                     >
-                      <Check className="h-3.5 w-3.5 text-cedar/70 mt-0.5 flex-shrink-0" aria-hidden />
+                      <Check className="h-3.5 w-3.5 text-cedar/70 mt-1 flex-shrink-0" aria-hidden />
                       <p className="text-foreground text-sm">{item}</p>
                     </div>
                   ))}
@@ -195,15 +168,14 @@ const Services = () => {
                     {String(YOU_HANDLE.length).padStart(2, "0")} ITEMS
                   </span>
                 </div>
-                <div className="space-y-3" role="list">
+                <div className="space-y-2.5" role="list">
                   {YOU_HANDLE.map((item, i) => (
                     <div
                       key={i}
                       role="listitem"
-                      className="flex items-start gap-3 py-2.5 pl-3 rounded-[4px] transition-colors duration-300 hover:bg-cedar/[0.03]"
-                      style={{ borderLeft: "2px solid hsl(35 15% 86% / 0.5)" }}
+                      className="flex items-start gap-3 py-2"
                     >
-                      <Minus className="h-3.5 w-3.5 text-muted-foreground/40 mt-0.5 flex-shrink-0" aria-hidden />
+                      <Minus className="h-3.5 w-3.5 text-muted-foreground/40 mt-1 flex-shrink-0" aria-hidden />
                       <div>
                         <p className="text-foreground text-sm">{item.task}</p>
                         <p className="text-xs text-muted-foreground mt-1">{item.note}</p>
