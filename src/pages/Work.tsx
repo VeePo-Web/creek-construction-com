@@ -107,10 +107,11 @@ const Work = () => {
               label="MORE WORK"
               headingId="gallery-heading"
               heading="Across every service."
-              subheading="Click any category to request a quote for similar work."
+              subheading="Photography in progress — click any category to request a quote."
+              align="center"
             />
 
-            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 mt-12" role="list">
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 mt-12" role="list">
               {PLACEHOLDERS.map((w, i) => (
                 <ProjectTile
                   key={i}
@@ -126,12 +127,6 @@ const Work = () => {
                   onClick={() => openModal([w.service])}
                 />
               ))}
-            </div>
-
-            <div className="mt-10 md:mt-12 text-center">
-              <p className="text-[10px] tracking-[0.25em] uppercase text-muted-foreground/60">
-                More projects added each month
-              </p>
             </div>
           </div>
         </div>
