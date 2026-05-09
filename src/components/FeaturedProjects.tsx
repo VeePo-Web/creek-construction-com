@@ -167,6 +167,7 @@ const FeaturedProjects = ({ background = "background" }: FeaturedProjectsProps =
               heading="Recent work, in detail."
               subheading="Projects we’re proud of — across Calgary, Edmonton, and surrounding Alberta."
               badge={`${String(withUrls.length).padStart(2, "0")} Featured`}
+              align="center"
               disableMotion
             />
           </div>
