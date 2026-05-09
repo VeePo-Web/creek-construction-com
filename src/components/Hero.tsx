@@ -29,7 +29,7 @@ const Hero = () => {
         <CedarCTA />
         <a
           href={`tel:${CONTACT.phoneTel}`}
-          className="inline-flex items-center justify-center gap-2 min-h-[44px] px-5 border border-white/25 hover:border-white text-[11px] tracking-[0.22em] uppercase text-white/85 hover:text-white transition-colors tabular-nums whitespace-nowrap rounded-[2px]"
+          className="inline-flex items-center justify-center gap-2 min-h-[44px] px-5 border border-white/30 hover:border-white hover:bg-white/[0.06] text-[11px] tracking-[0.22em] uppercase text-white/85 hover:text-white transition-colors duration-300 tabular-nums whitespace-nowrap rounded-[2px]"
         >
           <Phone className="h-3.5 w-3.5" strokeWidth={1.5} aria-hidden />
           <span>Call {CONTACT.phone}</span>

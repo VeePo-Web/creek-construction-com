@@ -1,78 +1,107 @@
-# Pass 34 — Calm Sweep Across Shared Modules + Homepage Loose Ends
+# Pass 35 — Apple-grade Calm: Buttons, Hero CTAs, and Last-Mile Chrome
 
-Pass 33 quieted the homepage rhythm. Audit shows the *shared* atomics still ship Pass 30-era chrome (border-l accents, grain-texture, BACKDROP gradients, border-image gradients) — so any page that mounts MiniFaq, QuoteFormInline, ServiceTile, CardPremium, FaqAccordion, or TrustChip immediately breaks the Fly4Me calm we just achieved on the homepage. Pass 34 finishes the job by sweeping these primitives, then closes three small loose ends on the homepage itself.
+Pass 33–34 quieted layouts and shared atomics. The remaining "loudness" is concentrated in **interactive primitives** that still ship pre-Pass-32 chrome: the primary CTA itself (shimmer + tracking shift + thermal glow), the Contact direct-line aside (3px bordered card), ProjectTile's hover shadow, NavigationMinimal's seam shadow, FloatingQuoteCTA's drop shadow, the Quote form submit's glow shadow, and a few residual gradient fallbacks. Pass 35 finishes the calibration so every interaction reads as Fly4Me/Apple — confident, flat, decisive.
 
-## Principles (carried forward)
-1. One eyebrow scale (`.eyebrow`), one hairline (`.hairline` / `border-cedar/12`), one card chrome (none — flat surface + hairline only).
-2. No grain-texture, no border-image gradients, no BACKDROP gradient on UI surfaces (gradients live only on hero photographic scrims).
-3. A left-edge cedar bar is the *only* "active accent" pattern. 2px width, never 3px. Used sparingly.
+## Principles (carried)
+1. **No glow shadows** on bronze surfaces. A hover shadow on a brand-color button reads as marketing, not craft.
+2. **No tracking-shift on hover** for buttons. Tracking shifts create a micro-jump that's the opposite of Apple's solid-mass press feedback.
+3. **No shimmer animation** on the primary CTA. The CTA earns attention through color and placement, not motion.
+4. **One CTA shape** site-wide: 2px radius (`rounded-[2px]`), filled bronze, white tracked label, arrow that translates 4px on hover. That's it.
 
 ---
 
-## A. MiniFaq (`src/components/MiniFaq.tsx`)
-- Strip the `borderImage` top-rule wrapper at L63 → replace with `.hairline` class on the section.
-- Accordion items: drop `grain-texture` and the open-state `bg-cedar/[0.03]` from `faq-accordion.tsx`. Use a clean stack of items separated by `.hairline`, no border box, no rounded corners. Open state shifts only the chevron (rotate 90°) and reveals a serif answer block.
+## A. CedarCTA — the canonical button (`src/components/CedarCTA.tsx` + `src/lib/colors.ts`)
 
-## B. FaqAccordion primitive (`src/components/ui/faq-accordion.tsx`)
-- Remove `grain-texture`, `border`, `rounded-sm`, `bg-background` and the cedar/30/40 hover/open border colors.
-- New shell: `className="border-b border-cedar/12"` per item, button row `py-5 md:py-6 flex items-baseline justify-between gap-6 text-left`, trigger title `font-serif text-lg md:text-xl tracking-[-0.01em]`, chevron is a single 12×12 cedar plus-to-minus glyph (`+` → rotate to `×`) using CSS, not lucide.
-- Answer panel: `pb-6 text-foreground/70 leading-relaxed max-w-[58ch]` — no inset background.
+### A1. Primary variant
+- Drop `cta-thermal` utility entirely.
+- Drop the hover tracking-shift (`hover:tracking-[0.2em]`).
+- Drop `hover:shadow-thermal`.
+- Replace `rounded-sm` with `rounded-[2px]` so corners match the Hero ghost CTA.
+- Update `BUTTON.primary` token to:
+  ```
+  base:       inline-flex items-center gap-3 bg-cedar text-cedar-foreground
+              px-8 py-4 rounded-[2px] text-[11px] tracking-[0.22em]
+              uppercase font-medium
+  hover:      hover:bg-cedar-hover
+  focus:      focus-visible:outline-none focus-visible:ring-2
+              focus-visible:ring-cedar focus-visible:ring-offset-2
+  transition: transition-colors duration-300
+  ```
+- Arrow stays — `ArrowRight` translates `+4px` on hover (already wired).
+- The entire `.cta-thermal` rule + `cta-shimmer-sweep` keyframe in `index.css` get deleted (lines 327–351, 517–528). Nothing else consumes them.
 
-## C. QuoteFormInline shell (`src/components/quote/QuoteFormInline.tsx`)
-- Remove `rounded-[6px] border border-cedar/15 border-l-[3px] border-l-cedar/40 grain-texture shadow-contact` from both the success state (L203) and the form shell (L224).
-- Replace with: form sits in a flat `bg-secondary/40 p-6 md:p-8` plate with a single `.hairline-l` cedar accent on the left edge (already exists in CSS). No shadow. No grain.
-- Audit and remove the two `borderImage` gradient dividers at L406/L413; replace with `.hairline`.
-- Inputs: confirm `h-12 rounded-[2px] border-cedar/15` consistent with Pass 32 Contact treatment. Tighten focus to `focus:border-cedar focus:ring-0` (no offset ring inside the form — inset shadow instead).
+### A2. Secondary variant
+- Replace the gradient underline `from-cedar to-cedar/60` with a flat `bg-cedar` 1px line — no gradient on a 4px-tall element, the gradient is invisible and adds noise.
+- Drop `hover:bg-cedar/[0.04]` and `hover:px-3` (reads as a button reflowing on hover; Apple links don't move). Keep only the line-grow micro-interaction.
 
-## D. ServiceTile primitive (`src/components/ui/service-tile.tsx`)
-- Drop `grain-texture` from the compact variant.
-- Both variants: flat surface, no border by default, only a `.hairline` bottom rule when stacked. Hover reveals a 2px cedar left bar (matches Pass 33 Services rows pattern). Reuses the `.eyebrow` for the metadata line.
+## B. QuoteFormInline submit + success buttons (`src/components/quote/QuoteFormInline.tsx`)
+- Both buttons (L214 success "Call us now", L424 form submit) carry a bespoke glow shadow `shadow-[0_1px_2px_hsl(var(--cedar)/0.20),0_8px_24px_-8px_hsl(var(--cedar)/0.30)]`. Strip both. They were the source of the "marketing button" feel inside the otherwise flat form plate.
+- Update both to `rounded-[2px]`, `tracking-[0.22em]`, `transition-colors duration-300`. Match A1 grammar.
 
-## E. CardPremium primitive (`src/components/ui/card-premium.tsx`)
-- Remove `grain-texture` and `border-cedar/20` defaults.
-- New default variant: zero chrome (just spacing) — let the page give it context. Accent variant: 2px cedar left bar only. This collapses the "premium card" treatment into Apple-grade restraint.
+## C. FloatingQuoteCTA chip (`src/components/FloatingQuoteCTA.tsx`)
+- L55 `shadow-[0_8px_30px_rgba(0,0,0,0.18)]` → reduce to a 1px hairline + minimal lift: `shadow-[0_2px_8px_-2px_rgba(0,0,0,0.10)]`. The chip needs *some* elevation to lift over photographs in the Featured section; we keep that but at 1/3 the intensity. Verify the chip still reads against light secondary backgrounds.
 
-## F. TrustChip primitive (`src/components/ui/trust-chip.tsx`)
-- Replace `border-cedar/25 bg-evergreen-foreground/[0.03]` with a flat row: small dot · label · dot · label, separated by middle dots in `.eyebrow` styling. No chip outline. Becomes a typographic strip rather than a pill row.
+## D. NavigationMinimal seam (`src/components/navigation/NavigationMinimal.tsx`)
+- L23: drop `shadow-[0_1px_0_0_rgba(0,0,0,0.04)]` — it was added before we standardized to `border-cedar/12`. The hairline alone is enough.
 
-## G. FeaturedProjects (`src/components/FeaturedProjects.tsx`)
-- "See all work" CTA at L223: replace bordered pill with a calm text link — `inline-flex items-center gap-2 text-[12px] tracking-[0.22em] uppercase text-cedar hover:text-cedar-hover py-3 min-h-[44px]` followed by an `→` arrow. Matches Hero's call CTA grammar.
-- Numbered fallback for projects with no `hero_url` (L74–82): replace `BACKDROP.evergreenPlate` with flat `bg-secondary` and a centered serif numeral in `text-foreground/15` — no dark gradient block.
+## E. ProjectTile (`src/components/ui/project-tile.tsx`)
+- L123: drop the `transition-shadow … group-hover:shadow-[0_8px_24px_-12px_hsl(var(--cedar)/0.18)]` and `border border-border/40`. ProjectTiles in FeaturedProjects already render edge-to-edge; the shadow created a phantom border on cream backgrounds.
+- L126: replace `BACKDROP.stonePlate` no-photo fallback with the same `bg-secondary` + serif numeral pattern we just deployed in FeaturedProjects (Pass 34) so the two callsites match.
 
-## H. CrewMoment dead-code cleanup (`src/components/CrewMoment.tsx`)
-- The `showStats` block still uses an inline `borderImage` gradient (L80). Replace with `.hairline` `pt-8` since the prop is still functionally exposed for non-homepage callers.
+## F. Contact direct-line aside (`src/pages/Contact.tsx`)
+- L68–118: the aside still ships a Pass-30 card chrome (`rounded-[6px] border border-cedar/15 border-l-[3px] border-l-cedar`). Replace with the new flat treatment to mirror the form panel:
+  - Outer wrapper: `mt-8 hairline-l border-l-[2px] !border-l-cedar bg-secondary/40 rounded-[2px]`.
+  - Inner row dividers (L87, L104): `border-t border-cedar/10` → `border-t border-cedar/12` (token consistency).
+  - Hover `hover:bg-cedar/[0.03]` stays — it's the active-row affordance.
 
-## I. Navigation chrome (`src/components/Navigation.tsx`, `MobileSubNav.tsx`, `MenuTrigger.tsx`, `GlobalMenu.tsx`)
-- Standardize cedar opacities: `border-cedar/25` → `border-cedar/12` for *idle* chrome borders; keep `/30` only as the hover/active state.
-- `Navigation.tsx` L77 elevated state: `border-b border-cedar/25 shadow-[0_1px_0_0_…]` → `border-b border-cedar/12` with no shadow (relies on the hairline alone).
-- `MenuTrigger.tsx` and `GlobalMenu.tsx` chip buttons: `border-cedar/20-25` → `border-cedar/12`, hover `border-cedar/40`.
-- `MobileSubNav.tsx` L66: `border-cedar/15` → `border-cedar/12`. Confirm no double-border seam where SectionRail meets the nav.
+## G. Contact form panel (`src/pages/Contact.tsx` L122)
+- The right column wraps `QuoteFormInline` in `bg-secondary/40 rounded-[6px] p-6 md:p-8`. Now that QuoteFormInline brings its *own* `bg-secondary/40` shell (Pass 34), the wrapper double-paints the surface. Drop the wrapper's `bg-secondary/40` and `p-6 md:p-8`; keep only the SectionHeader spacing wrapper. Form's internal padding handles the rest. Avoids the "card-in-card" look on lg+.
 
-## J. Services sub-page (`src/pages/Services.tsx`)
-- The category cards at L139 still use a 2px cedar top-bar plus a full border (`border-cedar/15 border-t-2 border-t-cedar`). Replace with: flat surface, `.hairline` top rule only, eyebrow + serif title + body. The 2px top-bar is heritage Pass 28 chrome and competes with the homepage's left-bar pattern.
-- Audit catalogue rows for any remaining `BACKDROP.bronzeWash` and remove.
+## H. QuoteCloserCard (`src/components/QuoteCloserCard.tsx`)
+- L29: `before:w-[3px]` → `before:w-[2px]` to match the universal 2px left-bar grammar (Services, About steps, ServiceTile hover).
+- The CedarCTA inside this card sits on evergreen — once Pass 35-A flattens the button, verify its `bg-cedar` still reads against `bg-evergreen`. (It will — both are tested colors.)
 
-## K. About sub-page (`src/pages/About.tsx`)
-- L86 process step rows: `border-l-2 border-cedar/16 hover:bg-cedar/[0.035]` → match the Services-row treatment: flat row, `.hairline` between items, hover reveals a 2px cedar left bar (animated 0→2px). Identical interaction language site-wide.
-- L115 city chips: `border-cedar/14 hover:bg-cedar/[0.035] hover:border-cedar/30` → `.hairline border` + hover swaps to `border-cedar/30` only. Drop the bg fill.
+## I. Hero ghost CTA (`src/components/Hero.tsx`)
+- L32: ghost call link uses `border-white/25 hover:border-white`. Bump *idle* to `border-white/30` (matches the BronzeCTA's perceived weight on the photographic hero) and add `hover:bg-white/[0.06]` for a Fly4Me-style soft fill on hover. Keeps the radius at `rounded-[2px]` (already correct).
 
-## L. Style-guide live atomic (`src/pages/StyleGuide.tsx`)
-- Add a single new "Atomics (Pass 32+)" subsection inside the existing Components beat showing four flat tiles: `.eyebrow`, `.hairline`, `.hairline-l`, and the new "left-bar hover" idiom — with code snippets. Append-only insertion (1 SectionShell call). Does not touch the rest of the file.
+## J. StatTrio card variant (`src/components/ui/stat-trio.tsx`)
+- L73 `card` variant still ships `grain-texture shadow-contact border border-border/40`. Even if not used on the homepage today, the variant exists in the public API. Refactor to: `py-3 pl-5 hover:pl-7 hover:bg-accent/[0.04] border-l border-cedar/12 hover:border-cedar/40`. Removes grain + shadow; preserves the indent-on-hover micro-interaction.
 
-## M. Token doc updates
-- `colors.ts`: deprecate `BACKDROP.evergreenPlate` (still used as a hero fallback only — annotate "use ONLY in PageHero/MediaSlot, never as a card surface").
-- `colors.ts`: deprecate `SHADOW.hairline` (`shadow-contact`) since Pass 33/34 stopped using shadows on cards; annotate as "available for elevation rare cases, prefer a `.hairline` rule".
+## K. Footer mobile dividers (`src/components/Footer.tsx`)
+- L46, L72: the `-mx-5 sm:-mx-6` negative-bleed dividers can clip if the parent ever gets `overflow-x-hidden` (it does — `overflow-x-clip` on `<main>`). Switch to non-bleeding: `border-t border-evergreen-foreground/10` with no negative margin. Visual: an inset divider with the same column gutter — cleaner Apple footer rhythm.
 
-## N. Verification
-- Browser screenshots at 390 / 768 / 1280 / 1440 of `/`, `/services`, `/about`, `/contact`. Walk through each:
-  - No visible card border anywhere except the new flat-with-hairline pattern.
-  - No grain texture remaining (open DevTools → search for `grain-texture` class on rendered DOM = 0 hits).
-  - No `border-image` style attributes on rendered nodes.
-  - FAQ accordion reads as Apple-grade typographic stack.
-  - Quote form reads as a calm secondary-tinted plate with one cedar left line.
-  - Featured projects' empty fallback no longer reads as a "broken hero".
-  - SectionRail + Navigation seam is a single 1px hairline, not a double line.
-- Lighthouse spot pass on `/services` (most-changed) — no CLS regression.
+## L. CSS cleanup (`src/index.css`)
+- Remove `.cta-thermal` definitions (L327–351).
+- Remove `@keyframes cta-shimmer-sweep` (L517–528).
+- Remove the `prefers-reduced-motion` opt-out for `.cta-thermal::before` (L597 region).
+- Net: ~35 lines lighter, one fewer reflow trigger on every CTA hover.
+
+## M. Token doc updates (`src/lib/colors.ts`)
+- `BUTTON.primary` rewritten as in A1 (canonical).
+- Add `BUTTON.ghost` token for the Hero on-photo treatment so it can be reused on PageHero variants:
+  ```
+  ghost: {
+    base: inline-flex items-center justify-center gap-2 min-h-[44px]
+          px-5 rounded-[2px] border border-white/30 text-[11px]
+          tracking-[0.22em] uppercase text-white/85
+    hover: hover:border-white hover:bg-white/[0.06] hover:text-white
+    transition: transition-colors duration-300
+  }
+  ```
+- Mark `SHADOW.thermal` as `@deprecated` (Pass 35 stopped using cedar glow on buttons; preserved only because it's referenced in legacy comments).
+
+## N. Style-guide refresh (`src/pages/StyleGuide.tsx`)
+- Update the "Buttons" beat to render the new flat primary, secondary, and ghost variants side-by-side with annotations.
+- Add a "Pass 35 — flat CTAs" note in the Components section explaining: no shimmer, no tracking-shift, no glow.
+
+## O. Verification (do not skip)
+1. `/` at 390 / 768 / 1280 / 1440: confirm hero CTA + ghost call CTA align on baseline, both at 2px radius, no shimmer when hovering primary.
+2. `/contact` at 390 / 768 / 1024 / 1280: direct-line aside reads as flat plate with single 2px cedar bar; right column no longer has card-in-card padding doubling.
+3. `/services` at 390 / 768 / 1280: WE/YOU HANDLE columns + numbered service rows: every interaction primitive matches the new grammar.
+4. `/`: hover the FloatingQuoteCTA chip — confirm shadow is felt, not seen.
+5. DevTools: search rendered DOM for `cta-thermal`, `shadow-thermal`, `grain-texture`. Expect 0 hits across `/`, `/services`, `/about`, `/contact`, `/work`.
+6. Lighthouse on `/contact` (most-changed) — confirm no CLS regression from the form-wrapper unwrap.
+7. Reduced-motion snapshot at `/` — primary CTA must not shimmer (confirms .cta-thermal is fully gone).
 
 ## Files to touch
-`src/components/MiniFaq.tsx`, `src/components/ui/faq-accordion.tsx`, `src/components/quote/QuoteFormInline.tsx`, `src/components/ui/service-tile.tsx`, `src/components/ui/card-premium.tsx`, `src/components/ui/trust-chip.tsx`, `src/components/FeaturedProjects.tsx`, `src/components/CrewMoment.tsx`, `src/components/Navigation.tsx`, `src/components/navigation/MobileSubNav.tsx`, `src/components/navigation/MenuTrigger.tsx`, `src/components/navigation/GlobalMenu.tsx`, `src/pages/Services.tsx`, `src/pages/About.tsx`, `src/pages/StyleGuide.tsx`, `src/lib/colors.ts`.
+`src/components/CedarCTA.tsx`, `src/components/quote/QuoteFormInline.tsx`, `src/components/FloatingQuoteCTA.tsx`, `src/components/navigation/NavigationMinimal.tsx`, `src/components/ui/project-tile.tsx`, `src/pages/Contact.tsx`, `src/components/QuoteCloserCard.tsx`, `src/components/Hero.tsx`, `src/components/ui/stat-trio.tsx`, `src/components/Footer.tsx`, `src/index.css`, `src/lib/colors.ts`, `src/pages/StyleGuide.tsx`.

@@ -43,7 +43,7 @@ const Footer = () => {
           </div>
 
           {/* mobile divider */}
-          <div className="lg:hidden -mx-5 sm:-mx-6 border-t border-evergreen-foreground/10" aria-hidden />
+          <div className="lg:hidden border-t border-evergreen-foreground/10" aria-hidden />
 
           {/* ── Navigate ── */}
           <div className="lg:col-span-4 lg:px-10 lg:border-l lg:border-evergreen-foreground/10">
@@ -69,7 +69,7 @@ const Footer = () => {
           </div>
 
           {/* mobile divider */}
-          <div className="lg:hidden -mx-5 sm:-mx-6 border-t border-evergreen-foreground/10" aria-hidden />
+          <div className="lg:hidden border-t border-evergreen-foreground/10" aria-hidden />
 
           {/* ── Direct line ── */}
           <div className="lg:col-span-4 lg:pl-10 lg:border-l lg:border-evergreen-foreground/10">

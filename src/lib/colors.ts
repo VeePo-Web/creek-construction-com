@@ -263,41 +263,57 @@ export const BORDER = {
 // ─────────────────────────────────────────────────────────────────────
 
 export const BUTTON = {
-  /** Primary CTA — bronze, full commitment. */
+  /**
+   * Primary CTA — Pass 35 canonical: flat bronze, 2px radius, no shimmer,
+   * no tracking-shift, no glow shadow. The CTA earns attention through
+   * color and placement, not motion.
+   */
   primary: {
     base:
-      "inline-flex items-center gap-3 bg-cedar text-cedar-foreground px-8 py-4 rounded-sm text-[11px] tracking-[0.18em] uppercase font-medium",
-    hover:
-      "hover:bg-cedar-hover hover:tracking-[0.2em] hover:shadow-thermal",
+      "inline-flex items-center gap-3 bg-cedar text-cedar-foreground px-8 py-4 rounded-[2px] text-[11px] tracking-[0.22em] uppercase font-medium",
+    hover: "hover:bg-cedar-hover",
     focus:
       "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cedar focus-visible:ring-offset-2",
     disabled: "disabled:opacity-40 disabled:cursor-not-allowed",
-    transition: "transition-[background-color,letter-spacing] duration-500",
+    transition: "transition-colors duration-300",
   },
   /** Secondary — evergreen on light, used for non-CTA primary actions. */
   secondary: {
     base:
-      "inline-flex items-center gap-2 bg-evergreen text-evergreen-foreground px-6 py-3 rounded-sm text-[11px] tracking-[0.18em] uppercase font-medium",
+      "inline-flex items-center gap-2 bg-evergreen text-evergreen-foreground px-6 py-3 rounded-[2px] text-[11px] tracking-[0.22em] uppercase font-medium",
     hover: "hover:bg-evergreen/90",
     focus:
       "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-evergreen focus-visible:ring-offset-2",
     disabled: "disabled:opacity-40 disabled:cursor-not-allowed",
     transition: "transition-colors duration-300",
   },
-  /** Ghost — outlined, minimal. */
+  /** Ghost — outlined on light surfaces. */
   ghost: {
     base:
-      "inline-flex items-center gap-2 border border-border text-foreground px-6 py-3 rounded-sm text-[11px] tracking-[0.18em] uppercase",
+      "inline-flex items-center gap-2 border border-border text-foreground px-6 py-3 rounded-[2px] text-[11px] tracking-[0.22em] uppercase",
     hover: "hover:border-cedar hover:text-cedar hover:bg-cedar/[0.04]",
     focus:
       "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cedar focus-visible:ring-offset-2",
     disabled: "disabled:opacity-40 disabled:cursor-not-allowed",
     transition: "transition-colors duration-300",
   },
+  /**
+   * On-photo — Pass 35: white outline that fills softly on hover (Fly4Me).
+   * Used by the Hero ghost call CTA over architect photography.
+   */
+  onPhoto: {
+    base:
+      "inline-flex items-center justify-center gap-2 min-h-[44px] px-5 rounded-[2px] border border-white/30 text-[11px] tracking-[0.22em] uppercase text-white/85",
+    hover: "hover:border-white hover:bg-white/[0.06] hover:text-white",
+    focus:
+      "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2",
+    disabled: "disabled:opacity-40 disabled:cursor-not-allowed",
+    transition: "transition-colors duration-300",
+  },
   /** Inline link with cedar underline sweep. */
   link: {
     base:
-      "inline-flex items-center gap-2 text-[11px] tracking-[0.18em] uppercase text-muted-foreground",
+      "inline-flex items-center gap-2 text-[11px] tracking-[0.22em] uppercase text-muted-foreground",
     hover: "hover:text-cedar",
     focus:
       "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cedar focus-visible:ring-offset-2 rounded-sm",

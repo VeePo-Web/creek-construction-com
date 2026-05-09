@@ -66,7 +66,7 @@ const Contact = () => {
                 />
 
                 <aside
-                  className="mt-8 rounded-[6px] border border-cedar/15 border-l-[3px] border-l-cedar overflow-hidden"
+                  className="mt-8 bg-secondary/40 border-l-[2px] border-l-cedar overflow-hidden"
                   aria-label="Direct contact details"
                 >
                   <a
@@ -84,7 +84,7 @@ const Contact = () => {
                     </div>
                   </a>
 
-                  <div className="border-t border-cedar/10" aria-hidden />
+                  <div className="border-t border-cedar/12" aria-hidden />
 
                   <a
                     href={`mailto:${CONTACT.email}`}
@@ -101,7 +101,7 @@ const Contact = () => {
                     </div>
                   </a>
 
-                  <div className="border-t border-cedar/10" aria-hidden />
+                  <div className="border-t border-cedar/12" aria-hidden />
 
                   <div className="flex items-start gap-4 px-5 py-5">
                     <div className="shrink-0 w-8 h-8 flex items-center justify-center">
@@ -119,7 +119,7 @@ const Contact = () => {
               </div>
 
               {/* RIGHT — the actual form, visually weighted */}
-              <div className="bg-secondary/40 rounded-[6px] p-6 md:p-8">
+              <div>
                 <SectionHeader
                   label="THE FORM"
                   headingId="form-heading"

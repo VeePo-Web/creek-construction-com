@@ -39,18 +39,15 @@ const CedarCTA = ({
   const { openModal } = useQuoteModal();
 
   const secondaryClass = cn(
-    "text-minimal text-cedar hover:text-cedar-hover transition-[color,background-color,padding] duration-500 group/link inline-flex items-center gap-3 min-h-[44px] py-2 px-1 rounded-sm",
-    "hover:bg-cedar/[0.04] hover:px-3",
+    "text-minimal text-cedar hover:text-cedar-hover transition-colors duration-300 group/link inline-flex items-center gap-3 min-h-[44px] py-2 px-1 rounded-sm",
     "focus-visible:ring-2 focus-visible:ring-cedar focus-visible:ring-offset-2",
     className,
   );
 
-  // Primary: tokenized BUTTON.primary + thermal shimmer + scale-on-press.
-  // Padding ladder: tighter on mobile, full hero scale at sm+.
+  // Primary: Pass 35 — flat bronze, no shimmer, no tracking-shift, no glow.
   const primaryClass = cn(
     BUTTON.primary.base,
     "px-8 py-4 sm:px-10 sm:py-5",
-    "cta-thermal",
     BUTTON.primary.hover,
     BUTTON.primary.focus,
     BUTTON.primary.transition,
@@ -66,7 +63,7 @@ const CedarCTA = ({
     <>
       <span>{children}</span>
       {variant === "secondary" ? (
-        <span className="inline-block w-4 h-px bg-gradient-to-r from-cedar to-cedar/60 group-hover/link:w-8 transition-[width] duration-500" />
+        <span className="inline-block w-4 h-px bg-cedar group-hover/link:w-8 transition-[width] duration-500" />
       ) : (
         <ArrowRight className="h-3.5 w-3.5 group-hover/cta:translate-x-1 transition-transform duration-500" aria-hidden="true" />
       )}
