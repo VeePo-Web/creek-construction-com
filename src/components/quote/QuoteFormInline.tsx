@@ -279,7 +279,7 @@ const QuoteFormInline = ({
             </Field>
           </div>
 
-          <div className="grid sm:grid-cols-2 gap-3">
+          <div className="grid sm:grid-cols-2 gap-3 sm:gap-4">
             <Field
               label="Email"
               htmlFor="qfi-email"
