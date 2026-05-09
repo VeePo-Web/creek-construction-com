@@ -65,14 +65,14 @@ const ProjectCard = ({ project, variant, index }: ProjectCardProps) => {
               width={1600}
               height={variant === "lead" ? 2000 : variant === "stack" ? 1200 : 2133}
               sizes={sizes}
-              wrapperClassName={`${aspectClass} w-full rounded-[6px]`}
+              wrapperClassName={`${aspectClass} w-full rounded-none`}
               className="transition-transform duration-[1.2s] group-hover:scale-[1.025]"
               cedarHover
             />
           ) : (
             // Evergreen gradient placeholder for featured projects without a hero
             <div
-              className={`${aspectClass} w-full rounded-[6px] relative overflow-hidden`}
+              className={`${aspectClass} w-full rounded-none relative overflow-hidden`}
               style={{ background: BACKDROP.evergreenPlate }}
             >
               <span className="absolute inset-0 flex items-center justify-center font-serif text-evergreen-foreground/20 text-5xl select-none tabular-nums">
