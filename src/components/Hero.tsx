@@ -16,22 +16,23 @@ const Hero = () => {
     <PageHero
       variant="architect-bleed"
       breadcrumb={[{ label: "Calgary · Edmonton · Alberta" }]}
-      sectionLabel="Exterior Construction"
+      sectionLabel="Calgary · Edmonton · Alberta"
       title={["Excellence in", "the Work."]}
-      subtitle="Decks, fencing, sheds, painting and siding — built to last across Alberta."
+      subtitle="Outdoor work for Alberta homes — done by the same crew you meet."
       query={{
         shot_type: ["hero", "elevation", "wide"],
         min_quality: "reference",
         kind: "image",
       }}
     >
-      <div className="flex flex-col sm:flex-row sm:items-center gap-x-6 gap-y-3">
+      <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4">
         <CedarCTA />
         <a
           href={`tel:${CONTACT.phoneTel}`}
-          className="inline-flex items-center gap-2 text-[11px] tracking-[0.22em] uppercase text-white/85 hover:text-white transition-colors min-h-[44px] px-2 tabular-nums whitespace-nowrap"
+          className="inline-flex items-center justify-center gap-2 min-h-[44px] px-5 border border-white/25 hover:border-white text-[11px] tracking-[0.22em] uppercase text-white/85 hover:text-white transition-colors tabular-nums whitespace-nowrap rounded-[2px]"
         >
-          or call {CONTACT.phone}
+          <Phone className="h-3.5 w-3.5" strokeWidth={1.5} aria-hidden />
+          <span>Call {CONTACT.phone}</span>
         </a>
       </div>
     </PageHero>
