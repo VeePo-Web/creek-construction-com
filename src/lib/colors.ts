@@ -132,10 +132,10 @@ export const BACKDROP = {
    *  Hero photo card overlays, About brand-promise plate. */
   evergreenCard:
     "linear-gradient(135deg, hsl(var(--evergreen)) 0%, hsl(150 25% 10%) 100%)",
-  /** Bronze warmth wash — used as ghost background on hover for light surfaces. */
+  /** @deprecated Pass 32+ stopped using bronze fills. Prefer flat `.hairline` rules. */
   bronzeWash:
     "linear-gradient(135deg, hsl(var(--cedar) / 0.07) 0%, hsl(var(--cedar) / 0.02) 100%)",
-  /** Bronze glow — for floating cards / accent halos over photos. */
+  /** @deprecated Pass 32+ stopped using bronze halos. */
   bronzeGlow:
     "radial-gradient(ellipse at 70% 30%, hsl(28 55% 45% / 0.18) 0%, transparent 60%)",
   /** Section bottom fade — into secondary surface. */
