@@ -7,8 +7,7 @@ import QuoteFormInline from "@/components/quote/QuoteFormInline";
 import { useDocumentTitle } from "@/hooks/useDocumentTitle";
 import { Phone, Mail, MapPin } from "lucide-react";
 import { CONTACT } from "@/config/contact";
-import { bronzeStep } from "@/lib/colors";
-import { MAX_WIDTH, SECTION_PADDING } from "@/lib/spacing";
+import { MAX_WIDTH } from "@/lib/spacing";
 
 /**
  * Contact — single-screen conversion page.
