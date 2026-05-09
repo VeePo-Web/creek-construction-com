@@ -1,84 +1,149 @@
-# Pass 29 — Services catalogue uplift, About process polish, Contact/NavMinimal harmony, atom radius sweep
+# Pass 30 — Fly4Me transposition: editorial restraint, numbered rows, Apple-grade interaction primitives
 
-Pass 28 fixed the QuickNav route bug, lifted the homepage Service tiles, and finished the section-seam hairline harmony on Hero/Crew/MiniFaq. Walking the **sub-pages** in parallel (Services, About, Work, Contact) at 390 / 768 / 1366 surfaces the remaining "stock" beats: most of the radius and hairline language was tightened on the homepage but the deeper pages still ship the older `rounded-sm` + flat `cedar/12` borders. Pass 29 brings the sub-page surfaces up to the homepage's editorial standard, then sweeps the remaining atoms.
+Pass 29 finished cleaning the sub-page hairlines and atom radii. Walking the Fly4Me reference end-to-end exposes the *next* leap: Fly4Me's discipline isn't about color (Creek already has the right warm palette) — it's about **rhythm, restraint, and a tiny vocabulary of interaction primitives** repeated everywhere. Pass 30 transposes those primitives into Creek without losing the bronze/cream warmth the user explicitly said to keep.
 
-## A. `/services` catalogue (`src/pages/Services.tsx`) — the commercial page deserves the most polish
+The principle: **import Fly4Me's grammar, keep Creek's voice.**
 
-The "Everything we build" section renders 5 groups × ~3 items as flat rows. It works, but the visual language is one generation behind the homepage tiles.
+---
 
-1. **Group heading divider** (line 83) — flat `border-b` with inline `borderBottomColor`. Replace with fading `borderImage`:
-   ```
-   borderImage: linear-gradient(90deg, hsl(var(--cedar) / ${opacity}) 0%, hsl(var(--cedar) / ${opacity * 0.4}) 100%) 1
-   ```
-   Asymmetric fade (left-strong → right-weak) reads as "the heading anchors the row" rather than a flat underline. Group heading itself: add `tabular-nums` index prefix `01·` `02·` etc. in cedar/40, matching the FeaturedProjects index treatment.
-2. **Service item button** (line 100) — `rounded-sm` → `rounded-[4px]`. Border-b `border-cedar/12` flat → fading `borderImage` at 0.18 opacity (subtler since they stack densely).
-3. **Hover affordance** — currently `hover:bg-cedar/[0.03]` + `group-hover:text-cedar` on title. Add a quiet trailing `→` arrow that fades in: `<span className="opacity-0 -translate-x-1 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300 text-cedar/60">→</span>`. Editorial restraint — the arrow is the verb.
-4. **Spacer row hairline** (line 114) — `border-b border-cedar/12` flat → matching fading borderImage so all hairlines speak the same dialect.
-5. **Number prefix per item** — wrap title with a tabular `02·` style index using cedar/35 to give the 15-item catalogue a numbered editorial spine. Optional but elegant — gate behind a comment for easy revert.
-6. **Mobile body padding** — `py-4 md:py-5` is good; add `px-4 sm:px-5` (currently `px-3 -mx-3`) so the hover bg and rounded corners breathe a touch on touch.
+## A. Interaction primitives — three CSS utilities, used everywhere
 
-## B. `/services` responsibility matrix — sub-row radius sweep
+Fly4Me has exactly **two** interaction signatures across the entire site: `link-underline` (gradient-grow underline, no layout shift) and `link-arrow` (↗ that translates `+3px,-3px` on group hover). They're cheap, GPU-only, and *used everywhere*. Creek currently re-rolls hover effects per component (after:bottom-0 underlines, group-hover:translate-x, hover:text-cedar). One vocabulary, applied consistently, looks orders of magnitude more polished.
 
-7. **Item rows** (lines 156, 181) — `rounded-sm` → `rounded-[4px]` (inside `rounded-[6px]` parent cards, maintain the 6 → 4 hierarchy from Pass 27).
-8. **"WE HANDLE / YOU HANDLE" headers** — `text-minimal text-cedar` is good. Add a `BronzeRule width="short"` to the right of the `XX ITEMS` count for visual symmetry with the eyebrow language used elsewhere.
+**Add to `src/index.css` `@layer utilities`:**
 
-## C. `/about` process steps + cities chip-grid + stat divider
+```css
+.link-underline {
+  background-image: linear-gradient(hsl(var(--cedar)), hsl(var(--cedar)));
+  background-position: 0 100%;
+  background-repeat: no-repeat;
+  background-size: 0% 1px;
+  transition: background-size 420ms cubic-bezier(0.22,1,0.36,1), color 240ms;
+  padding-bottom: 2px;
+}
+.link-underline:hover, .link-underline:focus-visible, .link-underline.is-active {
+  background-size: 100% 1px;
+}
 
-9. **Process step cards** (line 105) — `rounded-sm` → `rounded-[6px]`, add `transition-shadow` and `hover:shadow-[0_1px_2px_hsl(var(--cedar)/0.08)]` for the same lift treatment used on homepage Service tiles. Consistency between sister "stepped list" surfaces.
-10. **Step numeral** (line 108) — `font-serif text-base text-cedar/45 tabular-nums` is cramped against the `text-lg` heading. Promote to `text-lg` and to `text-cedar/55` for a slightly stronger anchor — still quiet, but no longer apologetic.
-11. **Stat trio top border** (line 69) — `border-t border-cedar/15` (flat) → fading borderImage matching the CrewMoment + MiniFaq pattern shipped in Pass 28. **Removes the last flat hairline on About.**
-12. **City chips** (line 132) — `border rounded-sm` → `rounded-[4px]`, and the inline style overrides `borderColor` per chip via bronzeStep — that creates a visually noisy gradient grid. Quiet it down: cap opacity at 0.22 (currently 0.32 max), and add `hover:shadow-[0_1px_2px_hsl(var(--cedar)/0.08)]` on the chip for tactile lift instead of color jump.
-13. **Cities trailing italic note** (line 142) — already fading borderImage. Good. Bump `tracking` on label-style content nowhere needed.
+.link-arrow {
+  display: inline-block;
+  transition: transform 320ms cubic-bezier(0.22,1,0.36,1);
+}
+.group:hover .link-arrow,
+.group:focus-visible .link-arrow {
+  transform: translate(3px, -3px);
+}
 
-## D. `/work` project header refinement
+.container-x {
+  @apply px-5 sm:px-6 md:px-10 lg:px-16;
+}
+```
 
-14. **Per-project metadata row** (line 88) — `text-[10px] tracking-[0.2em] uppercase text-cedar/80` works but the whole header sits flat on the page. Add a `BronzeRule width="short" variant="accent"` before the metadata to anchor each project header into the editorial system, matching FeaturedProjects' index-rule pattern.
-15. **Project header layout** — `md:flex-row md:items-baseline md:justify-between` puts metadata far right of an `text-3xl md:text-4xl` headline. Add `md:gap-8` (was `md:gap-6`) so they don't crowd at md.
+`container-x` replaces every ad-hoc `px-5 sm:px-6` Creek pads with — single source for horizontal rhythm. (Keep Creek's `container mx-auto max-w-[1440px]` on the *outer* wrapper; `container-x` is just the padding utility.)
 
-## E. `/contact` micro-tightening
+## B. Editorial section header — 12-col newspaper grid (the highest-impact change)
 
-16. **Direct-line label tracking** (lines 86, 110, 131) — `tracking-[0.2em]` → `tracking-[0.22em]` to match the canonical eyebrow tracking used in Footer + BronzeRule.
-17. **Centered "FREE QUOTE" eyebrow** (line 49) — single BronzeRule looks tiny floating alone above a 64px headline. Wrap with **two mirrored rules** (left and right of the label) for centered editorial symmetry:
-    ```
-    <div className="flex items-center justify-center gap-4">
-      <span className="h-px w-10 bg-cedar/30" />
-      <span className={EYEBROW.accent}>FREE QUOTE</span>
-      <span className="h-px w-10 bg-cedar/30" />
-    </div>
-    ```
-   Replaces the asymmetric one-sided rule that currently floats off-center visually.
-18. **Direct contact card border-left** (line 75) — currently `2px solid` cedar via inline style. Promote to `3px` to match the `border-l-[3px]` standard set in Pass 27 for QuoteFormInline + MidPageQuotePrompt — these are sister "card-with-cedar-bar" surfaces and should match.
+Fly4Me's signature: every section opens with the same 12-col header layout —
 
-## F. `NavigationMinimal` (`src/components/navigation/NavigationMinimal.tsx`) — Contact page chrome
+```text
+[ eyebrow · col-span-3 ]   [ MASSIVE HEADLINE · col-span-6 ]   [ ↗ All projects · col-span-3, right-aligned ]
+```
 
-19. **Header bottom border** (line 23) — `border-b border-cedar/25` flat → fading borderImage at 0.22, matching the QuickNav shell border applied in Pass 28.
-20. **Phone capsule radius** (line 38) — `rounded-sm` → `rounded-[6px]` matching the standardized Pass 27 card radius. Mobile touch target unchanged.
-21. **Sub-eyebrow tracking** (line 49) — `tracking-[0.2em]` → `tracking-[0.22em]`. Same canon as Item 16.
+Creek's `SectionHeader` is currently a centered/left-stack composition. Add a new `variant="editorial-grid"` to `src/components/SectionHeader.tsx` that renders this 3/6/3 layout with an optional trailing `link` slot. Roll it out on **homepage Services, FeaturedProjects, CrewMoment, TestimonialStrip, MiniFaq** — five sections, one rhythm. This is the single most "Apple-grade" change in the pass.
 
-## G. Atom radius sweep — finish the system
+Headline weight: keep DM Serif Display (Creek's voice) but tighten tracking from current `tracking-[-0.02em]` to **`tracking-[-0.035em]`** (Fly4Me uses -0.04em). Cap line-height at `leading-[1.02]` for the giant beats. Use `text-balance`.
 
-22. **StatTrio card variant** (`src/components/ui/stat-trio.tsx` line 72) — `rounded-sm` → `rounded-[6px]`. Used on About card layout. Brings the atom in line with FeaturedProjects/Services tiles.
-23. **TrustChips badge variant** (`src/components/ui/trust-chip.tsx` line 42) — `rounded-sm` → `rounded-[4px]`. Used inside cards (forms, page-hero) where the parent is `rounded-[6px]`, maintains 6→4 hierarchy.
-24. **MenuTrigger** (`src/components/navigation/MenuTrigger.tsx` line 47) — `rounded-sm` → `rounded-[6px]`. Last user-facing chrome atom on the old radius.
+## C. Homepage Services → numbered editorial rows (replaces tile grid)
 
-## H. Verification & QA
+The current homepage Services section (`src/components/Services.tsx`) is a 3-up tile grid with hero photos per group. It works, but it competes visually with the 4-up Featured Projects below it — two photo grids in a row dilute focus.
 
-25. After edits, viewport screenshots at **390 / 768 / 1366** of:
-    - `/services` (catalogue group + responsibility matrix)
-    - `/about` (process steps + city chips + stat trio top hairline)
-    - `/contact` (centered eyebrow, NavigationMinimal seam)
-    - `/work` (project header rule)
-26. **`rg "rounded-sm" src/{pages,components} | rg -v admin | rg -v StyleGuide`** — confirm only intentional `rounded-sm` instances remain (currently zero non-admin/non-styleguide hits will be the goal after this pass).
+**Convert to a Fly4Me-style numbered row list:**
 
-## Files to touch
+```text
+─────────────────────────────────────────────────────
+01    Decks, Pergolas & Patios          Cedar, composite, two-tier — built to outlast the lot.
+─────────────────────────────────────────────────────
+02    Fencing & Gates                   Privacy slats, side gates, custom millwork.
+─────────────────────────────────────────────────────
+… 03 / 04 / 05
+```
 
-- `src/pages/Services.tsx` (catalogue uplift, responsibility radius sweep)
-- `src/pages/About.tsx` (process steps, stat hairline, city chips)
-- `src/pages/Work.tsx` (project header BronzeRule)
-- `src/pages/Contact.tsx` (eyebrow symmetry, label tracking, border-l promotion)
-- `src/components/navigation/NavigationMinimal.tsx` (fading hairline, capsule radius, label tracking)
-- `src/components/ui/stat-trio.tsx` (atom radius)
-- `src/components/ui/trust-chip.tsx` (atom radius)
-- `src/components/navigation/MenuTrigger.tsx` (atom radius)
+12-col grid: `01` (col-span-1, eyebrow tracking) · Title (col-span-5, serif text-2xl/3xl) · Description (col-span-6, muted body). Hover: row tints `bg-cedar/[0.04]`, title gets `link-underline`, trailing `↗` arrow appears on the right. Every row is a quote-modal trigger. **No images** — the reduction is the point. The photo gravity stays with FeaturedProjects below.
 
-No schema, no business logic, no copy changes (other than potentially numbered prefixes in catalogue which are presentational), light-mode only, tokens-first, no behavior change. Pure editorial polish.
+Result: homepage rhythm becomes Hero (photo) → Services (typographic) → CrewMoment (photo) → FeaturedProjects (photo) → Testimonials (typographic) → MiniFaq (typographic) → Closer. **Alternating photo/typography beats** = the Fly4Me cadence.
+
+## D. FeaturedProjects — asymmetric staggered grid
+
+Fly4Me's project gallery uses staggered 12-col placements (`md:col-span-7` → `md:col-span-5 md:col-start-8 md:mt-24` → `md:col-span-6 md:col-start-2`). Creates a hand-laid editorial feel vs. the regular 3-up grid Creek currently ships.
+
+For the **Work page** Featured section, apply the same LAYOUTS array. Homepage FeaturedProjects can stay regular (less is more on home), but the `/work` page deserves the asymmetry. Image aspect: switch from current to `aspect-[4/5]` (Fly4Me ratio) — tall portraits feel more editorial than landscapes for residential builds.
+
+## E. Floating "Get a quote ↗" anchor (persistent conversion)
+
+Fly4Me's bottom-right `Start a project ↗` button is the highest-converting element on the site — present on every page, hover-lifts, never moves. Creek's QuickNav popover serves a similar role but is heavier (5 routes + quote action). Add a **dedicated single-purpose floating CTA** as a sibling to QuickNav (or merge — see decision point below):
+
+```tsx
+<button className="fixed bottom-5 right-5 md:bottom-8 md:right-8 z-40 bg-foreground text-background px-5 py-3 md:px-6 md:py-3.5 text-xs md:text-sm font-medium shadow-[0_8px_30px_rgba(0,0,0,0.15)] hover:opacity-90 transition-opacity">
+  Get a quote ↗
+</button>
+```
+
+Creek variant: use **`bg-evergreen text-evergreen-foreground`** (warmer than pure black) with a `border-l-[3px] border-cedar` accent bar to keep the brand language. Hidden on `/contact` (already at the funnel terminus).
+
+**Decision needed (see questions): keep QuickNav + add the floating CTA, or replace QuickNav with the single-purpose CTA?**
+
+## F. Header scroll-condense
+
+Fly4Me header animates `h-20 → h-16` once `scrollY > 24`. Creek's chrome is already always-opaque (per memory rule) — keep that — but add the **height condense** for the same Apple "settling" feel. Touch `src/components/Navigation.tsx` only; no opacity/blur changes.
+
+## G. Mobile menu — fewer, bigger, staggered
+
+Fly4Me's mobile menu replaces dense links with `text-3xl font-medium` stacked items animated in with a 70ms stagger. Creek's GlobalMenu already uses big type but the mobile sub-bar/SectionRail can compete on small screens. **Audit: at 390px width, ensure only ONE of (SectionRail, GlobalMenu) is visible at a time, never both stacked.** If both render, hide the rail under sm.
+
+## H. Section padding rhythm
+
+Fly4Me uses `py-24 md:py-40` for content sections, `py-32 md:py-48` for marquee beats (BrandStatement, CTA). Creek's `SECTION_PADDING.default` is currently smaller. **Bump `src/lib/spacing.ts` `default` to `py-24 md:py-32 lg:py-40`** — gives every section the breathing room Fly4Me uses to project confidence. Keep `compact` and `footer` variants unchanged.
+
+## I. Brand statement insertion (homepage)
+
+Fly4Me's BrandStatement is a single oversize pull quote between FeaturedWork and Services. Creek doesn't have an equivalent — the closest is the sub-headline under the hero. **Add a new `<BrandStatement />` section between Hero and Services** on the homepage, same 3/9 grid:
+
+```text
+[ EST. 2019 · ALBERTA ]   How we work shows up in the work itself. We don't subcontract the build, we don't surprise on price, and we'd rather do fewer projects exceptionally well.
+```
+
+Existing copy lives in About — promote a single sentence to the homepage at editorial scale.
+
+## J. Squared-corners discipline (selective)
+
+Fly4Me uses `--radius: 0` globally. Creek's 6px radius is a brand decision — **don't change tokens**. But Fly4Me's project tiles + image wrappers are deliberately squared because rounded corners on photographs read "stock". **Set image wrappers to `rounded-none`** in: FeaturedProjects, ProjectGallery, HomeProjectRecapStrip, CrewMoment photo. Keep cards/buttons at 6px. **Photographs are square. UI is rounded.** A simple, defensible rule.
+
+## K. Decision points (need user input)
+
+Two decisions affect scope materially. See `ask_questions` block below.
+
+## L. Files to touch
+
+- `src/index.css` — add `link-underline`, `link-arrow`, `container-x` utilities
+- `src/lib/spacing.ts` — bump `SECTION_PADDING.default`
+- `src/components/SectionHeader.tsx` — add `variant="editorial-grid"`
+- `src/components/Services.tsx` — convert to numbered rows, drop tile photos
+- `src/components/FeaturedProjects.tsx` — image wrappers `rounded-none`
+- `src/components/CrewMoment.tsx`, `src/components/media/HomeProjectRecapStrip.tsx` — image wrappers `rounded-none`
+- `src/components/ProjectGallery.tsx` — `rounded-none`
+- `src/components/Hero.tsx` — tighten headline tracking to `-0.035em`
+- `src/components/Navigation.tsx` — scroll-condense height
+- `src/components/BrandStatement.tsx` — new component
+- `src/pages/Index.tsx` — insert BrandStatement
+- `src/pages/Work.tsx` — apply asymmetric LAYOUTS to projects grid
+- `src/components/FloatingQuoteCTA.tsx` — new component (pending decision)
+- `src/App.tsx` or `src/components/Navigation.tsx` — mount FloatingQuoteCTA
+
+## M. Verification
+
+Screenshots at **390 / 768 / 1366** of `/`, `/work`, `/services`, `/about`, `/contact` after the pass. Specifically check:
+1. Numbered service rows wrap correctly on 390 (number stays inline with title, description drops below)
+2. Floating CTA doesn't overlap QuickNav on 390
+3. Editorial-grid section header collapses sanely under md (eyebrow → heading → arrow stack vertically)
+4. Squared image wrappers don't break the QuoteCloserCard rounded-[6px] hierarchy
+5. New `py-32` rhythm doesn't push above-the-fold content too far on 390

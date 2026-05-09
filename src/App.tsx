@@ -8,6 +8,7 @@ import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import { QuoteModalProvider } from "@/components/quote/QuoteModalProvider";
 import RequireAdmin from "@/components/admin/RequireAdmin";
+import FloatingQuoteCTA from "@/components/FloatingQuoteCTA";
 
 // Public routes are lazy except Home (the LCP/entry route).
 // Each non-home route ships its own JS chunk so visitors only download
@@ -51,6 +52,7 @@ const App = () => (
       >
         <QuoteModalProvider>
           <ScrollToTop />
+          <FloatingQuoteCTA />
           <Suspense fallback={<RouteSkeleton />}>
             <Routes>
               <Route path="/" element={<Index />} />

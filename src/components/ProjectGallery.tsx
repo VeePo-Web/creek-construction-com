@@ -31,7 +31,7 @@ const ProjectGallery = ({ project, priority = false }: ProjectGalleryProps) => {
     return (
       <figure className="w-full" style={{ contain: "layout style" }}>
         <div
-          className="relative w-full overflow-hidden rounded-[6px] max-h-[72svh] md:max-h-[80vh]"
+          className="relative w-full overflow-hidden rounded-none max-h-[72svh] md:max-h-[80vh]"
           style={{ aspectRatio: `${p.width} / ${p.height}` }}
         >
           <ProgressiveImage
@@ -55,7 +55,7 @@ const ProjectGallery = ({ project, priority = false }: ProjectGalleryProps) => {
         className="grid grid-cols-1 md:grid-cols-5 gap-6 md:gap-8 w-full"
         style={{ contain: "layout style" }}
       >
-        <figure className="md:col-span-3 relative overflow-hidden rounded-[6px]" style={{ aspectRatio: `${a.width} / ${a.height}` }}>
+        <figure className="md:col-span-3 relative overflow-hidden rounded-none" style={{ aspectRatio: `${a.width} / ${a.height}` }}>
           <ProgressiveImage
             src={a.src}
             alt={a.alt}
@@ -65,7 +65,7 @@ const ProjectGallery = ({ project, priority = false }: ProjectGalleryProps) => {
             cedarHover={false}
           />
         </figure>
-        <figure className="md:col-span-2 relative overflow-hidden rounded-[6px]" style={{ aspectRatio: `${b.width} / ${b.height}` }}>
+        <figure className="md:col-span-2 relative overflow-hidden rounded-none" style={{ aspectRatio: `${b.width} / ${b.height}` }}>
           <ProgressiveImage
             src={b.src}
             alt={b.alt}
@@ -83,13 +83,13 @@ const ProjectGallery = ({ project, priority = false }: ProjectGalleryProps) => {
     const [a, b, c] = photos;
     return (
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 w-full" style={{ contain: "layout style" }}>
-        <figure className="md:col-span-2 md:row-span-2 relative overflow-hidden rounded-[6px]" style={{ aspectRatio: `${a.width} / ${a.height}` }}>
+        <figure className="md:col-span-2 md:row-span-2 relative overflow-hidden rounded-none" style={{ aspectRatio: `${a.width} / ${a.height}` }}>
           <ProgressiveImage src={a.src} alt={a.alt} className="w-full h-full" priority={priority} sizes="(min-width: 768px) 66vw, 100vw" cedarHover={false} />
         </figure>
-        <figure className="relative overflow-hidden rounded-[6px]" style={{ aspectRatio: `${b.width} / ${b.height}` }}>
+        <figure className="relative overflow-hidden rounded-none" style={{ aspectRatio: `${b.width} / ${b.height}` }}>
           <ProgressiveImage src={b.src} alt={b.alt} className="w-full h-full" sizes="(min-width: 768px) 33vw, 100vw" cedarHover={false} />
         </figure>
-        <figure className="relative overflow-hidden rounded-[6px]" style={{ aspectRatio: `${c.width} / ${c.height}` }}>
+        <figure className="relative overflow-hidden rounded-none" style={{ aspectRatio: `${c.width} / ${c.height}` }}>
           <ProgressiveImage src={c.src} alt={c.alt} className="w-full h-full" sizes="(min-width: 768px) 33vw, 100vw" cedarHover={false} />
         </figure>
       </div>
@@ -103,7 +103,7 @@ const ProjectGallery = ({ project, priority = false }: ProjectGalleryProps) => {
       style={{ contain: "layout style" }}
     >
       {photos.map((p, i) => (
-        <figure key={`${project.slug}-${i}`} className="relative overflow-hidden rounded-[6px]">
+        <figure key={`${project.slug}-${i}`} className="relative overflow-hidden rounded-none">
           <ProgressiveImage
             src={p.src}
             alt={p.alt}
