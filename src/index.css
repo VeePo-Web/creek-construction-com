@@ -565,9 +565,6 @@ section[id^="section-"] {
       display: none !important;
     }
 
-    .cta-thermal::before {
-      display: none !important;
-    }
   }
 
 
