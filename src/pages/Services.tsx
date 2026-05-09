@@ -136,7 +136,7 @@ const Services = () => {
             <div className="mt-12 grid lg:grid-cols-2 gap-6 lg:gap-8">
               <div
                 aria-label="What we handle"
-                className="p-7 sm:p-8 md:p-10 border border-cedar/15 border-t-2 border-t-cedar rounded-[6px] h-full bg-background"
+                className="hairline pt-7 sm:pt-8 md:pt-10 px-1 sm:px-2 h-full"
               >
                 <div className="flex items-baseline justify-between gap-2 flex-wrap mb-8">
                   <h3 className="text-minimal text-cedar">WE HANDLE</h3>

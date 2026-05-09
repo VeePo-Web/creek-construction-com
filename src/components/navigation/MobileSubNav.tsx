@@ -63,7 +63,7 @@ const MobileSubNav = ({ faded = false }: MobileSubNavProps) => {
       aria-hidden={faded ? true : undefined}
       className={cn(
         "md:hidden fixed top-16 inset-x-0 z-40",
-        "border-b border-cedar/15 bg-background/96 backdrop-blur-[10px]",
+        "border-b border-cedar/12 bg-background/96 backdrop-blur-[10px]",
         "transition-opacity duration-500",
         faded ? "opacity-0 pointer-events-none" : "opacity-100",
       )}

@@ -200,7 +200,7 @@ const QuoteFormInline = ({
   if (success) {
     return (
       <div
-        className={`rounded-[6px] border border-cedar/15 border-l-[3px] border-l-cedar/40 grain-texture shadow-contact ${shellBg} ${pad} text-center ${className ?? ""}`}
+        className={`hairline-l border-l-[2px] !border-l-cedar ${shellBg} ${pad} text-center ${className ?? ""}`}
         role="status"
         aria-live="polite"
       >
@@ -221,7 +221,7 @@ const QuoteFormInline = ({
 
   return (
     <div
-      className={`rounded-[6px] border border-cedar/15 border-l-[3px] border-l-cedar/40 grain-texture shadow-contact ${shellBg} ${className ?? ""}`}
+      className={`hairline-l border-l-[2px] !border-l-cedar ${shellBg} ${className ?? ""}`}
       onKeyDown={handleKeyDown}
     >
       <div className={pad}>
@@ -400,20 +400,8 @@ const QuoteFormInline = ({
       </div>
 
       {/* Trust micro-strip + CTA */}
-      <div
-        className="bg-cedar/[0.03] border-t border-transparent"
-        style={{
-          borderImage:
-            "linear-gradient(90deg, transparent 0%, hsl(var(--cedar) / 0.20) 50%, transparent 100%) 1",
-        }}
-      >
-        <div
-          className="px-6 md:px-8 py-2 flex items-center justify-center gap-4 text-[10px] tracking-[0.18em] uppercase text-muted-foreground border-b border-transparent flex-wrap"
-          style={{
-            borderImage:
-              "linear-gradient(90deg, transparent 0%, hsl(var(--cedar) / 0.15) 50%, transparent 100%) 1",
-          }}
-        >
+      <div className="hairline">
+        <div className="hairline px-6 md:px-8 py-2 flex items-center justify-center gap-4 text-[10px] tracking-[0.18em] uppercase text-muted-foreground flex-wrap">
           <span className="inline-flex items-center gap-1.5">
             <Star className="h-3 w-3 fill-cedar text-cedar" aria-hidden /> Verified
           </span>

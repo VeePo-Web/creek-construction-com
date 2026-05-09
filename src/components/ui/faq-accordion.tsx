@@ -5,7 +5,6 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { cn } from "@/lib/utils";
-import { bronzeStep } from "@/lib/colors";
 
 export interface FaqItem {
   q: string;
@@ -18,39 +17,53 @@ interface FaqAccordionProps {
 }
 
 /**
- * FaqAccordion — wraps Radix Accordion with the bronze-step border treatment
- * baked in. Single source of truth for FAQ rendering across the site.
+ * FaqAccordion — flat editorial stack (Pass 34).
+ * Items are separated by .hairline rules. No card chrome, no grain,
+ * no background fill on open. Chevron is a typographic + → × glyph.
  */
 const FaqAccordion = ({ items, className }: FaqAccordionProps) => {
   return (
-    <Accordion type="single" collapsible className={cn("space-y-4", className)}>
-      {items.map((f, i) => {
-        const borderOp = 0.1 + (i / Math.max(items.length - 1, 1)) * 0.3;
-        const accentOp = bronzeStep(i, items.length);
-        return (
-          <AccordionItem
-            key={i}
-            value={`faq-${i}`}
-            className="grain-texture border px-6 transition-[border-color,background-color] duration-500 hover:border-cedar/30 data-[state=open]:border-cedar/40 data-[state=open]:bg-cedar/[0.03] rounded-sm bg-background"
-            style={{
-              borderColor: `hsl(var(--cedar) / ${borderOp})`,
-              borderLeft: `3px solid hsl(var(--cedar) / ${accentOp})`,
-            }}
+    <Accordion type="single" collapsible className={cn("w-full", className)}>
+      {items.map((f, i) => (
+        <AccordionItem
+          key={i}
+          value={`faq-${i}`}
+          className={cn(
+            "border-0 border-b border-cedar/12",
+            i === 0 && "border-t border-cedar/12",
+          )}
+        >
+          <AccordionTrigger
+            className={cn(
+              "group flex items-baseline justify-between gap-6 py-5 md:py-6",
+              "text-left hover:no-underline focus-visible:ring-offset-background",
+              "[&>svg]:hidden",
+            )}
           >
-            <AccordionTrigger className="text-left text-base md:text-lg font-normal text-foreground hover:no-underline py-5 hover:text-cedar transition-colors duration-500 focus-visible:ring-offset-background">
-              <span className="flex items-center gap-4">
-                <span className="text-[11px] tracking-[0.2em] text-cedar/40 tabular-nums">
-                  {String(i + 1).padStart(2, "0")}
-                </span>
-                <span>{f.q}</span>
+            <span className="flex items-baseline gap-4 flex-1 min-w-0">
+              <span className="text-[11px] tracking-[0.22em] text-cedar/55 tabular-nums shrink-0">
+                {String(i + 1).padStart(2, "0")}
               </span>
-            </AccordionTrigger>
-            <AccordionContent className="text-muted-foreground leading-relaxed pb-5 pl-10">
-              {f.a}
-            </AccordionContent>
-          </AccordionItem>
-        );
-      })}
+              <span className="font-serif text-lg md:text-xl tracking-[-0.01em] text-foreground leading-snug group-hover:text-cedar transition-colors duration-300">
+                {f.q}
+              </span>
+            </span>
+            <span
+              aria-hidden
+              className={cn(
+                "shrink-0 text-cedar/70 text-base leading-none",
+                "transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]",
+                "group-data-[state=open]:rotate-45",
+              )}
+            >
+              +
+            </span>
+          </AccordionTrigger>
+          <AccordionContent className="pb-6 pl-9 text-foreground/70 leading-relaxed max-w-[58ch]">
+            {f.a}
+          </AccordionContent>
+        </AccordionItem>
+      ))}
     </Accordion>
   );
 };
