@@ -1,20 +1,22 @@
+import { ArrowUpRight } from "lucide-react";
 import SectionHeader from "@/components/SectionHeader";
 import { SERVICE_GROUPS, getItemsForGroup } from "@/config/services";
 import { useQuoteModal } from "@/components/quote/QuoteModalProvider";
-import MediaSlot from "@/components/media/MediaSlot";
-import { MEDIA_SIZES } from "@/lib/media-sizes";
-import type { ServiceCategory } from "@/lib/api/public-media";
-import { bronzeStep } from "@/lib/colors";
-import { SECTION_PADDING, MAX_WIDTH, GRID_GAP } from "@/lib/spacing";
+import { SECTION_PADDING, MAX_WIDTH } from "@/lib/spacing";
 import { useReveal } from "@/hooks/useReveal";
 
 /**
  * Services — homepage section.
  *
- * Renders the five service GROUPS (not the fifteen individual items).
- * The full menu lives on /services; here we keep the editorial cadence of
- * five confident tiles. Clicking a tile opens the QuoteModal with no
- * preselection — the user picks which item(s) inside that group.
+ * Pass 30 — Fly4Me transposition: numbered editorial rows replace the
+ * 3-up tile grid. The homepage rhythm now alternates photo/typographic
+ * beats (Hero photo → Services typographic → Crew photo → Featured photo
+ * → Testimonials typographic → MiniFaq typographic → Closer photo). Two
+ * photo grids in a row diluted focus; this section earns its keep with
+ * editorial restraint.
+ *
+ * 12-col grid per row: 01 (1) · Title (5) · Short copy (5) · ↗ (1).
+ * Whole row is the quote-modal trigger.
  */
 const Services = () => {
   const { openModal } = useQuoteModal();
@@ -26,70 +28,81 @@ const Services = () => {
       className={`${SECTION_PADDING.default} bg-background`}
       aria-labelledby="services-heading"
     >
-      <div className="container mx-auto max-w-[1440px] px-5 sm:px-6">
+      <div className="container mx-auto max-w-[1440px] container-x">
         <div ref={ref} className={`${MAX_WIDTH.wide} mx-auto ${cls}`} style={style}>
-          <div className="mb-16">
-            <SectionHeader
-              variant="quiet"
-              label="WHAT WE BUILD"
-              headingId="services-heading"
-              heading="Five categories. Fifteen services."
-              
-            />
+          {/* Editorial 12-col header — eyebrow / headline / trailing CTA */}
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-y-6 md:gap-y-10 mb-14 md:mb-20">
+            <p className="md:col-span-3 text-[11px] uppercase tracking-[0.25em] text-muted-foreground">
+              What we build
+            </p>
+            <div className="md:col-span-6">
+              <h2
+                id="services-heading"
+                className="font-serif text-4xl sm:text-5xl md:text-6xl text-foreground leading-[1.02] tracking-[-0.035em] text-balance"
+              >
+                Five categories.
+                <br />
+                Fifteen services.
+              </h2>
+            </div>
+            <div className="md:col-span-3 md:flex md:items-end md:justify-end">
+              <button
+                type="button"
+                onClick={() => openModal()}
+                className="group inline-flex items-center gap-2 text-sm font-medium text-foreground"
+              >
+                <span className="link-underline">Start a quote</span>
+                <span className="link-arrow text-cedar">↗</span>
+              </button>
+            </div>
           </div>
 
-          {/* 5-tile grid: 2-up on sm (last tile centers when alone), 3-up on lg (5 → 3+2). */}
-          <div className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 ${GRID_GAP.default} sm:[&>*:last-child:nth-child(odd)]:col-span-2 sm:[&>*:last-child:nth-child(odd)]:max-w-[calc(50%-1rem)] sm:[&>*:last-child:nth-child(odd)]:mx-auto lg:[&>*:last-child:nth-child(odd)]:col-span-1 lg:[&>*:last-child:nth-child(odd)]:max-w-none lg:[&>*:last-child:nth-child(odd)]:mx-0`} role="list">
+          {/* Numbered rows — borderless top, fading hairlines between */}
+          <ul
+            className="border-t border-transparent"
+            style={{
+              borderImage:
+                "linear-gradient(90deg, hsl(var(--cedar) / 0.22) 0%, hsl(var(--cedar) / 0.06) 100%) 1",
+            }}
+            role="list"
+          >
             {SERVICE_GROUPS.map((group, i) => {
-              const Icon = group.icon;
-              const opacity = bronzeStep(i, SERVICE_GROUPS.length);
               const groupItemIds = getItemsForGroup(group.id).map((s) => s.id);
+              const n = String(i + 1).padStart(2, "0");
               return (
-                <button
-                  key={group.id}
-                  type="button"
-                  onClick={() => openModal(groupItemIds)}
-                  role="listitem"
-                  aria-label={`Get my free quote — ${group.title}`}
-                  className="group w-full text-left flex flex-col items-stretch overflow-hidden rounded-[6px] transition-[background-color,box-shadow] duration-300 hover:bg-cedar/[0.03] hover:shadow-[0_1px_2px_hsl(var(--cedar)/0.08),0_8px_24px_-12px_hsl(var(--cedar)/0.20)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cedar focus-visible:ring-offset-2 cursor-pointer border border-border/40"
-                  style={{
-                    borderLeftWidth: "3px",
-                    borderLeftColor: `hsl(var(--cedar) / ${opacity})`,
-                  }}
-                >
-                  <div className="relative w-full aspect-hero overflow-hidden before:absolute before:inset-0 before:z-[1] before:bg-cedar/0 before:transition-colors before:duration-500 group-hover:before:bg-cedar/[0.05] before:pointer-events-none">
-                    <MediaSlot
-                      query={{
-                        service: group.mediaCategory as ServiceCategory,
-                        kind: "image",
-                        min_quality: "reference",
-                      }}
-                      sizes={MEDIA_SIZES.THIRD}
-                      wrapperClassName="w-full h-full"
-                      className="transition-transform duration-[1.2s] group-hover:scale-[1.025]"
-                      fallbackVariant="stone"
-                      fallbackIcon={Icon}
-                      fallbackCaption={`${group.title} · Alberta`}
-                    />
-                  </div>
-
-                  <div className="p-5 md:p-6 flex flex-col flex-1">
-                    <Icon
-                      className="h-5 w-5 text-cedar/70 mb-4 transition-colors duration-300 group-hover:text-cedar"
-                      aria-hidden
-                      strokeWidth={1.5}
-                    />
-                    <h3 className="relative font-serif text-2xl text-foreground pb-1 after:absolute after:left-0 after:bottom-0 after:h-px after:w-8 after:bg-cedar/0 group-hover:after:bg-cedar/40 after:transition-colors after:duration-300">
-                      {group.title}
+                <li key={group.id} role="listitem">
+                  <button
+                    type="button"
+                    onClick={() => openModal(groupItemIds)}
+                    aria-label={`Get my free quote — ${group.title}`}
+                    className="group w-full text-left grid grid-cols-12 gap-x-4 sm:gap-x-6 gap-y-2 items-baseline py-7 md:py-9 border-b border-transparent transition-colors duration-300 hover:bg-cedar/[0.04] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cedar focus-visible:ring-offset-2"
+                    style={{
+                      borderImage:
+                        "linear-gradient(90deg, hsl(var(--cedar) / 0.22) 0%, hsl(var(--cedar) / 0.06) 100%) 1",
+                    }}
+                  >
+                    <span className="col-span-2 md:col-span-1 text-[11px] uppercase tracking-[0.25em] text-cedar/60 tabular-nums">
+                      {n}
+                    </span>
+                    <h3 className="col-span-10 md:col-span-5 font-serif text-2xl md:text-3xl text-foreground tracking-[-0.02em]">
+                      <span className="link-underline group-hover:[background-size:100%_1px]">
+                        {group.title}
+                      </span>
                     </h3>
-                    <p className="mt-2 text-sm text-muted-foreground leading-relaxed line-clamp-2">
-                      {group.short}
+                    <p className="col-span-12 md:col-span-5 text-sm md:text-base text-muted-foreground leading-relaxed text-pretty">
+                      {group.description}
                     </p>
-                  </div>
-                </button>
+                    <span
+                      aria-hidden
+                      className="col-span-12 md:col-span-1 md:flex md:items-center md:justify-end text-cedar/50 group-hover:text-cedar transition-colors hidden"
+                    >
+                      <ArrowUpRight className="link-arrow h-5 w-5" strokeWidth={1.5} />
+                    </span>
+                  </button>
+                </li>
               );
             })}
-          </div>
+          </ul>
         </div>
       </div>
     </section>
