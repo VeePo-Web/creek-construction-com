@@ -78,19 +78,16 @@ const Work = () => {
                 {PROJECTS.map((project, idx) => (
                   <article key={project.slug} aria-labelledby={`project-${project.slug}-heading`}>
                     {idx > 0 && (
-                      <header className="mb-6 flex flex-col items-start gap-3 md:flex-row md:items-baseline md:justify-between md:gap-8">
+                      <header className="mb-6 pt-10 hairline flex flex-col items-start gap-2 md:flex-row md:items-baseline md:justify-between md:gap-8">
                         <h2
                           id={`project-${project.slug}-heading`}
                           className="font-serif text-3xl md:text-4xl text-foreground"
                         >
                           {project.title}
                         </h2>
-                        <div className="flex items-center gap-3 shrink-0">
-                          <span aria-hidden className="h-px w-6 bg-cedar/40" />
-                          <p className="text-[10px] tracking-[0.22em] uppercase text-cedar/80 tabular-nums">
-                            {project.location} · {formatStatus(project.status)} · {project.year}
-                          </p>
-                        </div>
+                        <p className="text-[10px] tracking-[0.22em] uppercase text-cedar/70 tabular-nums shrink-0">
+                          {project.location} · {formatStatus(project.status)} · {project.year}
+                        </p>
                       </header>
                     )}
                     <ProjectGallery project={project} priority={idx === 0} />
