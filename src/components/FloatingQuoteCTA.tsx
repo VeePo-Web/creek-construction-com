@@ -58,7 +58,7 @@ const FloatingQuoteCTA = () => {
         "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cedar focus-visible:ring-offset-2",
         "min-h-[44px]",
         show
-          ? "opacity-100 translate-y-0 pointer-events-auto"
+          ? "opacity-100 translate-y-0 pointer-events-auto animate-[fade-in-up_0.6s_cubic-bezier(0.22,1,0.36,1)]"
           : "opacity-0 translate-y-3 pointer-events-none",
       )}
     >
