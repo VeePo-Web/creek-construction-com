@@ -66,7 +66,7 @@ const Contact = () => {
                 />
 
                 <aside
-                  className="mt-8 rounded-[6px] border border-cedar/15 border-l-[3px] border-l-cedar overflow-hidden"
+                  className="mt-8 bg-secondary/40 border-l-[2px] border-l-cedar overflow-hidden"
                   aria-label="Direct contact details"
                 >
                   <a
