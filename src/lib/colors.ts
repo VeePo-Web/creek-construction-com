@@ -287,8 +287,8 @@ export const BUTTON = {
     disabled: "disabled:opacity-40 disabled:cursor-not-allowed",
     transition: "transition-colors duration-300",
   },
-  /** Outline — outlined, minimal. (Light surfaces.) */
-  outline: {
+  /** Ghost — outlined on light surfaces. */
+  ghost: {
     base:
       "inline-flex items-center gap-2 border border-border text-foreground px-6 py-3 rounded-[2px] text-[11px] tracking-[0.22em] uppercase",
     hover: "hover:border-cedar hover:text-cedar hover:bg-cedar/[0.04]",
@@ -298,10 +298,10 @@ export const BUTTON = {
     transition: "transition-colors duration-300",
   },
   /**
-   * Ghost — Pass 35: on-photo treatment used by Hero ghost call CTA.
-   * White outline that fills softly on hover (Fly4Me grammar).
+   * On-photo — Pass 35: white outline that fills softly on hover (Fly4Me).
+   * Used by the Hero ghost call CTA over architect photography.
    */
-  ghost: {
+  onPhoto: {
     base:
       "inline-flex items-center justify-center gap-2 min-h-[44px] px-5 rounded-[2px] border border-white/30 text-[11px] tracking-[0.22em] uppercase text-white/85",
     hover: "hover:border-white hover:bg-white/[0.06] hover:text-white",
