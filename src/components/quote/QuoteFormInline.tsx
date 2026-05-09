@@ -211,7 +211,7 @@ const QuoteFormInline = ({
         </p>
         <a
           href={`tel:${CONTACT.phoneTel}`}
-          className="inline-flex items-center gap-2 bg-cedar text-cedar-foreground px-5 py-3 rounded-[6px] text-[11px] tracking-[0.2em] uppercase font-medium hover:bg-cedar-hover transition-colors min-h-[44px] tabular-nums shadow-[0_1px_2px_hsl(var(--cedar)/0.20),0_8px_24px_-8px_hsl(var(--cedar)/0.30)]"
+          className="inline-flex items-center gap-2 bg-cedar text-cedar-foreground px-5 py-3 rounded-[2px] text-[11px] tracking-[0.22em] uppercase font-medium hover:bg-cedar-hover transition-colors duration-300 min-h-[44px] tabular-nums"
         >
           <Phone className="h-3.5 w-3.5" aria-hidden /> Call us now
         </a>
