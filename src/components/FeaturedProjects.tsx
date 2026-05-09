@@ -47,8 +47,8 @@ const ProjectCard = ({ project, variant, index }: ProjectCardProps) => {
 
   const headingSize =
     variant === "lead"
-      ? "text-2xl md:text-3xl lg:text-[32px] xl:text-[36px]"
-      : "text-xl md:text-2xl";
+      ? "text-2xl md:text-3xl lg:text-[34px] xl:text-[40px]"
+      : "text-lg md:text-xl lg:text-[22px]";
 
   return (
     <article className="group h-full flex flex-col">
