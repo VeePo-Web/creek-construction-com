@@ -57,23 +57,20 @@ const TestimonialStrip = ({
         {items.map((t, i) => (
           <li
             key={t.firstName + i}
-            className="flex flex-col p-6 lg:p-8 sm:min-h-[200px] md:min-h-[240px] lg:min-h-[260px] bg-background border border-border/40 rounded-[6px] transition-[background-color,border-color] duration-300 hover:bg-cedar/[0.03] hover:border-cedar/30"
-            style={{
-              borderLeft: `2px solid hsl(var(--cedar) / ${Math.max(bronzeStep(i, items.length), 0.3)})`,
-            }}
+            className="relative flex flex-col p-6 lg:p-8 sm:min-h-[220px] lg:min-h-[260px] bg-background border border-cedar/10 transition-colors duration-300 hover:border-cedar/30"
           >
-            <p
-              className="font-serif text-lg md:text-xl text-foreground leading-snug flex-1"
-              style={{ textIndent: "-0.4em", paddingLeft: "0.4em" }}
-            >
-              <span aria-hidden className="text-cedar/35">&ldquo;</span>{t.quote}<span aria-hidden className="text-cedar/35">&rdquo;</span>
+            <span aria-hidden className="absolute -top-2 left-5 font-serif text-[56px] leading-none text-cedar/25 select-none">
+              &ldquo;
+            </span>
+            <p className="font-serif text-lg md:text-xl text-foreground/90 leading-snug flex-1 pt-6">
+              {t.quote}
             </p>
-            <div className="mt-8 pt-5 border-t border-border/40 flex flex-col sm:flex-row sm:items-baseline sm:justify-between gap-y-1 gap-x-2">
+            <div className="mt-8 pt-5 border-t border-cedar/10 flex flex-col sm:flex-row sm:items-baseline sm:justify-between gap-y-1 gap-x-2">
               <p className="text-sm text-foreground">
                 <span className="text-cedar/70 mr-1.5">—</span>
                 {t.firstName}
               </p>
-              <p className="text-[10px] tracking-[0.2em] uppercase text-muted-foreground/60">
+              <p className="text-[10px] tracking-[0.22em] uppercase text-muted-foreground/65">
                 {t.city} · {t.service}
               </p>
             </div>
