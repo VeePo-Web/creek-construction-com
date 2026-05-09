@@ -56,7 +56,7 @@ const ProgressiveImage = ({
   const handleLoad = useCallback(() => setLoaded(true), []);
 
   return (
-    <div className={`relative overflow-hidden rounded-sm group ${className}`} style={{ contain: 'layout style' }}>
+    <div className={`relative overflow-hidden rounded-[6px] group ${className}`} style={{ contain: 'layout style' }}>
       {/* Placeholder shimmer while loading — dual-layer cedar warmth */}
       <div
         className={`absolute inset-0 transition-opacity duration-1000 ${

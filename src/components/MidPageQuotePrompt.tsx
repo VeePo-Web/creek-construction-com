@@ -23,18 +23,20 @@ const MidPageQuotePrompt = ({
 }: MidPageQuotePromptProps) => {
   return (
     <div
-      className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-5 px-6 md:px-8 py-7 rounded-sm border border-cedar/20 bg-cedar/[0.04]"
+      className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-5 px-6 md:px-8 py-7 border-l-[3px] border-cedar/40 bg-cedar/[0.03] rounded-r-[6px]"
       aria-label="Mid-page quote prompt"
     >
-      <div>
+      <div className="max-w-[28ch]">
         <p className="text-[10px] tracking-[0.25em] uppercase text-cedar/80 mb-1.5">
           {eyebrow}
         </p>
-        <p className="font-serif text-xl md:text-2xl text-foreground leading-snug">
+        <p className="font-serif text-2xl md:text-3xl text-foreground leading-snug text-balance">
           {heading}
         </p>
       </div>
-      <CedarCTA preselectServices={preselectServices} />
+      <div className="mt-2 sm:mt-0 shrink-0">
+        <CedarCTA preselectServices={preselectServices} />
+      </div>
     </div>
   );
 };

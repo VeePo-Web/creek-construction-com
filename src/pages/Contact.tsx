@@ -2,12 +2,13 @@ import NavigationMinimal from "@/components/navigation/NavigationMinimal";
 import SkipToContent from "@/components/ui/skip-to-content";
 import Footer from "@/components/Footer";
 import SectionHeader from "@/components/SectionHeader";
+import BronzeRule from "@/components/ui/bronze-rule";
 import QuoteFormInline from "@/components/quote/QuoteFormInline";
 import { useDocumentTitle } from "@/hooks/useDocumentTitle";
 import { Phone, Mail, MapPin } from "lucide-react";
 import { CONTACT } from "@/config/contact";
 import { bronzeStep } from "@/lib/colors";
-import { MAX_WIDTH } from "@/lib/spacing";
+import { MAX_WIDTH, SECTION_PADDING } from "@/lib/spacing";
 
 /**
  * Contact — single-screen conversion page.
@@ -37,23 +38,23 @@ const Contact = () => {
 
       <section
         id="section-contact"
-        className="pt-10 sm:pt-14 md:pt-20 pb-20 md:pb-28"
+        className="pt-10 sm:pt-14 md:pt-20 pb-16 sm:pb-20 md:pb-24 lg:pb-28 xl:pb-32"
         aria-labelledby="contact-heading"
       >
         <div className="container mx-auto px-5 sm:px-6">
           <div className={`${MAX_WIDTH.wide} mx-auto`}>
             {/* Headline strip */}
             <div className="text-center max-w-3xl mx-auto mb-10 md:mb-14">
-              <p className="text-[10px] tracking-[0.25em] uppercase text-cedar mb-4">
-                FREE QUOTE
-              </p>
+              <div className="flex justify-center mb-4">
+                <BronzeRule label="FREE QUOTE" />
+              </div>
               <h1
                 id="contact-heading"
-                className="font-serif text-[32px] sm:text-4xl md:text-[44px] lg:text-[56px] text-foreground leading-[1.05] lg:leading-[1.02] tracking-[-0.025em] text-pretty"
+                className="font-serif text-[32px] sm:text-4xl md:text-[44px] lg:text-[56px] xl:text-[64px] text-foreground leading-[1.05] lg:leading-[1.02] tracking-[-0.02em] text-pretty text-balance"
               >
                 Tell us what you’re building.
               </h1>
-              <p className="mt-5 text-base md:text-lg text-muted-foreground leading-relaxed">
+              <p className="mt-6 text-base md:text-lg text-muted-foreground leading-relaxed max-w-[44ch] mx-auto text-balance">
                 Free written quote within 24–48 hours. We quote what we’ll actually charge.
               </p>
             </div>
@@ -70,7 +71,7 @@ const Contact = () => {
                 />
 
                 <aside
-                  className="mt-8 rounded-sm border border-border/40 grain-texture overflow-hidden"
+                  className="mt-8 rounded-[6px] border border-border/40 grain-texture overflow-hidden"
                   style={{ borderLeft: `2px solid hsl(var(--cedar) / ${bronzeStep(0, ROW_COUNT)})` }}
                   aria-label="Direct contact details"
                 >
@@ -83,13 +84,20 @@ const Contact = () => {
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className="text-[10px] tracking-[0.2em] uppercase text-muted-foreground/75">Call or Text · Reply in 24–48&nbsp;hours</p>
-                      <p className="text-foreground font-medium group-hover/row:text-cedar transition-colors duration-200">
+                      <p className="font-serif text-lg text-foreground group-hover/row:text-cedar transition-colors duration-200 tabular-nums">
                         {CONTACT.phone}
                       </p>
                     </div>
                   </a>
 
-                  <div className="border-t border-border/30" aria-hidden />
+                  <div
+                    className="border-t border-transparent"
+                    aria-hidden
+                    style={{
+                      borderImage:
+                        "linear-gradient(90deg, transparent 0%, hsl(var(--cedar) / 0.20) 50%, transparent 100%) 1",
+                    }}
+                  />
 
                   <a
                     href={`mailto:${CONTACT.email}`}
@@ -106,7 +114,14 @@ const Contact = () => {
                     </div>
                   </a>
 
-                  <div className="border-t border-border/30" aria-hidden />
+                  <div
+                    className="border-t border-transparent"
+                    aria-hidden
+                    style={{
+                      borderImage:
+                        "linear-gradient(90deg, transparent 0%, hsl(var(--cedar) / 0.20) 50%, transparent 100%) 1",
+                    }}
+                  />
 
                   <div className="flex items-start gap-4 px-5 py-5">
                     <div className="shrink-0 w-8 h-8 flex items-center justify-center">
@@ -116,7 +131,7 @@ const Contact = () => {
                       <p className="text-[10px] tracking-[0.2em] uppercase text-muted-foreground/75 mb-1">Service Areas</p>
                       <p className="text-foreground font-medium">Calgary, Edmonton &amp; surrounding Alberta</p>
                       <p className="text-xs text-muted-foreground mt-1">
-                        Including {CONTACT.cities.slice(0, 3).join(", ")} + more towns
+                        Including {CONTACT.cities.slice(0, 3).join(", ")} — and the towns in between.
                       </p>
                     </div>
                   </div>

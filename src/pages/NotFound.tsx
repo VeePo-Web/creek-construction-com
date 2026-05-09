@@ -3,51 +3,50 @@ import { useEffect } from "react";
 import Navigation from "@/components/Navigation";
 import CedarCTA from "@/components/CedarCTA";
 import Footer from "@/components/Footer";
+import PageHero from "@/components/ui/page-hero";
+import SkipToContent from "@/components/ui/skip-to-content";
 import { useDocumentTitle } from "@/hooks/useDocumentTitle";
 
 const NotFound = () => {
   const location = useLocation();
-  useDocumentTitle("Page Not Found", "The page you’re looking for doesn’t exist. Find your way back to Creek Construction.");
+  useDocumentTitle(
+    "Page Not Found",
+    "The page you’re looking for doesn’t exist. Find your way back to Creek Construction.",
+  );
 
   useEffect(() => {
     if (import.meta.env.DEV) console.warn("[404]", location.pathname);
   }, [location.pathname]);
 
   return (
-    <main id="main-content" className="min-h-screen overflow-x-clip bg-background flex flex-col" aria-label="Page not found — Creek Construction">
+    <main
+      id="main-content"
+      className="min-h-screen overflow-x-clip bg-background"
+      aria-label="Page not found — Creek Construction"
+    >
       <Navigation />
+      <SkipToContent target="section-not-found" />
 
-      <section className="relative flex-1 flex items-center justify-center overflow-hidden bg-evergreen text-evergreen-foreground py-24 md:py-32">
-        <div
-          className="absolute inset-0 opacity-90"
-          style={{
-            background:
-              "radial-gradient(ellipse at center, hsl(150 30% 22%) 0%, hsl(150 25% 12%) 60%, hsl(150 30% 6%) 100%)",
-          }}
-        />
-
-        <div className="relative z-10 text-center max-w-2xl mx-auto px-5 sm:px-6 md:px-10">
-          <div className="flex items-center justify-center gap-3 sm:gap-4 mb-10 flex-wrap">
-            <div className="w-10 sm:w-12 h-px bg-evergreen-foreground/15" />
-            <span className="text-[11px] tracking-[0.25em] text-evergreen-foreground/40 tabular-nums">404</span>
-            <div className="w-8 h-px bg-cedar/40" />
-            <span className="text-[10px] tracking-[0.25em] uppercase text-evergreen-foreground/40">Off the map</span>
-            <div className="w-10 sm:w-12 h-px bg-evergreen-foreground/15" />
-          </div>
-
-          <h1 className="font-serif text-evergreen-foreground mb-6 leading-[1.05] tracking-[-0.02em] text-balance" style={{ fontSize: "clamp(2.25rem, 5vw, 4rem)" }}>
-            Nothing here.
-          </h1>
-
-          <p className="text-base md:text-lg text-evergreen-foreground/65 italic font-serif mb-10 text-balance">
-            That page doesn’t exist — but the work does.
-          </p>
-
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-6">
+      <section id="section-not-found" aria-labelledby="not-found-heading">
+        <PageHero
+          variant="evergreen-typographic"
+          breadcrumb={[]}
+          numeral="404"
+          sectionLabel="OFF THE MAP"
+          title={["Nothing here.", "But the work does."]}
+          subtitle="That page doesn’t exist — but the projects, the crew, and the calendar all do."
+          skipToId="not-found-heading"
+        >
+          <div
+            id="not-found-heading"
+            className="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-6"
+          >
             <CedarCTA to="/">Back to home</CedarCTA>
-            <CedarCTA to="/services" variant="secondary">Browse services</CedarCTA>
+            <CedarCTA to="/services" variant="secondary">
+              Browse services
+            </CedarCTA>
           </div>
-        </div>
+        </PageHero>
       </section>
 
       <Footer />
