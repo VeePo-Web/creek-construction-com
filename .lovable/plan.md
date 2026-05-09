@@ -1,149 +1,124 @@
-# Pass 30 — Fly4Me transposition: editorial restraint, numbered rows, Apple-grade interaction primitives
+# Pass 31 — "Calm Like Fly4Me" Cleanup
 
-Pass 29 finished cleaning the sub-page hairlines and atom radii. Walking the Fly4Me reference end-to-end exposes the *next* leap: Fly4Me's discipline isn't about color (Creek already has the right warm palette) — it's about **rhythm, restraint, and a tiny vocabulary of interaction primitives** repeated everywhere. Pass 30 transposes those primitives into Creek without losing the bronze/cream warmth the user explicitly said to keep.
+Goal: strip the homepage and sub-pages down to Fly4Me-level calm. Fewer surfaces, fewer rules, fewer chips, more whitespace, perfectly tuned per breakpoint. Keep Creek's bronze/cream warmth and editorial typography.
 
-The principle: **import Fly4Me's grammar, keep Creek's voice.**
+## Principles enforced this pass
+1. One idea per screen height. Generous negative space wins over decoration.
+2. Maximum two hairlines visible at a time. No stacked dividers.
+3. Conversion CTAs (phone, Quote, MENU, Floating Quote) stay; everything else may quiet down.
+4. Mobile (390px) is the design target; scale up — not down.
 
 ---
 
-## A. Interaction primitives — three CSS utilities, used everywhere
+## A. Homepage rhythm trim
 
-Fly4Me has exactly **two** interaction signatures across the entire site: `link-underline` (gradient-grow underline, no layout shift) and `link-arrow` (↗ that translates `+3px,-3px` on group hover). They're cheap, GPU-only, and *used everywhere*. Creek currently re-rolls hover effects per component (after:bottom-0 underlines, group-hover:translate-x, hover:text-cedar). One vocabulary, applied consistently, looks orders of magnitude more polished.
+Current: Hero → BrandStatement → Services → CrewMoment → Featured → Testimonials → MiniFaq → Closer (8 beats).
+Target: Hero → BrandStatement → Services → Featured → CrewMoment → Testimonials → Closer (7 beats; MiniFaq moves to /about or /services to remove the second info-dense block before closer).
 
-**Add to `src/index.css` `@layer utilities`:**
+- Move `<MiniFaq />` off Index.tsx; mount on `/services` above its closer.
+- Reorder so the single dense photo strip (Featured) sits between two quieter beats.
 
-```css
-.link-underline {
-  background-image: linear-gradient(hsl(var(--cedar)), hsl(var(--cedar)));
-  background-position: 0 100%;
-  background-repeat: no-repeat;
-  background-size: 0% 1px;
-  transition: background-size 420ms cubic-bezier(0.22,1,0.36,1), color 240ms;
-  padding-bottom: 2px;
-}
-.link-underline:hover, .link-underline:focus-visible, .link-underline.is-active {
-  background-size: 100% 1px;
-}
+## B. Hero (`src/components/Hero.tsx`)
 
-.link-arrow {
-  display: inline-block;
-  transition: transform 320ms cubic-bezier(0.22,1,0.36,1);
-}
-.group:hover .link-arrow,
-.group:focus-visible .link-arrow {
-  transform: translate(3px, -3px);
-}
+- Reduce to: kicker (small caps), 2-line serif headline, single sentence sub-copy, ONE primary CTA + one ghost link. Remove any badges/chips/stat row inside the hero frame.
+- Headline tracking `-0.04em`, leading `1.02`, balance.
+- Mobile: title clamps to `clamp(2.25rem, 9vw, 3.25rem)`; sub-copy `text-[15px] leading-[1.55]`.
+- Image: full-bleed right column on `lg`, full-bleed top on mobile, `aspect-[4/5]` on mobile, `aspect-[5/6]` on desktop, `rounded-none`, subtle 6% cedar inner border only on desktop.
+- Remove any hero scrim that fights the headline; keep only a 0→25% bottom gradient at 30% opacity for caption legibility.
 
-.container-x {
-  @apply px-5 sm:px-6 md:px-10 lg:px-16;
-}
-```
+## C. BrandStatement (`src/components/BrandStatement.tsx`)
 
-`container-x` replaces every ad-hoc `px-5 sm:px-6` Creek pads with — single source for horizontal rhythm. (Keep Creek's `container mx-auto max-w-[1440px]` on the *outer* wrapper; `container-x` is just the padding utility.)
+- Pure type beat. Remove eyebrow column on mobile (stack), keep on `md+`.
+- Statement: `text-pretty`, max 14 words. Tracking `-0.03em`. Color `text-foreground/85`.
+- Padding: `py-28 md:py-40 lg:py-48` so it breathes between Hero and Services.
 
-## B. Editorial section header — 12-col newspaper grid (the highest-impact change)
+## D. Services rows (`src/components/Services.tsx`)
 
-Fly4Me's signature: every section opens with the same 12-col header layout —
+- Keep numbered 12-col rows from Pass 30, refine:
+  - Row vertical padding: `py-8 md:py-10` (was 7/9) for Apple-like generosity.
+  - Borders: only one bottom hairline per row, no top borders, no fading gradients on every row — use a single `divide-y` style at 0.10 cedar.
+  - Number column: `tabular-nums text-cedar/55 text-[11px]` and right-align on mobile to free reading column.
+  - Title hover: underline only (already), drop the right `↗` arrow on mobile (`hidden md:inline-block`).
+  - Remove description on mobile if > 90 chars; show full on `md+`.
+  - First row gets a top hairline; subsequent rows none — a continuous list, not stacked cards.
 
-```text
-[ eyebrow · col-span-3 ]   [ MASSIVE HEADLINE · col-span-6 ]   [ ↗ All projects · col-span-3, right-aligned ]
-```
+## E. FeaturedProjects (`src/components/FeaturedProjects.tsx`)
 
-Creek's `SectionHeader` is currently a centered/left-stack composition. Add a new `variant="editorial-grid"` to `src/components/SectionHeader.tsx` that renders this 3/6/3 layout with an optional trailing `link` slot. Roll it out on **homepage Services, FeaturedProjects, CrewMoment, TestimonialStrip, MiniFaq** — five sections, one rhythm. This is the single most "Apple-grade" change in the pass.
+- Limit to 3 projects on homepage (was likely 4–6). "View all →" link below grid.
+- Aspect: `aspect-[4/5]` mobile, `aspect-[3/4]` desktop. `rounded-none` already in.
+- Caption block under image: project name (serif 18/20), city · year (mono uppercase 11px tracking 0.22em). One line each. No chips, no tags.
 
-Headline weight: keep DM Serif Display (Creek's voice) but tighten tracking from current `tracking-[-0.02em]` to **`tracking-[-0.035em]`** (Fly4Me uses -0.04em). Cap line-height at `leading-[1.02]` for the giant beats. Use `text-balance`.
+## F. CrewMoment
 
-## C. Homepage Services → numbered editorial rows (replaces tile grid)
+- Drop to a single full-bleed image with a 1-line italic caption underneath. No headline, no rule. It's a breath, not a section.
+- Padding `py-20 md:py-28`.
 
-The current homepage Services section (`src/components/Services.tsx`) is a 3-up tile grid with hero photos per group. It works, but it competes visually with the 4-up Featured Projects below it — two photo grids in a row dilute focus.
+## G. TestimonialStrip
 
-**Convert to a Fly4Me-style numbered row list:**
+- Show one quote at a time on mobile, 3 across on `lg`.
+- Remove top rule (background change is enough). Quote marks as serif glyph at 56px, cedar/30, absolute top-left of each card; no border on cards.
 
-```text
-─────────────────────────────────────────────────────
-01    Decks, Pergolas & Patios          Cedar, composite, two-tier — built to outlast the lot.
-─────────────────────────────────────────────────────
-02    Fencing & Gates                   Privacy slats, side gates, custom millwork.
-─────────────────────────────────────────────────────
-… 03 / 04 / 05
-```
+## H. QuoteCloserCard
 
-12-col grid: `01` (col-span-1, eyebrow tracking) · Title (col-span-5, serif text-2xl/3xl) · Description (col-span-6, muted body). Hover: row tints `bg-cedar/[0.04]`, title gets `link-underline`, trailing `↗` arrow appears on the right. Every row is a quote-modal trigger. **No images** — the reduction is the point. The photo gravity stays with FeaturedProjects below.
+- Reduce to: eyebrow, 2-line serif headline, sub-copy, primary CTA, secondary phone link. Strip stat trio + trust chips (move to /contact page hero).
+- Background: `bg-secondary`, single 1px cedar/15 top hairline, no card surface.
 
-Result: homepage rhythm becomes Hero (photo) → Services (typographic) → CrewMoment (photo) → FeaturedProjects (photo) → Testimonials (typographic) → MiniFaq (typographic) → Closer. **Alternating photo/typography beats** = the Fly4Me cadence.
+## I. Sub-pages consistency sweep
 
-## D. FeaturedProjects — asymmetric staggered grid
+- `/services`: hero → numbered groups (same component grammar as homepage Services) → MiniFaq → CTA. Drop city chip cluster from page hero.
+- `/work`: hero → asymmetric grid (Pass 30) → CTA. Remove StatTrio at top.
+- `/about`: hero → BrandStatement-style mission → process steps (max 3, no shadow on hover, just background tint) → city chips moved here at the bottom — `rounded-[4px]`, single row scroll on mobile.
+- `/contact`: hero → form + direct contact card side-by-side on `lg`, stacked on mobile. Form labels above inputs, 14px caps tracking 0.18em. Inputs `h-12`, `rounded-[4px]`, focus ring cedar/40.
 
-Fly4Me's project gallery uses staggered 12-col placements (`md:col-span-7` → `md:col-span-5 md:col-start-8 md:mt-24` → `md:col-span-6 md:col-start-2`). Creates a hand-laid editorial feel vs. the regular 3-up grid Creek currently ships.
+## J. Navigation
 
-For the **Work page** Featured section, apply the same LAYOUTS array. Homepage FeaturedProjects can stay regular (less is more on home), but the `/work` page deserves the asymmetry. Image aspect: switch from current to `aspect-[4/5]` (Fly4Me ratio) — tall portraits feel more editorial than landscapes for residential builds.
+- SectionRail: hide on mobile entirely (top chrome already crowded). Keep on `md+`.
+- Header height locks `h-16` after scroll (already), but ensure padding-top of `<main>` matches via CSS var to prevent jump. Add `transition-[height] duration-300 ease-out`.
+- MENU button: 44px square, `rounded-[6px]`, label `MENU` in 11px tracking 0.25em — no icon noise.
 
-## E. Floating "Get a quote ↗" anchor (persistent conversion)
+## K. FloatingQuoteCTA
 
-Fly4Me's bottom-right `Start a project ↗` button is the highest-converting element on the site — present on every page, hover-lifts, never moves. Creek's QuickNav popover serves a similar role but is heavier (5 routes + quote action). Add a **dedicated single-purpose floating CTA** as a sibling to QuickNav (or merge — see decision point below):
+- Hide on `/`, `/contact` and below 768px. On homepage the closer is the conversion anchor; mobile users get the sticky bottom bar from QuickNav. Avoids stacking two CTAs.
+- Reveal threshold raised to `scrollY > window.innerHeight * 0.6` so it appears only after Hero leaves.
 
-```tsx
-<button className="fixed bottom-5 right-5 md:bottom-8 md:right-8 z-40 bg-foreground text-background px-5 py-3 md:px-6 md:py-3.5 text-xs md:text-sm font-medium shadow-[0_8px_30px_rgba(0,0,0,0.15)] hover:opacity-90 transition-opacity">
-  Get a quote ↗
-</button>
-```
+## L. Vertical rhythm tokens (`src/lib/spacing.ts`)
 
-Creek variant: use **`bg-evergreen text-evergreen-foreground`** (warmer than pure black) with a `border-l-[3px] border-cedar` accent bar to keep the brand language. Hidden on `/contact` (already at the funnel terminus).
+- Add `SECTION_PADDING.calm = "py-24 sm:py-28 md:py-36 lg:py-44"` for Hero/BrandStatement/Closer.
+- Keep `default` for content sections.
+- Add `CONTAINER_X = "px-5 sm:px-8 lg:px-12 xl:px-16"` and apply via `container-x` utility everywhere replacing ad-hoc `px-*`.
 
-**Decision needed (see questions): keep QuickNav + add the floating CTA, or replace QuickNav with the single-purpose CTA?**
+## M. Type scale tightening (`src/lib/typography.ts`)
 
-## F. Header scroll-condense
+- H1: `clamp(2.5rem, 6.5vw, 5.25rem)` tracking `-0.04em` leading `1.02`.
+- H2: `clamp(2rem, 4.5vw, 3.5rem)` tracking `-0.035em`.
+- Body: `text-[15.5px] md:text-base leading-[1.65] text-foreground/75`.
+- Eyebrow: 11px caps, tracking `0.22em`, color `text-cedar/65`.
+- Apply across SectionHeader, Hero, BrandStatement, page heroes.
 
-Fly4Me header animates `h-20 → h-16` once `scrollY > 24`. Creek's chrome is already always-opaque (per memory rule) — keep that — but add the **height condense** for the same Apple "settling" feel. Touch `src/components/Navigation.tsx` only; no opacity/blur changes.
+## N. Color quietening (`src/index.css`)
 
-## G. Mobile menu — fewer, bigger, staggered
+- Reduce default cedar border opacity utility to 0.10 (from 0.18). Stronger 0.22 reserved for explicit emphasis.
+- Body text default to `foreground/78`. Headlines `foreground/95`.
 
-Fly4Me's mobile menu replaces dense links with `text-3xl font-medium` stacked items animated in with a 70ms stagger. Creek's GlobalMenu already uses big type but the mobile sub-bar/SectionRail can compete on small screens. **Audit: at 390px width, ensure only ONE of (SectionRail, GlobalMenu) is visible at a time, never both stacked.** If both render, hide the rail under sm.
+## O. Image cleanup
 
-## H. Section padding rhythm
+- Audit `/src/assets`: dedupe near-identical hero shots; pick 6 hero-grade photos (1 hero, 3 featured, 1 crew, 1 about). Reuse for /work gallery.
+- Convert any decorative SVG dividers in components to nothing — rely on whitespace.
 
-Fly4Me uses `py-24 md:py-40` for content sections, `py-32 md:py-48` for marquee beats (BrandStatement, CTA). Creek's `SECTION_PADDING.default` is currently smaller. **Bump `src/lib/spacing.ts` `default` to `py-24 md:py-32 lg:py-40`** — gives every section the breathing room Fly4Me uses to project confidence. Keep `compact` and `footer` variants unchanged.
+## P. Accessibility & polish
 
-## I. Brand statement insertion (homepage)
+- Focus ring: single utility `focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cedar/40 focus-visible:ring-offset-2 focus-visible:ring-offset-background`.
+- All interactive targets ≥ 44px on mobile (audit chips, nav links).
+- Reduced motion: respect `prefers-reduced-motion` in Hero Ken Burns and reveal animations.
 
-Fly4Me's BrandStatement is a single oversize pull quote between FeaturedWork and Services. Creek doesn't have an equivalent — the closest is the sub-headline under the hero. **Add a new `<BrandStatement />` section between Hero and Services** on the homepage, same 3/9 grid:
+## Q. Verification
 
-```text
-[ EST. 2019 · ALBERTA ]   How we work shows up in the work itself. We don't subcontract the build, we don't surprise on price, and we'd rather do fewer projects exceptionally well.
-```
+Browser screenshots at 390 / 768 / 1024 / 1440 of `/`, `/services`, `/work`, `/about`, `/contact`. Check:
+- No horizontal scroll, no stacked hairlines, CTAs never overlap.
+- Section padding feels Apple-calm (not cramped).
+- Floating CTA hidden where required.
+- Hero loads under 2s; LCP image is the hero photo.
 
-Existing copy lives in About — promote a single sentence to the homepage at editorial scale.
+## Files to touch
 
-## J. Squared-corners discipline (selective)
-
-Fly4Me uses `--radius: 0` globally. Creek's 6px radius is a brand decision — **don't change tokens**. But Fly4Me's project tiles + image wrappers are deliberately squared because rounded corners on photographs read "stock". **Set image wrappers to `rounded-none`** in: FeaturedProjects, ProjectGallery, HomeProjectRecapStrip, CrewMoment photo. Keep cards/buttons at 6px. **Photographs are square. UI is rounded.** A simple, defensible rule.
-
-## K. Decision points (need user input)
-
-Two decisions affect scope materially. See `ask_questions` block below.
-
-## L. Files to touch
-
-- `src/index.css` — add `link-underline`, `link-arrow`, `container-x` utilities
-- `src/lib/spacing.ts` — bump `SECTION_PADDING.default`
-- `src/components/SectionHeader.tsx` — add `variant="editorial-grid"`
-- `src/components/Services.tsx` — convert to numbered rows, drop tile photos
-- `src/components/FeaturedProjects.tsx` — image wrappers `rounded-none`
-- `src/components/CrewMoment.tsx`, `src/components/media/HomeProjectRecapStrip.tsx` — image wrappers `rounded-none`
-- `src/components/ProjectGallery.tsx` — `rounded-none`
-- `src/components/Hero.tsx` — tighten headline tracking to `-0.035em`
-- `src/components/Navigation.tsx` — scroll-condense height
-- `src/components/BrandStatement.tsx` — new component
-- `src/pages/Index.tsx` — insert BrandStatement
-- `src/pages/Work.tsx` — apply asymmetric LAYOUTS to projects grid
-- `src/components/FloatingQuoteCTA.tsx` — new component (pending decision)
-- `src/App.tsx` or `src/components/Navigation.tsx` — mount FloatingQuoteCTA
-
-## M. Verification
-
-Screenshots at **390 / 768 / 1366** of `/`, `/work`, `/services`, `/about`, `/contact` after the pass. Specifically check:
-1. Numbered service rows wrap correctly on 390 (number stays inline with title, description drops below)
-2. Floating CTA doesn't overlap QuickNav on 390
-3. Editorial-grid section header collapses sanely under md (eyebrow → heading → arrow stack vertically)
-4. Squared image wrappers don't break the QuoteCloserCard rounded-[6px] hierarchy
-5. New `py-32` rhythm doesn't push above-the-fold content too far on 390
+`src/pages/Index.tsx`, `src/pages/Services.tsx`, `src/pages/Work.tsx`, `src/pages/About.tsx`, `src/pages/Contact.tsx`, `src/components/Hero.tsx`, `src/components/BrandStatement.tsx`, `src/components/Services.tsx`, `src/components/FeaturedProjects.tsx`, `src/components/CrewMoment.tsx`, `src/components/TestimonialStrip.tsx`, `src/components/QuoteCloserCard.tsx`, `src/components/MiniFaq.tsx`, `src/components/Navigation.tsx`, `src/components/navigation/*`, `src/components/FloatingQuoteCTA.tsx`, `src/lib/spacing.ts`, `src/lib/typography.ts`, `src/index.css`.
