@@ -71,7 +71,7 @@ const Contact = () => {
                 />
 
                 <aside
-                  className="mt-8 rounded-sm border border-border/40 grain-texture overflow-hidden"
+                  className="mt-8 rounded-[6px] border border-border/40 grain-texture overflow-hidden"
                   style={{ borderLeft: `2px solid hsl(var(--cedar) / ${bronzeStep(0, ROW_COUNT)})` }}
                   aria-label="Direct contact details"
                 >
@@ -84,13 +84,20 @@ const Contact = () => {
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className="text-[10px] tracking-[0.2em] uppercase text-muted-foreground/75">Call or Text · Reply in 24–48&nbsp;hours</p>
-                      <p className="text-foreground font-medium group-hover/row:text-cedar transition-colors duration-200">
+                      <p className="font-serif text-lg text-foreground group-hover/row:text-cedar transition-colors duration-200 tabular-nums">
                         {CONTACT.phone}
                       </p>
                     </div>
                   </a>
 
-                  <div className="border-t border-border/30" aria-hidden />
+                  <div
+                    className="border-t border-transparent"
+                    aria-hidden
+                    style={{
+                      borderImage:
+                        "linear-gradient(90deg, transparent 0%, hsl(var(--cedar) / 0.20) 50%, transparent 100%) 1",
+                    }}
+                  />
 
                   <a
                     href={`mailto:${CONTACT.email}`}
@@ -107,7 +114,14 @@ const Contact = () => {
                     </div>
                   </a>
 
-                  <div className="border-t border-border/30" aria-hidden />
+                  <div
+                    className="border-t border-transparent"
+                    aria-hidden
+                    style={{
+                      borderImage:
+                        "linear-gradient(90deg, transparent 0%, hsl(var(--cedar) / 0.20) 50%, transparent 100%) 1",
+                    }}
+                  />
 
                   <div className="flex items-start gap-4 px-5 py-5">
                     <div className="shrink-0 w-8 h-8 flex items-center justify-center">
@@ -117,12 +131,11 @@ const Contact = () => {
                       <p className="text-[10px] tracking-[0.2em] uppercase text-muted-foreground/75 mb-1">Service Areas</p>
                       <p className="text-foreground font-medium">Calgary, Edmonton &amp; surrounding Alberta</p>
                       <p className="text-xs text-muted-foreground mt-1">
-                        Including {CONTACT.cities.slice(0, 3).join(", ")} + more towns
+                        Including {CONTACT.cities.slice(0, 3).join(", ")} — and the towns in between.
                       </p>
                     </div>
                   </div>
                 </aside>
-              </div>
 
               {/* RIGHT — the actual form */}
               <div>
