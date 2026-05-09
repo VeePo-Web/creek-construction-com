@@ -84,7 +84,7 @@ const Contact = () => {
                     </div>
                   </a>
 
-                  <div className="border-t border-cedar/10" aria-hidden />
+                  <div className="border-t border-cedar/12" aria-hidden />
 
                   <a
                     href={`mailto:${CONTACT.email}`}
@@ -101,7 +101,7 @@ const Contact = () => {
                     </div>
                   </a>
 
-                  <div className="border-t border-cedar/10" aria-hidden />
+                  <div className="border-t border-cedar/12" aria-hidden />
 
                   <div className="flex items-start gap-4 px-5 py-5">
                     <div className="shrink-0 w-8 h-8 flex items-center justify-center">
