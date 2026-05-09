@@ -20,7 +20,7 @@ const NavigationMinimal = () => {
       <header
         className={cn(
           "fixed top-0 inset-x-0 z-50",
-          "bg-background/95 backdrop-blur-[8px] border-b border-cedar/12 shadow-[0_1px_0_0_rgba(0,0,0,0.04)]",
+          "bg-background/95 backdrop-blur-[8px] border-b border-cedar/12",
         )}
         role="banner"
       >
