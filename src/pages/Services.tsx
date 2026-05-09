@@ -80,9 +80,14 @@ const Services = () => {
                 return (
                   <div key={group.id} aria-labelledby={`group-${group.id}`}>
                     <div
-                      className="pb-3 mb-5 md:pb-4 md:mb-6 border-b"
-                      style={{ borderBottomColor: `hsl(var(--cedar) / ${opacity})` }}
+                      className="pb-3 mb-5 md:pb-4 md:mb-6 border-b border-transparent flex items-baseline gap-3"
+                      style={{
+                        borderImage: `linear-gradient(90deg, hsl(var(--cedar) / ${opacity}) 0%, hsl(var(--cedar) / ${opacity * 0.4}) 100%) 1`,
+                      }}
                     >
+                      <span className="text-[11px] tracking-[0.22em] text-cedar/40 tabular-nums">
+                        {String(gIdx + 1).padStart(2, "0")}
+                      </span>
                       <h3
                         id={`group-${group.id}`}
                         className="font-serif text-xl md:text-2xl text-foreground"
@@ -97,7 +102,11 @@ const Services = () => {
                           key={item.id}
                           type="button"
                           onClick={() => openModal([item.id])}
-                          className="group flex items-baseline justify-between gap-4 py-4 md:py-5 text-left border-b border-cedar/12 transition-colors duration-300 hover:bg-cedar/[0.03] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cedar focus-visible:ring-offset-2 rounded-sm px-3 -mx-3 min-h-[44px]"
+                          className="group flex items-baseline justify-between gap-4 py-4 md:py-5 text-left border-b border-transparent transition-colors duration-300 hover:bg-cedar/[0.03] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cedar focus-visible:ring-offset-2 rounded-[4px] px-4 sm:px-5 -mx-4 sm:-mx-5 min-h-[44px]"
+                          style={{
+                            borderImage:
+                              "linear-gradient(90deg, hsl(var(--cedar) / 0.18) 0%, hsl(var(--cedar) / 0.05) 100%) 1",
+                          }}
                           aria-label={`Get my free quote for ${item.title}`}
                         >
                           <div className="flex-1 min-w-0">
@@ -108,10 +117,23 @@ const Services = () => {
                               <p className="text-xs text-muted-foreground mt-1">{item.short}</p>
                             )}
                           </div>
+                          <span
+                            aria-hidden
+                            className="shrink-0 text-cedar/60 opacity-0 -translate-x-1 transition-all duration-300 group-hover:opacity-100 group-hover:translate-x-0"
+                          >
+                            →
+                          </span>
                         </button>
                       ))}
                       {items.length % 2 === 1 && (
-                        <div className="hidden sm:block border-b border-cedar/12" aria-hidden />
+                        <div
+                          className="hidden sm:block border-b border-transparent"
+                          style={{
+                            borderImage:
+                              "linear-gradient(90deg, hsl(var(--cedar) / 0.18) 0%, hsl(var(--cedar) / 0.05) 100%) 1",
+                          }}
+                          aria-hidden
+                        />
                       )}
                     </div>
                   </div>
@@ -153,7 +175,7 @@ const Services = () => {
                     <div
                       key={i}
                       role="listitem"
-                      className="flex items-start gap-3 py-2.5 pl-3 rounded-sm transition-colors duration-300 hover:bg-cedar/[0.05]"
+                      className="flex items-start gap-3 py-2.5 pl-3 rounded-[4px] transition-colors duration-300 hover:bg-cedar/[0.05]"
                       style={{ borderLeft: `2px solid hsl(var(--cedar) / ${bronzeStep(i, WE_HANDLE.length)})` }}
                     >
                       <Check className="h-3.5 w-3.5 text-cedar/70 mt-0.5 flex-shrink-0" aria-hidden />
@@ -178,7 +200,7 @@ const Services = () => {
                     <div
                       key={i}
                       role="listitem"
-                      className="flex items-start gap-3 py-2.5 pl-3 rounded-sm transition-colors duration-300 hover:bg-cedar/[0.03]"
+                      className="flex items-start gap-3 py-2.5 pl-3 rounded-[4px] transition-colors duration-300 hover:bg-cedar/[0.03]"
                       style={{ borderLeft: "2px solid hsl(35 15% 86% / 0.5)" }}
                     >
                       <Minus className="h-3.5 w-3.5 text-muted-foreground/40 mt-0.5 flex-shrink-0" aria-hidden />

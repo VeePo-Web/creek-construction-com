@@ -66,7 +66,11 @@ const About = () => {
 
             {/* Inline stat trio — quiet, no border, no CTA */}
             <div
-              className="mt-12 pt-8 border-t border-cedar/15"
+              className="mt-12 pt-8 border-t border-transparent"
+              style={{
+                borderImage:
+                  "linear-gradient(90deg, transparent 0%, hsl(var(--cedar) / 0.22) 50%, transparent 100%) 1",
+              }}
               role="group"
               aria-label="Creek by the numbers"
             >
@@ -102,10 +106,10 @@ const About = () => {
                 <div
                   key={i}
                   role="listitem"
-                  className="flex items-start gap-4 sm:gap-5 pl-4 sm:pl-6 py-4 sm:py-5 rounded-sm transition-colors duration-300 hover:bg-cedar/[0.04] bg-background"
+                  className="flex items-start gap-4 sm:gap-5 pl-4 sm:pl-6 py-4 sm:py-5 rounded-[6px] transition-[background-color,box-shadow] duration-300 hover:bg-cedar/[0.04] hover:shadow-[0_1px_2px_hsl(var(--cedar)/0.08)] bg-background"
                   style={{ borderLeft: `2px solid hsl(var(--cedar) / ${bronzeStep(i, STEPS.length)})` }}
                 >
-                  <span className="font-serif text-base text-cedar/45 tabular-nums mt-0.5 w-8 shrink-0">
+                  <span className="font-serif text-lg text-cedar/55 tabular-nums mt-0.5 w-8 shrink-0">
                     {String(i + 1).padStart(2, "0")}
                   </span>
                   <div>
@@ -131,8 +135,8 @@ const About = () => {
               {CONTACT.cities.map((city, i) => (
                 <span
                   key={city}
-                  className="text-sm text-muted-foreground border rounded-sm px-3 py-2.5 inline-flex items-center justify-center min-h-[44px] hover:text-foreground hover:bg-cedar/[0.04] hover:border-cedar/30 transition-[color,background-color,border-color] duration-300"
-                  style={{ borderColor: `hsl(var(--cedar) / ${Math.max(0.18, Math.min(bronzeStep(i, CONTACT.cities.length), 0.32))})` }}
+                  className="text-sm text-muted-foreground border rounded-[4px] px-3 py-2.5 inline-flex items-center justify-center min-h-[44px] hover:text-foreground hover:bg-cedar/[0.04] hover:border-cedar/30 hover:shadow-[0_1px_2px_hsl(var(--cedar)/0.08)] transition-[color,background-color,border-color,box-shadow] duration-300"
+                  style={{ borderColor: `hsl(var(--cedar) / ${Math.max(0.16, Math.min(bronzeStep(i, CONTACT.cities.length), 0.22))})` }}
                 >
                   {city}
                 </span>

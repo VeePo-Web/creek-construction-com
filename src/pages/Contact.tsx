@@ -45,8 +45,10 @@ const Contact = () => {
           <div className={`${MAX_WIDTH.wide} mx-auto`}>
             {/* Headline strip */}
             <div className="text-center max-w-3xl mx-auto mb-10 md:mb-14">
-              <div className="flex justify-center mb-4">
-                <BronzeRule label="FREE QUOTE" />
+              <div className="flex items-center justify-center gap-4 mb-4" aria-hidden>
+                <span className="h-px w-10 bg-cedar/30" />
+                <span className="text-[10px] tracking-[0.22em] uppercase text-cedar font-medium">FREE QUOTE</span>
+                <span className="h-px w-10 bg-cedar/30" />
               </div>
               <h1
                 id="contact-heading"
@@ -72,7 +74,7 @@ const Contact = () => {
 
                 <aside
                   className="mt-8 rounded-[6px] border border-border/40 grain-texture overflow-hidden"
-                  style={{ borderLeft: `2px solid hsl(var(--cedar) / ${bronzeStep(0, ROW_COUNT)})` }}
+                  style={{ borderLeft: `3px solid hsl(var(--cedar) / ${bronzeStep(0, ROW_COUNT)})` }}
                   aria-label="Direct contact details"
                 >
                   <a
