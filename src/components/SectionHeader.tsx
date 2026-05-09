@@ -36,18 +36,12 @@ interface SectionHeaderProps {
    * "double reveal" jitter and ~4 framer subscriptions per header.
    */
   disableMotion?: boolean;
+  /** Horizontal alignment. Defaults to "left" (homepage); pass "center" on sub-page sections. */
+  align?: "left" | "center";
 }
 
 /**
  * SectionHeader — editorial section intro.
- *
- * In default mode this composes BronzeRule (numeral + rule + eyebrow)
- * + heading + italic subheading + counter badge.
- *
- * In "quiet" mode the numeral and the counter badge are dropped — the
- * eyebrow + headline + subhead carry the section alone. This is the
- * Fantasy.co reduction principle: the second time a page says something,
- * it should say it more quietly.
  */
 const SectionHeader = ({
   numeral,
@@ -60,22 +54,24 @@ const SectionHeader = ({
   baseDelay = 0,
   variant = "quiet",
   disableMotion = false,
+  align = "left",
 }: SectionHeaderProps) => {
   const showNumeral = variant === "default" && numeral;
   const showBadge = variant === "default" && badge;
+  const centered = align === "center";
 
   const Wrap = ({ delay, children }: { delay: number; children: ReactNode }) =>
     disableMotion ? <>{children}</> : <ScrollRevealMotion delay={delay}>{children}</ScrollRevealMotion>;
 
   return (
-    <>
+    <div className={centered ? "text-center [&_*]:mx-auto" : ""}>
       {label && (
         <Wrap delay={baseDelay}>
           <BronzeRule
             numeral={showNumeral ? numeral : undefined}
             label={label}
             variant={cedarLabel ? "accent" : "default"}
-            className="mb-6"
+            className={`mb-6 ${centered ? "justify-center" : ""}`}
           />
         </Wrap>
       )}
@@ -86,7 +82,7 @@ const SectionHeader = ({
 
       {subheading && (
         <Wrap delay={baseDelay + 0.15}>
-          <p className="text-subhead text-foreground/60 italic font-serif mb-8 text-balance max-w-[44ch]">
+          <p className={`text-subhead text-foreground/60 italic font-serif mb-8 text-balance max-w-[44ch] ${centered ? "" : ""}`}>
             {subheading}
           </p>
         </Wrap>
@@ -97,7 +93,7 @@ const SectionHeader = ({
           <BronzeRule label={badge!} variant="default" width="long" />
         </Wrap>
       )}
-    </>
+    </div>
   );
 };
 
