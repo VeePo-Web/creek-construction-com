@@ -1,21 +1,31 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
+import { useQuoteModal } from "@/components/quote/QuoteModalProvider";
+import BronzeRule from "@/components/ui/bronze-rule";
 
-const NAV_ITEMS = [
+type NavItem = {
+  label: string;
+  /** Path to navigate to. When omitted, `action` runs instead. */
+  path?: string;
+  /** Synthetic action (e.g. open modal). */
+  action?: "quote";
+};
+
+const NAV_ITEMS: NavItem[] = [
   { label: "Home", path: "/" },
-  { label: "Signature 8×8", path: "/signature" },
-  { label: "Custom Builds", path: "/custom" },
-  { label: "Our Standard", path: "/standard" },
-  { label: "Resources", path: "/resources" },
-  { label: "Get My Sauna Plan", path: "/plan" },
+  { label: "Services", path: "/services" },
+  { label: "Work", path: "/work" },
+  { label: "About", path: "/about" },
+  { label: "Contact", path: "/contact" },
+  { label: "Get a Quote", action: "quote" },
 ];
 
 /**
  * QuickNav — "/" command palette.
  *
- * Converted off framer-motion (perf pass). Open/close handled by
- * conditional render + CSS opacity transitions. Backdrop-blur-sm
- * removed; the translucent backdrop carries the layering on its own.
+ * Routes match the real five-route IA (Home / Services / Work / About /
+ * Contact) plus a synthetic "Get a Quote" action that opens the QuoteModal
+ * directly instead of navigating.
  */
 const QuickNav = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -24,6 +34,7 @@ const QuickNav = () => {
   const [activeIndex, setActiveIndex] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
+  const { openModal } = useQuoteModal();
 
   const filtered = query
     ? NAV_ITEMS.filter((item) =>
@@ -81,11 +92,16 @@ const QuickNav = () => {
   }, []);
 
   const go = useCallback(
-    (path: string) => {
-      navigate(path);
+    (item: NavItem) => {
       close();
+      if (item.action === "quote") {
+        // Defer modal open one frame so close animation can start.
+        window.requestAnimationFrame(() => openModal([]));
+        return;
+      }
+      if (item.path) navigate(item.path);
     },
-    [navigate, close],
+    [navigate, close, openModal],
   );
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -98,7 +114,7 @@ const QuickNav = () => {
       e.preventDefault();
       setActiveIndex((prev) => Math.max(prev - 1, 0));
     } else if (e.key === "Enter" && filtered[activeIndex]) {
-      go(filtered[activeIndex].path);
+      go(filtered[activeIndex]);
     }
   };
 
@@ -114,9 +130,13 @@ const QuickNav = () => {
       <div className="absolute inset-0 bg-foreground/15" />
 
       <div
-        className={`fixed top-0 left-0 right-0 bg-background/97 border-b border-cedar/20 p-4 shadow-architectural transition-transform duration-200 ease-[cubic-bezier(0.16,1,0.3,1)] motion-reduce:transition-none ${
+        className={`fixed top-0 left-0 right-0 bg-background/97 border-b border-transparent p-4 shadow-architectural transition-transform duration-200 ease-[cubic-bezier(0.16,1,0.3,1)] motion-reduce:transition-none ${
           mounted ? "translate-y-0" : "-translate-y-4"
         }`}
+        style={{
+          borderImage:
+            "linear-gradient(90deg, transparent 0%, hsl(var(--cedar) / 0.20) 50%, transparent 100%) 1",
+        }}
         onClick={(e) => e.stopPropagation()}
         role="dialog"
         aria-modal="true"
@@ -124,11 +144,8 @@ const QuickNav = () => {
       >
         <div className="container mx-auto max-w-lg">
           <div className="flex items-center gap-3 mb-3">
-            <span className="text-[9px] tracking-[0.3em] text-cedar/40 uppercase">
-              Navigate
-            </span>
-            <div className="w-6 h-px bg-cedar/15" />
-            <span className="text-[9px] tracking-[0.2em] text-muted-foreground/30 ml-auto">
+            <BronzeRule label="Navigate" width="short" variant="accent" />
+            <span className="text-[10px] tracking-[0.22em] uppercase text-muted-foreground/40 ml-auto">
               ESC to close
             </span>
           </div>
@@ -149,26 +166,29 @@ const QuickNav = () => {
             }
           />
           <ul id="quicknav-list" className="mt-3 space-y-1" role="listbox">
-            {filtered.map((item, i) => (
-              <li
-                key={item.path}
-                id={`quicknav-option-${i}`}
-                role="option"
-                aria-selected={i === activeIndex}
-                className={`flex items-center justify-between px-3 py-2.5 min-h-[44px] rounded-sm cursor-pointer text-sm tracking-[0.1em] transition-colors duration-200 ${
-                  i === activeIndex
-                    ? "bg-cedar/10 text-foreground"
-                    : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
-                }`}
-                onClick={() => go(item.path)}
-                onMouseEnter={() => setActiveIndex(i)}
-              >
-                <span className="uppercase text-[11px] font-medium">{item.label}</span>
-                <span className="text-[9px] text-muted-foreground/40 tabular-nums">
-                  {item.path}
-                </span>
-              </li>
-            ))}
+            {filtered.map((item, i) => {
+              const isActive = i === activeIndex;
+              return (
+                <li
+                  key={item.label}
+                  id={`quicknav-option-${i}`}
+                  role="option"
+                  aria-selected={isActive}
+                  className={`flex items-center justify-between px-3 py-2.5 min-h-[44px] rounded-sm cursor-pointer text-sm tracking-[0.1em] transition-[background-color,box-shadow] duration-200 ${
+                    isActive
+                      ? "bg-cedar/[0.06] text-foreground shadow-[inset_0_-2px_0_hsl(var(--cedar))]"
+                      : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+                  }`}
+                  onClick={() => go(item)}
+                  onMouseEnter={() => setActiveIndex(i)}
+                >
+                  <span className="uppercase text-[11px] font-medium">{item.label}</span>
+                  <span className="text-[9px] text-muted-foreground/40 tabular-nums">
+                    {isActive ? "press ↵" : item.path ?? "modal"}
+                  </span>
+                </li>
+              );
+            })}
             {filtered.length === 0 && (
               <li className="px-3 py-2 text-[11px] text-muted-foreground/50 tracking-[0.1em]">
                 No matches

@@ -24,7 +24,11 @@ const STATS: StatItem[] = [
 const HeroProofBand = () => (
   <section
     aria-label="Creek Construction credentials"
-    className="border-b border-cedar/12 bg-background"
+    className="border-b border-transparent bg-background"
+    style={{
+      borderImage:
+        "linear-gradient(90deg, transparent 0%, hsl(var(--cedar) / 0.22) 50%, transparent 100%) 1",
+    }}
   >
     <div className="container mx-auto max-w-[1440px] px-5 sm:px-6 py-8 md:py-10">
       <div className="max-w-5xl mx-auto">
@@ -53,7 +57,7 @@ const Hero = () => {
           <CedarCTA />
           <a
             href={`tel:${CONTACT.phoneTel}`}
-            className="inline-flex items-center gap-2 text-[11px] tracking-[0.2em] uppercase text-white/90 hover:text-white transition-colors min-h-[44px] px-2 tabular-nums"
+            className="inline-flex items-center gap-2 text-[11px] tracking-[0.2em] uppercase text-white/90 hover:text-white transition-colors min-h-[44px] px-2 tabular-nums whitespace-nowrap"
           >
             or call {CONTACT.phone}
           </a>

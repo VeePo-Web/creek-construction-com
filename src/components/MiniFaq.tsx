@@ -57,11 +57,17 @@ const MiniFaq = ({
       />
       <FaqAccordion items={items} className="mt-10" />
       {showPhoneFallback && (
-        <p className="mt-8 pt-6 border-t border-cedar/12 text-xs text-muted-foreground/70 text-left">
+        <p
+          className="mt-10 pt-7 border-t border-transparent text-xs text-muted-foreground/70 text-left"
+          style={{
+            borderImage:
+              "linear-gradient(90deg, transparent 0%, hsl(var(--cedar) / 0.22) 50%, transparent 100%) 1",
+          }}
+        >
           Have more questions?{" "}
           <a
             href={`tel:${CONTACT.phoneTel}`}
-            className="inline-flex items-center gap-1.5 text-cedar hover:text-cedar-hover font-medium transition-colors"
+            className="inline-flex items-center gap-1.5 text-cedar hover:text-cedar-hover font-medium transition-colors tabular-nums"
           >
             <Phone className="h-3 w-3" aria-hidden /> Call {CONTACT.phone}
           </a>
