@@ -1,6 +1,6 @@
 import type { LucideIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { bronzeStep, BACKDROP } from "@/lib/colors";
+import { bronzeStep } from "@/lib/colors";
 import { FOCUS } from "@/lib/motion";
 import { useFirstApprovedMedia } from "@/hooks/useApprovedMedia";
 import type { ServiceCategory } from "@/lib/api/public-media";
