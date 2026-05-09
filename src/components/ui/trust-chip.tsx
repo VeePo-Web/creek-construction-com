@@ -39,7 +39,7 @@ const TrustChips = ({
             key={label}
             role="listitem"
             className={cn(
-              "inline-flex items-center gap-2 px-3 py-1.5 rounded-sm border backdrop-blur-sm",
+              "inline-flex items-center gap-2 px-3 py-1.5 rounded-[4px] border backdrop-blur-sm",
               onDark
                 ? "border-cedar/25 bg-evergreen-foreground/[0.03]"
                 : "border-border/60 bg-background/60",

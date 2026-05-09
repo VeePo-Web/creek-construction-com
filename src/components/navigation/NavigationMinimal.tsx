@@ -20,8 +20,12 @@ const NavigationMinimal = () => {
       <header
         className={cn(
           "fixed top-0 inset-x-0 z-50",
-          "bg-background/95 backdrop-blur-[8px] border-b border-cedar/25 shadow-[0_1px_0_0_rgba(0,0,0,0.04)]",
+          "bg-background/95 backdrop-blur-[8px] border-b border-transparent shadow-[0_1px_0_0_rgba(0,0,0,0.04)]",
         )}
+        style={{
+          borderImage:
+            "linear-gradient(90deg, transparent 0%, hsl(var(--cedar) / 0.22) 50%, transparent 100%) 1",
+        }}
         role="banner"
       >
         <span
@@ -35,7 +39,7 @@ const NavigationMinimal = () => {
             href={`tel:${CONTACT.phoneTel}`}
             aria-label={`Call ${CONTACT.phone}`}
             className={cn(
-              "inline-flex items-center gap-2.5 min-h-[44px] px-3 rounded-sm",
+              "inline-flex items-center gap-2.5 min-h-[44px] px-3 rounded-[6px]",
               "border border-cedar/30 hover:border-cedar/60 hover:bg-cedar/5",
               "transition-colors duration-300",
               "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cedar focus-visible:ring-offset-2",
@@ -46,7 +50,7 @@ const NavigationMinimal = () => {
               <span className="text-[13px] md:text-sm font-medium text-foreground tracking-tight">
                 {CONTACT.phone}
               </span>
-              <span className="hidden sm:inline text-[9px] tracking-[0.2em] uppercase text-muted-foreground/70 mt-1">
+              <span className="hidden sm:inline text-[9px] tracking-[0.22em] uppercase text-muted-foreground/70 mt-1">
                 Call or text
               </span>
             </span>
