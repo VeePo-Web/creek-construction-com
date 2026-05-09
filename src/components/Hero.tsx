@@ -1,3 +1,4 @@
+import { Phone } from "lucide-react";
 import CedarCTA from "@/components/CedarCTA";
 import { CONTACT } from "@/config/contact";
 import PageHero from "@/components/ui/page-hero";
