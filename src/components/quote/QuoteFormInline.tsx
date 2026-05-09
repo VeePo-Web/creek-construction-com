@@ -313,10 +313,10 @@ const QuoteFormInline = ({
 
           {/* Services chips, grouped */}
           <div>
-            <p className="text-[11px] tracking-[0.18em] uppercase text-muted-foreground mb-3">
-              What do you need?{" "}
-              <span className="text-muted-foreground/60 normal-case tracking-normal">— pick any</span>
-            </p>
+            <div className="mb-3">
+              <BronzeRule width="short" label="WHAT DO YOU NEED?" variant="accent" />
+              <p className="mt-1 text-[11px] text-muted-foreground/70">— pick any</p>
+            </div>
             <div className="space-y-3">
               {SERVICE_GROUPS.map((group) => {
                 const items = getItemsForGroup(group.id);
@@ -334,9 +334,9 @@ const QuoteFormInline = ({
                             type="button"
                             onClick={() => toggleService(s.id)}
                             aria-pressed={isSelected}
-                            className={`inline-flex items-center gap-1.5 px-3 py-2 rounded-sm border text-xs transition-colors min-h-[40px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cedar focus-visible:ring-offset-1 ${
+                            className={`inline-flex items-center gap-1.5 px-3 py-2 rounded-[4px] border text-xs transition-colors min-h-[40px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cedar focus-visible:ring-offset-1 ${
                               isSelected
-                                ? "border-cedar bg-cedar/[0.08] text-foreground"
+                                ? "border-cedar/60 bg-cedar/[0.06] text-foreground shadow-[inset_0_-2px_0_hsl(var(--cedar))]"
                                 : "border-border text-muted-foreground hover:border-cedar/50 hover:text-foreground hover:bg-cedar/[0.02]"
                             }`}
                           >
