@@ -490,11 +490,6 @@ section[id^="section-"] {
     to   { opacity: 1;   transform: scale(1.12); filter: blur(0); }
   }
 
-  /* CTA shimmer keyframe (consumed by .cta-thermal:hover) */
-  @keyframes cta-shimmer-sweep {
-    from { left: -100%; }
-    to   { left: 150%; }
-  }
 
   /* Progressive image shimmer (consumed by ProgressiveImage). */
   @keyframes img-shimmer {
