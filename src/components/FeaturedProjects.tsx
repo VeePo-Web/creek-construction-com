@@ -54,7 +54,7 @@ const ProjectCard = ({ project, variant, index }: ProjectCardProps) => {
     <article className="group h-full flex flex-col">
         <Link
           to={`/work#${project.slug}`}
-          className="block focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cedar focus-visible:ring-offset-2 rounded-sm"
+          className="block focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cedar focus-visible:ring-offset-2 rounded-[6px]"
           aria-label={`View ${project.title}, ${project.service} in ${project.location ?? "Alberta"}`}
         >
           {project.hero_url ? (
@@ -64,36 +64,33 @@ const ProjectCard = ({ project, variant, index }: ProjectCardProps) => {
               width={1600}
               height={variant === "lead" ? 2000 : variant === "stack" ? 1200 : 2133}
               sizes={sizes}
-              wrapperClassName={`${aspectClass} w-full rounded-sm`}
-              className={`transition-transform duration-[1.2s] ${variant === "lead" ? "group-hover:scale-[1.025]" : "group-hover:scale-[1.04]"}`}
+              wrapperClassName={`${aspectClass} w-full rounded-[6px]`}
+              className="transition-transform duration-[1.2s] group-hover:scale-[1.025]"
               cedarHover
             />
           ) : (
             // Evergreen gradient placeholder for featured projects without a hero
             <div
-              className={`${aspectClass} w-full rounded-sm relative overflow-hidden`}
-              style={{
-                background:
-                  "linear-gradient(135deg, hsl(150 25% 14%) 0%, hsl(150 25% 8%) 100%)",
-              }}
+              className={`${aspectClass} w-full rounded-[6px] relative overflow-hidden`}
+              style={{ background: BACKDROP.evergreenPlate }}
             >
-              <span className="absolute inset-0 flex items-center justify-center font-serif text-evergreen-foreground/20 text-5xl select-none">
+              <span className="absolute inset-0 flex items-center justify-center font-serif text-evergreen-foreground/20 text-5xl select-none tabular-nums">
                 {String(index + 1).padStart(2, "0")}
               </span>
             </div>
           )}
 
-          <div className="mt-6 flex items-baseline justify-between gap-4">
-            <div className="flex items-center gap-3 min-w-0 flex-1">
-              <span className="text-[10px] tracking-[0.25em] uppercase text-cedar/70 tabular-nums shrink-0">
+          <div className="mt-6 flex items-baseline justify-between gap-4 tabular-nums">
+            <div className="flex items-center gap-3 min-w-0 flex-1 flex-wrap sm:flex-nowrap">
+              <span className="text-[10px] tracking-[0.25em] uppercase text-cedar/70 shrink-0">
                 {String(index + 1).padStart(2, "0")}
               </span>
-              <span className="text-[10px] tracking-[0.2em] uppercase text-muted-foreground/60 truncate min-w-0">
+              <span className="text-[10px] tracking-[0.2em] uppercase text-muted-foreground/60 whitespace-normal sm:whitespace-nowrap sm:truncate min-w-0">
                 {project.location ?? "Alberta"} · {project.service}
               </span>
             </div>
             {project.year && (
-              <span className="text-[10px] tracking-[0.2em] text-muted-foreground/40 tabular-nums whitespace-nowrap shrink-0">
+              <span className="text-[10px] tracking-[0.2em] text-muted-foreground/40 whitespace-nowrap shrink-0">
                 {project.year}
               </span>
             )}
