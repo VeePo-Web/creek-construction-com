@@ -45,7 +45,7 @@ const Contact = () => {
               <p className="eyebrow mb-4">FREE QUOTE</p>
               <h1
                 id="contact-heading"
-                className="font-serif text-[32px] sm:text-4xl md:text-[44px] lg:text-[56px] xl:text-[64px] text-foreground leading-[1.02] tracking-[-0.035em] text-pretty text-balance lg:max-w-[12ch]"
+                className="font-serif text-[32px] sm:text-4xl md:text-[44px] lg:text-[56px] xl:text-[64px] text-foreground leading-[1.02] tracking-[-0.035em] text-pretty text-balance"
               >
                 Tell us what you’re building.
               </h1>
