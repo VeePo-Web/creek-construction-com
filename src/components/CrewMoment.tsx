@@ -44,18 +44,21 @@ const CrewMoment = ({
   const inner = (
     <div ref={ref} className={`${MAX_WIDTH.wide} mx-auto ${cls}`} style={style}>
       <div className={`grid lg:grid-cols-[5fr_7fr] ${GRID_GAP.editorial} items-center`}>
-        <MediaSlot
-          query={{
-            shot_type: ["process", "detail", "interior"],
-            kind: "image",
-            min_quality: "reference",
-          }}
-          sizes={MEDIA_SIZES.PORTRAIT_HALF}
-          wrapperClassName="aspect-[5/4] sm:aspect-[4/5] w-full rounded-none overflow-hidden"
-          cedarHover
-          fallbackVariant="cedar"
-          fallbackCaption="On the boards · Alberta"
-        />
+        <div>
+          <MediaSlot
+            query={{
+              shot_type: ["process", "detail", "interior"],
+              kind: "image",
+              min_quality: "reference",
+            }}
+            sizes={MEDIA_SIZES.PORTRAIT_HALF}
+            wrapperClassName="aspect-[4/5] lg:aspect-[3/4] w-full rounded-none overflow-hidden"
+            cedarHover
+            fallbackVariant="cedar"
+            fallbackCaption="On the boards · Alberta"
+          />
+          <p className="eyebrow mt-4">On the boards · Alberta</p>
+        </div>
 
         <div>
           <SectionHeader
@@ -109,8 +112,7 @@ const CrewMoment = ({
   return (
     <section
       id="section-crew"
-      className={`${SECTION_PADDING.default} ${background === "secondary" ? "bg-secondary" : "bg-background"} ${topRule ? "border-t border-transparent" : ""}`}
-      style={topRule ? { borderImage: "linear-gradient(90deg, transparent 0%, hsl(var(--cedar) / 0.28) 50%, transparent 100%) 1" } : undefined}
+      className={`${SECTION_PADDING.default} ${background === "secondary" ? "bg-secondary" : "bg-background"} ${topRule ? "hairline" : ""}`}
       aria-labelledby={headingId}
     >
       <div className="container mx-auto px-5 sm:px-6">{inner}</div>

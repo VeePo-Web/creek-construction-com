@@ -81,19 +81,16 @@ const ProjectCard = ({ project, variant, index }: ProjectCardProps) => {
             </div>
           )}
 
-          <div className="mt-6 flex items-baseline justify-between gap-4 tabular-nums">
-            <div className="flex items-center gap-3 min-w-0 flex-1 flex-wrap sm:flex-nowrap">
-              <span className="text-[10px] tracking-[0.25em] uppercase text-cedar/70 shrink-0">
-                {String(index + 1).padStart(2, "0")}
-              </span>
-              <span className="text-[10px] tracking-[0.2em] uppercase text-muted-foreground/60 whitespace-normal sm:whitespace-nowrap sm:truncate min-w-0">
-                {project.location ?? "Alberta"} · {project.service}
-              </span>
-            </div>
+          <div className="mt-5 flex items-baseline gap-3 tabular-nums flex-wrap">
+            <span className="eyebrow text-cedar/70">{String(index + 1).padStart(2, "0")}</span>
+            <span className="eyebrow">{project.location ?? "Alberta"}</span>
+            <span className="eyebrow">·</span>
+            <span className="eyebrow">{project.service}</span>
             {project.year && (
-              <span className="text-[10px] tracking-[0.2em] text-muted-foreground/40 whitespace-nowrap shrink-0">
-                {project.year}
-              </span>
+              <>
+                <span className="eyebrow">·</span>
+                <span className="eyebrow">{project.year}</span>
+              </>
             )}
           </div>
 
@@ -170,6 +167,7 @@ const FeaturedProjects = ({ background = "background" }: FeaturedProjectsProps =
               heading="Recent work, in detail."
               subheading="Projects we’re proud of — across Calgary, Edmonton, and surrounding Alberta."
               badge={`${String(withUrls.length).padStart(2, "0")} Featured`}
+              align="center"
               disableMotion
             />
           </div>

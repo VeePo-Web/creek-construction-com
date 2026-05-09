@@ -81,14 +81,17 @@ export const HEADLINE = {
 // EYEBROW — uppercase, letter-spaced label above a heading
 // ─────────────────────────────────────────────────────────────────────
 
+/**
+ * EYEBROW — uppercase, letter-spaced label above a heading.
+ * @deprecated Prefer the `.eyebrow` CSS utility (defined in src/index.css).
+ * It is the canonical Pass 32+ token: 11px, tracking 0.22em, cedar/65.
+ * These constants remain only for legacy components mid-migration.
+ */
 export const EYEBROW = {
-  /** Default — neutral muted color. */
   default:
     "text-[10px] tracking-[0.25em] uppercase text-muted-foreground/70 font-medium",
-  /** Bronze — used for active state or contextual emphasis. */
   accent:
     "text-[10px] tracking-[0.25em] uppercase text-cedar font-medium",
-  /** On dark — when sitting on evergreen/footer. */
   onDark:
     "text-[10px] tracking-[0.25em] uppercase text-cedar/80 font-medium",
 } as const;
@@ -98,9 +101,9 @@ export const EYEBROW = {
 // ─────────────────────────────────────────────────────────────────────
 
 export const BODY = {
-  /** Lead paragraph — sits directly under a section heading. */
+  /** Lead paragraph — sits directly under a section heading. Calm editorial scale. */
   lead:
-    "font-sans text-foreground/75 text-[15px] sm:text-base md:text-[17px] leading-[1.65] text-balance",
+    "font-sans text-foreground/75 text-[15px] sm:text-base leading-[1.65] text-balance",
 
   /** Default body copy. */
   default:

@@ -1,22 +1,15 @@
 import { ArrowUpRight } from "lucide-react";
-import SectionHeader from "@/components/SectionHeader";
+import { Link } from "react-router-dom";
 import { SERVICE_GROUPS, getItemsForGroup } from "@/config/services";
 import { useQuoteModal } from "@/components/quote/QuoteModalProvider";
 import { SECTION_PADDING, MAX_WIDTH } from "@/lib/spacing";
 import { useReveal } from "@/hooks/useReveal";
 
 /**
- * Services — homepage section.
- *
- * Pass 30 — Fly4Me transposition: numbered editorial rows replace the
- * 3-up tile grid. The homepage rhythm now alternates photo/typographic
- * beats (Hero photo → Services typographic → Crew photo → Featured photo
- * → Testimonials typographic → MiniFaq typographic → Closer photo). Two
- * photo grids in a row diluted focus; this section earns its keep with
- * editorial restraint.
- *
- * 12-col grid per row: 01 (1) · Title (5) · Short copy (5) · ↗ (1).
- * Whole row is the quote-modal trigger.
+ * Services — homepage editorial rows. Pass 33: tightened rhythm,
+ * removed duplicate "Start a quote" header CTA in favor of an end-of-list
+ * footnote, added a left-edge cedar marker that animates in on hover
+ * (no row-height shift), uniform .hairline dividers throughout.
  */
 const Services = () => {
   const { openModal } = useQuoteModal();
@@ -30,12 +23,10 @@ const Services = () => {
     >
       <div className="container mx-auto max-w-[1440px] container-x">
         <div ref={ref} className={`${MAX_WIDTH.wide} mx-auto ${cls}`} style={style}>
-          {/* Editorial 12-col header — eyebrow / headline / trailing CTA */}
-          <div className="grid grid-cols-1 md:grid-cols-12 gap-y-6 md:gap-y-10 mb-14 md:mb-20">
-            <p className="md:col-span-3 text-[11px] uppercase tracking-[0.25em] text-muted-foreground">
-              What we build
-            </p>
-            <div className="md:col-span-6">
+          {/* Calm editorial header — single eyebrow + headline, no trailing CTA */}
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-y-6 mb-14 md:mb-20">
+            <p className="eyebrow md:col-span-3">What we build</p>
+            <div className="md:col-span-9">
               <h2
                 id="services-heading"
                 className="font-serif text-4xl sm:text-5xl md:text-6xl text-foreground leading-[1.02] tracking-[-0.035em] text-balance"
@@ -45,31 +36,27 @@ const Services = () => {
                 Fifteen services.
               </h2>
             </div>
-            <div className="md:col-span-3 md:flex md:items-end md:justify-end">
-              <button
-                type="button"
-                onClick={() => openModal()}
-                className="group inline-flex items-center gap-2 text-sm font-medium text-foreground"
-              >
-                <span className="link-underline">Start a quote</span>
-                <span className="link-arrow text-cedar">↗</span>
-              </button>
-            </div>
           </div>
 
-          {/* Numbered rows — single faint top hairline; rows divided only at bottom */}
-          <ul className="border-t border-cedar/15" role="list">
+          {/* Numbered rows — top hairline; rows divided by .hairline */}
+          <ul role="list">
             {SERVICE_GROUPS.map((group, i) => {
               const groupItemIds = getItemsForGroup(group.id).map((s) => s.id);
               const n = String(i + 1).padStart(2, "0");
+              const isFirst = i === 0;
               return (
-                <li key={group.id} role="listitem" className="border-b border-cedar/10">
+                <li key={group.id} role="listitem" className={isFirst ? "hairline" : "hairline"}>
                   <button
                     type="button"
                     onClick={() => openModal(groupItemIds)}
                     aria-label={`Get my free quote — ${group.title}`}
-                    className="group w-full text-left grid grid-cols-12 gap-x-4 sm:gap-x-6 gap-y-2 items-baseline py-8 md:py-10 transition-colors duration-300 hover:bg-cedar/[0.035] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cedar/40 focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+                    className="group relative w-full text-left grid grid-cols-12 gap-x-4 sm:gap-x-6 gap-y-2 items-baseline py-7 md:py-9 pl-3 md:pl-5 transition-colors duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cedar/40 focus-visible:ring-offset-2 focus-visible:ring-offset-background"
                   >
+                    {/* Apple-style left index marker — 0 → 2px on hover */}
+                    <span
+                      aria-hidden
+                      className="absolute left-0 top-2 bottom-2 w-0 bg-cedar transition-all duration-300 group-hover:w-[2px]"
+                    />
                     <span className="col-span-2 md:col-span-1 text-[11px] uppercase tracking-[0.22em] text-cedar/55 tabular-nums text-right md:text-left">
                       {n}
                     </span>
@@ -91,6 +78,16 @@ const Services = () => {
                 </li>
               );
             })}
+            {/* End-of-list footnote — Apple-grade calm closer */}
+            <li className="hairline">
+              <Link
+                to="/contact"
+                className="group flex items-center justify-between py-6 md:py-7 pl-3 md:pl-5 text-[12px] tracking-[0.18em] uppercase text-muted-foreground/70 hover:text-cedar transition-colors"
+              >
+                <span>Don’t see what you need? Ask anyway.</span>
+                <ArrowUpRight className="h-4 w-4 group-hover:text-cedar transition-colors" strokeWidth={1.5} aria-hidden />
+              </Link>
+            </li>
           </ul>
         </div>
       </div>
@@ -99,3 +96,4 @@ const Services = () => {
 };
 
 export default Services;
+
