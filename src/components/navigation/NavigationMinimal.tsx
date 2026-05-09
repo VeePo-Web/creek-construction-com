@@ -31,7 +31,7 @@ const NavigationMinimal = () => {
             href={`tel:${CONTACT.phoneTel}`}
             aria-label={`Call ${CONTACT.phone}`}
             className={cn(
-              "inline-flex items-center gap-2.5 min-h-[44px] px-3 rounded-[6px]",
+              "inline-flex items-center gap-2.5 min-h-[44px] px-3 rounded-[2px]",
               "border border-cedar/30 hover:border-cedar/60 hover:bg-cedar/5",
               "transition-colors duration-300",
               "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cedar focus-visible:ring-offset-2",
