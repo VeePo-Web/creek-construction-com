@@ -421,7 +421,7 @@ const QuoteFormInline = ({
             disabled={!canSubmit}
             aria-label={ctaLabel}
             data-quote-cta
-            className="w-full inline-flex items-center justify-center gap-2 bg-cedar text-cedar-foreground px-6 py-3.5 rounded-[6px] text-[12px] tracking-[0.2em] uppercase font-medium hover:bg-cedar-hover disabled:opacity-50 disabled:cursor-not-allowed transition-colors min-h-[52px] shadow-[0_1px_2px_hsl(var(--cedar)/0.20),0_8px_24px_-8px_hsl(var(--cedar)/0.30)]"
+            className="w-full inline-flex items-center justify-center gap-2 bg-cedar text-cedar-foreground px-6 py-3.5 rounded-[2px] text-[12px] tracking-[0.22em] uppercase font-medium hover:bg-cedar-hover disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-300 min-h-[52px]"
           >
             {submitting ? (
               <>
