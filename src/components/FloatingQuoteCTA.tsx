@@ -24,7 +24,8 @@ const FloatingQuoteCTA = () => {
       if (pending) return;
       pending = true;
       raf = requestAnimationFrame(() => {
-        setShow(window.scrollY > 120);
+        const threshold = window.innerHeight * 0.6;
+        setShow(window.scrollY > threshold);
         pending = false;
       });
     };
@@ -36,7 +37,9 @@ const FloatingQuoteCTA = () => {
     };
   }, []);
 
-  if (pathname === "/contact") return null;
+  // Hide on the homepage (closer is the conversion anchor) and /contact.
+  // Hide on mobile to avoid stacking with the bottom QuickNav bar.
+  if (pathname === "/" || pathname === "/contact") return null;
 
   return (
     <button
