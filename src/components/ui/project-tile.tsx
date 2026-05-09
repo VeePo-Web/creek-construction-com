@@ -120,10 +120,10 @@ const ProjectTile = ({
       >
         <div
           className={cn(
-            "relative rounded-sm overflow-hidden transition-shadow duration-700 group-hover:shadow-[0_8px_24px_-12px_hsl(var(--cedar)/0.18)] border border-border/40",
+            "relative rounded-sm overflow-hidden",
             aspectClass,
+            !hasPhoto && "bg-secondary",
           )}
-          style={hasPhoto ? undefined : { background: BACKDROP.stonePlate }}
         >
           {renderVisual()}
 
