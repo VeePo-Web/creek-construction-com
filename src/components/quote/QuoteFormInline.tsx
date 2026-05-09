@@ -473,7 +473,7 @@ const Field = ({
     <div className="flex items-center justify-between mb-1.5 min-h-[16px]">
       <label
         htmlFor={htmlFor}
-        className="block text-[11px] tracking-[0.15em] uppercase text-muted-foreground"
+        className="block text-[11px] tracking-[0.18em] uppercase font-medium text-muted-foreground"
       >
         {label}
         {required && <span className="text-cedar ml-1">*</span>}
@@ -510,7 +510,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
       onChange={(e) => onChange(e.target.value)}
       aria-invalid={invalid || undefined}
       {...rest}
-      className={`w-full rounded-sm border bg-background px-3 py-2.5 text-sm focus:outline-none focus:ring-1 transition-colors min-h-[44px] ${
+      className={`w-full rounded-[4px] border bg-background px-3 py-2.5 text-sm focus:outline-none focus:ring-1 transition-colors min-h-[44px] ${
         invalid
           ? "border-destructive/60 focus:border-destructive focus:ring-destructive/30"
           : "border-border focus:border-cedar focus:ring-cedar/30"
