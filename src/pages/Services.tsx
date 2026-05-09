@@ -139,7 +139,7 @@ const Services = () => {
             <div className="mt-12 grid lg:grid-cols-2 gap-6 lg:gap-8">
               <div
                 aria-label="What we handle"
-                className="p-7 sm:p-8 md:p-10 border border-cedar/30 rounded-sm h-full"
+                className="p-7 sm:p-8 md:p-10 border border-cedar/30 rounded-[6px] h-full"
                 style={{ background: BACKDROP.bronzeWash }}
               >
                 <div className="flex items-baseline justify-between gap-2 flex-wrap mb-8">
@@ -165,7 +165,7 @@ const Services = () => {
 
               <div
                 aria-label="What you handle"
-                className="p-7 sm:p-8 md:p-10 border border-border/40 rounded-sm h-full bg-background"
+                className="p-7 sm:p-8 md:p-10 border border-border/40 rounded-[6px] h-full bg-background"
               >
                 <div className="flex items-baseline justify-between gap-2 flex-wrap mb-8">
                   <h3 className="text-minimal text-muted-foreground">YOU HANDLE</h3>
