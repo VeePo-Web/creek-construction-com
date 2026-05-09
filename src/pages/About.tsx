@@ -109,11 +109,11 @@ const About = () => {
               heading="Calgary, Edmonton, and the towns in between."
               align="center"
             />
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2 mt-10">
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-1.5 mt-10">
               {CONTACT.cities.map((city) => (
                 <span
                   key={city}
-                  className="text-[11px] tracking-[0.18em] uppercase text-muted-foreground border border-cedar/12 rounded-[4px] px-3 py-2.5 inline-flex items-center justify-center min-h-[44px] hover:text-foreground hover:border-cedar/30 transition-colors duration-300"
+                  className="text-[11px] tracking-[0.18em] uppercase text-muted-foreground border border-cedar/15 rounded-[2px] px-3 py-2.5 inline-flex items-center justify-center min-h-[44px] hover:text-foreground hover:border-cedar/30 transition-colors duration-300"
                 >
                   {city}
                 </span>
