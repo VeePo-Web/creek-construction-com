@@ -57,44 +57,33 @@ const Services = () => {
             </div>
           </div>
 
-          {/* Numbered rows — borderless top, fading hairlines between */}
-          <ul
-            className="border-t border-transparent"
-            style={{
-              borderImage:
-                "linear-gradient(90deg, hsl(var(--cedar) / 0.22) 0%, hsl(var(--cedar) / 0.06) 100%) 1",
-            }}
-            role="list"
-          >
+          {/* Numbered rows — single faint top hairline; rows divided only at bottom */}
+          <ul className="border-t border-cedar/15" role="list">
             {SERVICE_GROUPS.map((group, i) => {
               const groupItemIds = getItemsForGroup(group.id).map((s) => s.id);
               const n = String(i + 1).padStart(2, "0");
               return (
-                <li key={group.id} role="listitem">
+                <li key={group.id} role="listitem" className="border-b border-cedar/10">
                   <button
                     type="button"
                     onClick={() => openModal(groupItemIds)}
                     aria-label={`Get my free quote — ${group.title}`}
-                    className="group w-full text-left grid grid-cols-12 gap-x-4 sm:gap-x-6 gap-y-2 items-baseline py-7 md:py-9 border-b border-transparent transition-colors duration-300 hover:bg-cedar/[0.04] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cedar focus-visible:ring-offset-2"
-                    style={{
-                      borderImage:
-                        "linear-gradient(90deg, hsl(var(--cedar) / 0.22) 0%, hsl(var(--cedar) / 0.06) 100%) 1",
-                    }}
+                    className="group w-full text-left grid grid-cols-12 gap-x-4 sm:gap-x-6 gap-y-2 items-baseline py-8 md:py-10 transition-colors duration-300 hover:bg-cedar/[0.035] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cedar/40 focus-visible:ring-offset-2 focus-visible:ring-offset-background"
                   >
-                    <span className="col-span-2 md:col-span-1 text-[11px] uppercase tracking-[0.25em] text-cedar/60 tabular-nums">
+                    <span className="col-span-2 md:col-span-1 text-[11px] uppercase tracking-[0.22em] text-cedar/55 tabular-nums text-right md:text-left">
                       {n}
                     </span>
-                    <h3 className="col-span-10 md:col-span-5 font-serif text-2xl md:text-3xl text-foreground tracking-[-0.02em]">
+                    <h3 className="col-span-10 md:col-span-5 font-serif text-2xl md:text-3xl text-foreground tracking-[-0.02em] leading-[1.15]">
                       <span className="link-underline group-hover:[background-size:100%_1px]">
                         {group.title}
                       </span>
                     </h3>
-                    <p className="col-span-12 md:col-span-5 text-sm md:text-base text-muted-foreground leading-relaxed text-pretty">
+                    <p className="hidden md:block md:col-span-5 text-base text-muted-foreground/85 leading-relaxed text-pretty">
                       {group.description}
                     </p>
                     <span
                       aria-hidden
-                      className="col-span-12 md:col-span-1 md:flex md:items-center md:justify-end text-cedar/50 group-hover:text-cedar transition-colors hidden"
+                      className="hidden md:flex md:col-span-1 md:items-center md:justify-end text-cedar/45 group-hover:text-cedar transition-colors"
                     >
                       <ArrowUpRight className="link-arrow h-5 w-5" strokeWidth={1.5} />
                     </span>
