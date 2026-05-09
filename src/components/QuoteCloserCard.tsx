@@ -1,5 +1,4 @@
 import CedarCTA from "@/components/CedarCTA";
-import { TRUST_SIGNALS } from "@/config/trust-signals";
 import { BACKDROP } from "@/lib/colors";
 import { SECTION_PADDING } from "@/lib/spacing";
 
