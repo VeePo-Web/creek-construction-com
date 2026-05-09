@@ -1,95 +1,78 @@
-# Pass 33 — Homepage Polish + Token Sweep
+# Pass 34 — Calm Sweep Across Shared Modules + Homepage Loose Ends
 
-Goal: Bring the homepage rhythm to the same Apple/Fly4Me calm the sub-pages now achieve, then sweep Pass 32's `.eyebrow` + `.hairline` atomics through every component that still hand-rolls cedar borders or uppercase tracking. Tighten one rhythm break (BrandStatement → Services) that currently feels stacked rather than composed.
+Pass 33 quieted the homepage rhythm. Audit shows the *shared* atomics still ship Pass 30-era chrome (border-l accents, grain-texture, BACKDROP gradients, border-image gradients) — so any page that mounts MiniFaq, QuoteFormInline, ServiceTile, CardPremium, FaqAccordion, or TrustChip immediately breaks the Fly4Me calm we just achieved on the homepage. Pass 34 finishes the job by sweeping these primitives, then closes three small loose ends on the homepage itself.
 
-## Principles
-1. The homepage proves the brand silently — no decorative scrim, no extra hairlines, no mixed eyebrow widths.
-2. Every cedar hairline on the page is either `.hairline` (1px cedar/12) or absent. No `border-image` gradients on standard section seams.
-3. Every uppercase micro-label is `.eyebrow`. One scale, one color, one weight.
-4. Two adjacent sections must never share a background color without a single `.hairline` between them.
+## Principles (carried forward)
+1. One eyebrow scale (`.eyebrow`), one hairline (`.hairline` / `border-cedar/12`), one card chrome (none — flat surface + hairline only).
+2. No grain-texture, no border-image gradients, no BACKDROP gradient on UI surfaces (gradients live only on hero photographic scrims).
+3. A left-edge cedar bar is the *only* "active accent" pattern. 2px width, never 3px. Used sparingly.
 
 ---
 
-## A. Hero (`src/components/Hero.tsx`)
+## A. MiniFaq (`src/components/MiniFaq.tsx`)
+- Strip the `borderImage` top-rule wrapper at L63 → replace with `.hairline` class on the section.
+- Accordion items: drop `grain-texture` and the open-state `bg-cedar/[0.03]` from `faq-accordion.tsx`. Use a clean stack of items separated by `.hairline`, no border box, no rounded corners. Open state shifts only the chevron (rotate 90°) and reveals a serif answer block.
 
-- Subtitle current `Decks, fencing, sheds, painting and siding — built to last across Alberta.` reads as a pricing list. Replace with a single Fly4Me-grade benefit sentence: `Outdoor work for Alberta homes — done by the same crew you meet.`
-- Move "or call (780)…" from a comma-separated row into a true ghost button that mirrors CedarCTA height (44px), with `border border-cedar/15 hover:border-cedar` and a leading `Phone` icon. Eliminates the floating bare text-link feel.
-- Eyebrow swap: `Exterior Construction` → `Calgary · Edmonton · Alberta` (already present as breadcrumb — drop redundancy by removing breadcrumb prop and elevating it to the eyebrow). One label, one location.
+## B. FaqAccordion primitive (`src/components/ui/faq-accordion.tsx`)
+- Remove `grain-texture`, `border`, `rounded-sm`, `bg-background` and the cedar/30/40 hover/open border colors.
+- New shell: `className="border-b border-cedar/12"` per item, button row `py-5 md:py-6 flex items-baseline justify-between gap-6 text-left`, trigger title `font-serif text-lg md:text-xl tracking-[-0.01em]`, chevron is a single 12×12 cedar plus-to-minus glyph (`+` → rotate to `×`) using CSS, not lucide.
+- Answer panel: `pb-6 text-foreground/70 leading-relaxed max-w-[58ch]` — no inset background.
 
-## B. BrandStatement (`src/components/BrandStatement.tsx`)
+## C. QuoteFormInline shell (`src/components/quote/QuoteFormInline.tsx`)
+- Remove `rounded-[6px] border border-cedar/15 border-l-[3px] border-l-cedar/40 grain-texture shadow-contact` from both the success state (L203) and the form shell (L224).
+- Replace with: form sits in a flat `bg-secondary/40 p-6 md:p-8` plate with a single `.hairline-l` cedar accent on the left edge (already exists in CSS). No shadow. No grain.
+- Audit and remove the two `borderImage` gradient dividers at L406/L413; replace with `.hairline`.
+- Inputs: confirm `h-12 rounded-[2px] border-cedar/15` consistent with Pass 32 Contact treatment. Tighten focus to `focus:border-cedar focus:ring-0` (no offset ring inside the form — inset shadow instead).
 
-- Change layout from 3/9 split to centered single-column on md+ matching Fly4Me's "philosophy as wall text" pattern. Eyebrow on top center (`.eyebrow`), single statement below, max-w `46ch`, type clamp `(1.625rem, 3.6vw, 2.875rem)` (smaller than now — currently competes with Hero H1).
-- Replace the current sentence with three discrete sentences typeset as one paragraph, each separated by a thin cedar middle-dot `·` rather than periods+space — feels Apple-typeset.
-- Wrap with a `.hairline` top + bottom so it reads as a quoted plate, not a section.
+## D. ServiceTile primitive (`src/components/ui/service-tile.tsx`)
+- Drop `grain-texture` from the compact variant.
+- Both variants: flat surface, no border by default, only a `.hairline` bottom rule when stacked. Hover reveals a 2px cedar left bar (matches Pass 33 Services rows pattern). Reuses the `.eyebrow` for the metadata line.
 
-## C. Services homepage rows (`src/components/Services.tsx`)
+## E. CardPremium primitive (`src/components/ui/card-premium.tsx`)
+- Remove `grain-texture` and `border-cedar/20` defaults.
+- New default variant: zero chrome (just spacing) — let the page give it context. Accent variant: 2px cedar left bar only. This collapses the "premium card" treatment into Apple-grade restraint.
 
-- The header's 3-column grid duplicates the eyebrow pattern that's already in BrandStatement. Drop the trailing "Start a quote ↗" — it competes with the per-row CTA. Replace with an end-of-list footnote row: thin hairline + 1-line sentence "Don't see what you need? Ask anyway → " linking to /contact.
-- Rows: tighten py to `py-7 md:py-9` (currently 8/10). Move the `↗` arrow left of the description on lg+ so it lives at the title baseline; on md it stays right.
-- Make the divider strategy uniform — `.hairline` between rows; remove the existing `border-t border-cedar/15` top rule on the `<ul>`. The first row's top edge is the hairline.
-- Per-row hover: drop `bg-cedar/[0.035]`, switch to a left-edge cedar bar that animates from `0 → 2px width` on hover (Apple-style index marker). Keeps row height stable.
+## F. TrustChip primitive (`src/components/ui/trust-chip.tsx`)
+- Replace `border-cedar/25 bg-evergreen-foreground/[0.03]` with a flat row: small dot · label · dot · label, separated by middle dots in `.eyebrow` styling. No chip outline. Becomes a typographic strip rather than a pill row.
 
-## D. FeaturedProjects (`src/components/FeaturedProjects.tsx`)
+## G. FeaturedProjects (`src/components/FeaturedProjects.tsx`)
+- "See all work" CTA at L223: replace bordered pill with a calm text link — `inline-flex items-center gap-2 text-[12px] tracking-[0.22em] uppercase text-cedar hover:text-cedar-hover py-3 min-h-[44px]` followed by an `→` arrow. Matches Hero's call CTA grammar.
+- Numbered fallback for projects with no `hero_url` (L74–82): replace `BACKDROP.evergreenPlate` with flat `bg-secondary` and a centered serif numeral in `text-foreground/15` — no dark gradient block.
 
-- Audit & enforce: max 3 projects on homepage (already done in Pass 31?). Verify the prop limit is in place; if not, add a `limit?: number` default to 3.
-- Drop any per-card cedar border or shadow; pure photo + caption with `.eyebrow` metadata line. Caption rhythm: project name (font-serif), middle-dot, location, middle-dot, year — all in one row.
-- Section header uses the new centered `align="center"` SectionHeader.
+## H. CrewMoment dead-code cleanup (`src/components/CrewMoment.tsx`)
+- The `showStats` block still uses an inline `borderImage` gradient (L80). Replace with `.hairline` `pt-8` since the prop is still functionally exposed for non-homepage callers.
 
-## E. CrewMoment (`src/components/CrewMoment.tsx`)
+## I. Navigation chrome (`src/components/Navigation.tsx`, `MobileSubNav.tsx`, `MenuTrigger.tsx`, `GlobalMenu.tsx`)
+- Standardize cedar opacities: `border-cedar/25` → `border-cedar/12` for *idle* chrome borders; keep `/30` only as the hover/active state.
+- `Navigation.tsx` L77 elevated state: `border-b border-cedar/25 shadow-[0_1px_0_0_…]` → `border-b border-cedar/12` with no shadow (relies on the hairline alone).
+- `MenuTrigger.tsx` and `GlobalMenu.tsx` chip buttons: `border-cedar/20-25` → `border-cedar/12`, hover `border-cedar/40`.
+- `MobileSubNav.tsx` L66: `border-cedar/15` → `border-cedar/12`. Confirm no double-border seam where SectionRail meets the nav.
 
-- Strip the `borderImage` topRule path — replace with `.hairline` class when `topRule` is true.
-- Remove the optional `showStats` block here (proof lives in the closer/about). Keep the prop signature deprecated but no-op so existing call sites don't break; clean up `STATS_TRIO` import if unused.
-- Image aspect: `aspect-[4/5]` mobile, `aspect-[3/4]` desktop (currently 5/4 on mobile which feels squat).
-- Caption under image: small italic 1-liner (`On the boards · Calgary NW`) using `.eyebrow` for the trailing service area.
+## J. Services sub-page (`src/pages/Services.tsx`)
+- The category cards at L139 still use a 2px cedar top-bar plus a full border (`border-cedar/15 border-t-2 border-t-cedar`). Replace with: flat surface, `.hairline` top rule only, eyebrow + serif title + body. The 2px top-bar is heritage Pass 28 chrome and competes with the homepage's left-bar pattern.
+- Audit catalogue rows for any remaining `BACKDROP.bronzeWash` and remove.
 
-## F. TestimonialStrip (`src/components/TestimonialStrip.tsx`)
+## K. About sub-page (`src/pages/About.tsx`)
+- L86 process step rows: `border-l-2 border-cedar/16 hover:bg-cedar/[0.035]` → match the Services-row treatment: flat row, `.hairline` between items, hover reveals a 2px cedar left bar (animated 0→2px). Identical interaction language site-wide.
+- L115 city chips: `border-cedar/14 hover:bg-cedar/[0.035] hover:border-cedar/30` → `.hairline border` + hover swaps to `border-cedar/30` only. Drop the bg fill.
 
-- Cards drop the `border border-cedar/10` and oversize curly quote. Replace with a clean editorial layout: short serif quote, then a single `.hairline` separator, then `firstName · city · service` in `.eyebrow`. No card chrome. Three columns float on whitespace alone — the Fly4Me move.
-- Remove the `topRule` borderImage; use `.hairline` instead.
-- Add a `bg-secondary` band only when `background="secondary"` — already done; just confirm the inner has `py-2` reduction so the whitespace isn't doubled with the cards' own padding.
+## L. Style-guide live atomic (`src/pages/StyleGuide.tsx`)
+- Add a single new "Atomics (Pass 32+)" subsection inside the existing Components beat showing four flat tiles: `.eyebrow`, `.hairline`, `.hairline-l`, and the new "left-bar hover" idiom — with code snippets. Append-only insertion (1 SectionShell call). Does not touch the rest of the file.
 
-## G. QuoteCloserCard (`src/components/QuoteCloserCard.tsx`)
+## M. Token doc updates
+- `colors.ts`: deprecate `BACKDROP.evergreenPlate` (still used as a hero fallback only — annotate "use ONLY in PageHero/MediaSlot, never as a card surface").
+- `colors.ts`: deprecate `SHADOW.hairline` (`shadow-contact`) since Pass 33/34 stopped using shadows on cards; annotate as "available for elevation rare cases, prefer a `.hairline` rule".
 
-- Replace `BACKDROP.evergreenCard` linear gradient with flat `bg-evergreen` — matches the calm flat Footer landing immediately below.
-- Drop `md:grain-texture` — adds noise that fights the editorial calm.
-- Eyebrow uses `.eyebrow` (currently hand-rolled `[10px] tracking-[0.25em]`).
-- Add a single trailing micro-line under the CedarCTA: `Free · No obligation · 24-hour reply` separated by middle dots, in `.eyebrow` `text-evergreen-foreground/55`. Replaces the trust signals that were stripped in Pass 31 — but as one calm line, not chips.
-
-## H. Spacing token consolidation (`src/lib/spacing.ts`)
-
-- `SECTION_PADDING.default` and `SECTION_PADDING.calm` should be consolidated. Audit usage:
-  - `default` → general sections
-  - `calm` → BrandStatement, Hero, intro plates
-- Add `SECTION_PADDING.tight` for stacked-rhythm sections like the catalogue rows on /services where 32px above + 24px below feels right and the current `default` is too generous.
-
-## I. Typography sweep (`src/lib/typography.ts`)
-
-- `EYEBROW.default/accent/onDark` are still hand-rolled into many components. Confirm everything routes through these constants OR the new `.eyebrow` CSS class. Pick one canonical eyebrow; deprecate the other in JSDoc with a `@deprecated use .eyebrow class` note.
-- `BODY.lead` is currently `text-[15px] sm:text-base md:text-[17px] leading-[1.65]`. Drop md upper to `text-base` for mobile-first calm; oversized lead text feels marketing, not editorial.
-
-## J. Color token sweep (`src/lib/colors.ts`)
-
-- Add a new `RULE` export documenting the canonical hairline opacities used since Pass 32:
-  - `RULE.hairline = "border-cedar/12"`
-  - `RULE.divider = "border-cedar/8"` (between siblings inside a list)
-  - `RULE.strong = "border-cedar/30"` (active state)
-- Mark `BACKDROP.bronzeWash`, `BACKDROP.bronzeGlow`, and `DIVIDER.ornamental` as `@deprecated` — Pass 31/32 stopped using them. Don't delete; future audit pass.
-
-## K. /style-guide live preview
-
-- Add a dedicated "Atomics" section showing the new `.eyebrow` + `.hairline` utilities side-by-side with a code snippet, so future passes can sanity-check tokens at a glance.
-
-## L. Verification
-
-- Browser screenshots at 390 / 768 / 1280 / 1440 of `/` (homepage). Verify:
-  - Hero ghost call button aligns with primary CTA (44px, same baseline)
-  - BrandStatement now reads as a quoted plate (hairline above and below)
-  - Services rows: equal py rhythm, no double-eyebrow at section top, footnote row present
-  - Testimonials feel like floating editorial quotes, not cards
-  - Closer card flat evergreen, single trust micro-line under CTA
-  - No back-to-back identical bg colors without a `.hairline` between them
-- DevTools Lighthouse pass on `/` — no new layout shift from hover-only border animation.
+## N. Verification
+- Browser screenshots at 390 / 768 / 1280 / 1440 of `/`, `/services`, `/about`, `/contact`. Walk through each:
+  - No visible card border anywhere except the new flat-with-hairline pattern.
+  - No grain texture remaining (open DevTools → search for `grain-texture` class on rendered DOM = 0 hits).
+  - No `border-image` style attributes on rendered nodes.
+  - FAQ accordion reads as Apple-grade typographic stack.
+  - Quote form reads as a calm secondary-tinted plate with one cedar left line.
+  - Featured projects' empty fallback no longer reads as a "broken hero".
+  - SectionRail + Navigation seam is a single 1px hairline, not a double line.
+- Lighthouse spot pass on `/services` (most-changed) — no CLS regression.
 
 ## Files to touch
-
-`src/components/Hero.tsx`, `src/components/BrandStatement.tsx`, `src/components/Services.tsx`, `src/components/FeaturedProjects.tsx`, `src/components/CrewMoment.tsx`, `src/components/TestimonialStrip.tsx`, `src/components/QuoteCloserCard.tsx`, `src/lib/spacing.ts`, `src/lib/typography.ts`, `src/lib/colors.ts`, `src/pages/StyleGuide.tsx` (or wherever the live atomics list lives).
+`src/components/MiniFaq.tsx`, `src/components/ui/faq-accordion.tsx`, `src/components/quote/QuoteFormInline.tsx`, `src/components/ui/service-tile.tsx`, `src/components/ui/card-premium.tsx`, `src/components/ui/trust-chip.tsx`, `src/components/FeaturedProjects.tsx`, `src/components/CrewMoment.tsx`, `src/components/Navigation.tsx`, `src/components/navigation/MobileSubNav.tsx`, `src/components/navigation/MenuTrigger.tsx`, `src/components/navigation/GlobalMenu.tsx`, `src/pages/Services.tsx`, `src/pages/About.tsx`, `src/pages/StyleGuide.tsx`, `src/lib/colors.ts`.
