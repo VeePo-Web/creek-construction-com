@@ -52,9 +52,9 @@ const FloatingQuoteCTA = () => {
         "border-l-[3px] border-cedar",
         "pl-4 pr-5 py-3 md:pl-5 md:pr-6 md:py-3.5",
         "text-[11px] md:text-xs tracking-[0.18em] uppercase font-medium",
-        "shadow-[0_8px_30px_rgba(0,0,0,0.18)]",
+        "shadow-[0_2px_8px_-2px_rgba(0,0,0,0.10)]",
         "transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]",
-        "hover:-translate-y-0.5 hover:shadow-[0_14px_36px_rgba(0,0,0,0.24)]",
+        "hover:-translate-y-0.5 hover:shadow-[0_4px_12px_-2px_rgba(0,0,0,0.14)]",
         "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cedar focus-visible:ring-offset-2",
         "min-h-[44px]",
         show
