@@ -52,27 +52,19 @@ const TestimonialStrip = ({
 
       <ul
         role="list"
-        className="mt-12 grid gap-6 md:gap-8 sm:grid-cols-2 lg:grid-cols-3"
+        className="mt-12 grid gap-10 md:gap-12 sm:grid-cols-2 lg:grid-cols-3"
       >
         {items.map((t, i) => (
           <li
             key={t.firstName + i}
-            className="relative flex flex-col p-6 lg:p-8 sm:min-h-[220px] lg:min-h-[260px] bg-background border border-cedar/10 transition-colors duration-300 hover:border-cedar/30"
+            className="flex flex-col"
           >
-            <span aria-hidden className="absolute -top-2 left-5 font-serif text-[56px] leading-none text-cedar/25 select-none">
-              &ldquo;
-            </span>
-            <p className="font-serif text-lg md:text-xl text-foreground/90 leading-snug flex-1 pt-6">
-              {t.quote}
+            <p className="font-serif text-lg md:text-xl text-foreground/90 leading-snug flex-1">
+              &ldquo;{t.quote}&rdquo;
             </p>
-            <div className="mt-8 pt-5 border-t border-cedar/10 flex flex-col sm:flex-row sm:items-baseline sm:justify-between gap-y-1 gap-x-2">
-              <p className="text-sm text-foreground">
-                <span className="text-cedar/70 mr-1.5">—</span>
-                {t.firstName}
-              </p>
-              <p className="text-[10px] tracking-[0.22em] uppercase text-muted-foreground/65">
-                {t.city} · {t.service}
-              </p>
+            <div className="mt-6 hairline pt-4 flex flex-wrap items-baseline gap-x-3 gap-y-1">
+              <p className="text-sm text-foreground">{t.firstName}</p>
+              <p className="eyebrow">{t.city} · {t.service}</p>
             </div>
           </li>
         ))}
