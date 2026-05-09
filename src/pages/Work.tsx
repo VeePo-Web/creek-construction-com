@@ -83,7 +83,7 @@ const Work = () => {
                         >
                           {project.title}
                         </h2>
-                        <p className="text-[10px] tracking-[0.22em] uppercase text-cedar/70 tabular-nums shrink-0">
+                        <p className="text-[10px] tracking-[0.22em] uppercase text-muted-foreground/85 tabular-nums shrink-0">
                           {project.location} · {formatStatus(project.status)} · {project.year}
                         </p>
                       </header>
