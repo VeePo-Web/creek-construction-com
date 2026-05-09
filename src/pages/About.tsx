@@ -7,12 +7,9 @@ import SectionHeader from "@/components/SectionHeader";
 import PageHero from "@/components/ui/page-hero";
 import { useDocumentTitle } from "@/hooks/useDocumentTitle";
 import { CONTACT } from "@/config/contact";
-import { bronzeStep } from "@/lib/colors";
 import { SECTION_PADDING, MAX_WIDTH } from "@/lib/spacing";
 import { BODY } from "@/lib/typography";
 import { CREEK_PROCESS as STEPS } from "@/config/process";
-import { STATS_TRIO } from "@/config/stats";
-import StatTrio from "@/components/ui/stat-trio";
 
 const About = () => {
   useDocumentTitle(
