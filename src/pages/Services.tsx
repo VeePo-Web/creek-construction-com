@@ -10,7 +10,7 @@ import { Check, Minus } from "lucide-react";
 import { useDocumentTitle } from "@/hooks/useDocumentTitle";
 import { SERVICE_GROUPS, getItemsForGroup } from "@/config/services";
 import { useQuoteModal } from "@/components/quote/QuoteModalProvider";
-import { bronzeStep } from "@/lib/colors";
+
 import { SECTION_PADDING, MAX_WIDTH } from "@/lib/spacing";
 import { FAQS_SERVICES } from "@/config/faqs";
 
