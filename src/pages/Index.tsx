@@ -12,11 +12,9 @@ import TestimonialStrip from "@/components/TestimonialStrip";
 import BrandStatement from "@/components/BrandStatement";
 
 /**
- * Homepage rhythm (Pass 13 — funnel discipline):
- *   Hero → Services → CrewMoment → Featured → Testimonials → MiniFaq → Closer
- * One terminal CTA (Closer). Mid-page InlineQuote was removed: pasting an
- * 8-field form mid-homepage breaks the editorial scan and competes with
- * the closer. The full form lives on /contact.
+ * Homepage rhythm (Pass 31 — Apple-grade calm):
+ *   Hero → BrandStatement → Services → Featured → Crew → Testimonials → Closer
+ * MiniFaq lives on /services to keep the homepage scan uncluttered.
  */
 const Index = () => {
   useDocumentTitle(
