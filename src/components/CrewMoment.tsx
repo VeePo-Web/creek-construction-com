@@ -74,7 +74,11 @@ const CrewMoment = ({
           </div>
           {showStats && (
             <div
-              className="mt-10 pt-8 border-t border-cedar/15 grid grid-cols-3 gap-6 md:gap-8"
+              className="mt-10 pt-8 border-t border-transparent grid grid-cols-3 gap-6 md:gap-8"
+              style={{
+                borderImage:
+                  "linear-gradient(90deg, transparent 0%, hsl(var(--cedar) / 0.22) 50%, transparent 100%) 1",
+              }}
               role="group"
               aria-label="Creek by the numbers"
             >
@@ -83,7 +87,7 @@ const CrewMoment = ({
                   <p className="font-serif text-2xl md:text-[1.75rem] text-foreground leading-none tabular-nums">
                     {s.value}
                   </p>
-                  <p className="text-[9px] tracking-[0.18em] uppercase text-muted-foreground/70 mt-2 leading-tight">
+                  <p className="text-[10px] tracking-[0.22em] uppercase text-muted-foreground/70 mt-2 leading-tight">
                     {s.label}
                   </p>
                 </div>

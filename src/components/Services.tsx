@@ -38,6 +38,7 @@ const Services = () => {
             />
           </div>
 
+          {/* 5-tile grid: 2-up on sm (last tile centers when alone), 3-up on lg (5 → 3+2). */}
           <div className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 ${GRID_GAP.default} sm:[&>*:last-child:nth-child(odd)]:col-span-2 sm:[&>*:last-child:nth-child(odd)]:max-w-[calc(50%-1rem)] sm:[&>*:last-child:nth-child(odd)]:mx-auto lg:[&>*:last-child:nth-child(odd)]:col-span-1 lg:[&>*:last-child:nth-child(odd)]:max-w-none lg:[&>*:last-child:nth-child(odd)]:mx-0`} role="list">
             {SERVICE_GROUPS.map((group, i) => {
               const Icon = group.icon;
@@ -50,36 +51,38 @@ const Services = () => {
                   onClick={() => openModal(groupItemIds)}
                   role="listitem"
                   aria-label={`Get my free quote — ${group.title}`}
-                  className="group w-full text-left flex flex-col items-stretch overflow-hidden rounded-sm transition-[background-color] duration-300 hover:bg-cedar/[0.03] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cedar focus-visible:ring-offset-2 cursor-pointer border border-border/40"
+                  className="group w-full text-left flex flex-col items-stretch overflow-hidden rounded-[6px] transition-[background-color,box-shadow] duration-300 hover:bg-cedar/[0.03] hover:shadow-[0_1px_2px_hsl(var(--cedar)/0.08),0_8px_24px_-12px_hsl(var(--cedar)/0.20)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cedar focus-visible:ring-offset-2 cursor-pointer border border-border/40"
                   style={{
                     borderLeftWidth: "3px",
                     borderLeftColor: `hsl(var(--cedar) / ${opacity})`,
                   }}
                 >
-                  <MediaSlot
-                    query={{
-                      service: group.mediaCategory as ServiceCategory,
-                      kind: "image",
-                      min_quality: "reference",
-                    }}
-                    sizes={MEDIA_SIZES.THIRD}
-                    wrapperClassName="w-full aspect-hero relative overflow-hidden"
-                    className="transition-transform duration-[1.2s] group-hover:scale-[1.025]"
-                    fallbackVariant="stone"
-                    fallbackIcon={Icon}
-                    fallbackCaption={`${group.title} · Alberta`}
-                  />
+                  <div className="relative w-full aspect-hero overflow-hidden before:absolute before:inset-0 before:z-[1] before:bg-cedar/0 before:transition-colors before:duration-500 group-hover:before:bg-cedar/[0.05] before:pointer-events-none">
+                    <MediaSlot
+                      query={{
+                        service: group.mediaCategory as ServiceCategory,
+                        kind: "image",
+                        min_quality: "reference",
+                      }}
+                      sizes={MEDIA_SIZES.THIRD}
+                      wrapperClassName="w-full h-full"
+                      className="transition-transform duration-[1.2s] group-hover:scale-[1.025]"
+                      fallbackVariant="stone"
+                      fallbackIcon={Icon}
+                      fallbackCaption={`${group.title} · Alberta`}
+                    />
+                  </div>
 
                   <div className="p-5 md:p-6 flex flex-col flex-1">
                     <Icon
-                      className="h-5 w-5 text-cedar/70 mb-3 transition-colors duration-300 group-hover:text-cedar"
+                      className="h-5 w-5 text-cedar/70 mb-4 transition-colors duration-300 group-hover:text-cedar"
                       aria-hidden
                       strokeWidth={1.5}
                     />
-                    <h3 className="font-serif text-2xl text-foreground mb-3 transition-colors duration-300 group-hover:text-cedar">
+                    <h3 className="relative font-serif text-2xl text-foreground pb-1 after:absolute after:left-0 after:bottom-0 after:h-px after:w-8 after:bg-cedar/0 group-hover:after:bg-cedar/40 after:transition-colors after:duration-300">
                       {group.title}
                     </h3>
-                    <p className="text-sm text-muted-foreground leading-relaxed line-clamp-2">
+                    <p className="mt-2 text-sm text-muted-foreground leading-relaxed line-clamp-2">
                       {group.short}
                     </p>
                   </div>

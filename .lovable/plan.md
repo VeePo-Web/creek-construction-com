@@ -1,58 +1,88 @@
-# Pass 27 — Footer presence, QuoteFormInline editorial uplift, and the conversion-surface radius/typography sweep
+# Pass 28 — QuickNav route fix, homepage Services tile uplift, and the hairline harmony sweep
 
-Pass 26 cleaned NotFound, FeaturedProjects, MidPageQuotePrompt, and the Contact info card. The two highest-value surfaces still reading as "stock" rather than "world-class" are the **Footer** and **QuoteFormInline**. Both are conversion-critical (Footer carries the last impression; QuoteFormInline IS the conversion). FlexServices' equivalents are quietly cinematic; ours are functional. We close that gap, then sweep the remaining cards.
+Pass 27 closed Footer + QuoteFormInline. Walking the homepage end-to-end at 390 / 768 / 1366 surfaces three remaining "stock" beats and one outright **bug** that breaks the slash command. We fix them and finish unifying the section-seam hairline language so every divider in the site speaks the same dialect.
 
-## A. Footer (`src/components/Footer.tsx`) — give it editorial weight
+## A. CRITICAL BUG — `src/components/QuickNav.tsx` ships sauna template routes
 
-The footer is currently a single 12px-tall bar of links. On a long-scroll editorial site that lands as anticlimax. FlexServices uses a 3-zone footer: identity column, navigation column, contact column, each separated by hairlines, on a generous py-20 evergreen plate.
+Pressing `/` opens a command palette listing routes that **do not exist** in this project:
 
-1. **Vertical rhythm** — `py-12 md:py-14` → `pt-20 pb-10 md:pt-24 md:pb-12` (use `SECTION_PADDING.footer`). The footer should breathe, not crowd the QuoteCloserCard above it.
-2. **Three-zone grid layout (lg+)** — Replace the single horizontal flex with a `grid lg:grid-cols-12 gap-12`:
-    - **Cols 1–4**: Brand identity. Logo + serif wordmark + a one-line italic promise: `"Built well, on time, on time again."`
-    - **Cols 5–8**: Sitemap. Eyebrow `"NAVIGATE"` + vertical link list, sans, `text-sm`, `space-y-2`. Each link gets a `→` chevron on hover that translates 4px right (matches the rest of the editorial system).
-    - **Cols 9–12**: Direct line. Eyebrow `"DIRECT LINE"` + serif phone (the same `font-serif text-lg tabular-nums` we used on Contact), email below in sans, then the three service cities as a single muted line.
-3. **Fading hairline column dividers** on lg+ — `lg:divide-x lg:divide-cedar/15` is too flat; instead use a custom `:nth-child(2)` and `:nth-child(3)` `border-l border-transparent` with the standard cedar-fading `borderImage` running vertical (rotate gradient 180deg, top 0% → 50% 0.20 → 100% 0%).
-4. **Bronze rule eyebrow above the © line** — already a fading hairline (good). Add a small bronze numeral `"//"` or numeric year on the left, copyright centered, a "Made in Alberta" caption on the right (justify-between on md+, stacked on mobile). All `text-evergreen-foreground/55`, `text-[11px]`, `tracking-[0.18em]`.
-5. **Background warmth** — solid `bg-evergreen` reads as a flat plate. Add an **inset radial accent** at top-center: `style={{ background: "radial-gradient(ellipse at top, hsl(150 25% 18%) 0%, hsl(var(--evergreen)) 60%)" }}` so the footer fades up into the page rather than hard-cutting.
-6. **Mobile collapse** — on `<lg`, stack the three zones with a fading hairline between each (same borderImage horizontal). Order: Identity → Navigate → Direct Line. Center the brand block, left-align the link/contact lists.
-7. **Logo treatment** — currently `h-9 w-9`. Bump to `h-10 w-10` on lg+, add `opacity-90 group-hover:opacity-100 transition-opacity` so it feels editorial, not iconic.
-8. **Footer link hover** — currently `hover:text-cedar`. Add a `before:` underline draw: `relative before:absolute before:bottom-0 before:left-0 before:h-px before:w-0 before:bg-cedar before:transition-all before:duration-300 hover:before:w-full` for an editorial underline animation.
+```
+Home              /
+Signature 8×8     /signature        ← 404
+Custom Builds     /custom           ← 404
+Our Standard      /standard         ← 404
+Resources         /resources        ← 404
+Get My Sauna Plan /plan             ← 404
+```
 
-## B. QuoteFormInline (`src/components/quote/QuoteFormInline.tsx`) — promote to editorial form
+Real routes (per `App.tsx`): `/`, `/services`, `/work`, `/about`, `/contact`. Anyone power-user enough to hit `/` lands on dead links. Embarrassing for a "world-class" site.
 
-The form is functionally complete and trust-strip is good, but visually it's a **shadcn-default rectangle** sitting in a designed page. Three high-impact upgrades, no logic changes.
+1. **Replace `NAV_ITEMS`** with the real five routes:
+    ```
+    Home → /
+    Services → /services
+    Work → /work
+    About → /about
+    Contact → /contact
+    ```
+   Add a sixth synthetic action: `Get a Quote → opens QuoteModal` (use `useQuoteModal().openModal([])`, branch `go()` to call it instead of navigate when the item has no path).
+2. **Visual uplift** — palette currently uses `rounded-sm` on items (intentional, keep as pills) but the **shell** wraps in `bg-background/97 border-b border-cedar/20`. Promote the shell border to the cedar-fading hairline (`borderImage` linear gradient at 0.20 opacity) for visual consistency with the rest of the site.
+3. **Eyebrow row** — `tracking-[0.3em]` is louder than the canonical `0.22em` cedar eyebrow. Drop to `0.22em`. Replace inline `w-6 h-px bg-cedar/15` with a real `BronzeRule width="short"` for token consistency.
+4. **Active item background** — `bg-cedar/10` → `bg-cedar/[0.06]` and add `shadow-[inset_0_-2px_0_hsl(var(--cedar))]` matching the segmented-control pattern from QuoteFormInline. Consistency.
+5. **Path label** — switch from raw path to a meaningful `→ press Enter` micro-hint when the row is active (today the path is shown in `text-[9px]` regardless). The path is only useful when the row isn't active.
+6. **Aria correctness** — `aria-expanded="true"` is always true on the open palette. That's fine. But `role="combobox"` requires `aria-controls="quicknav-list"` which is present — verify after edit.
 
-9. **Shell radius + bronze edge** — `rounded-sm` → `rounded-[6px]`. Add the canonical bronze left-bar (matches Contact info card and the other editorial cards site-wide): change `border border-cedar/15` to `border border-cedar/15 border-l-[3px] border-l-cedar/40`. Keeps the form anchored as part of the same family.
-10. **Field labels** — currently `text-[11px] tracking-[0.15em] uppercase text-muted-foreground` (good). Add `font-medium` so they sit above body text in weight, not just position. Tracking from `0.15em` → `0.18em` to match every other eyebrow on the site.
-11. **Input radius** — every input is `rounded-sm`; promote to `rounded-[4px]` (slightly tighter than card radius for a hierarchy: card 6 → input 4). Same for service chips and timeline radio buttons.
-12. **Service chip refinement** — current `border-cedar bg-cedar/[0.08]` selected state reads as "highlighted box". Switch selected to `border-cedar/60 bg-cedar/[0.06] text-foreground shadow-[inset_0_-2px_0_hsl(var(--cedar))]` — a bronze underline INSIDE the chip rather than a halo. More editorial, less form-builder.
-13. **Timeline radio** — same treatment as chips. The three-button row currently `border border-border` — add `divide-x divide-border/40` on the wrapper and a single shared `rounded-[4px]` outer border so the three options read as a single segmented control. Selected state same shadow-inset cedar underline.
-14. **CTA button** — the submit `bg-cedar text-cedar-foreground rounded-sm` matches CedarCTA but isn't actually CedarCTA. Reuse the same primary look: `rounded-[6px]`, `tracking-[0.2em]`, add a hairline shadow `shadow-[0_1px_2px_hsl(var(--cedar)/0.20),0_8px_24px_-8px_hsl(var(--cedar)/0.30)]` for editorial lift. Keep the `min-h-[52px]` (good for thumb).
-15. **Trust micro-strip** — currently `bg-muted/40` flat tint. Replace with `bg-cedar/[0.03] border-t border-transparent` + the cedar-fading borderImage. Replaces a hard divider with the same hairline language as section seams.
-16. **Section title above the chips** — `"What do you need?"` is sitting in regular eyebrow. Add the standard SubLabel pattern: `<BronzeRule width="short" label="WHAT DO YOU NEED?" />` so the form internally uses the same micro-rhythm as the page.
-17. **Success state card** — `rounded-sm`, `bg-secondary/40`, plain green check. Promote to `rounded-[6px]`, add the bronze left-bar, swap the check circle for a serif numeral `"01"` in cedar above `"We've got it."` for editorial cohesion. Keep the call CTA below.
-18. **Field gap** — `space-y-5` is generous but the two `grid sm:grid-cols-2 gap-3` rows feel pinched at md. Change inner grid gap to `gap-3 sm:gap-4`, outer spacing to `space-y-6` for a slightly more editorial pace.
+## B. Homepage Services tile (`src/components/Services.tsx`) — promote to editorial card
 
-## C. Remaining radius sweep (from Pass 26 leftovers)
+The 5-tile grid currently renders each group as a card with `rounded-sm` corners and image filling the top — same surface family as our refined cards but stuck at the old radius and missing the hairline language.
 
-19. **TestimonialStrip cards** — `rounded-sm` → `rounded-[6px]` (line 60). Cards are media-bearing — must match new radius family.
-20. **QuoteCloserCard** — `rounded-sm` → `rounded-[6px]` on the outer wrapper (line 40); pseudo-element bronze bar already in place.
-21. **Navigation pills** (`MenuTrigger`, `NavigationMinimal`, `MobileSubNav`, `HeaderBreadcrumb`, `GlobalMenu`) — these are tap targets, not media surfaces. Keep them at `rounded-sm` (intentional — pills should be tighter than cards). No change. Document this in a comment so future sweeps don't break it.
+7. **Outer radius** — `rounded-sm` → `rounded-[6px]` (line 53). Matches FeaturedProjects, TestimonialStrip, QuoteFormInline.
+8. **Hover micro-interaction** — currently `hover:bg-cedar/[0.03]` only. Add a hairline shadow on hover: `hover:shadow-[0_1px_2px_hsl(var(--cedar)/0.08),0_8px_24px_-12px_hsl(var(--cedar)/0.20)]` for editorial lift. Mirrors the QuoteFormInline CTA shadow at lower opacity.
+9. **Image crossfade vs scale** — currently `group-hover:scale-[1.025]` only. Add a `before:` cedar wash `before:absolute before:inset-0 before:bg-cedar/0 group-hover:before:bg-cedar/[0.05] before:transition-colors before:duration-500` to the MediaSlot wrapper for a Vogue-style warm hover.
+10. **Card body padding** — `p-5 md:p-6` is fine but the icon → heading gap `mb-3` reads tight against the 24px serif heading. Bump to `mb-4`. Body copy gets `mt-1` lift.
+11. **Heading transition** — `group-hover:text-cedar` on the title is heavy. Split: title stays `text-foreground`, the icon and a subtle 1px bottom-border on the title underline cedar on hover (`relative pb-1 after:h-px after:bg-cedar/0 after:absolute after:left-0 after:bottom-0 after:w-8 group-hover:after:bg-cedar/40 after:transition-colors`). Editorial restraint.
+12. **Last-child odd-count layout fragility** — the `[&>*:last-child:nth-child(odd)]:col-span-2 ... :max-w-[calc(50%-1rem)] :mx-auto` chain is brittle and mixes Tailwind arbitrary selectors. With 5 groups it works (5 → 1 trailing), but it's a maintainability landmine. Replace with a clean `lg:[&>*:nth-child(4)]:col-span-1 lg:[&>*:nth-child(5)]:col-span-1` if the grid auto-fills correctly, OR keep behavior but extract the chain into a single class via `cn()` for readability. Document with a comment.
 
-## D. Curly-quote + tabular-nums micro-sweep
+## C. HeroProofBand (`src/components/Hero.tsx`) — fading hairline + tabular-nums
 
-22. **`rg "[a-zA-Z]'[a-zA-Z]" src/{components,pages} -n`** — find any remaining straight apostrophes inside JSX text and convert to `'`. From session memory, hot spots are likely in QuoteFormInline labels, Footer (none currently), MiniFaq, and admin (skip admin). Audit & replace.
-23. **Phone numbers** — every visible phone string should ship `tabular-nums`. Footer (already has it), QuoteFormInline success-state CTA copy ("Or call …" — verify), Contact direct row (added in Pass 26), Hero/CTA buttons that surface the phone — confirm.
+13. **Bottom border** — `border-b border-cedar/12` is a flat 1px line that hard-cuts into the next section. Replace with the canonical fading borderImage so the proof band floats off the hero rather than slamming into Services.
+14. **"or call" link** — currently `text-white/90 hover:text-white` but the CedarCTA is on a dark hero plate, so the white text works only on the architect-bleed variant. On other heroes it'd break. The Hero only uses architect-bleed (good), so leave as-is. But add `whitespace-nowrap` so the phone number never wraps mid-string at narrow viewports.
 
-## E. Light QA
+## D. CrewMoment stat divider (`src/components/CrewMoment.tsx`)
 
-24. After edits: viewport screenshots at 375 / 768 / 1366 of `/contact` (form), `/` bottom (footer), and `/contact` success state (form-submit confirmation). Verify the form's bronze left-bar lines up with the Contact info card on the left, the trust strip uses fading hairline, the segmented timeline reads as one control, and the footer's three-zone grid breathes on desktop and stacks cleanly on mobile.
+15. **`border-t border-cedar/15`** on the stat row (line 77) → fading borderImage. Same hairline language as section seams.
+16. **Stat row label** — `text-[9px] tracking-[0.18em]` is sub-eyebrow. Promote to `text-[10px] tracking-[0.22em]` to match the Footer eyebrows for site-wide eyebrow consistency.
+
+## E. MiniFaq phone fallback (`src/components/MiniFaq.tsx`)
+
+17. **`border-t border-cedar/12`** on the phone fallback row (line 60) → fading borderImage with a wider opacity (0.22). Make it match the Footer copyright line treatment so users perceive both as "soft endings."
+18. **Spacing** — `mt-8 pt-6` is asymmetric. Promote to `mt-10 pt-7`.
+19. **Phone link** — add `tabular-nums` (consistent with Footer/Contact/QuoteForm).
+
+## F. SectionHeader subhead (`src/components/SectionHeader.tsx`)
+
+20. **Italic subhead** — `text-subhead text-foreground/60 italic font-serif mb-8 text-balance`. Add `max-w-[44ch]` so subheads don't sprawl across full container widths on lg+ — same constraint we applied to Contact in Pass 26. Editorial subheads should never run wider than ~44ch.
+21. **Heading default bottom margin** — `mb-4 [&:last-child]:mb-8`. When the subhead exists this is `mb-4`, when it doesn't it's `mb-8`. That's correct. No change.
+
+## G. Section anchor sweep (verify, no edits expected)
+
+22. **`rg "<section" src/pages src/components -n | rg -v "section-"`** — confirm every section element has an `id="section-*"` per the registry rule from memory. Fix any stragglers.
+
+## H. Curly-quote sweep (low-risk safety pass)
+
+23. **`rg "[a-zA-Z]'[a-zA-Z]" src/{pages,components} -n`** — find any remaining straight apostrophes inside JSX text (not inside string attribute values) and convert to `'`. Excludes admin pages.
+
+## I. Light QA
+
+24. After edits: viewport screenshots at 375 / 768 / 1366 of the homepage `/`, focusing on (a) Services 5-tile grid hover, (b) Hero proof band → Services seam, (c) press `/` and confirm the palette lists the 5 real routes plus the Quote action. Verify QuickNav routes navigate correctly.
 
 ## Files to touch
 
-- `src/components/Footer.tsx` (full rewrite of the layout, no API changes)
-- `src/components/quote/QuoteFormInline.tsx` (shell + chips + button + success)
-- `src/components/TestimonialStrip.tsx` (radius)
-- `src/components/QuoteCloserCard.tsx` (radius)
+- `src/components/QuickNav.tsx` (route fix + shell hairline + active-row inset)
+- `src/components/Services.tsx` (homepage tiles — radius, lift, hover wash)
+- `src/components/Hero.tsx` (HeroProofBand fading hairline + nowrap)
+- `src/components/CrewMoment.tsx` (stat divider, eyebrow scale)
+- `src/components/MiniFaq.tsx` (phone fallback hairline + tabular-nums)
+- `src/components/SectionHeader.tsx` (subhead width constraint)
 
-No schema, no business logic, no validation changes, no auth/RLS, light-mode only, tokens-first.
+No schema, no business logic, no auth/RLS, light-mode only, tokens-first, no behavior change other than the QuickNav route correction.
