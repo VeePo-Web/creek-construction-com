@@ -38,12 +38,7 @@ const TrustChips = ({
           <span
             key={label}
             role="listitem"
-            className={cn(
-              "inline-flex items-center gap-2 px-3 py-1.5 rounded-[4px] border backdrop-blur-sm",
-              onDark
-                ? "border-cedar/25 bg-evergreen-foreground/[0.03]"
-                : "border-border/60 bg-background/60",
-            )}
+            className="inline-flex items-center gap-2 px-3 py-1.5"
           >
             <Icon className="h-3 w-3 text-cedar/80" aria-hidden strokeWidth={1.6} />
             <span

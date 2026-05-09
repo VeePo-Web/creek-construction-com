@@ -77,11 +77,7 @@ const CrewMoment = ({
           </div>
           {showStats && (
             <div
-              className="mt-10 pt-8 border-t border-transparent grid grid-cols-3 gap-6 md:gap-8"
-              style={{
-                borderImage:
-                  "linear-gradient(90deg, transparent 0%, hsl(var(--cedar) / 0.22) 50%, transparent 100%) 1",
-              }}
+              className="hairline mt-10 pt-8 grid grid-cols-3 gap-6 md:gap-8"
               role="group"
               aria-label="Creek by the numbers"
             >

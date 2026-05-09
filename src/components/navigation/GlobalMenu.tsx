@@ -178,8 +178,8 @@ const GlobalMenu = ({ isOpen, onClose, id = "global-menu" }: GlobalMenuProps) =>
             onClick={onClose}
             aria-label="Close menu"
             className={cn(
-              "relative inline-flex items-center gap-2 h-12 px-3 rounded-sm border border-cedar/25",
-              "hover:bg-cedar/10 hover:border-cedar/50 transition-colors duration-300",
+              "relative inline-flex items-center gap-2 h-12 px-3 rounded-sm border border-cedar/12",
+              "hover:bg-cedar/10 hover:border-cedar/40 transition-colors duration-300",
               "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cedar focus-visible:ring-offset-2",
             )}
           >
@@ -265,8 +265,8 @@ const GlobalMenu = ({ isOpen, onClose, id = "global-menu" }: GlobalMenuProps) =>
                         onClick={() => handleService(s.id)}
                         className={cn(
                           "inline-flex items-center min-h-[44px] px-4 py-2 rounded-full",
-                          "border border-cedar/25 text-sm text-foreground/80",
-                          "hover:border-cedar/60 hover:text-cedar hover:bg-cedar/5",
+                          "border border-cedar/12 text-sm text-foreground/80",
+                          "hover:border-cedar/40 hover:text-cedar hover:bg-cedar/5",
                           "transition-[color,background-color,border-color] duration-300",
                           "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cedar focus-visible:ring-offset-2",
                         )}
@@ -405,7 +405,7 @@ const GlobalMenu = ({ isOpen, onClose, id = "global-menu" }: GlobalMenuProps) =>
 
         {/* Bottom CTA bar — trust · phone · Quote */}
         <div
-          className="flex-shrink-0 border-t border-cedar/20 bg-background/95"
+          className="flex-shrink-0 border-t border-cedar/12 bg-background/95"
           style={{ paddingBottom: "max(1.25rem, env(safe-area-inset-bottom))" }}
         >
           <div className="max-w-7xl mx-auto px-6 md:px-12 lg:px-20 pt-5 pb-5">
@@ -422,7 +422,7 @@ const GlobalMenu = ({ isOpen, onClose, id = "global-menu" }: GlobalMenuProps) =>
                   onClick={onClose}
                   className={cn(
                     "inline-flex items-center justify-center gap-2 min-h-[44px] px-3 rounded-sm",
-                    "border border-cedar/25 hover:border-cedar/55 hover:bg-cedar/5",
+                    "border border-cedar/12 hover:border-cedar/40 hover:bg-cedar/5",
                     "text-sm text-foreground/85 hover:text-cedar transition-colors duration-300",
                     "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cedar focus-visible:ring-offset-2",
                   )}

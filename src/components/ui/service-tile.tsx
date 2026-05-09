@@ -1,6 +1,5 @@
 import type { LucideIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { bronzeStep } from "@/lib/colors";
 import { FOCUS } from "@/lib/motion";
 import { HEADLINE } from "@/lib/typography";
 
@@ -41,7 +40,6 @@ const ServiceTile = ({
   className,
 }: ServiceTileProps) => {
   const Icon = item.icon;
-  const opacity = bronzeStep(index, total);
   const isCompact = variant === "compact";
 
   return (
@@ -51,23 +49,20 @@ const ServiceTile = ({
       role="listitem"
       aria-label={`Request a quote for ${item.title}`}
       className={cn(
-        "group w-full text-left rounded-sm border border-border/60 transition-[transform,background-color,border-color] duration-500",
-        "shadow-contact hover:border-cedar/35 hover:bg-cedar/[0.03] hover:translate-y-[-2px]",
+        "group relative w-full text-left transition-[background-color] duration-300",
+        "hover:bg-cedar/[0.025]",
         FOCUS.ring,
-        isCompact ? "flex items-start gap-5 p-6 grain-texture" : "flex flex-col items-stretch p-6",
+        isCompact ? "flex items-start gap-5 p-6" : "flex flex-col items-stretch p-6",
         className,
       )}
-      style={{
-        borderLeftWidth: "3px",
-        borderLeftColor: `hsl(var(--cedar) / ${opacity})`,
-      }}
     >
+      <span
+        aria-hidden
+        className="absolute left-0 top-3 bottom-3 w-0 bg-cedar transition-all duration-300 group-hover:w-[2px]"
+      />
       {isCompact ? (
         <>
-          <div
-            className="shrink-0 w-12 h-12 rounded-sm flex items-center justify-center"
-            style={{ background: `hsl(var(--cedar) / ${0.08 + opacity * 0.05})` }}
-          >
+          <div className="shrink-0 w-12 h-12 flex items-center justify-center">
             <Icon className="h-5 w-5 text-cedar" aria-hidden strokeWidth={1.5} />
           </div>
           <div className="flex-1">

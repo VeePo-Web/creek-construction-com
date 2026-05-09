@@ -8,7 +8,7 @@ import { supabase } from "@/integrations/supabase/client";
 import type { DBProject } from "@/lib/api/public-media";
 import { useReveal } from "@/hooks/useReveal";
 import { SECTION_PADDING } from "@/lib/spacing";
-import { BACKDROP } from "@/lib/colors";
+
 
 /**
  * FeaturedProjects — editorial gallery of `featured = true` projects from
@@ -70,12 +70,9 @@ const ProjectCard = ({ project, variant, index }: ProjectCardProps) => {
               cedarHover
             />
           ) : (
-            // Evergreen gradient placeholder for featured projects without a hero
-            <div
-              className={`${aspectClass} w-full rounded-none relative overflow-hidden`}
-              style={{ background: BACKDROP.evergreenPlate }}
-            >
-              <span className="absolute inset-0 flex items-center justify-center font-serif text-evergreen-foreground/20 text-5xl select-none tabular-nums">
+            // Calm secondary fallback for featured projects without a hero
+            <div className={`${aspectClass} w-full rounded-none relative overflow-hidden bg-secondary`}>
+              <span className="absolute inset-0 flex items-center justify-center font-serif text-foreground/15 text-6xl select-none tabular-nums">
                 {String(index + 1).padStart(2, "0")}
               </span>
             </div>
@@ -220,7 +217,7 @@ const FeaturedProjects = ({ background = "background" }: FeaturedProjectsProps =
           <div className="mt-12 md:mt-16 flex justify-center">
             <Link
               to="/work"
-              className="text-minimal tracking-[0.18em] text-cedar hover:text-cedar-hover transition-[color,background-color,border-color] duration-300 group/link inline-flex items-center gap-3 min-h-[44px] py-3 px-5 rounded-[6px] border border-cedar/15 hover:border-cedar/30 hover:bg-cedar/[0.04] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cedar focus-visible:ring-offset-2"
+              className="eyebrow !text-cedar hover:!text-cedar-hover transition-colors duration-300 group/link inline-flex items-center gap-2 min-h-[44px] py-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cedar focus-visible:ring-offset-2"
             >
               <span>See all work</span>
               <ArrowRight

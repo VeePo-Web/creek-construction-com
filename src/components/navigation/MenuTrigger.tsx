@@ -45,7 +45,7 @@ const MenuTrigger = ({
       aria-label={isOpen ? "Close site menu" : "Open site menu"}
       className={cn(
         "relative flex items-center justify-center gap-2.5 rounded-[6px]",
-        "border border-cedar/20 hover:border-cedar/50 hover:bg-cedar/5",
+        "border border-cedar/12 hover:border-cedar/40 hover:bg-cedar/5",
         "transition-[background-color,border-color] duration-300",
         "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cedar focus-visible:ring-offset-2",
         // When labelled, give it pill proportions; otherwise stay square 48x48.
