@@ -28,8 +28,6 @@ const Contact = () => {
     `Get in touch with Creek Construction — call ${CONTACT.phone} or email ${CONTACT.email}. Free quotes across Calgary, Edmonton, and surrounding Alberta.`,
   );
 
-  const ROW_COUNT = 3;
-
   return (
     <main id="main-content" className="min-h-screen overflow-x-clip bg-background" aria-label="Contact — Creek Construction">
       <NavigationMinimal />
