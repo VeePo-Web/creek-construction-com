@@ -1,65 +1,58 @@
-# Pass 26 — NotFound, FeaturedProjects, Contact, MidPageQuotePrompt, and the global radius/typography sweep
+# Pass 27 — Footer presence, QuoteFormInline editorial uplift, and the conversion-surface radius/typography sweep
 
-Pass 25 unified hero + gallery + section seams. Pass 26 attacks the remaining "almost-canonical" surfaces — the 404, the FeaturedProjects gallery, the Contact info card, the MidPageQuotePrompt — plus a global rounded-radius + truncation + tabular-nums sweep. These are the surfaces FlexServices nails by being relentlessly consistent; we're 90% there and the last 10% is what reads as "premium" vs. "good".
+Pass 26 cleaned NotFound, FeaturedProjects, MidPageQuotePrompt, and the Contact info card. The two highest-value surfaces still reading as "stock" rather than "world-class" are the **Footer** and **QuoteFormInline**. Both are conversion-critical (Footer carries the last impression; QuoteFormInline IS the conversion). FlexServices' equivalents are quietly cinematic; ours are functional. We close that gap, then sweep the remaining cards.
 
-## A. NotFound (`src/pages/NotFound.tsx`) — bring it onto the same editorial chassis
+## A. Footer (`src/components/Footer.tsx`) — give it editorial weight
 
-Currently it ships a custom evergreen radial + custom 404 rule + raw `<h1 style={{fontSize: clamp(...)}}>`. None of it composes from the design system.
+The footer is currently a single 12px-tall bar of links. On a long-scroll editorial site that lands as anticlimax. FlexServices uses a 3-zone footer: identity column, navigation column, contact column, each separated by hairlines, on a generous py-20 evergreen plate.
 
-1. **Replace the entire hero** with `PageHero variant="evergreen-typographic"`, sectionLabel `"404 · Off the map"`, title `["Nothing here.", "But the work does."]`, subtitle copy moved to the variant's subtitle slot. Drop the manual `radial-gradient` and the manual 404 rule — the BronzeRule + triptych backdrop carry the same weight, branded.
-2. **CTA cluster** — keep `<CedarCTA to="/">Back to home</CedarCTA>` + `<CedarCTA to="/services" variant="secondary">Browse services</CedarCTA>` as PageHero children. Spacing already handled by hero.
-3. **Section anchor** — give the wrapper section the canonical `id="section-not-found"` so it gets the new global `scroll-mt` and feels first-party.
-4. **Drop `flex-col flex-1` from `<main>`** — PageHero owns its own min-height now; the dual-flex layout is what produced the "stuck mid-screen" 404 on tall viewports.
+1. **Vertical rhythm** — `py-12 md:py-14` → `pt-20 pb-10 md:pt-24 md:pb-12` (use `SECTION_PADDING.footer`). The footer should breathe, not crowd the QuoteCloserCard above it.
+2. **Three-zone grid layout (lg+)** — Replace the single horizontal flex with a `grid lg:grid-cols-12 gap-12`:
+    - **Cols 1–4**: Brand identity. Logo + serif wordmark + a one-line italic promise: `"Built well, on time, on time again."`
+    - **Cols 5–8**: Sitemap. Eyebrow `"NAVIGATE"` + vertical link list, sans, `text-sm`, `space-y-2`. Each link gets a `→` chevron on hover that translates 4px right (matches the rest of the editorial system).
+    - **Cols 9–12**: Direct line. Eyebrow `"DIRECT LINE"` + serif phone (the same `font-serif text-lg tabular-nums` we used on Contact), email below in sans, then the three service cities as a single muted line.
+3. **Fading hairline column dividers** on lg+ — `lg:divide-x lg:divide-cedar/15` is too flat; instead use a custom `:nth-child(2)` and `:nth-child(3)` `border-l border-transparent` with the standard cedar-fading `borderImage` running vertical (rotate gradient 180deg, top 0% → 50% 0.20 → 100% 0%).
+4. **Bronze rule eyebrow above the © line** — already a fading hairline (good). Add a small bronze numeral `"//"` or numeric year on the left, copyright centered, a "Made in Alberta" caption on the right (justify-between on md+, stacked on mobile). All `text-evergreen-foreground/55`, `text-[11px]`, `tracking-[0.18em]`.
+5. **Background warmth** — solid `bg-evergreen` reads as a flat plate. Add an **inset radial accent** at top-center: `style={{ background: "radial-gradient(ellipse at top, hsl(150 25% 18%) 0%, hsl(var(--evergreen)) 60%)" }}` so the footer fades up into the page rather than hard-cutting.
+6. **Mobile collapse** — on `<lg`, stack the three zones with a fading hairline between each (same borderImage horizontal). Order: Identity → Navigate → Direct Line. Center the brand block, left-align the link/contact lists.
+7. **Logo treatment** — currently `h-9 w-9`. Bump to `h-10 w-10` on lg+, add `opacity-90 group-hover:opacity-100 transition-opacity` so it feels editorial, not iconic.
+8. **Footer link hover** — currently `hover:text-cedar`. Add a `before:` underline draw: `relative before:absolute before:bottom-0 before:left-0 before:h-px before:w-0 before:bg-cedar before:transition-all before:duration-300 hover:before:w-full` for an editorial underline animation.
 
-## B. FeaturedProjects (`src/components/FeaturedProjects.tsx`)
+## B. QuoteFormInline (`src/components/quote/QuoteFormInline.tsx`) — promote to editorial form
 
-5. **Radius drift** — every `rounded-sm` (4px) here clashes with ProjectGallery's new `rounded-[6px]` from Pass 25. Promote to `rounded-[6px]` everywhere (image wrapper, focus ring, "See all work" button) so the two galleries match.
-6. **Hover scale ladder** — line 68 still uses two different scales depending on variant (`1.025` for lead vs `1.04` for stack/row). Pass 25 standardized Services tiles to `1.025`. Apply the same here: every variant `group-hover:scale-[1.025]`.
-7. **Headline size ladder** — the lead heading goes `text-2xl md:text-3xl lg:text-[32px] xl:text-[36px]` while the stack/row ones top out at `text-xl md:text-2xl`. The lead at xl is only 4px bigger than stack — hierarchy disappears on desktop. Spread the ladder: lead `text-2xl md:text-3xl lg:text-[34px] xl:text-[40px]`, others `text-lg md:text-xl lg:text-[22px]`.
-8. **Eyebrow row tabular-nums alignment** — the index numeral, location · service, and year all read in three slots. The first uses `tabular-nums`, the third uses `tabular-nums`, the middle (location · service) uses neither. Add a single `tabular-nums` to the row container so the dot separators don't drift between cards.
-9. **Truncation collision** — line 91 has `truncate min-w-0` on the location/service span. When location is short and service is long ("decks") this looks fine, but when location is "Sherwood Park" the truncation eats the service. Switch to two-line wrap on `<sm`: `flex-wrap` + `whitespace-normal sm:whitespace-nowrap sm:truncate`.
-10. **Placeholder gradient color** — hardcoded `hsl(150 25% 14%)` etc. Replace with the existing `BACKDROP.evergreenGradient` token (or add it if missing) so the dark-mode-cousin colors stay sourced from one file. Light-mode-only is fine; just don't hardcode.
-11. **"See all work" button radius + padding** — `rounded-sm` → `rounded-[6px]`; the button is `border + bg-cedar/[0.04]` already which reads as a pill on most viewports. Add `tracking-[0.18em]` to match the secondary CedarCTA exactly.
+The form is functionally complete and trust-strip is good, but visually it's a **shadcn-default rectangle** sitting in a designed page. Three high-impact upgrades, no logic changes.
 
-## C. Contact (`src/pages/Contact.tsx`)
+9. **Shell radius + bronze edge** — `rounded-sm` → `rounded-[6px]`. Add the canonical bronze left-bar (matches Contact info card and the other editorial cards site-wide): change `border border-cedar/15` to `border border-cedar/15 border-l-[3px] border-l-cedar/40`. Keeps the form anchored as part of the same family.
+10. **Field labels** — currently `text-[11px] tracking-[0.15em] uppercase text-muted-foreground` (good). Add `font-medium` so they sit above body text in weight, not just position. Tracking from `0.15em` → `0.18em` to match every other eyebrow on the site.
+11. **Input radius** — every input is `rounded-sm`; promote to `rounded-[4px]` (slightly tighter than card radius for a hierarchy: card 6 → input 4). Same for service chips and timeline radio buttons.
+12. **Service chip refinement** — current `border-cedar bg-cedar/[0.08]` selected state reads as "highlighted box". Switch selected to `border-cedar/60 bg-cedar/[0.06] text-foreground shadow-[inset_0_-2px_0_hsl(var(--cedar))]` — a bronze underline INSIDE the chip rather than a halo. More editorial, less form-builder.
+13. **Timeline radio** — same treatment as chips. The three-button row currently `border border-border` — add `divide-x divide-border/40` on the wrapper and a single shared `rounded-[4px]` outer border so the three options read as a single segmented control. Selected state same shadow-inset cedar underline.
+14. **CTA button** — the submit `bg-cedar text-cedar-foreground rounded-sm` matches CedarCTA but isn't actually CedarCTA. Reuse the same primary look: `rounded-[6px]`, `tracking-[0.2em]`, add a hairline shadow `shadow-[0_1px_2px_hsl(var(--cedar)/0.20),0_8px_24px_-8px_hsl(var(--cedar)/0.30)]` for editorial lift. Keep the `min-h-[52px]` (good for thumb).
+15. **Trust micro-strip** — currently `bg-muted/40` flat tint. Replace with `bg-cedar/[0.03] border-t border-transparent` + the cedar-fading borderImage. Replaces a hard divider with the same hairline language as section seams.
+16. **Section title above the chips** — `"What do you need?"` is sitting in regular eyebrow. Add the standard SubLabel pattern: `<BronzeRule width="short" label="WHAT DO YOU NEED?" />` so the form internally uses the same micro-rhythm as the page.
+17. **Success state card** — `rounded-sm`, `bg-secondary/40`, plain green check. Promote to `rounded-[6px]`, add the bronze left-bar, swap the check circle for a serif numeral `"01"` in cedar above `"We've got it."` for editorial cohesion. Keep the call CTA below.
+18. **Field gap** — `space-y-5` is generous but the two `grid sm:grid-cols-2 gap-3` rows feel pinched at md. Change inner grid gap to `gap-3 sm:gap-4`, outer spacing to `space-y-6` for a slightly more editorial pace.
 
-12. **Hero h1 scale** — `text-[32px] sm:text-4xl md:text-[44px] lg:text-[56px]` is one rung shy of the cinematic hero ladder (`xl:text-[64px]`). Add `xl:text-[64px]` so the headline lands at parity with home/services on large desktops.
-13. **Headline tracking** — uses `tracking-[-0.025em]` while the cinematic hero uses `tracking-[-0.02em]`. Match the cinematic value site-wide for consistent letter-spacing.
-14. **Subhead lift** — currently `mt-5 text-base md:text-lg text-muted-foreground`. Promote to `mt-6 text-base md:text-lg text-muted-foreground text-balance max-w-[44ch] mx-auto` to match the new hero subtitle spec from Pass 25.
-15. **Eyebrow ("FREE QUOTE")** — currently raw `<p>`. Replace with `<BronzeRule label="FREE QUOTE" variant="onLight" />` so the eyebrow renders the bronze hairline like every other page hero.
-16. **Direct contact card** — `rounded-sm` → `rounded-[6px]`. The bronze left-bar is good. The three rows currently divide via `border-t border-border/30`; replace with a fading hairline (linear-gradient borderImage at 0.20 mid) for editorial parity with the section seams from Pass 25.
-17. **Phone row hierarchy** — the phone number renders as `text-foreground font-medium`. Bump to `font-serif text-lg` (it's the single most important conversion target on the page); leave email and area at sans body.
-18. **Service Areas row "Including … + more towns"** — drop the literal `+ more towns` and replace with an em-dash phrasing per the typography memory: `"Including {first three cities} — and the towns in between."`
-19. **Section vertical rhythm** — `pt-10 sm:pt-14 md:pt-20 pb-20 md:pb-28` is a custom ladder. Use `SECTION_PADDING.default` for `pb-*` and explicit smaller `pt-*` only (since NavigationMinimal is shorter than full nav). Cleans the spacing tokens.
+## C. Remaining radius sweep (from Pass 26 leftovers)
 
-## D. MidPageQuotePrompt (`src/components/MidPageQuotePrompt.tsx`)
+19. **TestimonialStrip cards** — `rounded-sm` → `rounded-[6px]` (line 60). Cards are media-bearing — must match new radius family.
+20. **QuoteCloserCard** — `rounded-sm` → `rounded-[6px]` on the outer wrapper (line 40); pseudo-element bronze bar already in place.
+21. **Navigation pills** (`MenuTrigger`, `NavigationMinimal`, `MobileSubNav`, `HeaderBreadcrumb`, `GlobalMenu`) — these are tap targets, not media surfaces. Keep them at `rounded-sm` (intentional — pills should be tighter than cards). No change. Document this in a comment so future sweeps don't break it.
 
-20. **Border + bg combo too loud** — `border-cedar/20 bg-cedar/[0.04]` reads as a "callout box". The rest of the editorial system uses borderless cedar-tinted strips with a left bar. Replace with `border-l-[3px] border-cedar/40 bg-cedar/[0.03] rounded-r-[6px] rounded-l-none px-6 md:px-8 py-7`.
-21. **Heading scale** — `text-xl md:text-2xl` is timid against the surrounding catalogue. Bump to `text-2xl md:text-3xl` with `text-balance max-w-[28ch]`.
-22. **CTA gap** — on `<sm` the CTA stacks below; add `mt-2 sm:mt-0` so the gap respects the prompt baseline rather than the flex-gap.
+## D. Curly-quote + tabular-nums micro-sweep
 
-## E. Global radius sweep
+22. **`rg "[a-zA-Z]'[a-zA-Z]" src/{components,pages} -n`** — find any remaining straight apostrophes inside JSX text and convert to `'`. From session memory, hot spots are likely in QuoteFormInline labels, Footer (none currently), MiniFaq, and admin (skip admin). Audit & replace.
+23. **Phone numbers** — every visible phone string should ship `tabular-nums`. Footer (already has it), QuoteFormInline success-state CTA copy ("Or call …" — verify), Contact direct row (added in Pass 26), Hero/CTA buttons that surface the phone — confirm.
 
-23. `rg "rounded-sm" src/components src/pages | rg -v "//"` — there are likely 30–60 hits. The new editorial radius is `rounded-[6px]` for image surfaces and `rounded-sm` (2–4px) only for chips/pills. Audit and migrate image/card surfaces to `rounded-[6px]`. Specifically Hero, FeaturedProjects ProjectCards, ProjectGallery (done), QuoteCloserCard image area, CrewMoment MediaSlot, MidPageQuotePrompt, Contact direct card, MiniFaq cards, NotFound — anywhere an image or media-bearing card sits.
+## E. Light QA
 
-## F. Tabular-nums + curly-quote sweep
-
-24. **Tabular-nums** — every metadata strip with numerals (years, dates, indexes, addresses) should ship `tabular-nums`. Sweep `rg "[0-9]{4}" src/components src/pages -l` and confirm. CrewMoment stat row, FeaturedProjects index, Work meta line, About cities counter (if exists) — all need it.
-25. **Curly quotes** — `rg "[a-zA-Z]'[a-z]" src/{components,pages}` and replace `'` → `’` in JSX text. Same for straight `"…"` → `"…"`. Do NOT touch JS string literals (props, hrefs, classNames, alt text identifiers); only visible JSX text.
-
-## G. Section anchor IDs sanity
-
-26. **Verify every page-level `<section>` has `id="section-*"`** so the global `scroll-mt` from Pass 24 catches it. NotFound currently has none. About story/process/areas — confirm. Work featured/gallery — confirm. Services catalogue/responsibility — confirm.
-
-## H. Skip-to-content + landmark hygiene
-
-27. **`SkipToContent target` audits** — Contact uses `section-contact`, Work uses dynamic `section-featured`/`section-gallery`. Verify each target id exists in the rendered DOM (no dead anchors). For NotFound, add `target="section-not-found"`.
-28. **`<main>` `aria-label`** — every page already has one. Audit the wording to match the canonical pattern: `"<Page name> — Creek Construction"`. NotFound says "Page not found — Creek Construction" (good). Index says? Verify and align.
-
-## I. Light QA
-
-29. After edits: screenshot 404, Contact, Work-with-featured at 375 / 768 / 1366. Verify the 404 hero feels like the rest of the site (BronzeRule eyebrow, triptych backdrop, CedarCTA cluster), the FeaturedProjects gallery shares ProjectGallery's gap+radius DNA, and Contact's direct card uses fading hairlines + bronze-rule eyebrow.
+24. After edits: viewport screenshots at 375 / 768 / 1366 of `/contact` (form), `/` bottom (footer), and `/contact` success state (form-submit confirmation). Verify the form's bronze left-bar lines up with the Contact info card on the left, the trust strip uses fading hairline, the segmented timeline reads as one control, and the footer's three-zone grid breathes on desktop and stacks cleanly on mobile.
 
 ## Files to touch
 
-`src/pages/NotFound.tsx`, `src/components/FeaturedProjects.tsx`, `src/pages/Contact.tsx`, `src/components/MidPageQuotePrompt.tsx`, plus radius/quote sweep across `src/components/**` and `src/pages/**`. No schema, no business logic, no component deletions. Tokens-first, light-mode only.
+- `src/components/Footer.tsx` (full rewrite of the layout, no API changes)
+- `src/components/quote/QuoteFormInline.tsx` (shell + chips + button + success)
+- `src/components/TestimonialStrip.tsx` (radius)
+- `src/components/QuoteCloserCard.tsx` (radius)
+
+No schema, no business logic, no validation changes, no auth/RLS, light-mode only, tokens-first.
