@@ -163,6 +163,41 @@ section[id^="section-"] {
   ::-webkit-scrollbar-thumb:hover { background: hsl(var(--cedar) / 0.3); }
 
   /* ─────────────────────────────────────────────────────────────
+     INTERACTION PRIMITIVES (Pass 30 — Fly4Me grammar)
+     A two-word vocabulary used across links and arrow CTAs.
+     GPU-only, no layout shift, single source of truth.
+     ───────────────────────────────────────────────────────────── */
+
+  .link-underline {
+    background-image: linear-gradient(hsl(var(--cedar)), hsl(var(--cedar)));
+    background-position: 0 100%;
+    background-repeat: no-repeat;
+    background-size: 0% 1px;
+    transition: background-size 420ms cubic-bezier(0.22, 1, 0.36, 1),
+      color 240ms cubic-bezier(0.22, 1, 0.36, 1);
+    padding-bottom: 2px;
+  }
+  .link-underline:hover,
+  .link-underline:focus-visible,
+  .link-underline.is-active {
+    background-size: 100% 1px;
+  }
+
+  .link-arrow {
+    display: inline-block;
+    transition: transform 320ms cubic-bezier(0.22, 1, 0.36, 1);
+    will-change: transform;
+  }
+  .group:hover .link-arrow,
+  .group:focus-visible .link-arrow {
+    transform: translate(3px, -3px);
+  }
+
+  .container-x {
+    @apply px-5 sm:px-6 md:px-10 lg:px-16;
+  }
+
+  /* ─────────────────────────────────────────────────────────────
      EDITORIAL TYPE UTILITIES
      Used widely across components. Kept inline so PurgeCSS keeps them.
      ───────────────────────────────────────────────────────────── */
