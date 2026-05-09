@@ -527,6 +527,27 @@ section[id^="section-"] {
   }
 
   /* ─────────────────────────────────────────────────────────────
+     EDITORIAL ATOMICS — eyebrow + hairline (Pass 32)
+     Use these instead of hand-rolled tracking/border strings.
+     ───────────────────────────────────────────────────────────── */
+  .eyebrow {
+    font-size: 11px;
+    line-height: 1;
+    text-transform: uppercase;
+    letter-spacing: 0.22em;
+    color: hsl(var(--cedar) / 0.65);
+    font-weight: 500;
+  }
+  .hairline { border-top: 1px solid hsl(var(--cedar) / 0.12); }
+  .hairline-l { border-left: 1px solid hsl(var(--cedar) / 0.12); }
+
+  /* Single-play reveal for FloatingQuoteCTA chip. */
+  @keyframes fade-in-up {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ─────────────────────────────────────────────────────────────
      ACCESSIBILITY CONSOLIDATION
      ───────────────────────────────────────────────────────────── */
 
