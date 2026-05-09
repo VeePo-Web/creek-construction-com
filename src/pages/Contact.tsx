@@ -38,23 +38,23 @@ const Contact = () => {
 
       <section
         id="section-contact"
-        className="pt-10 sm:pt-14 md:pt-20 pb-20 md:pb-28"
+        className="pt-10 sm:pt-14 md:pt-20 pb-16 sm:pb-20 md:pb-24 lg:pb-28 xl:pb-32"
         aria-labelledby="contact-heading"
       >
         <div className="container mx-auto px-5 sm:px-6">
           <div className={`${MAX_WIDTH.wide} mx-auto`}>
             {/* Headline strip */}
             <div className="text-center max-w-3xl mx-auto mb-10 md:mb-14">
-              <p className="text-[10px] tracking-[0.25em] uppercase text-cedar mb-4">
-                FREE QUOTE
-              </p>
+              <div className="flex justify-center mb-4">
+                <BronzeRule label="FREE QUOTE" />
+              </div>
               <h1
                 id="contact-heading"
-                className="font-serif text-[32px] sm:text-4xl md:text-[44px] lg:text-[56px] text-foreground leading-[1.05] lg:leading-[1.02] tracking-[-0.025em] text-pretty"
+                className="font-serif text-[32px] sm:text-4xl md:text-[44px] lg:text-[56px] xl:text-[64px] text-foreground leading-[1.05] lg:leading-[1.02] tracking-[-0.02em] text-pretty text-balance"
               >
                 Tell us what you’re building.
               </h1>
-              <p className="mt-5 text-base md:text-lg text-muted-foreground leading-relaxed">
+              <p className="mt-6 text-base md:text-lg text-muted-foreground leading-relaxed max-w-[44ch] mx-auto text-balance">
                 Free written quote within 24–48 hours. We quote what we’ll actually charge.
               </p>
             </div>
