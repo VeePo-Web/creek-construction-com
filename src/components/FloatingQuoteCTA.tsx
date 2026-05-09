@@ -47,7 +47,7 @@ const FloatingQuoteCTA = () => {
       onClick={() => openModal()}
       aria-label="Get a free quote"
       className={cn(
-        "hidden md:inline-flex fixed bottom-8 right-8 z-40",
+        "group hidden md:inline-flex items-center gap-2.5 fixed bottom-8 right-8 z-40",
         "bg-evergreen text-evergreen-foreground",
         "border-l-[3px] border-cedar",
         "pl-4 pr-5 py-3 md:pl-5 md:pr-6 md:py-3.5",
