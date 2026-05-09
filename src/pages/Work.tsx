@@ -40,8 +40,6 @@ const Work = () => {
   );
   const { openModal } = useQuoteModal();
 
-  const totalCount = PROJECTS.length + PLACEHOLDERS.length;
-
   return (
     <main id="main-content" className="min-h-screen overflow-x-clip bg-background" aria-label="Our Work — Creek Construction">
       <ProjectsJsonLd />
