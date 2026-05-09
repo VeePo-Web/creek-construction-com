@@ -355,10 +355,13 @@ const QuoteFormInline = ({
 
           {!compact && (
             <div>
-              <p className="text-[11px] tracking-[0.18em] uppercase text-muted-foreground mb-2">
+              <p className="text-[11px] tracking-[0.2em] uppercase font-medium text-muted-foreground mb-2">
                 When?
               </p>
-              <div className="grid grid-cols-3 gap-1.5" role="radiogroup">
+              <div
+                className="grid grid-cols-3 rounded-[4px] border border-border overflow-hidden divide-x divide-border/60"
+                role="radiogroup"
+              >
                 {TIMELINE_OPTIONS.map((t) => {
                   const active = form.timeline === t;
                   return (
@@ -368,10 +371,10 @@ const QuoteFormInline = ({
                       role="radio"
                       aria-checked={active}
                       onClick={() => update("timeline", t)}
-                      className={`px-2 py-2.5 rounded-sm border text-xs transition-colors min-h-[44px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cedar focus-visible:ring-offset-1 ${
+                      className={`px-2 py-2.5 text-xs transition-colors min-h-[44px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cedar focus-visible:ring-inset ${
                         active
-                          ? "border-cedar bg-cedar/[0.08] text-foreground"
-                          : "border-border text-muted-foreground hover:border-cedar/50"
+                          ? "bg-cedar/[0.06] text-foreground shadow-[inset_0_-2px_0_hsl(var(--cedar))]"
+                          : "text-muted-foreground hover:bg-cedar/[0.02] hover:text-foreground"
                       }`}
                     >
                       {t}
@@ -390,15 +393,27 @@ const QuoteFormInline = ({
               rows={2}
               maxLength={2000}
               placeholder="e.g. 14×20 cedar deck, replacing a worn pressure-treated one."
-              className="w-full rounded-sm border border-border bg-background px-3 py-2.5 text-sm focus:outline-none focus:border-cedar focus:ring-1 focus:ring-cedar/30 transition-colors resize-none"
+              className="w-full rounded-[4px] border border-border bg-background px-3 py-2.5 text-sm focus:outline-none focus:border-cedar focus:ring-1 focus:ring-cedar/30 transition-colors resize-none"
             />
           </Field>
         </div>
       </div>
 
-      {/* Trust micro-strip + CTA — same as the modal */}
-      <div className="border-t border-border/40 bg-muted/40">
-        <div className="px-6 md:px-8 py-2 flex items-center justify-center gap-4 text-[10px] tracking-[0.18em] uppercase text-muted-foreground border-b border-border/30 flex-wrap">
+      {/* Trust micro-strip + CTA */}
+      <div
+        className="bg-cedar/[0.03] border-t border-transparent"
+        style={{
+          borderImage:
+            "linear-gradient(90deg, transparent 0%, hsl(var(--cedar) / 0.20) 50%, transparent 100%) 1",
+        }}
+      >
+        <div
+          className="px-6 md:px-8 py-2 flex items-center justify-center gap-4 text-[10px] tracking-[0.18em] uppercase text-muted-foreground border-b border-transparent flex-wrap"
+          style={{
+            borderImage:
+              "linear-gradient(90deg, transparent 0%, hsl(var(--cedar) / 0.15) 50%, transparent 100%) 1",
+          }}
+        >
           <span className="inline-flex items-center gap-1.5">
             <Star className="h-3 w-3 fill-cedar text-cedar" aria-hidden /> Verified
           </span>
@@ -418,7 +433,7 @@ const QuoteFormInline = ({
             disabled={!canSubmit}
             aria-label={ctaLabel}
             data-quote-cta
-            className="w-full inline-flex items-center justify-center gap-2 bg-cedar text-cedar-foreground px-6 py-3.5 rounded-sm text-[12px] tracking-[0.18em] uppercase font-medium hover:bg-cedar-hover disabled:opacity-50 disabled:cursor-not-allowed transition-colors min-h-[52px]"
+            className="w-full inline-flex items-center justify-center gap-2 bg-cedar text-cedar-foreground px-6 py-3.5 rounded-[6px] text-[12px] tracking-[0.2em] uppercase font-medium hover:bg-cedar-hover disabled:opacity-50 disabled:cursor-not-allowed transition-colors min-h-[52px] shadow-[0_1px_2px_hsl(var(--cedar)/0.20),0_8px_24px_-8px_hsl(var(--cedar)/0.30)]"
           >
             {submitting ? (
               <>
