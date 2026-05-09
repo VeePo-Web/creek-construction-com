@@ -160,7 +160,7 @@ const Services = () => {
 
               <div
                 aria-label="What you handle"
-                className="p-7 sm:p-8 md:p-10 border border-border/40 rounded-[6px] h-full bg-background"
+                className="hairline pt-7 sm:pt-8 md:pt-10 px-1 sm:px-2 h-full"
               >
                 <div className="flex items-baseline justify-between gap-2 flex-wrap mb-8">
                   <h3 className="text-minimal text-muted-foreground">YOU HANDLE</h3>

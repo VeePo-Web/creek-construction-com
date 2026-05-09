@@ -78,14 +78,15 @@ const About = () => {
               align="center"
             />
 
-            <div className="space-y-3 mt-12 max-w-[62ch] mx-auto" role="list">
+            <div className="mt-12 max-w-[62ch] mx-auto" role="list">
               {STEPS.map((s, i) => (
                 <div
                   key={i}
                   role="listitem"
-                  className="flex items-start gap-4 sm:gap-5 pl-4 sm:pl-5 py-4 sm:py-5 rounded-[4px] transition-colors duration-300 hover:bg-cedar/[0.035] bg-background border-l-2 border-cedar/16"
+                  className={`group relative flex items-start gap-4 sm:gap-5 pl-4 sm:pl-5 py-5 sm:py-6 transition-colors duration-300 hover:bg-cedar/[0.025] ${i === 0 ? "border-t border-cedar/12" : ""} border-b border-cedar/12`}
                 >
-                  <span className="font-mono text-[11px] tracking-[0.22em] text-cedar/45 tabular-nums mt-1 w-9 shrink-0">
+                  <span aria-hidden className="absolute left-0 top-4 bottom-4 w-0 bg-cedar transition-all duration-300 group-hover:w-[2px]" />
+                  <span className="font-mono text-[11px] tracking-[0.22em] text-cedar/55 tabular-nums mt-1 w-9 shrink-0">
                     {String(i + 1).padStart(2, "0")}
                   </span>
                   <div>
@@ -112,7 +113,7 @@ const About = () => {
               {CONTACT.cities.map((city) => (
                 <span
                   key={city}
-                  className="text-[11px] tracking-[0.18em] uppercase text-muted-foreground border border-cedar/14 rounded-[4px] px-3 py-2.5 inline-flex items-center justify-center min-h-[44px] hover:text-foreground hover:bg-cedar/[0.035] hover:border-cedar/30 transition-colors duration-300"
+                  className="text-[11px] tracking-[0.18em] uppercase text-muted-foreground border border-cedar/12 rounded-[4px] px-3 py-2.5 inline-flex items-center justify-center min-h-[44px] hover:text-foreground hover:border-cedar/30 transition-colors duration-300"
                 >
                   {city}
                 </span>
