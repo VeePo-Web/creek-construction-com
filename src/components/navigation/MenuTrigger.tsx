@@ -44,7 +44,7 @@ const MenuTrigger = ({
       aria-controls={controlsId}
       aria-label={isOpen ? "Close site menu" : "Open site menu"}
       className={cn(
-        "relative flex items-center justify-center gap-2.5 rounded-[6px]",
+        "relative flex items-center justify-center gap-2.5 rounded-[2px]",
         "border border-cedar/12 hover:border-cedar/40 hover:bg-cedar/5",
         "transition-[background-color,border-color] duration-300",
         "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cedar focus-visible:ring-offset-2",

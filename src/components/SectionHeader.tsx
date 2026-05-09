@@ -1,6 +1,5 @@
 import type { ReactNode } from "react";
 import ScrollRevealMotion from "@/components/ScrollRevealMotion";
-import BronzeRule from "@/components/ui/bronze-rule";
 import { HEADLINE } from "@/lib/typography";
 
 interface SectionHeaderProps {
@@ -67,22 +66,22 @@ const SectionHeader = ({
     <div className={centered ? "flex flex-col items-center text-center" : ""}>
       {label && (
         <Wrap delay={baseDelay}>
-          <BronzeRule
-            numeral={showNumeral ? numeral : undefined}
-            label={label}
-            variant={cedarLabel ? "accent" : "default"}
-            className={`mb-6 ${centered ? "justify-center" : ""}`}
-          />
+          <p className={`eyebrow mb-5 ${centered ? "text-center" : ""}`}>
+            {showNumeral && (
+              <span className="text-cedar/55 tabular-nums mr-3">{numeral}</span>
+            )}
+            {label}
+          </p>
         </Wrap>
       )}
 
       <Wrap delay={baseDelay + 0.1}>
-        <h2 id={headingId} className={`${HEADLINE.section} mb-4 [&:last-child]:mb-8`}>{heading}</h2>
+        <h2 id={headingId} className={`${HEADLINE.section} mb-3 [&:last-child]:mb-0`}>{heading}</h2>
       </Wrap>
 
       {subheading && (
         <Wrap delay={baseDelay + 0.15}>
-          <p className="text-subhead text-foreground/60 italic font-serif mb-8 text-balance max-w-[44ch]">
+          <p className="text-base md:text-lg text-muted-foreground mb-6 text-pretty max-w-[56ch]">
             {subheading}
           </p>
         </Wrap>
@@ -90,7 +89,7 @@ const SectionHeader = ({
 
       {showBadge && (
         <Wrap delay={baseDelay + 0.2}>
-          <BronzeRule label={badge!} variant="default" width="long" />
+          <p className="eyebrow mt-2">{badge}</p>
         </Wrap>
       )}
     </div>

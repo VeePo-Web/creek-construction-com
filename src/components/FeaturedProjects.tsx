@@ -55,7 +55,7 @@ const ProjectCard = ({ project, variant, index }: ProjectCardProps) => {
     <article className="group h-full flex flex-col">
         <Link
           to={`/work#${project.slug}`}
-          className="block focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cedar focus-visible:ring-offset-2 rounded-[6px]"
+          className="block focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cedar focus-visible:ring-offset-2 rounded-[2px]"
           aria-label={`View ${project.title}, ${project.service} in ${project.location ?? "Alberta"}`}
         >
           {project.hero_url ? (

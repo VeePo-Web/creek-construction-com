@@ -83,10 +83,10 @@ const About = () => {
                 <div
                   key={i}
                   role="listitem"
-                  className={`group relative flex items-start gap-4 sm:gap-5 pl-4 sm:pl-5 py-5 sm:py-6 transition-colors duration-300 hover:bg-cedar/[0.025] ${i === 0 ? "border-t border-cedar/12" : ""} border-b border-cedar/12`}
+                  className={`group relative flex items-start gap-4 sm:gap-5 pl-4 sm:pl-5 py-5 sm:py-6 transition-colors duration-300 ${i === 0 ? "border-t border-cedar/12" : ""} border-b border-cedar/12`}
                 >
                   <span aria-hidden className="absolute left-0 top-4 bottom-4 w-0 bg-cedar transition-all duration-300 group-hover:w-[2px]" />
-                  <span className="font-mono text-[11px] tracking-[0.22em] text-cedar/55 tabular-nums mt-1 w-9 shrink-0">
+                  <span className="font-mono text-[11px] tracking-[0.22em] text-cedar/55 tabular-nums mt-1.5 w-7 shrink-0">
                     {String(i + 1).padStart(2, "0")}
                   </span>
                   <div>
@@ -109,11 +109,11 @@ const About = () => {
               heading="Calgary, Edmonton, and the towns in between."
               align="center"
             />
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2 mt-10">
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-1.5 mt-10">
               {CONTACT.cities.map((city) => (
                 <span
                   key={city}
-                  className="text-[11px] tracking-[0.18em] uppercase text-muted-foreground border border-cedar/12 rounded-[4px] px-3 py-2.5 inline-flex items-center justify-center min-h-[44px] hover:text-foreground hover:border-cedar/30 transition-colors duration-300"
+                  className="text-[11px] tracking-[0.18em] uppercase text-muted-foreground border border-cedar/15 rounded-[2px] px-3 py-2.5 inline-flex items-center justify-center min-h-[44px] hover:text-foreground hover:border-cedar/30 transition-colors duration-300"
                 >
                   {city}
                 </span>
