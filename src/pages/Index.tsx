@@ -9,7 +9,6 @@ import Footer from "@/components/Footer";
 import { LocalBusinessJsonLd } from "@/components/JsonLd";
 import CrewMoment from "@/components/CrewMoment";
 import TestimonialStrip from "@/components/TestimonialStrip";
-import MiniFaq from "@/components/MiniFaq";
 import BrandStatement from "@/components/BrandStatement";
 
 /**
