@@ -136,6 +136,7 @@ const Contact = () => {
                     </div>
                   </div>
                 </aside>
+              </div>
 
               {/* RIGHT — the actual form */}
               <div>
