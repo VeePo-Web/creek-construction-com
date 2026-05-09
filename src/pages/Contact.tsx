@@ -2,7 +2,7 @@ import NavigationMinimal from "@/components/navigation/NavigationMinimal";
 import SkipToContent from "@/components/ui/skip-to-content";
 import Footer from "@/components/Footer";
 import SectionHeader from "@/components/SectionHeader";
-import BronzeRule from "@/components/ui/bronze-rule";
+
 import QuoteFormInline from "@/components/quote/QuoteFormInline";
 import { useDocumentTitle } from "@/hooks/useDocumentTitle";
 import { Phone, Mail, MapPin } from "lucide-react";
