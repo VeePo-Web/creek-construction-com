@@ -20,8 +20,10 @@
 // ─────────────────────────────────────────────────────────────────────
 
 export const SECTION_PADDING = {
-  /** Standard homepage section (Hero, Services, About, etc.). Pass 30 bumped for Fly4Me-grade breathing room. */
+  /** Standard homepage section. */
   default: "py-20 sm:py-24 md:py-28 lg:py-32 xl:py-40",
+  /** Calm — Apple-grade breathing room for Hero, BrandStatement and Closer. */
+  calm: "py-24 sm:py-28 md:py-36 lg:py-44",
   /** Tight — proof bands, footer-adjacent sections. */
   tight: "py-12 sm:py-16 md:py-20",
   /** Slimmer — for trust strips and inline rows. */
