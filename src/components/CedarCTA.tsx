@@ -63,7 +63,7 @@ const CedarCTA = ({
     <>
       <span>{children}</span>
       {variant === "secondary" ? (
-        <span className="inline-block w-4 h-px bg-gradient-to-r from-cedar to-cedar/60 group-hover/link:w-8 transition-[width] duration-500" />
+        <span className="inline-block w-4 h-px bg-cedar group-hover/link:w-8 transition-[width] duration-500" />
       ) : (
         <ArrowRight className="h-3.5 w-3.5 group-hover/cta:translate-x-1 transition-transform duration-500" aria-hidden="true" />
       )}
