@@ -199,20 +199,18 @@ const QuoteFormInline = ({
   if (success) {
     return (
       <div
-        className={`rounded-sm border border-cedar/20 grain-texture shadow-contact ${shellBg} ${pad} text-center ${className ?? ""}`}
+        className={`rounded-[6px] border border-cedar/15 border-l-[3px] border-l-cedar/40 grain-texture shadow-contact ${shellBg} ${pad} text-center ${className ?? ""}`}
         role="status"
         aria-live="polite"
       >
-        <div className="w-14 h-14 mx-auto rounded-full bg-cedar/10 border-2 border-cedar/30 flex items-center justify-center mb-5">
-          <Check className="h-6 w-6 text-cedar" aria-hidden />
-        </div>
+        <p className="font-serif text-2xl text-cedar tabular-nums mb-2">01</p>
         <h3 className="font-serif text-2xl text-foreground mb-2">We’ve got it.</h3>
         <p className="text-muted-foreground mb-6 text-sm">
           Thanks — we’ll review your project and reach out within 24 hours.
         </p>
         <a
           href={`tel:${CONTACT.phoneTel}`}
-          className="inline-flex items-center gap-2 bg-cedar text-cedar-foreground px-5 py-3 rounded-sm text-[11px] tracking-[0.18em] uppercase font-medium hover:bg-cedar-hover transition-colors min-h-[44px]"
+          className="inline-flex items-center gap-2 bg-cedar text-cedar-foreground px-5 py-3 rounded-[6px] text-[11px] tracking-[0.2em] uppercase font-medium hover:bg-cedar-hover transition-colors min-h-[44px] tabular-nums shadow-[0_1px_2px_hsl(var(--cedar)/0.20),0_8px_24px_-8px_hsl(var(--cedar)/0.30)]"
         >
           <Phone className="h-3.5 w-3.5" aria-hidden /> Call us now
         </a>
@@ -222,13 +220,13 @@ const QuoteFormInline = ({
 
   return (
     <div
-      className={`rounded-sm border border-cedar/15 grain-texture shadow-contact ${shellBg} ${className ?? ""}`}
+      className={`rounded-[6px] border border-cedar/15 border-l-[3px] border-l-cedar/40 grain-texture shadow-contact ${shellBg} ${className ?? ""}`}
       onKeyDown={handleKeyDown}
     >
       <div className={pad}>
-        <div className="space-y-5">
+        <div className="space-y-6">
           {/* Phone first — conversion-critical */}
-          <div className="grid sm:grid-cols-2 gap-3">
+          <div className="grid sm:grid-cols-2 gap-3 sm:gap-4">
             <Field
               label="Phone"
               htmlFor="qfi-phone"
