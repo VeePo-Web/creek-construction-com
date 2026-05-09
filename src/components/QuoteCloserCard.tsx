@@ -37,7 +37,7 @@ const QuoteCloserCard = ({
 }: QuoteCloserCardProps) => {
   const card = (
     <div
-      className="rounded-sm overflow-hidden relative md:grain-texture before:content-[''] before:absolute before:left-0 before:top-0 before:bottom-0 before:w-[3px] before:bg-cedar"
+      className="rounded-[6px] overflow-hidden relative md:grain-texture before:content-[''] before:absolute before:left-0 before:top-0 before:bottom-0 before:w-[3px] before:bg-cedar"
       style={{
         background: BACKDROP.evergreenCard,
       }}
