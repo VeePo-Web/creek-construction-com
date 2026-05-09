@@ -8,7 +8,7 @@ import { supabase } from "@/integrations/supabase/client";
 import type { DBProject } from "@/lib/api/public-media";
 import { useReveal } from "@/hooks/useReveal";
 import { SECTION_PADDING } from "@/lib/spacing";
-import { BACKDROP } from "@/lib/colors";
+
 
 /**
  * FeaturedProjects — editorial gallery of `featured = true` projects from
