@@ -119,7 +119,7 @@ const Contact = () => {
               </div>
 
               {/* RIGHT — the actual form, visually weighted */}
-              <div className="bg-secondary/40 rounded-[6px] p-6 md:p-8">
+              <div>
                 <SectionHeader
                   label="THE FORM"
                   headingId="form-heading"
