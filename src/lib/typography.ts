@@ -98,9 +98,9 @@ export const EYEBROW = {
 // ─────────────────────────────────────────────────────────────────────
 
 export const BODY = {
-  /** Lead paragraph — sits directly under a section heading. */
+  /** Lead paragraph — sits directly under a section heading. Calm editorial scale. */
   lead:
-    "font-sans text-foreground/75 text-[15px] sm:text-base md:text-[17px] leading-[1.65] text-balance",
+    "font-sans text-foreground/75 text-[15px] sm:text-base leading-[1.65] text-balance",
 
   /** Default body copy. */
   default:
