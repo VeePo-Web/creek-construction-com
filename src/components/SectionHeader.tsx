@@ -64,7 +64,7 @@ const SectionHeader = ({
     disableMotion ? <>{children}</> : <ScrollRevealMotion delay={delay}>{children}</ScrollRevealMotion>;
 
   return (
-    <div className={centered ? "text-center [&_*]:mx-auto" : ""}>
+    <div className={centered ? "flex flex-col items-center text-center" : ""}>
       {label && (
         <Wrap delay={baseDelay}>
           <BronzeRule
@@ -82,7 +82,7 @@ const SectionHeader = ({
 
       {subheading && (
         <Wrap delay={baseDelay + 0.15}>
-          <p className={`text-subhead text-foreground/60 italic font-serif mb-8 text-balance max-w-[44ch] ${centered ? "" : ""}`}>
+          <p className="text-subhead text-foreground/60 italic font-serif mb-8 text-balance max-w-[44ch]">
             {subheading}
           </p>
         </Wrap>
