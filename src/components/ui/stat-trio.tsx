@@ -58,7 +58,7 @@ const StatRow = ({
         <p className="font-serif text-2xl md:text-[1.75rem] text-foreground leading-none tabular-nums">
           {display}
         </p>
-        <p className="text-[10px] tracking-[0.2em] uppercase text-muted-foreground/70 mt-2 leading-tight">
+        <p className="eyebrow opacity-70 mt-2">
           {item.label}
         </p>
       </div>
@@ -69,7 +69,7 @@ const StatRow = ({
     <div
       tabIndex={0}
       className={cn(
-        "group/stat cursor-default rounded-[6px] transition-[padding-left,background-color,border-color] duration-500 focus-visible:ring-2 focus-visible:ring-cedar focus-visible:ring-offset-2",
+        "group/stat cursor-default rounded-[2px] transition-[padding-left,background-color,border-color] duration-500 focus-visible:ring-2 focus-visible:ring-cedar focus-visible:ring-offset-2",
         variant === "card" && "py-3 pl-5 hover:pl-7 hover:bg-accent/[0.04]",
         variant === "footer" && "py-2",
       )}
@@ -80,12 +80,7 @@ const StatRow = ({
       }
     >
       {item.heading && (
-        <h3
-          className={cn(
-            "text-[10px] tracking-[0.25em] uppercase mb-3 font-medium",
-            onDark ? "text-cedar/80" : "text-muted-foreground",
-          )}
-        >
+        <h3 className={cn("eyebrow mb-3", onDark && "text-cedar/80")}>
           {item.heading}
         </h3>
       )}

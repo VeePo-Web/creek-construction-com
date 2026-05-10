@@ -43,7 +43,7 @@ const TrustChips = ({
             <Icon className="h-3 w-3 text-cedar/80" aria-hidden strokeWidth={1.6} />
             <span
               className={cn(
-                "text-[10px] tracking-[0.18em] uppercase font-light",
+                "eyebrow font-normal",
                 onDark ? "text-evergreen-foreground/70" : "text-muted-foreground",
               )}
             >
@@ -70,7 +70,7 @@ const TrustChips = ({
         <span key={label} role="listitem" className="flex items-center gap-3">
           {i > 0 && <span aria-hidden className={cn("hidden sm:inline-block w-px h-3", dividerColor)} />}
           <Icon className={cn("h-3 w-3 shrink-0", iconColor)} aria-hidden strokeWidth={1.6} />
-          <span className={cn("text-[10px] tracking-[0.22em] uppercase font-light", textColor)}>
+          <span className={cn("eyebrow font-normal", textColor)}>
             {label}
           </span>
         </span>
