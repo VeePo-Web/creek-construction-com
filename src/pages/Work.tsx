@@ -15,6 +15,7 @@ import { Hammer, Fence, Paintbrush, Home, Trees, type LucideIcon } from "lucide-
 import { useQuoteModal } from "@/components/quote/QuoteModalProvider";
 import { PROJECTS, formatStatus } from "@/data/projects";
 import { SECTION_PADDING, MAX_WIDTH } from "@/lib/spacing";
+import { HEADLINE } from "@/lib/typography";
 
 interface PlaceholderItem {
   title: string;
@@ -79,11 +80,11 @@ const Work = () => {
                       <header className="mb-6 pt-10 hairline flex flex-col items-start gap-2 md:flex-row md:items-baseline md:justify-between md:gap-8">
                         <h2
                           id={`project-${project.slug}-heading`}
-                          className="font-serif text-3xl md:text-4xl text-foreground"
+                          className={HEADLINE.section}
                         >
                           {project.title}
                         </h2>
-                        <p className="text-[10px] tracking-[0.22em] uppercase text-muted-foreground/85 tabular-nums shrink-0">
+                        <p className="eyebrow tabular-nums opacity-75 shrink-0">
                           {project.location} · {formatStatus(project.status)} · {project.year}
                         </p>
                       </header>

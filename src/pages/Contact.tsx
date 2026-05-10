@@ -66,7 +66,7 @@ const Contact = () => {
                 />
 
                 <aside
-                  className="mt-8 bg-secondary/40 border-l-[2px] border-l-cedar overflow-hidden"
+                  className="mt-8 border-l-[2px] border-l-cedar overflow-hidden"
                   aria-label="Direct contact details"
                 >
                   <a
@@ -77,7 +77,7 @@ const Contact = () => {
                       <Phone className="h-4 w-4 text-cedar" aria-hidden />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="text-[10px] tracking-[0.22em] uppercase text-muted-foreground/75">Call or Text · Reply in 24–48&nbsp;hours</p>
+                      <p className="eyebrow opacity-70">Call or Text</p>
                       <p className="font-serif text-lg text-foreground group-hover/row:text-cedar transition-colors duration-200 tabular-nums">
                         {CONTACT.phone}
                       </p>
@@ -94,8 +94,8 @@ const Contact = () => {
                       <Mail className="h-4 w-4 text-cedar" aria-hidden />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="text-[10px] tracking-[0.22em] uppercase text-muted-foreground/75">Email</p>
-                      <p className="text-foreground font-medium group-hover/row:text-cedar transition-colors duration-200 truncate">
+                      <p className="eyebrow opacity-70">Email</p>
+                      <p className="text-base text-foreground group-hover/row:text-cedar transition-colors duration-200 truncate">
                         {CONTACT.email}
                       </p>
                     </div>
@@ -108,8 +108,8 @@ const Contact = () => {
                       <MapPin className="h-4 w-4 text-cedar" aria-hidden />
                     </div>
                     <div className="flex-1">
-                      <p className="text-[10px] tracking-[0.22em] uppercase text-muted-foreground/75 mb-1">Service Areas</p>
-                      <p className="text-foreground font-medium">Calgary, Edmonton &amp; surrounding Alberta</p>
+                      <p className="eyebrow opacity-70 mb-1">Service Areas</p>
+                      <p className="text-base text-foreground">Calgary, Edmonton &amp; surrounding Alberta</p>
                       <p className="text-xs text-muted-foreground mt-1">
                         Including {CONTACT.cities.slice(0, 3).join(", ")} — and the towns in between.
                       </p>

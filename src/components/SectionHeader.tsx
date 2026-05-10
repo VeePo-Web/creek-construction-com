@@ -68,7 +68,7 @@ const SectionHeader = ({
         <Wrap delay={baseDelay}>
           <p className={`eyebrow mb-5 ${centered ? "text-center" : ""}`}>
             {showNumeral && (
-              <span className="text-cedar/55 tabular-nums mr-3">{numeral}</span>
+              <span className="tabular-nums mr-3 opacity-55">{numeral}</span>
             )}
             {label}
           </p>

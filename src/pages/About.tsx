@@ -59,7 +59,7 @@ const About = () => {
                 We don’t subcontract the build. The crew you meet at the quote is the crew on-site
                 doing the work.
               </p>
-              <p className="font-serif italic text-xl md:text-2xl text-foreground/70 text-balance pt-6">
+              <p className="font-serif italic text-xl md:text-2xl text-foreground/85 text-balance mt-6 pt-8 hairline">
                 “We don’t subcontract, and that decides everything else.”
               </p>
             </div>
@@ -113,7 +113,7 @@ const About = () => {
               {CONTACT.cities.map((city) => (
                 <span
                   key={city}
-                  className="text-[11px] tracking-[0.18em] uppercase text-muted-foreground border border-cedar/15 rounded-[2px] px-3 py-2.5 inline-flex items-center justify-center min-h-[44px] hover:text-foreground hover:border-cedar/30 transition-colors duration-300"
+                  className="eyebrow text-muted-foreground/75 border border-cedar/15 rounded-[2px] px-3 py-2.5 inline-flex items-center justify-center min-h-[44px] hover:text-foreground hover:border-cedar/30 transition-colors duration-300"
                 >
                   {city}
                 </span>
