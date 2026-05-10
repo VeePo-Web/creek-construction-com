@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { SERVICE_GROUPS, getItemsForGroup } from "@/config/services";
 import { useQuoteModal } from "@/components/quote/QuoteModalProvider";
 import { SECTION_PADDING, MAX_WIDTH } from "@/lib/spacing";
+import { HEADLINE } from "@/lib/typography";
 import { useReveal } from "@/hooks/useReveal";
 
 /**
@@ -29,7 +30,7 @@ const Services = () => {
             <div className="md:col-span-9">
               <h2
                 id="services-heading"
-                className="font-serif text-4xl sm:text-5xl md:text-6xl text-foreground leading-[1.02] tracking-[-0.035em] text-balance"
+                className={`${HEADLINE.section} leading-[1.02]`}
               >
                 Five categories.
                 <br />
@@ -57,7 +58,7 @@ const Services = () => {
                       aria-hidden
                       className="absolute left-0 top-2 bottom-2 w-0 bg-cedar transition-all duration-300 group-hover:w-[2px]"
                     />
-                    <span className="col-span-2 md:col-span-1 text-[11px] uppercase tracking-[0.22em] text-cedar/55 tabular-nums text-right md:text-left">
+                    <span className="col-span-2 md:col-span-1 eyebrow-base text-cedar/55 tabular-nums text-right md:text-left">
                       {n}
                     </span>
                     <h3 className="col-span-10 md:col-span-5 font-serif text-2xl md:text-3xl text-foreground tracking-[-0.02em] leading-[1.15]">
