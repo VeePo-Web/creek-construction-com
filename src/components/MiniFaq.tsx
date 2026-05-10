@@ -80,7 +80,7 @@ const MiniFaq = ({
   return (
     <section
       id="section-faq"
-      className={`${SECTION_PADDING.default} ${background === "secondary" ? "bg-secondary" : "bg-background"} ${topPad === "generous" ? "!pt-24 md:!pt-32 lg:!pt-36 xl:!pt-40" : ""}`}
+      className={`${SECTION_PADDING.default} ${background === "secondary" ? "bg-secondary" : "bg-background"} ${topPad === "generous" ? "!pt-24 md:!pt-32 lg:!pt-36 xl:!pt-40" : ""} min-h-[100svh] flex flex-col justify-center`}
       aria-labelledby={headingId}
     >
       <div className="container-page">{inner}</div>

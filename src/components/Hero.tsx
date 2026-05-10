@@ -15,8 +15,8 @@ const Hero = () => {
   return (
     <PageHero
       variant="architect-bleed"
-      breadcrumb={[{ label: "Calgary · Edmonton · Alberta" }]}
-      sectionLabel="Calgary · Edmonton · Alberta"
+      breadcrumb={[]}
+      sectionLabel=""
       title={["Excellence in", "the Work."]}
       subtitle="Outdoor work for Alberta homes — done by the same crew you meet."
       query={{

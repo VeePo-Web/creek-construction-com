@@ -85,7 +85,7 @@ const TestimonialStrip = ({
   return (
     <section
       id="section-testimonials"
-      className={`${SECTION_PADDING.default} ${background === "secondary" ? "bg-secondary" : "bg-background"} ${topRule ? "hairline" : ""}`}
+      className={`${SECTION_PADDING.default} ${background === "secondary" ? "bg-secondary" : "bg-background"} ${topRule ? "hairline" : ""} min-h-[100svh] flex flex-col justify-center`}
       aria-labelledby={headingId}
     >
       <div className="container-page">{inner}</div>

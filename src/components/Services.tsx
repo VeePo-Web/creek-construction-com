@@ -18,7 +18,7 @@ const Services = () => {
   return (
     <section
       id="section-services"
-      className={`${SECTION_PADDING.default} bg-background`}
+      className={`${SECTION_PADDING.default} bg-background min-h-[100svh] flex flex-col justify-center`}
       aria-labelledby="services-heading"
     >
       <div className="container-page">
@@ -73,15 +73,6 @@ const Services = () => {
                 </li>
               );
             })}
-            <li className="hairline">
-              <Link
-                to="/contact"
-                className="group flex items-center justify-between py-6 md:py-7 pl-3 md:pl-5 eyebrow opacity-70 hover:opacity-100 transition-opacity"
-              >
-                <span>Don’t see what you need? Ask anyway.</span>
-                <ArrowUpRight className="h-4 w-4 group-hover:text-cedar transition-colors" strokeWidth={1.5} aria-hidden />
-              </Link>
-            </li>
           </ul>
         </div>
       </div>

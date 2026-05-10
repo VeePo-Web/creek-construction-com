@@ -79,9 +79,6 @@ const About = () => {
               </figure>
             </div>
 
-            <p className="font-serif italic text-xl md:text-2xl text-foreground/85 text-balance text-center mt-12 pt-8 hairline max-w-[62ch] mx-auto">
-              “We don’t subcontract, and that decides everything else.”
-            </p>
           </div>
         </div>
       </section>
@@ -150,9 +147,6 @@ const About = () => {
                 </span>
               ))}
             </div>
-            <p className="text-xs text-muted-foreground/70 text-center max-w-[48ch] mx-auto mt-8">
-              Not on the list? Ask anyway — we’ll let you know if we can travel.
-            </p>
           </div>
         </div>
       </section>

@@ -5,7 +5,7 @@ import { BACKDROP, SCRIM, TEXT } from "@/lib/colors";
 import BreadcrumbTrail, { type BreadcrumbItem } from "@/components/ui/breadcrumb-trail";
 import BronzeRule from "@/components/ui/bronze-rule";
 import KineticHeadline, { type KineticSize } from "@/components/ui/kinetic-headline";
-import HeroProvenanceCard from "@/components/ui/hero-provenance-card";
+
 import MediaSlot from "@/components/media/MediaSlot";
 import HeroTriptych from "@/components/media/HeroTriptych";
 import { useApprovedMedia, useFirstApprovedMedia } from "@/hooks/useApprovedMedia";
@@ -176,7 +176,7 @@ const EvergreenTypographic = (props: EvergreenTypographicProps) => {
   return (
     <section
       className={cn(
-        "relative overflow-hidden text-evergreen-foreground min-h-[68vh] md:min-h-[78vh] flex items-end",
+        "relative overflow-hidden text-evergreen-foreground min-h-[100svh] flex items-end",
         props.className,
       )}
       aria-label={lines.join(" ")}
@@ -187,11 +187,6 @@ const EvergreenTypographic = (props: EvergreenTypographicProps) => {
         rhythm="equal"
         scrim="left"
         priority
-        fallbackCaptions={[
-          "Photographing this season",
-          "On the boards",
-          "Across Alberta",
-        ]}
       />
 
       {/* Spine — left vertical bronze hairline */}
@@ -224,16 +219,7 @@ const EvergreenTypographic = (props: EvergreenTypographicProps) => {
 
       <div className="container mx-auto px-5 sm:px-6 md:px-10 relative z-10 pt-28 md:pt-36 pb-16 md:pb-24 lg:pb-28">
         <div className="max-w-2xl">
-          {/* Breadcrumb intentionally omitted — HeaderBreadcrumb in the chrome
-              owns sub-page wayfinding (v3.1). The `breadcrumb` prop is still
-              accepted for back-compat but no longer renders here. */}
-
-          <BronzeRule
-            numeral={props.numeral}
-            label={props.sectionLabel}
-            variant="onDark"
-            className="mb-6 md:mb-9 lg:mb-10 hero-rule-draw"
-          />
+          {/* sectionLabel/eyebrow chip removed (Pass 52) — H1 carries the page. */}
 
           <KineticHeadline
             lines={lines}
@@ -306,24 +292,16 @@ const EditorialSplit = (props: EditorialSplitProps) => {
     <section
       id="section-hero"
       className={cn(
-        "relative min-h-[78vh] md:min-h-screen flex items-center overflow-hidden text-evergreen-foreground",
+        "relative min-h-[100svh] flex items-center overflow-hidden text-evergreen-foreground",
         props.className,
       )}
       aria-label={lines.join(" ")}
     >
-      {/* Photographic triptych backdrop — replaces the old solid evergreen.
-          leftWide scrim holds heavier black through 56% so the headline column
-          AND the floating provenance card both stay legible. */}
       <HeroTriptych
         queries={triptychQueries}
         rhythm="asymmetric"
         scrim="leftWide"
         priority
-        fallbackCaptions={[
-          "Decks · Calgary",
-          "Cedar · detail",
-          "Across Alberta",
-        ]}
       />
 
       <div className="container mx-auto px-5 sm:px-6 md:px-10 relative z-10 py-20 md:py-28 lg:py-32">
@@ -336,16 +314,8 @@ const EditorialSplit = (props: EditorialSplitProps) => {
         >
           {/* ─── Left column ─── */}
           <div className={hasMedia ? "lg:col-span-7 max-w-2xl" : ""}>
-            {/* Breadcrumb intentionally omitted — HeaderBreadcrumb in the chrome
-                owns wayfinding (v3.1). On Home there's no sub-page context, so
-                the eyebrow comes from BronzeRule's sectionLabel only. */}
+            {/* sectionLabel/eyebrow chip removed (Pass 52) — H1 carries the page. */}
 
-            <BronzeRule
-              numeral={props.numeral}
-              label={props.sectionLabel}
-              variant="onDark"
-              className="mb-6 hero-rule-draw"
-            />
 
             <KineticHeadline
               lines={lines}
@@ -400,21 +370,7 @@ const EditorialSplit = (props: EditorialSplitProps) => {
                   />
                 </div>
 
-                {props.provenance && (
-                  <div className="mt-6 lg:mt-0 lg:absolute lg:left-[-24px] lg:bottom-[-32px] lg:max-w-[340px]">
-                    <HeroProvenanceCard
-                      eyebrow={props.provenance.eyebrow}
-                      heading={props.provenance.heading}
-                      body={props.provenance.body}
-                      location={props.provenance.location ?? item?.alt?.split(" in ")[1]?.split(",")[0]}
-                      year={props.provenance.year}
-                      service={props.provenance.service ?? item?.service ?? undefined}
-                      delayMs={1500}
-                    >
-                      {props.provenance.children}
-                    </HeroProvenanceCard>
-                  </div>
-                )}
+                {/* HeroProvenanceCard removed (Pass 52). */}
               </div>
             </div>
           )}
@@ -443,17 +399,12 @@ const CinematicBleed = (props: CinematicBleedProps) => {
   // is the photo and it is what the user sees first).
   useHeroPreload(photo.item?.url, MEDIA_SIZES.HERO_FULL);
 
-  const captionLine = useMemo(() => {
-    if (!props.caption) return null;
-    const { service, location, year } = props.caption;
-    return [service, location, year ? String(year) : null].filter(Boolean).join(" · ");
-  }, [props.caption]);
+  // captionLine removed (Pass 52).
 
   return (
     <section
       className={cn(
-        "relative overflow-hidden flex items-end",
-        "min-h-[68vh] md:min-h-[78vh] lg:min-h-[720px] xl:min-h-[780px]",
+        "relative overflow-hidden flex items-end min-h-[100svh]",
         props.className,
       )}
       style={{
@@ -520,15 +471,7 @@ const CinematicBleed = (props: CinematicBleedProps) => {
       {/* Content */}
       <div className="container mx-auto max-w-[1440px] px-5 sm:px-6 md:px-10 relative z-10 pt-28 md:pt-36 pb-16 md:pb-24 lg:pb-28">
         <div className="max-w-3xl">
-          {/* Breadcrumb intentionally omitted — HeaderBreadcrumb in the
-              chrome owns sub-page wayfinding so the hero photo stays clean. */}
-
-          <BronzeRule
-            numeral={props.numeral}
-            label={props.sectionLabel}
-            variant="onDark"
-            className="mb-6 md:mb-9 lg:mb-10 hero-rule-draw"
-          />
+          {/* sectionLabel/eyebrow chip removed (Pass 52). */}
 
           <KineticHeadline
             lines={lines}
@@ -560,16 +503,7 @@ const CinematicBleed = (props: CinematicBleedProps) => {
             </div>
           )}
 
-          {captionLine && (
-            <div
-              className="mt-8 pt-5 border-t border-evergreen-foreground/10 hero-provenance-enter"
-              style={{ ["--kinetic-delay" as never]: "1700ms" }}
-            >
-              <p className="text-[10px] tracking-[0.25em] uppercase text-evergreen-foreground/60 tabular-nums">
-                {captionLine}
-              </p>
-            </div>
-          )}
+          {/* Bottom caption rail removed (Pass 52). */}
         </div>
       </div>
     </section>
@@ -597,7 +531,7 @@ const ServicePortrait = (props: ServicePortraitProps) => {
     <section
       className={cn(
         "relative overflow-hidden text-evergreen-foreground",
-        "min-h-[68vh] md:min-h-[640px] lg:min-h-[720px] xl:min-h-[780px] flex items-end",
+        "min-h-[100svh] flex items-end",
         props.className,
       )}
       aria-label={lines.join(" ")}
@@ -607,26 +541,11 @@ const ServicePortrait = (props: ServicePortraitProps) => {
         rhythm="equal"
         scrim="bottom"
         priority
-        fallbackCaptions={[
-          "Decks · Calgary",
-          "Sheds · Edmonton",
-          "Fences · Alberta",
-        ]}
       />
-
-      {/* Top scrim provided by HeroTriptych (SCRIM.topNav + SCRIM.mobileTop). */}
 
       <div className="container mx-auto max-w-[1440px] px-5 sm:px-6 md:px-10 relative z-10 pt-28 md:pt-36 pb-16 md:pb-24 lg:pb-28">
         <div className="max-w-3xl">
-          {/* Breadcrumb intentionally omitted — see CinematicBleed for the
-              same rationale. HeaderBreadcrumb owns sub-page wayfinding. */}
-
-          <BronzeRule
-            numeral={props.numeral}
-            label={props.sectionLabel}
-            variant="onDark"
-            className="mb-6 md:mb-9 lg:mb-10 hero-rule-draw"
-          />
+          {/* sectionLabel/eyebrow chip removed (Pass 52). */}
 
           <KineticHeadline
             lines={lines}
@@ -709,12 +628,6 @@ const CinematicLegacy = (props: CinematicLegacyProps) => {
       <div className="container mx-auto px-5 sm:px-6 md:px-10 relative z-10 pb-16">
         <div className="max-w-3xl">
           <BreadcrumbTrail items={props.breadcrumb} onDark className="mb-6" />
-          <BronzeRule
-            numeral={props.numeral ?? "I"}
-            label={props.sectionLabel}
-            variant="onDark"
-            className="mb-4"
-          />
           <KineticHeadline lines={lines} italic={props.italic} size="cinematic" onDark />
           {props.subtitle && (
             <p
@@ -773,23 +686,14 @@ const ArchitectBleed = (props: ArchitectBleedProps) => {
 
   useHeroPreload(imgSrc, MEDIA_SIZES.HERO_FULL);
 
-  const captionLine = useMemo(() => {
-    const c = props.caption ?? {};
-    const fallbackLocation = item?.alt?.split(" in ")[1]?.split(",")[0];
-    const service = c.service ?? item?.service ?? undefined;
-    const location = c.location ?? fallbackLocation;
-    const year = c.year ?? undefined;
-    return [service, location, year ? String(year) : null]
-      .filter(Boolean)
-      .join(" · ");
-  }, [props.caption, item]);
+  // captionLine removed (Pass 52) — no auto-derived "service · location" chip.
 
   return (
     <section
       id="section-hero"
       className={cn(
         "relative overflow-hidden flex flex-col justify-between",
-        "min-h-[78vh] sm:min-h-[84vh] md:min-h-[78vh] lg:min-h-[760px] xl:min-h-[820px] 2xl:min-h-[900px]",
+        "min-h-[100svh]",
         props.className,
       )}
       style={{ backgroundColor: inColor ? "hsl(28 16% 10%)" : "hsl(0 0% 4%)", contain: "layout style paint" }}
@@ -869,29 +773,7 @@ const ArchitectBleed = (props: ArchitectBleedProps) => {
         aria-hidden
       />
 
-      {/* ── Top: hairline + uppercase eyebrow ── */}
-      <div className="container mx-auto max-w-[1440px] px-5 sm:px-6 md:px-10 relative z-10 pt-20 sm:pt-24 md:pt-32">
-        <div
-          className="flex items-center gap-4 hero-provenance-enter"
-          style={{ ["--kinetic-delay" as never]: "200ms" }}
-        >
-          <span
-            aria-hidden
-            className="block h-px w-10 md:w-16"
-            style={{ backgroundColor: "hsl(0 0% 100% / 0.55)" }}
-          />
-          <span
-            className="text-[10px] md:text-[11px] uppercase tabular-nums"
-            style={{
-              color: "hsl(0 0% 100% / 0.82)",
-              letterSpacing: "0.24em",
-              fontFamily: "var(--font-sans, 'DM Sans', system-ui, sans-serif)",
-            }}
-          >
-            {props.sectionLabel}
-          </span>
-        </div>
-      </div>
+      {/* Top eyebrow row removed (Pass 52) — chrome owns wayfinding, H1 carries the page. */}
 
       {/* ── Middle: oversized light serif headline ── */}
       <div className="container mx-auto max-w-[1440px] px-5 sm:px-6 md:px-10 relative z-10 flex-1 flex items-center justify-start">
@@ -990,30 +872,7 @@ const ArchitectBleed = (props: ArchitectBleedProps) => {
             )}
           </div>
 
-          {captionLine && (
-            <div className="md:col-span-5 lg:col-span-5 text-right md:mt-2">
-              <div
-                className="inline-flex items-center gap-3 hero-provenance-enter"
-                style={{ ["--kinetic-delay" as never]: "1600ms" }}
-              >
-                <span
-                  aria-hidden
-                  className="block h-px w-8"
-                  style={{ backgroundColor: "hsl(0 0% 100% / 0.45)" }}
-                />
-                <span
-                  className="text-[10px] md:text-[11px] uppercase tabular-nums whitespace-nowrap"
-                  style={{
-                    color: "hsl(0 0% 100% / 0.7)",
-                    letterSpacing: "0.22em",
-                    fontFamily: "var(--font-sans, 'DM Sans', system-ui, sans-serif)",
-                  }}
-                >
-                  {captionLine}
-                </span>
-              </div>
-            </div>
-          )}
+          {/* Bottom-right captionLine rail removed (Pass 52). */}
         </div>
       </div>
     </section>

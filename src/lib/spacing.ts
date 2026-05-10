@@ -22,6 +22,23 @@
 // containers — see PageHero / Navigation.
 // ─────────────────────────────────────────────────────────────────────
 
+/**
+ * Per-section min-height — every editorial plate is sized to one
+ * small-viewport (svh excludes mobile browser chrome to prevent jumps).
+ * Pair with `SECTION_LAYOUT.centered` so content sits in the middle.
+ */
+export const SECTION_HEIGHT = {
+  /** Default for every plate — fills one viewport. */
+  fullScreen: "min-h-[100svh]",
+  /** Bleeds — read as a break, not a plate. */
+  bleed: "min-h-[68svh] md:min-h-[78svh]",
+} as const;
+
+export const SECTION_LAYOUT = {
+  /** Vertically center content in a SECTION_HEIGHT.fullScreen wrapper. */
+  centered: "flex flex-col justify-center",
+} as const;
+
 export const SECTION_PADDING = {
   /** Standard homepage section. */
   default: "py-20 sm:py-24 md:py-28 lg:py-32 xl:py-40",

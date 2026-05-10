@@ -158,11 +158,8 @@ const Services = () => {
                   aria-label="What we handle"
                   className="hairline pt-7 sm:pt-8 md:pt-10 px-1 sm:px-2 h-full"
                 >
-                  <div className="flex items-baseline justify-between gap-2 flex-wrap mb-8">
+                  <div className="mb-8">
                     <p className="eyebrow">WE HANDLE</p>
-                    <span className="eyebrow tabular-nums opacity-60">
-                      {String(WE_HANDLE.length).padStart(2, "0")} ITEMS
-                    </span>
                   </div>
                   <div className="space-y-2.5" role="list">
                     {WE_HANDLE.map((item, i) => (
@@ -182,11 +179,8 @@ const Services = () => {
                   aria-label="What you handle"
                   className="hairline pt-7 sm:pt-8 md:pt-10 px-1 sm:px-2 h-full"
                 >
-                  <div className="flex items-baseline justify-between gap-2 flex-wrap mb-8">
+                  <div className="mb-8">
                     <p className="eyebrow opacity-65">YOU HANDLE</p>
-                    <span className="eyebrow tabular-nums opacity-60">
-                      {String(YOU_HANDLE.length).padStart(2, "0")} ITEMS
-                    </span>
                   </div>
                   <div className="space-y-2.5" role="list">
                     {YOU_HANDLE.map((item, i) => (
