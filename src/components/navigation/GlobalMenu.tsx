@@ -178,7 +178,7 @@ const GlobalMenu = ({ isOpen, onClose, id = "global-menu" }: GlobalMenuProps) =>
             onClick={onClose}
             aria-label="Close menu"
             className={cn(
-              "relative inline-flex items-center gap-2 h-12 px-3 rounded-sm border border-cedar/12",
+              "relative inline-flex items-center gap-2 h-12 px-3 rounded-[2px] border border-cedar/12",
               "hover:bg-cedar/10 hover:border-cedar/40 transition-colors duration-300",
               "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cedar focus-visible:ring-offset-2",
             )}
@@ -234,7 +234,7 @@ const GlobalMenu = ({ isOpen, onClose, id = "global-menu" }: GlobalMenuProps) =>
                         {isCurrent && (
                           <span
                             aria-hidden
-                            className="text-[10px] tracking-[0.25em] uppercase text-cedar/80 font-medium translate-y-[-0.2em]"
+                            className="text-[10px] tracking-[0.22em] uppercase text-cedar/80 font-medium translate-y-[-0.2em]"
                           >
                             · current
                           </span>
@@ -254,7 +254,7 @@ const GlobalMenu = ({ isOpen, onClose, id = "global-menu" }: GlobalMenuProps) =>
                 className="hero-provenance-enter"
                 style={{ ["--kinetic-delay" as never]: delay(PRIMARY_ROUTES.length + 1) }}
               >
-                <p className="text-[10px] tracking-[0.25em] uppercase text-cedar/80 font-medium mb-4">
+                <p className="text-[10px] tracking-[0.22em] uppercase text-cedar/80 font-medium mb-4">
                   Quote a service
                 </p>
                 <ul className="flex flex-wrap gap-2">
@@ -324,7 +324,7 @@ const GlobalMenu = ({ isOpen, onClose, id = "global-menu" }: GlobalMenuProps) =>
                           background: "linear-gradient(90deg, hsl(var(--cedar) / 0.7), transparent)",
                         }}
                       />
-                      <p className="absolute bottom-6 left-6 right-6 text-[10px] tracking-[0.25em] uppercase text-cedar/80 font-medium">
+                      <p className="absolute bottom-6 left-6 right-6 text-[10px] tracking-[0.22em] uppercase text-cedar/80 font-medium">
                         Field photography updates each season — request a quote and we’ll send our latest project deck.
                       </p>
                     </div>
@@ -350,7 +350,7 @@ const GlobalMenu = ({ isOpen, onClose, id = "global-menu" }: GlobalMenuProps) =>
                 className="hero-provenance-enter"
                 style={{ ["--kinetic-delay" as never]: delay(4) }}
               >
-                <p className="text-[10px] tracking-[0.25em] uppercase text-cedar/80 font-medium mb-4">
+                <p className="text-[10px] tracking-[0.22em] uppercase text-cedar/80 font-medium mb-4">
                   Where we build
                 </p>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
@@ -372,7 +372,7 @@ const GlobalMenu = ({ isOpen, onClose, id = "global-menu" }: GlobalMenuProps) =>
                             >
                               <span>{city}</span>
                               {isHomeBase && (
-                                <span className="text-[9px] tracking-[0.22em] uppercase text-cedar/70 font-medium">
+                                <span className="text-[10px] tracking-[0.22em] uppercase text-cedar/70 font-medium">
                                   Home base
                                 </span>
                               )}
@@ -410,7 +410,7 @@ const GlobalMenu = ({ isOpen, onClose, id = "global-menu" }: GlobalMenuProps) =>
         >
           <div className="max-w-7xl mx-auto px-6 md:px-12 lg:px-20 pt-5 pb-5">
             <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-              <div className="flex items-center gap-2 text-[11px] tracking-[0.18em] uppercase text-muted-foreground">
+              <div className="flex items-center gap-2 text-[10px] tracking-[0.22em] uppercase font-medium text-muted-foreground">
                 <ShieldCheck className="h-4 w-4 text-cedar shrink-0" aria-hidden />
                 <span>{TRUST_LINE}</span>
               </div>
@@ -421,7 +421,7 @@ const GlobalMenu = ({ isOpen, onClose, id = "global-menu" }: GlobalMenuProps) =>
                   href={`tel:${CONTACT.phoneTel}`}
                   onClick={onClose}
                   className={cn(
-                    "inline-flex items-center justify-center gap-2 min-h-[44px] px-3 rounded-sm",
+                    "inline-flex items-center justify-center gap-2 min-h-[44px] px-3 rounded-[2px]",
                     "border border-cedar/12 hover:border-cedar/40 hover:bg-cedar/5",
                     "text-sm text-foreground/85 hover:text-cedar transition-colors duration-300",
                     "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cedar focus-visible:ring-offset-2",

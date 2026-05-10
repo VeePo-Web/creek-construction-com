@@ -241,7 +241,7 @@ const QuoteFormInline = ({
               }
               adornment={
                 phoneValid ? (
-                  <span className="inline-flex items-center gap-1 text-[10px] tracking-[0.18em] uppercase text-cedar">
+                  <span className="inline-flex items-center gap-1 eyebrow text-cedar">
                     <Check className="h-3 w-3" aria-hidden /> Ready
                   </span>
                 ) : null
@@ -316,14 +316,14 @@ const QuoteFormInline = ({
           <div>
             <div className="mb-3">
               <BronzeRule width="short" label="WHAT DO YOU NEED?" variant="accent" />
-              <p className="mt-1 text-[11px] text-muted-foreground/70">— pick any</p>
+              <p className="mt-1 text-[10px] text-muted-foreground/70 italic">— pick any</p>
             </div>
             <div className="space-y-3">
               {SERVICE_GROUPS.map((group) => {
                 const items = getItemsForGroup(group.id);
                 return (
                   <div key={group.id}>
-                    <p className="text-[10px] tracking-[0.22em] uppercase text-cedar/70 mb-1.5">
+                    <p className="eyebrow opacity-90 mb-1.5">
                       {group.title}
                     </p>
                     <div className="flex flex-wrap gap-1.5">
@@ -335,7 +335,7 @@ const QuoteFormInline = ({
                             type="button"
                             onClick={() => toggleService(s.id)}
                             aria-pressed={isSelected}
-                            className={`inline-flex items-center gap-1.5 px-3 py-2 rounded-[4px] border text-xs transition-colors min-h-[40px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cedar focus-visible:ring-offset-1 ${
+                            className={`inline-flex items-center gap-1.5 px-3 py-2 rounded-[2px] border text-xs transition-colors min-h-[40px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cedar focus-visible:ring-offset-1 ${
                               isSelected
                                 ? "border-cedar/60 bg-cedar/[0.06] text-foreground shadow-[inset_0_-2px_0_hsl(var(--cedar))]"
                                 : "border-border text-muted-foreground hover:border-cedar/50 hover:text-foreground hover:bg-cedar/[0.02]"
@@ -355,11 +355,11 @@ const QuoteFormInline = ({
 
           {!compact && (
             <div>
-              <p className="text-[11px] tracking-[0.2em] uppercase font-medium text-muted-foreground mb-2">
+              <p className="eyebrow text-muted-foreground mb-2">
                 When?
               </p>
               <div
-                className="grid grid-cols-3 rounded-[4px] border border-border overflow-hidden divide-x divide-border/60"
+                className="grid grid-cols-3 rounded-[2px] border border-border overflow-hidden divide-x divide-border/60"
                 role="radiogroup"
               >
                 {TIMELINE_OPTIONS.map((t) => {
@@ -393,7 +393,7 @@ const QuoteFormInline = ({
               rows={2}
               maxLength={2000}
               placeholder="e.g. 14×20 cedar deck, replacing a worn pressure-treated one."
-              className="w-full rounded-[4px] border border-border bg-background px-3 py-2.5 text-sm focus:outline-none focus:border-cedar focus:ring-1 focus:ring-cedar/30 transition-colors resize-none"
+              className="w-full rounded-[2px] border border-border bg-background px-3 py-2.5 text-sm focus:outline-none focus:border-cedar focus:ring-1 focus:ring-cedar/30 transition-colors resize-none"
             />
           </Field>
         </div>
@@ -401,7 +401,7 @@ const QuoteFormInline = ({
 
       {/* Trust micro-strip + CTA */}
       <div className="hairline">
-        <div className="hairline px-6 md:px-8 py-2 flex items-center justify-center gap-4 text-[10px] tracking-[0.18em] uppercase text-muted-foreground flex-wrap">
+        <div className="hairline px-6 md:px-8 py-2 flex items-center justify-center gap-4 eyebrow text-muted-foreground flex-wrap">
           <span className="inline-flex items-center gap-1.5">
             <Star className="h-3 w-3 fill-cedar text-cedar" aria-hidden /> Verified
           </span>
@@ -421,7 +421,7 @@ const QuoteFormInline = ({
             disabled={!canSubmit}
             aria-label={ctaLabel}
             data-quote-cta
-            className="w-full inline-flex items-center justify-center gap-2 bg-cedar text-cedar-foreground px-6 py-3.5 rounded-[2px] text-[12px] tracking-[0.22em] uppercase font-medium hover:bg-cedar-hover disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-300 min-h-[52px]"
+            className="w-full inline-flex items-center justify-center gap-2 bg-cedar text-cedar-foreground px-6 py-3.5 rounded-[2px] text-[11px] tracking-[0.22em] uppercase font-medium hover:bg-cedar-hover disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-300 min-h-[52px]"
           >
             {submitting ? (
               <>
@@ -461,7 +461,7 @@ const Field = ({
     <div className="flex items-center justify-between mb-1.5 min-h-[16px]">
       <label
         htmlFor={htmlFor}
-        className="block text-[11px] tracking-[0.18em] uppercase font-medium text-muted-foreground"
+        className="block text-[10px] tracking-[0.22em] uppercase font-medium text-muted-foreground"
       >
         {label}
         {required && <span className="text-cedar ml-1">*</span>}
@@ -498,7 +498,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
       onChange={(e) => onChange(e.target.value)}
       aria-invalid={invalid || undefined}
       {...rest}
-      className={`w-full rounded-[4px] border bg-background px-3 py-2.5 text-sm focus:outline-none focus:ring-1 transition-colors min-h-[44px] ${
+      className={`w-full rounded-[2px] border bg-background px-3 py-2.5 text-sm focus:outline-none focus:ring-1 transition-colors min-h-[44px] ${
         invalid
           ? "border-destructive/60 focus:border-destructive focus:ring-destructive/30"
           : "border-border focus:border-cedar focus:ring-cedar/30"

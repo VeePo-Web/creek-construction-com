@@ -1,66 +1,96 @@
-# Pass 40 — Navigation Lockup Typographic Standardization
+# Pass 41 — Quote Form Inline + GlobalMenu Lockup Standardization
 
-The chrome (top header + section rails + breadcrumb chip + mobile sub-nav + minimal nav) is the only remaining surface where eyebrow-style labels still ship in **four different tracking values**: 0.18em on the desktop Quote CTA + phone link, 0.20em on the compact rail and mobile sub-rail, 0.22em on most labels, 0.24em on the centered editorial rail. On a sweeping eye-test the chrome reads "almost-but-not-quite uniform" — and that is the precise visual nick that separates a site that *feels* design-system-driven from one that *is*.
+The two highest-traffic interactive surfaces still ship in legacy tracking grammar: **QuoteFormInline** (the Contact-page conversion engine — 0.18em / 0.20em / 0.22em mixed across labels, chips, trust strip, CTA) and **GlobalMenu** (fullscreen menu — 0.25em on every cedar caption, 0.22em on a few, 4 different rounded-radius values). Pass 40 closed the chrome at 10px/0.22em; this pass extends that lockup into the conversion form and the menu so a user moving from header → menu → form sees a single consistent tracking density everywhere they look.
 
-This pass collapses every nav label to the single canonical pair already proven on cream surfaces and shipping in `BUTTON.primary.base`: **10px uppercase, letter-spacing 0.22em, font-medium**. Phone link and Quote CTA both already have the right base — they just need their tracking overrides removed. Section rails, breadcrumb chip, mobile sub-nav, and MenuTrigger label all collapse to the same numbers.
-
-Out of scope: GlobalMenu and QuoteModal (over-photo / fullscreen surfaces — separate pass).
+QuoteModal stays out of scope (separate pass — it has form parity logic with QuoteFormInline that needs aligned changes, deserves its own focused sweep).
 
 ## Principles
-- Nav labels: `text-[10px] tracking-[0.22em] uppercase font-medium`. No exceptions on the chrome.
-- Phone link is the one exception in *size only* — it stays `text-[11px]` to keep tabular-nums readable, but tracking drops to 0.22em.
-- Active-state cedar underline animation is the visual thread; the type itself never changes weight or tracking on hover/active.
+- All eyebrow labels: `text-[10px] tracking-[0.22em] uppercase font-medium` (cedar/65 default via `.eyebrow`, or explicit `text-cedar/{55|70|80}` / `text-foreground/{45|65}` when a different mute level is needed).
+- All form-control corners: `rounded-[2px]`. No `rounded-[4px]`, no `rounded-sm` (which is 2px in default Tailwind v3 but reads as a different token in code review).
+- Field labels stay at 10px (was bouncing between 10px and 11px). The "*" required marker stays cedar; the "(optional)" tag drops to text-[9px] and stays normal-case (already correct).
+- Trust strips below CTAs: 10px / 0.22em (was 0.18em).
 
 ---
 
-## A. Navigation top bar (`src/components/Navigation.tsx`)
+## A. QuoteFormInline (`src/components/quote/QuoteFormInline.tsx`)
 
-- L67 `desktopCta` — drop the bespoke `tracking-[0.18em]`. The `BUTTON.primary.base` token already ships 0.22em; remove the override, becomes:
-  ```ts
-  "px-4 py-2.5 text-[11px] gap-2"
-  ```
-- L125 desktop phone link — `text-[11px] tracking-[0.18em] uppercase text-foreground/75 …` → `text-[11px] tracking-[0.22em] uppercase font-medium text-foreground/75 …`. Adds `font-medium` so the phone matches the CTA weight (currently reads 100 units lighter than the CTA next to it).
+### A.1 Phone-ready adornment (L244)
+`text-[10px] tracking-[0.18em] uppercase text-cedar` → `eyebrow text-cedar` (the cedar override stays — this is a "go" badge, not a quiet caption).
 
-## B. SectionRail centered editorial variant (`src/components/navigation/SectionRail.tsx` L146)
+### A.2 Service group titles (L326)
+`text-[10px] tracking-[0.22em] uppercase text-cedar/70 mb-1.5` → `eyebrow opacity-90 mb-1.5` (the cedar/70 maps cleanly onto the cedar/65 default at opacity-100; opacity-90 keeps the slightly stronger reading without naming a color).
 
-`text-[10px] tracking-[0.24em] uppercase font-medium` → `text-[10px] tracking-[0.22em] uppercase font-medium`.
+### A.3 Service chips (L338)
+`rounded-[4px]` → `rounded-[2px]`. (The selected chip's `shadow-[inset_0_-2px_0_hsl(var(--cedar))]` already provides the brand mark — the chip corners read cleaner at 2px against the form's 2px shell.)
 
-(The 0.24em was meant to "feel more editorial" against the cream chrome, but it visually fights the BUTTON tracking on the right cluster. Unifying to 0.22em is the single biggest legibility win on desktop.)
+### A.4 Timeline label (L358)
+`text-[11px] tracking-[0.2em] uppercase font-medium text-muted-foreground` → `eyebrow text-muted-foreground`. Unifies size 11 → 10 with the rest of the form's labels.
 
-## C. SectionRail n=2 sub-bar (`src/components/navigation/SectionRail.tsx` L77, L103)
+### A.5 Timeline radiogroup container (L362)
+`rounded-[4px]` → `rounded-[2px]`.
 
-- L77 "On this page" caption: already 0.22em — add `font-medium` for consistency with the other rail labels (currently bare).
-- L103 sub-bar items: already 0.22em — add `font-medium`.
+### A.6 Project-details textarea (L396)
+`rounded-[4px]` → `rounded-[2px]`.
 
-## D. SectionRailCompact (tablet) (`src/components/navigation/SectionRailCompact.tsx` L66, L87)
+### A.7 Trust micro-strip (L404)
+`text-[10px] tracking-[0.18em] uppercase text-muted-foreground` → `eyebrow text-muted-foreground`. The strip currently reads slightly tighter than its CTA — fixing this aligns it.
 
-- L66 active item: `text-[10px] tracking-[0.2em] uppercase font-medium` → `text-[10px] tracking-[0.22em] uppercase font-medium`.
-- L87 overflow trigger: `text-[10px] tracking-[0.2em] uppercase font-normal` → `text-[10px] tracking-[0.22em] uppercase font-medium` (drops the lone `font-normal` that makes the overflow chip look orphaned).
+### A.8 Submit CTA (L424)
+`text-[12px] tracking-[0.22em]` → `text-[11px] tracking-[0.22em]` (keeps tracking, drops 12 → 11 to match every other CTA on the site, including `BUTTON.primary.base` which is the canonical 11px). Min-height stays 52px for thumb tap.
 
-## E. HeaderBreadcrumb chip (`src/components/navigation/HeaderBreadcrumb.tsx` L30)
+### A.9 Field label (L464)
+`text-[11px] tracking-[0.18em] uppercase font-medium text-muted-foreground` → `text-[10px] tracking-[0.22em] uppercase font-medium text-muted-foreground` (matches the form's own service-group titles in §A.2).
 
-Already 0.22em / font-medium — verify and confirm no override needed. (Listed for completeness; expected to be a no-op.)
+### A.10 Optional marker (L469)
+Already correct (text-[10px] normal-case tracking-normal). No-op.
 
-## F. MobileSubNav (`src/components/navigation/MobileSubNav.tsx` L77, L119)
+### A.11 Input shell (L501)
+`rounded-[4px]` → `rounded-[2px]`. (Field <Input/> shared shell.)
 
-- L77 caption: already 0.22em / font-medium — no-op.
-- L119 nav items: `text-[10px] tracking-[0.2em] uppercase font-medium` → `text-[10px] tracking-[0.22em] uppercase font-medium`.
+### A.12 "pick any" inline note (L319)
+Currently `text-[11px] text-muted-foreground/70` (lowercase, italic feel). Drop to `text-[10px] text-muted-foreground/70 italic` for a cleaner subordinate note next to the BronzeRule label. (Italic is reserved for inline asides per the design system.)
 
-## G. MenuTrigger label (`src/components/navigation/MenuTrigger.tsx` L83)
+## B. GlobalMenu (`src/components/navigation/GlobalMenu.tsx`)
 
-Already 0.22em / font-medium — no-op. Listed for completeness.
+### B.1 Close button (L181, L190)
+- L181 `rounded-sm` → `rounded-[2px]` (consistency tag).
+- L190 already correct (`text-[10px] tracking-[0.22em] uppercase font-medium`). No-op.
 
-## H. NavigationMinimal phone label (`src/components/navigation/NavigationMinimal.tsx` L42, L45)
+### B.2 "current" marker on active route (L237)
+`text-[10px] tracking-[0.25em] uppercase text-cedar/80 font-medium` → `text-[10px] tracking-[0.22em] uppercase text-cedar/80 font-medium`.
 
-- L42 phone number: `text-[13px] md:text-sm font-medium text-foreground tracking-tight` — keep (this is the *value*, not a label).
-- L45 caption "CALL OR TEXT": `text-[9px] tracking-[0.22em] uppercase text-muted-foreground/70 mt-1` → bump to `text-[10px] tracking-[0.22em] uppercase font-medium text-muted-foreground/70 mt-1`. The 9px size is the only sub-10px tracked label in the project and it hairlines at 1.25× DPR.
+### B.3 "Quote a service" caption (L257)
+`tracking-[0.25em]` → `tracking-[0.22em]`.
 
-## I. Verification
-1. Header at 1440 / 1280 / 1024 / 768 / 390: every uppercase label in the chrome (CTA, phone, section rail, breadcrumb, mobile sub-rail, MENU) renders at exactly 0.22em — measured by inspecting `letter-spacing` in DevTools across all elements.
-2. Active section in the centered rail still gets the cedar underline; underline width unchanged.
-3. CTA + phone visual weight match (font-medium on both); no more "the phone reads lighter" effect.
-4. Contact-page minimal nav phone caption renders at 10px (not 9px) — crisp at 1.25× DPR.
-5. Sub-page wayfinding compact rail (tablet) and mobile sub-nav both read at the same tracking as the desktop rail — proven by switching viewports in the preview without any visual jump in tracking density.
+### B.4 Hero photo fallback caption (L327)
+`tracking-[0.25em]` → `tracking-[0.22em]`.
+
+### B.5 Hero provenance line (L342)
+Already at 0.22em — verify no-op.
+
+### B.6 "Where we build" caption (L353)
+`tracking-[0.25em]` → `tracking-[0.22em]`.
+
+### B.7 Metro group labels (L359)
+Already at 0.22em — verify no-op.
+
+### B.8 "Home base" inline tag (L375)
+`text-[9px] tracking-[0.22em]` → `text-[10px] tracking-[0.22em]` (drops the only 9px label in the menu — hairlines at 1.25× DPR like the NavigationMinimal phone caption did before Pass 40).
+
+### B.9 Bottom trust line (L413)
+`text-[11px] tracking-[0.18em] uppercase text-muted-foreground` → `text-[10px] tracking-[0.22em] uppercase font-medium text-muted-foreground` (matches every other label in the menu).
+
+### B.10 Phone link in bottom bar (L424)
+`rounded-sm` → `rounded-[2px]`. The `<span className="tracking-[0.06em]">{CONTACT.phone}</span>` at L432 stays — that's the phone-number tracking, not a label.
+
+## C. Verification
+1. `/contact` form: every label, chip, timeline button, trust strip, and CTA reads at 0.22em — measured by `letter-spacing` in DevTools across 10+ elements.
+2. All form inputs and chip buttons render at 2px corners (sweep DevTools — no `rounded-[4px]` or `rounded-sm` left in the form).
+3. Open GlobalMenu (☰) on `/`: every cedar caption ("Quote a service", "Where we build", "current", "Home base", trust line, fallback caption) reads at 0.22em.
+4. "Home base" tag renders crisp at 10px (was 9px hairline).
+5. Bottom-bar phone pill in the menu has the same 2px corners as the close button at the top.
+6. Tab through the form on Contact: focus rings still 2px cedar; field labels haven't visually moved (size shift is 1px so layout is stable).
+7. 390 / 768 / 928 (current) / 1440 sweep on `/contact` and on `/` with menu open — no overflow, no layout drift.
 
 ## Files to touch
-`src/components/Navigation.tsx`, `src/components/navigation/SectionRail.tsx`, `src/components/navigation/SectionRailCompact.tsx`, `src/components/navigation/MobileSubNav.tsx`, `src/components/navigation/NavigationMinimal.tsx`.
+`src/components/quote/QuoteFormInline.tsx`, `src/components/navigation/GlobalMenu.tsx`.
