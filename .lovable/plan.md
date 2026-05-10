@@ -1,72 +1,76 @@
-# Pass 36 — Editorial Calm: Quiet the Section Headers, Standardize Radii
+# Pass 37 — Cross-Component Consistency: Eyebrow Grammar, Row Pattern, Closer Calm
 
-Pass 35 flattened the buttons. The next-loudest element on every sub-page is the **section header rhythm**: every `<SectionHeader>` still ships a 40px cedar bar (`BronzeRule`) immediately before the eyebrow label, then an italic-serif subheading. On Apple/Fly4Me sub-pages, the eyebrow is the lightest possible whisper — never a decorative rule, never italic. Pass 36 quiets the sub-page rhythm to match the homepage (which already uses the lightweight `.eyebrow` utility), then sweeps remaining `rounded-[6px]` interactive surfaces into the canonical 2px corner.
+Pass 36 quieted the section-header rhythm. With every `<SectionHeader>` now whispering a single `.eyebrow`, the next visible inconsistencies are at the **component-grammar layer**: interactive rows behave differently on Services vs About vs the homepage; eyebrows are hand-rolled with bespoke tracking values in the Footer and Services responsibility matrix; and the QuoteCloserCard headline currently outshouts the hero. Pass 37 enforces a single grammar across these surfaces.
 
 ## Principles
-1. **The eyebrow is the rule.** A bronze bar before every label competes with the headline. The label itself, sized 11px / 0.22em, *is* the divider.
-2. **Subheadings are sans, not italic-serif.** Italic-serif on every section reads like a magazine pull-quote — overused, it loses its weight. Reserve italic-serif for *one* genuine pull-quote per page (About story, Footer tagline, BrandStatement).
-3. **One radius for interactive chrome:** `rounded-[2px]`. shadcn primitives (Dialog, Select, Card) keep their `rounded-md` — those are accessibility-tuned and live below the visual surface.
-4. **PageHero keeps BronzeRule.** Over photography, the bar provides anchoring. Light-surface section headers don't need it.
+1. **One row pattern across the site.** Every interactive content row uses: `border-b border-cedar/12` divider, hidden 2px cedar left-bar that slides in on hover, no row background fill on hover, optional right chevron that nudges 4px on hover. About already follows this. Homepage Services already follows this. Services page catalogue does not — it still hovers a cedar tint and rounds to 4px.
+2. **One eyebrow utility, applied everywhere.** Every uppercase tracking-[0.22em] label uses the `.eyebrow` utility — no more hand-rolled `text-[10px/11px] tracking-[0.18em/0.20em/0.22em] uppercase text-cedar/55|70|80` strings. Counters use `.eyebrow tabular-nums`. The deprecated `EYEBROW.*` token strings continue to live for legacy components but are not introduced anywhere new.
+3. **The closer never out-shouts the hero.** `QuoteCloserCard` sized at 56px outpaints the hero on shorter pages (Services, About). Cap at 48px / `HEADLINE.section` token.
+4. **Captions don't duplicate themselves.** When a MediaSlot already prints a fallback caption, the section that wraps it does not re-print the same string below.
 
 ---
 
-## A. SectionHeader — drop the bar, drop the italic (`src/components/SectionHeader.tsx`)
+## A. Services page — catalogue rows match the canonical pattern (`src/pages/Services.tsx`)
 
-### A1. Replace BronzeRule with `.eyebrow`
-- Remove the `<BronzeRule numeral=… label=… />` block (L68–77).
-- Replace with: `<p className={`eyebrow ${centered ? "text-center" : ""} mb-5`}>{label}</p>`.
-- The numeral support drops with this change. (Currently unused on production pages — every callsite passes `label` only.)
-- Drop the `BronzeRule` import.
+Replace the catalogue button (L95–L110) with the canonical row grammar:
+- Drop `border-b border-cedar/8` per-row → group container gets a `hairline` top, rows divided by `border-b border-cedar/12`.
+- Drop `hover:bg-cedar/[0.035] rounded-[4px] px-3 sm:px-4 -mx-3 sm:-mx-4` (negative-bleed background fill — competes with the .hairline).
+- Add hidden left-bar marker: `<span aria-hidden className="absolute left-0 top-3 bottom-3 w-0 bg-cedar transition-all duration-300 group-hover:w-[2px]" />`.
+- Add right chevron on md+: `<ArrowUpRight className="hidden sm:block h-4 w-4 text-cedar/45 group-hover:text-cedar transition-colors opacity-0 group-hover:opacity-100" />`.
+- Wrap the row in `relative pl-3 sm:pl-4` so the marker positions cleanly.
+- Title color stays `text-foreground` (drop `group-hover:text-cedar` so the hover signal lives in the bar + chevron, not the type).
+- Group heading L85–L90 uses bespoke sizing → use `HEADLINE.sub` token + keep the `01/02/03…` eyebrow numeral inline.
 
-### A2. Subheading: sans, not italic-serif
-- L85: `text-subhead text-foreground/60 italic font-serif mb-8 text-balance max-w-[44ch]` → `text-base md:text-lg text-muted-foreground mb-6 text-pretty max-w-[56ch]`.
-- Wider max-width (44ch → 56ch) keeps "Photography in progress — click any category to request a quote." on one line on `/work` desktop.
+## B. Services page — responsibility matrix eyebrows (`src/pages/Services.tsx` L142–L169)
+- L142 `text-minimal text-cedar` → `<p className="eyebrow">WE HANDLE</p>` (cedar is already the eyebrow color).
+- L166 `text-minimal text-muted-foreground` → `<p className="eyebrow opacity-65">YOU HANDLE</p>` (use opacity to dim against the same eyebrow stamp instead of a different color token).
+- L143 + L167 right-side counters: bespoke `text-[10px] tracking-[0.2em]` → `<span className="eyebrow tabular-nums opacity-60">{N} ITEMS</span>`.
 
-### A3. Counter badge variant
-- The `showBadge` block (L91–95) uses `BronzeRule` too. Since A1 removes the import: rewrite as a flat eyebrow row: `<p className="eyebrow mt-2">{badge}</p>`. (Badge prop is currently used on a single hero card; verify visual.)
+## C. Footer — switch to `.eyebrow` utility (`src/components/Footer.tsx`)
+- L50, L76 column titles: bespoke `text-[11px] tracking-[0.22em] uppercase text-cedar/70` → `<p className="eyebrow mb-4 text-center lg:text-left">…</p>`.
+- L101 © line: bespoke `text-[11px] tracking-[0.18em] uppercase text-evergreen-foreground/55` → `eyebrow opacity-55` (keeps the cedar tint consistent across the page bottom; `0.18em` was the only stray tracking value in the file). Adjust spacing: `mt-14 pt-6` → `mt-16 pt-8` for breathing room.
+- L40 italic-serif tagline: keep — this is one of the protected pull-quote carve-outs.
 
-### A4. Heading bottom margin
-- L80: `mb-4 [&:last-child]:mb-8` → `mb-3 [&:last-child]:mb-0`. Pages already control vertical rhythm via `mt-X` on the next block; the global `mb-8` was double-spacing.
+## D. TestimonialStrip — collapse author + meta into one eyebrow row (`src/components/TestimonialStrip.tsx`)
+- L62 quote class: switch to `${HEADLINE.card} text-foreground/90 leading-snug flex-1` and import HEADLINE — keeps card-sized serif consistent across the site.
+- L65–L68 author/meta: collapse to a single line with bullet:
+  ```tsx
+  <div className="mt-6 hairline pt-4 flex flex-wrap items-baseline gap-x-2 gap-y-1">
+    <p className="text-sm text-foreground">{t.firstName}</p>
+    <span className="eyebrow opacity-50">·</span>
+    <p className="eyebrow">{t.city} · {t.service}</p>
+  </div>
+  ```
 
-## B. About page polish (`src/pages/About.tsx`)
+## E. QuoteCloserCard — cap headline + tighten chrome (`src/components/QuoteCloserCard.tsx`)
+- L31: `eyebrow text-cedar/80` → `eyebrow` (eyebrow utility already lands a cedar tone — `/80` was double-tinting on the dark evergreen plate; if contrast suffers, use `eyebrow text-cedar` instead).
+- L32 headline: replace bespoke `text-3xl sm:text-4xl md:text-[40px] lg:text-5xl xl:text-[56px] leading-[1.1] tracking-[-0.02em]` with: `font-serif text-3xl md:text-4xl lg:text-5xl leading-[1.1] tracking-[-0.022em]` (matches `HEADLINE.section` tokens, never larger than the hero).
+- L41 trust line: `text-[11px] tracking-[0.22em] uppercase text-evergreen-foreground/55` → `eyebrow opacity-55` (shares the global eyebrow stamp).
 
-- **L86 process row:** drop `hover:bg-cedar/[0.025]` (Apple rows just slide the indicator — no fill flicker on hover). Keep the left-bar marker.
-- **L89 numeral column:** `w-9` → `w-7`, `mt-1` → `mt-1.5`. Tighter index column matches Services row grammar.
-- **L116 city chips:** `rounded-[4px]` → `rounded-[2px]`; `border-cedar/12` → `border-cedar/15`; tighten `gap-2` → `gap-1.5` so the grid reads as a single calm field.
-- **L62 pull-quote:** keep italic-serif (this is the *one* real pull-quote on the page, now that SectionHeader subheads have shed their italic — the contrast is restored).
+## F. BrandStatement — solid foreground + calmer dots (`src/components/BrandStatement.tsx`)
+- L27: `text-foreground/90` → `text-foreground`. Reduce noise: tonal opacity in this size implies "sub-headline" — but this is the philosophy plate, the calmest text on the page deserves full ink.
+- L29 + L31 middle dots: `text-cedar/55` → `text-cedar/40` (the dot is a separator, not a feature).
 
-## C. Work page polish (`src/pages/Work.tsx`)
-- **L86:** the per-project meta strip currently uses `text-cedar/70` for `location · status · year`. Switch to `text-muted-foreground/85` and keep tracking — the cedar tint duplicates what the `.hairline` already signals.
-- Verify featured project header (L79) uses the new `.hairline` consistently after SectionHeader changes.
+## G. CrewMoment — caption deduplication (`src/components/CrewMoment.tsx`)
+- L58: drop `fallbackCaption="On the boards · Alberta"` from the MediaSlot — the eyebrow below the image (L60) already prints this caption, and showing it twice when the photo fails to load looks like a render bug.
 
-## D. Sweep `rounded-[6px]` → `rounded-[2px]` on custom interactive surfaces
-- `src/components/navigation/NavigationMinimal.tsx` L34 (phone CTA pill).
-- `src/components/navigation/MenuTrigger.tsx` L47.
-- `src/components/FeaturedProjects.tsx` L58 (focus ring radius on project link wrapper).
-- **Skip:** `ProgressiveImage.tsx` (image surface — `rounded-[6px]` is a deliberate softening of photo corners; leave it; the wrapper already gets clipped by parent radius). Actually — for consistency with `ProjectTile` (`rounded-sm` = 2px) audit needed: change `ProgressiveImage` to `rounded-[2px]` so the photo and its frame share the same corner.
+## H. MiniFaq — clean stray whitespace (`src/components/MiniFaq.tsx` L60)
+- Remove the blank line inside the `<p className="hairline …">…` so the rendered paragraph doesn't ship a stray text node before the "Have more questions?" copy. (Cosmetic — no visible regression, but it's one of the dangling sloppy bits.)
 
-## E. PageHero subhead audit (`src/components/ui/page-hero.tsx`)
-- L717: hero subhead `mt-4 text-lg italic font-serif max-w-xl text-evergreen-foreground/85` — keep italic here. Hero is the one place a pull-quote subhead earns its weight (large type, photographic context).
-- No changes — documenting the carve-out so it doesn't get swept by a future pass.
+## I. Hero ghost call link — slight visibility bump (`src/components/Hero.tsx` L32)
+- `border-white/30 hover:border-white hover:bg-white/[0.06]` → `border-white/40 hover:border-white hover:bg-white/[0.08]`.
+- `text-white/85 hover:text-white` → `text-white/90 hover:text-white`. Ghost over photography needs a touch more weight to match the primary CedarCTA visually.
 
-## F. QuickNav + GlobalMenu BronzeRule (`src/components/QuickNav.tsx` L147, `src/components/navigation/GlobalMenu.tsx` L249)
-- These render BronzeRule inside chrome (menus, side rails). Keep — they provide visual anchoring in dense menu real estate. Mark in plan only — no code change.
-
-## G. Style-guide refresh (`src/pages/StyleGuide.tsx`)
-- Update the SectionHeader demo to show the new flat eyebrow + sans subhead.
-- Add a "Pass 36" note explaining the eyebrow-as-rule principle.
-
-## H. Token doc updates (`src/lib/typography.ts` if present)
-- If `EYEBROW.default` token is defined separately from the `.eyebrow` utility, leave both; mark `EYEBROW.default` as the canonical for inline use, `.eyebrow` for SectionHeader.
-
-## I. Verification
-1. `/about`, `/services`, `/work`, `/contact`, `/`: every `<SectionHeader>` renders a thin eyebrow only — no 40px cedar bar, no italic subhead.
-2. `/about` process rows: hover slides the 2px cedar bar in, no row background change.
-3. `/about` city grid: every chip renders at 2px radius with the tighter gap.
-4. `/work` per-project meta strip: single neutral muted-foreground line, no cedar tint.
-5. NavigationMinimal phone pill + MenuTrigger button render at 2px corners.
-6. PageHero on `/about`, `/work`, `/services`: still ships the BronzeRule + italic hero subhead (carve-out preserved).
-7. Reduced-motion + 390/768/1280 visual sweep: no overflow, no layout shift from removed BronzeRule height.
+## J. Verification
+1. `/services` catalogue: every row hovers identically to `/about` process rows — left bar slides in, no fill flicker, chevron fades in on the right (md+).
+2. `/services` responsibility matrix: WE HANDLE / YOU HANDLE eyebrows + counters render in the single eyebrow stamp.
+3. Footer: column titles, © line, "Made in Alberta" all share the eyebrow stamp; no stray tracking values.
+4. `/`: TestimonialStrip cards show one-line author+meta separated by a faint dot; quote sized like a card title.
+5. `/`, `/services`, `/about`, `/work`: QuoteCloserCard headline is no larger than the hero on the same page.
+6. `/`: BrandStatement reads as full-ink type with calmer separators.
+7. CrewMoment: image fallback no longer prints duplicate caption.
+8. Hero: ghost call CTA reads as visually equal in weight to the primary.
+9. 390/768/1280/1440 sweep: no overflow, no layout drift.
 
 ## Files to touch
-`src/components/SectionHeader.tsx`, `src/pages/About.tsx`, `src/pages/Work.tsx`, `src/components/navigation/NavigationMinimal.tsx`, `src/components/navigation/MenuTrigger.tsx`, `src/components/FeaturedProjects.tsx`, `src/components/ProgressiveImage.tsx`, `src/pages/StyleGuide.tsx`.
+`src/pages/Services.tsx`, `src/components/Footer.tsx`, `src/components/TestimonialStrip.tsx`, `src/components/QuoteCloserCard.tsx`, `src/components/BrandStatement.tsx`, `src/components/CrewMoment.tsx`, `src/components/MiniFaq.tsx`, `src/components/Hero.tsx`.
