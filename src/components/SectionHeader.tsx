@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 import ScrollRevealMotion from "@/components/ScrollRevealMotion";
-import { HEADLINE } from "@/lib/typography";
+import { HEADLINE, BODY } from "@/lib/typography";
 
 interface SectionHeaderProps {
   /** Roman numeral or number string. Ignored when variant="quiet". */
