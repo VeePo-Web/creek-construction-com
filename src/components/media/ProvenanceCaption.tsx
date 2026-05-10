@@ -39,12 +39,12 @@ const ProvenanceCaption = ({
 
   const sizeClass =
     variant === "subtle"
-      ? "text-[9px] tracking-[0.22em]"
-      : "text-[10px] tracking-[0.2em]";
+      ? "text-[10px] tracking-[0.22em]"
+      : "text-[10px] tracking-[0.22em]";
 
   return (
     <div
-      className={`flex items-center gap-3 ${sizeClass} uppercase text-muted-foreground/70 ${className}`}
+      className={`flex items-center gap-3 ${sizeClass} uppercase font-medium text-muted-foreground/70 ${className}`}
       aria-hidden="true"
     >
       {numeral && (

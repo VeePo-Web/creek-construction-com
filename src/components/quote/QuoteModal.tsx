@@ -301,7 +301,7 @@ const QuoteModal = () => {
               className="h-20 w-auto object-contain mb-5 drop-shadow-[0_4px_24px_hsl(0_0%_0%/0.3)]"
               loading="eager"
             />
-            <p className="text-[10px] tracking-[0.25em] uppercase text-cedar/80 mb-3">
+            <p className="text-[10px] tracking-[0.22em] uppercase font-medium text-cedar/80 mb-3">
               Free · No obligation
             </p>
             <h2 className="font-serif text-xl leading-tight mb-3">
@@ -320,7 +320,7 @@ const QuoteModal = () => {
               <Star className="h-3 w-3 fill-cedar" aria-hidden />
               <Star className="h-3 w-3 fill-cedar" aria-hidden />
               <Star className="h-3 w-3 fill-cedar" aria-hidden />
-              <span className="text-[10px] tracking-[0.2em] uppercase text-evergreen-foreground/70 ml-1">
+              <span className="text-[10px] tracking-[0.22em] uppercase font-medium text-evergreen-foreground/70 ml-1">
                 Verified builds
               </span>
             </div>
@@ -338,7 +338,7 @@ const QuoteModal = () => {
         <div className="md:hidden bg-evergreen text-evergreen-foreground px-5 py-2.5 flex items-center gap-2.5">
           <img src={logo} alt="" width={28} height={28} className="h-7 w-7 object-contain" />
           <p className="font-serif text-sm leading-none">Creek Construction</p>
-          <span className="ml-auto text-[9px] tracking-[0.25em] uppercase text-cedar/80">
+          <span className="ml-auto text-[10px] tracking-[0.22em] uppercase font-medium text-cedar/80">
             Free Quote
           </span>
         </div>
@@ -359,7 +359,7 @@ const QuoteModal = () => {
             <>
               {/* Header — dynamic line replaces step counter */}
               <header className="px-6 md:px-8 pt-6 md:pt-7 pb-4">
-                <p className="text-[10px] tracking-[0.25em] uppercase text-cedar mb-2">
+                <p className="text-[10px] tracking-[0.22em] uppercase font-medium text-cedar mb-2">
                   {mode === "inquiry" ? "Send us a message" : "Free quote"}
                 </p>
                 <h3
@@ -386,7 +386,7 @@ const QuoteModal = () => {
                     }
                     adornment={
                       phoneValid ? (
-                        <span className="inline-flex items-center gap-1 text-[10px] tracking-[0.18em] uppercase text-cedar">
+                        <span className="inline-flex items-center gap-1 text-[10px] tracking-[0.22em] uppercase font-medium text-cedar">
                           <Check className="h-3 w-3" aria-hidden /> Ready
                         </span>
                       ) : null
@@ -461,7 +461,7 @@ const QuoteModal = () => {
                 {/* SERVICES — chip picker, grouped */}
                 {mode === "quote" && (
                   <div>
-                    <p className="text-[11px] tracking-[0.18em] uppercase text-muted-foreground mb-3">
+                    <p className="text-[10px] tracking-[0.22em] uppercase font-medium text-muted-foreground mb-3">
                       What do you need? <span className="text-muted-foreground/60 normal-case tracking-normal">— pick any</span>
                     </p>
                     <div className="space-y-3">
@@ -469,7 +469,7 @@ const QuoteModal = () => {
                         const items = getItemsForGroup(group.id);
                         return (
                           <div key={group.id}>
-                            <p className="text-[10px] tracking-[0.22em] uppercase text-cedar/70 mb-1.5">
+                            <p className="text-[10px] tracking-[0.22em] uppercase font-medium text-cedar/70 mb-1.5">
                               {group.title}
                             </p>
                             <div className="flex flex-wrap gap-1.5">
@@ -481,7 +481,7 @@ const QuoteModal = () => {
                                     type="button"
                                     onClick={() => toggleService(s.id)}
                                     aria-pressed={isSelected}
-                                    className={`inline-flex items-center gap-1.5 px-3 py-2 rounded-sm border text-xs transition-colors min-h-[40px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cedar focus-visible:ring-offset-1 ${
+                                    className={`inline-flex items-center gap-1.5 px-3 py-2 rounded-[2px] border text-xs transition-colors min-h-[40px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cedar focus-visible:ring-offset-1 ${
                                       isSelected
                                         ? "border-cedar bg-cedar/[0.08] text-foreground"
                                         : "border-border text-muted-foreground hover:border-cedar/50 hover:text-foreground hover:bg-cedar/[0.02]"
@@ -503,7 +503,7 @@ const QuoteModal = () => {
                 {/* Timeline — segmented, 3 options, defaults to "Within 1 month" */}
                 {mode === "quote" && (
                   <div>
-                    <p className="text-[11px] tracking-[0.18em] uppercase text-muted-foreground mb-2">
+                    <p className="text-[10px] tracking-[0.22em] uppercase font-medium text-muted-foreground mb-2">
                       When?
                     </p>
                     <div className="grid grid-cols-3 gap-1.5" role="radiogroup">
@@ -516,7 +516,7 @@ const QuoteModal = () => {
                             role="radio"
                             aria-checked={active}
                             onClick={() => update("timeline", t)}
-                            className={`px-2 py-2.5 rounded-sm border text-xs transition-colors min-h-[44px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cedar focus-visible:ring-offset-1 ${
+                            className={`px-2 py-2.5 rounded-[2px] border text-xs transition-colors min-h-[44px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cedar focus-visible:ring-offset-1 ${
                               active
                                 ? "border-cedar bg-cedar/[0.08] text-foreground"
                                 : "border-border text-muted-foreground hover:border-cedar/50"
@@ -547,7 +547,7 @@ const QuoteModal = () => {
                         ? "e.g. Wondering about pricing for a 200 ft fence in Cochrane."
                         : "e.g. 14×20 cedar deck, replacing a worn pressure-treated one."
                     }
-                    className="w-full rounded-sm border border-border bg-background px-3 py-2.5 text-sm focus:outline-none focus:border-cedar focus:ring-1 focus:ring-cedar/30 transition-colors resize-none"
+                    className="w-full rounded-[2px] border border-border bg-background px-3 py-2.5 text-sm focus:outline-none focus:border-cedar focus:ring-1 focus:ring-cedar/30 transition-colors resize-none"
                   />
                 </Field>
 
@@ -577,7 +577,7 @@ const QuoteModal = () => {
                 className="sticky bottom-0 z-10 bg-muted border-t border-border/40"
                 style={{ paddingBottom: "max(0px, env(safe-area-inset-bottom))" }}
               >
-                <div className="px-6 md:px-8 py-2 flex items-center justify-center gap-4 text-[10px] tracking-[0.18em] uppercase text-muted-foreground border-b border-border/30">
+                <div className="px-6 md:px-8 py-2 flex items-center justify-center gap-4 text-[10px] tracking-[0.22em] uppercase font-medium text-muted-foreground border-b border-border/30">
                   <span className="inline-flex items-center gap-1.5">
                     <Star className="h-3 w-3 fill-cedar text-cedar" aria-hidden />
                     Verified
@@ -599,7 +599,7 @@ const QuoteModal = () => {
                     onClick={handleSubmit}
                     disabled={!canSubmit}
                     aria-label={ctaLabel}
-                    className="w-full inline-flex items-center justify-center gap-2 bg-cedar text-cedar-foreground px-6 py-3.5 rounded-sm text-[12px] tracking-[0.18em] uppercase font-medium hover:bg-cedar-hover disabled:opacity-50 disabled:cursor-not-allowed transition-colors min-h-[52px]"
+                    className="w-full inline-flex items-center justify-center gap-2 bg-cedar text-cedar-foreground px-6 py-3.5 rounded-[2px] text-[11px] tracking-[0.22em] uppercase font-medium hover:bg-cedar-hover disabled:opacity-50 disabled:cursor-not-allowed transition-colors min-h-[52px]"
                   >
                     {submitting ? (
                       <>
@@ -680,7 +680,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
       onChange={(e) => onChange(e.target.value)}
       aria-invalid={invalid || undefined}
       {...rest}
-      className={`w-full rounded-sm border bg-background px-3 py-2.5 text-sm focus:outline-none focus:ring-1 transition-colors min-h-[44px] ${
+      className={`w-full rounded-[2px] border bg-background px-3 py-2.5 text-sm focus:outline-none focus:ring-1 transition-colors min-h-[44px] ${
         invalid
           ? "border-destructive/60 focus:border-destructive focus:ring-destructive/30"
           : "border-border focus:border-cedar focus:ring-cedar/30"
@@ -719,7 +719,7 @@ const SuccessPanel = ({
     <div className="flex flex-col sm:flex-row items-center gap-4">
       <a
         href={`tel:${CONTACT.phoneTel}`}
-        className="inline-flex items-center gap-2 bg-cedar text-cedar-foreground px-6 py-3 rounded-sm text-[11px] tracking-[0.18em] uppercase font-medium hover:bg-cedar-hover transition-colors min-h-[44px]"
+        className="inline-flex items-center gap-2 bg-cedar text-cedar-foreground px-6 py-3 rounded-[2px] text-[11px] tracking-[0.22em] uppercase font-medium hover:bg-cedar-hover transition-colors min-h-[44px]"
       >
         <Phone className="h-3.5 w-3.5" aria-hidden /> Call us now
       </a>
@@ -727,14 +727,14 @@ const SuccessPanel = ({
         type="button"
         ref={doneBtnRef}
         onClick={onClose}
-        className="bg-evergreen text-evergreen-foreground px-6 py-3 rounded-sm text-[11px] tracking-[0.18em] uppercase font-medium hover:bg-evergreen/90 transition-colors min-h-[44px]"
+        className="bg-evergreen text-evergreen-foreground px-6 py-3 rounded-[2px] text-[11px] tracking-[0.22em] uppercase font-medium hover:bg-evergreen/90 transition-colors min-h-[44px]"
       >
         Done
       </button>
       <button
         type="button"
         onClick={onSendAnother}
-        className="text-[11px] tracking-[0.18em] uppercase text-muted-foreground hover:text-cedar transition-colors min-h-[44px] px-2"
+        className="text-[11px] tracking-[0.22em] uppercase text-muted-foreground hover:text-cedar transition-colors min-h-[44px] px-2"
       >
         Send another →
       </button>

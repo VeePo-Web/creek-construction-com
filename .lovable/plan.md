@@ -1,96 +1,65 @@
-# Pass 41 — Quote Form Inline + GlobalMenu Lockup Standardization
+# Pass 42 — Caption & QuoteModal Token Normalization
 
-The two highest-traffic interactive surfaces still ship in legacy tracking grammar: **QuoteFormInline** (the Contact-page conversion engine — 0.18em / 0.20em / 0.22em mixed across labels, chips, trust strip, CTA) and **GlobalMenu** (fullscreen menu — 0.25em on every cedar caption, 0.22em on a few, 4 different rounded-radius values). Pass 40 closed the chrome at 10px/0.22em; this pass extends that lockup into the conversion form and the menu so a user moving from header → menu → form sees a single consistent tracking density everywhere they look.
+After Passes 40–41 standardized navigation, GlobalMenu, and the inline quote form, the remaining offenders breaking the Fly4Me-grade calm are: **QuoteModal** (the modal still ships legacy 0.18em / 0.25em tracking, 11–12px eyebrows, and `rounded-sm` on its primary CTAs) and the **public media caption layer** (HomeProjectRecapStrip, MediaSlot overlay, ProvenanceCaption, ProgressiveImage placeholder) which still uses `tracking-[0.25em]` and inconsistent 9/10px sizing. This pass collapses every public-surface eyebrow to the canonical `text-[10px] tracking-[0.22em] uppercase font-medium` and every form/CTA corner to `rounded-[2px]`. Admin and shadcn primitives are explicitly out of scope.
 
-QuoteModal stays out of scope (separate pass — it has form parity logic with QuoteFormInline that needs aligned changes, deserves its own focused sweep).
+## A. `src/components/quote/QuoteModal.tsx` — full sweep
 
-## Principles
-- All eyebrow labels: `text-[10px] tracking-[0.22em] uppercase font-medium` (cedar/65 default via `.eyebrow`, or explicit `text-cedar/{55|70|80}` / `text-foreground/{45|65}` when a different mute level is needed).
-- All form-control corners: `rounded-[2px]`. No `rounded-[4px]`, no `rounded-sm` (which is 2px in default Tailwind v3 but reads as a different token in code review).
-- Field labels stay at 10px (was bouncing between 10px and 11px). The "*" required marker stays cedar; the "(optional)" tag drops to text-[9px] and stays normal-case (already correct).
-- Trust strips below CTAs: 10px / 0.22em (was 0.18em).
+Rules applied:
+- Every `tracking-[0.18em]` → `tracking-[0.22em]`.
+- Every `tracking-[0.25em]` → `tracking-[0.22em]`.
+- Every `text-[9px]` eyebrow → `text-[10px]`.
+- Every `text-[11px]` / `text-[12px]` uppercase eyebrow on body copy or pills → `text-[10px]`. (The single exception is the primary submit CTA, which stays `text-[11px]` to match `QuoteFormInline`'s submit.)
+- Every `rounded-sm` on form controls and CTAs → `rounded-[2px]`.
+- Add `font-medium` wherever the eyebrow currently lacks it (visual weight parity with nav + GlobalMenu).
 
----
+Specific lines (current → target):
 
-## A. QuoteFormInline (`src/components/quote/QuoteFormInline.tsx`)
+1. **Line 304** category eyebrow: `text-[10px] tracking-[0.25em] uppercase text-cedar/80` → `text-[10px] tracking-[0.22em] uppercase font-medium text-cedar/80`.
+2. **Line 341** "selected" tag: `text-[9px] tracking-[0.25em] uppercase text-cedar/80` → `text-[10px] tracking-[0.22em] uppercase font-medium text-cedar/80`.
+3. **Line 362** sub-section eyebrow: `text-[10px] tracking-[0.25em] uppercase text-cedar` → `text-[10px] tracking-[0.22em] uppercase font-medium text-cedar`.
+4. **Line 389** chip caption: `text-[10px] tracking-[0.18em] uppercase text-cedar` → `text-[10px] tracking-[0.22em] uppercase font-medium text-cedar`.
+5. **Line 464** field group label: `text-[11px] tracking-[0.18em] uppercase text-muted-foreground` → `text-[10px] tracking-[0.22em] uppercase font-medium text-muted-foreground`.
+6. **Line 506** field group label (timeline): same change as #5.
+7. **Line 580** trust micro-strip in modal footer: `text-[10px] tracking-[0.18em] uppercase text-muted-foreground` → `text-[10px] tracking-[0.22em] uppercase font-medium text-muted-foreground`.
+8. **Line 602** primary submit CTA: `rounded-sm text-[12px] tracking-[0.18em]` → `rounded-[2px] text-[11px] tracking-[0.22em]` (height/padding unchanged → still 52px hit target).
+9. **Line 722** floating "Get a quote" trigger: `rounded-sm text-[11px] tracking-[0.18em]` → `rounded-[2px] text-[11px] tracking-[0.22em]`.
+10. **Line 730** evergreen secondary CTA: same change as #9 (rounded + tracking).
+11. **Line 737** ghost cancel link: `text-[11px] tracking-[0.18em]` → `text-[11px] tracking-[0.22em]` (no rounding to change).
+12. Sweep any remaining `rounded-sm` on form inputs / chip buttons inside this file (textarea, inputs, day pills) → `rounded-[2px]`. Verify with `rg "rounded-sm" src/components/quote/QuoteModal.tsx` post-edit returns zero.
 
-### A.1 Phone-ready adornment (L244)
-`text-[10px] tracking-[0.18em] uppercase text-cedar` → `eyebrow text-cedar` (the cedar override stays — this is a "go" badge, not a quiet caption).
+## B. Media caption layer — public surfaces only
 
-### A.2 Service group titles (L326)
-`text-[10px] tracking-[0.22em] uppercase text-cedar/70 mb-1.5` → `eyebrow opacity-90 mb-1.5` (the cedar/70 maps cleanly onto the cedar/65 default at opacity-100; opacity-90 keeps the slightly stronger reading without naming a color).
+13. **`src/components/media/HomeProjectRecapStrip.tsx`** lines 55 & 67: `text-[10px] tracking-[0.25em] uppercase` → `text-[10px] tracking-[0.22em] uppercase font-medium` (preserve color tokens `text-cedar/70` and `text-muted-foreground/60 tabular-nums`).
+14. **`src/components/media/MediaSlot.tsx`** line 125 caption overlay: `text-[10px] tracking-[0.25em] uppercase font-medium` → `text-[10px] tracking-[0.22em] uppercase font-medium`.
+15. **`src/components/media/ProvenanceCaption.tsx`** line 42 small variant: `text-[9px] tracking-[0.22em]` → `text-[10px] tracking-[0.22em]` (font-medium already inherited from base; verify and add if missing). The default variant already at 10px stays put.
+16. **`src/components/ProgressiveImage.tsx`** line 142 placeholder eyebrow: `text-[9px] tracking-[0.2em] uppercase text-white/30` → `text-[10px] tracking-[0.22em] uppercase font-medium text-white/30`.
 
-### A.3 Service chips (L338)
-`rounded-[4px]` → `rounded-[2px]`. (The selected chip's `shadow-[inset_0_-2px_0_hsl(var(--cedar))]` already provides the brand mark — the chip corners read cleaner at 2px against the form's 2px shell.)
+## C. Mobile sub-nav micro-fix
 
-### A.4 Timeline label (L358)
-`text-[11px] tracking-[0.2em] uppercase font-medium text-muted-foreground` → `eyebrow text-muted-foreground`. Unifies size 11 → 10 with the rest of the form's labels.
+17. **`src/components/navigation/MobileSubNav.tsx`** line 104 separator dot: `text-[9px]` → `text-[10px]` so the dot height matches the 10px caption rhythm of the items it separates. Color (`text-foreground/25`) unchanged.
 
-### A.5 Timeline radiogroup container (L362)
-`rounded-[4px]` → `rounded-[2px]`.
+## D. Out of scope (explicit)
 
-### A.6 Project-details textarea (L396)
-`rounded-[4px]` → `rounded-[2px]`.
+- `src/pages/StyleGuide.tsx` — internal reference page; its 0.25em / 0.18em values are intentional documentation of legacy versus canonical tokens.
+- `src/pages/admin/*` — operator UI, not customer-facing.
+- `src/components/ui/*` (dialog, tabs, command, context-menu, resizable) — shadcn primitives whose `rounded-sm` is part of the library contract; they are not visible enough on public surfaces to justify forking.
+- `src/components/QuickNav.tsx` line 186 — dev-only floating helper.
 
-### A.7 Trust micro-strip (L404)
-`text-[10px] tracking-[0.18em] uppercase text-muted-foreground` → `eyebrow text-muted-foreground`. The strip currently reads slightly tighter than its CTA — fixing this aligns it.
+## E. Verification
 
-### A.8 Submit CTA (L424)
-`text-[12px] tracking-[0.22em]` → `text-[11px] tracking-[0.22em]` (keeps tracking, drops 12 → 11 to match every other CTA on the site, including `BUTTON.primary.base` which is the canonical 11px). Min-height stays 52px for thumb tap.
+- `rg "tracking-\[0\.(18|25)em\]|text-\[9px\]" src/components/quote src/components/media src/components/navigation` returns **zero** matches after the pass.
+- `rg "rounded-sm" src/components/quote/QuoteModal.tsx` returns **zero** matches.
+- Visual sweep at 390 / 768 / 1440:
+  - Open `/contact`, click "Get a quote" → confirm modal eyebrows all read at the same weight & spacing as the inline form.
+  - Scroll homepage past `HomeProjectRecapStrip` → captions and year tabular-nums sit on the same baseline rhythm as nav rail captions.
+  - Hover any project tile w/ `MediaSlot` overlay caption → tracking matches the surrounding chrome.
+- No layout drift: 10px at 0.22em is ~1px narrower per word vs 0.25em, well within existing padding budgets.
 
-### A.9 Field label (L464)
-`text-[11px] tracking-[0.18em] uppercase font-medium text-muted-foreground` → `text-[10px] tracking-[0.22em] uppercase font-medium text-muted-foreground` (matches the form's own service-group titles in §A.2).
+## Files touched
 
-### A.10 Optional marker (L469)
-Already correct (text-[10px] normal-case tracking-normal). No-op.
-
-### A.11 Input shell (L501)
-`rounded-[4px]` → `rounded-[2px]`. (Field <Input/> shared shell.)
-
-### A.12 "pick any" inline note (L319)
-Currently `text-[11px] text-muted-foreground/70` (lowercase, italic feel). Drop to `text-[10px] text-muted-foreground/70 italic` for a cleaner subordinate note next to the BronzeRule label. (Italic is reserved for inline asides per the design system.)
-
-## B. GlobalMenu (`src/components/navigation/GlobalMenu.tsx`)
-
-### B.1 Close button (L181, L190)
-- L181 `rounded-sm` → `rounded-[2px]` (consistency tag).
-- L190 already correct (`text-[10px] tracking-[0.22em] uppercase font-medium`). No-op.
-
-### B.2 "current" marker on active route (L237)
-`text-[10px] tracking-[0.25em] uppercase text-cedar/80 font-medium` → `text-[10px] tracking-[0.22em] uppercase text-cedar/80 font-medium`.
-
-### B.3 "Quote a service" caption (L257)
-`tracking-[0.25em]` → `tracking-[0.22em]`.
-
-### B.4 Hero photo fallback caption (L327)
-`tracking-[0.25em]` → `tracking-[0.22em]`.
-
-### B.5 Hero provenance line (L342)
-Already at 0.22em — verify no-op.
-
-### B.6 "Where we build" caption (L353)
-`tracking-[0.25em]` → `tracking-[0.22em]`.
-
-### B.7 Metro group labels (L359)
-Already at 0.22em — verify no-op.
-
-### B.8 "Home base" inline tag (L375)
-`text-[9px] tracking-[0.22em]` → `text-[10px] tracking-[0.22em]` (drops the only 9px label in the menu — hairlines at 1.25× DPR like the NavigationMinimal phone caption did before Pass 40).
-
-### B.9 Bottom trust line (L413)
-`text-[11px] tracking-[0.18em] uppercase text-muted-foreground` → `text-[10px] tracking-[0.22em] uppercase font-medium text-muted-foreground` (matches every other label in the menu).
-
-### B.10 Phone link in bottom bar (L424)
-`rounded-sm` → `rounded-[2px]`. The `<span className="tracking-[0.06em]">{CONTACT.phone}</span>` at L432 stays — that's the phone-number tracking, not a label.
-
-## C. Verification
-1. `/contact` form: every label, chip, timeline button, trust strip, and CTA reads at 0.22em — measured by `letter-spacing` in DevTools across 10+ elements.
-2. All form inputs and chip buttons render at 2px corners (sweep DevTools — no `rounded-[4px]` or `rounded-sm` left in the form).
-3. Open GlobalMenu (☰) on `/`: every cedar caption ("Quote a service", "Where we build", "current", "Home base", trust line, fallback caption) reads at 0.22em.
-4. "Home base" tag renders crisp at 10px (was 9px hairline).
-5. Bottom-bar phone pill in the menu has the same 2px corners as the close button at the top.
-6. Tab through the form on Contact: focus rings still 2px cedar; field labels haven't visually moved (size shift is 1px so layout is stable).
-7. 390 / 768 / 928 (current) / 1440 sweep on `/contact` and on `/` with menu open — no overflow, no layout drift.
-
-## Files to touch
-`src/components/quote/QuoteFormInline.tsx`, `src/components/navigation/GlobalMenu.tsx`.
+1. `src/components/quote/QuoteModal.tsx`
+2. `src/components/media/HomeProjectRecapStrip.tsx`
+3. `src/components/media/MediaSlot.tsx`
+4. `src/components/media/ProvenanceCaption.tsx`
+5. `src/components/ProgressiveImage.tsx`
+6. `src/components/navigation/MobileSubNav.tsx`

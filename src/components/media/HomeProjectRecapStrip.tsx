@@ -52,7 +52,7 @@ const HomeProjectRecapStrip = () => {
           <ScrollRevealMotion>
             <div className="flex items-baseline justify-between mb-10">
               <div>
-                <p className="text-[10px] tracking-[0.25em] uppercase text-cedar/70 mb-3">
+                <p className="text-[10px] tracking-[0.22em] uppercase font-medium text-cedar/70 mb-3">
                   Field Notes
                 </p>
                 <h2
@@ -64,7 +64,7 @@ const HomeProjectRecapStrip = () => {
               </div>
               <div className="hidden md:flex items-center gap-3">
                 <div className="w-10 h-px bg-cedar/30" />
-                <span className="text-[10px] tracking-[0.25em] uppercase text-muted-foreground/60 tabular-nums">
+                <span className="text-[10px] tracking-[0.22em] uppercase font-medium text-muted-foreground/60 tabular-nums">
                   04 Frames
                 </span>
               </div>
