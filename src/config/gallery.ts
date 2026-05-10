@@ -30,7 +30,7 @@ export interface GalleryImage {
 export const GALLERY: GalleryImage[] = [
   { src: heroArchitect,           alt: "Modern Alberta home with cedar siding and wraparound deck at golden hour." },
   { src: saunaBackyard,           alt: "Cedar backyard structure with warm interior light against a clear evening sky." },
-  { src: galleryShed01,           alt: "Backyard structure with curved cantilever roofline mid-construction." },
+  { src: galleryShed01,           alt: "Backyard structure with under construction with framed walls and clean joinery." },
   { src: saunaMountain,           alt: "Cedar exterior structure on an acreage with distant mountain backdrop." },
   { src: saunaInteriorEditorial,  alt: "Cedar-clad interior with bench detail and warm directional light." },
   { src: heroArchitecture,        alt: "Architectural exterior elevation with horizontal cedar cladding." },
