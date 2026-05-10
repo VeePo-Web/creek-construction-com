@@ -378,21 +378,7 @@ const EditorialSplit = (props: EditorialSplitProps) => {
                   />
                 </div>
 
-                {props.provenance && (
-                  <div className="mt-6 lg:mt-0 lg:absolute lg:left-[-24px] lg:bottom-[-32px] lg:max-w-[340px]">
-                    <HeroProvenanceCard
-                      eyebrow={props.provenance.eyebrow}
-                      heading={props.provenance.heading}
-                      body={props.provenance.body}
-                      location={props.provenance.location ?? item?.alt?.split(" in ")[1]?.split(",")[0]}
-                      year={props.provenance.year}
-                      service={props.provenance.service ?? item?.service ?? undefined}
-                      delayMs={1500}
-                    >
-                      {props.provenance.children}
-                    </HeroProvenanceCard>
-                  </div>
-                )}
+                {/* HeroProvenanceCard removed (Pass 52). */}
               </div>
             </div>
           )}
