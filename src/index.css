@@ -498,10 +498,9 @@ section[id^="section-"] {
   }
 
   /* ─────────────────────────────────────────────────────────────
-     EDITORIAL ATOMICS — eyebrow + hairline (Pass 32, retuned Pass 43)
+     EDITORIAL ATOMICS — eyebrow + cta-label + hairline (Pass 44)
      Caption tier:  .eyebrow / .eyebrow-base  → 10px / 0.22em / 500
-     CTA tier:      text-[11px] tracking-[0.22em] uppercase font-medium
-                    → reserved for primary/secondary CTAs only
+     CTA tier:      .cta-label                → 11px / 0.22em / 500
      ───────────────────────────────────────────────────────────── */
   .eyebrow {
     font-size: 10px;
@@ -518,6 +517,14 @@ section[id^="section-"] {
     letter-spacing: 0.22em;
     font-weight: 500;
     /* color inherited / set by caller */
+  }
+  .cta-label {
+    font-size: 11px;
+    line-height: 1;
+    text-transform: uppercase;
+    letter-spacing: 0.22em;
+    font-weight: 500;
+    /* color inherited / set by caller (cedar-foreground, white, muted-foreground) */
   }
   .hairline { border-top: 1px solid hsl(var(--cedar) / 0.12); }
   .hairline-l { border-left: 1px solid hsl(var(--cedar) / 0.12); }
