@@ -22,7 +22,7 @@ const Services = () => {
       className={`${SECTION_PADDING.default} bg-background`}
       aria-labelledby="services-heading"
     >
-      <div className="container mx-auto max-w-[1440px] container-x">
+      <div className="container-page">
         <div ref={ref} className={`${MAX_WIDTH.wide} mx-auto ${cls}`} style={style}>
           {/* Calm editorial header — single eyebrow + headline, no trailing CTA */}
           <div className="grid grid-cols-1 md:grid-cols-12 gap-y-6 mb-14 md:mb-20">

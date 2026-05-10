@@ -83,7 +83,7 @@ const MiniFaq = ({
       className={`${SECTION_PADDING.default} ${background === "secondary" ? "bg-secondary" : "bg-background"} ${topPad === "generous" ? "!pt-24 md:!pt-32 lg:!pt-36 xl:!pt-40" : ""}`}
       aria-labelledby={headingId}
     >
-      <div className="container mx-auto px-5 sm:px-6">{inner}</div>
+      <div className="container-page">{inner}</div>
     </section>
   );
 };

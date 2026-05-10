@@ -17,7 +17,7 @@ const BrandStatement = () => {
       aria-label="Creek Construction philosophy"
       className={`${SECTION_PADDING.calm} bg-background`}
     >
-      <div className="container mx-auto max-w-[1440px] container-x">
+      <div className="container-page">
         <div
           ref={ref}
           className={`max-w-3xl mx-auto text-center ${cls}`}
