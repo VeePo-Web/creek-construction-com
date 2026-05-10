@@ -1,5 +1,7 @@
 import CedarCTA from "@/components/CedarCTA";
 import { SECTION_PADDING } from "@/lib/spacing";
+import { HEADLINE } from "@/lib/typography";
+import { cn } from "@/lib/utils";
 
 interface QuoteCloserCardProps {
   eyebrow?: string;
@@ -29,7 +31,7 @@ const QuoteCloserCard = ({
     <div className="relative bg-evergreen overflow-hidden before:content-[''] before:absolute before:left-0 before:top-0 before:bottom-0 before:w-[2px] before:bg-cedar">
       <div className="relative z-10 p-6 sm:p-8 md:p-10 lg:p-12">
         <p className="eyebrow mb-4">{eyebrow}</p>
-        <h2 className="font-serif text-evergreen-foreground text-3xl md:text-4xl lg:text-5xl leading-[1.1] tracking-[-0.022em] text-balance mb-5 max-w-[22ch]">
+        <h2 className={cn(HEADLINE.section, "text-evergreen-foreground leading-[1.1] mb-5 max-w-[22ch]")}>
           {heading}
         </h2>
         <p className="text-evergreen-foreground/70 leading-relaxed mb-8 max-w-[52ch]">
