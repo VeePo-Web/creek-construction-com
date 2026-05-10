@@ -1,6 +1,7 @@
 import SectionHeader from "@/components/SectionHeader";
 import CedarCTA from "@/components/CedarCTA";
 import { TESTIMONIALS_TOP3, type Testimonial } from "@/config/testimonials";
+import { HEADLINE } from "@/lib/typography";
 
 import { SECTION_PADDING, MAX_WIDTH } from "@/lib/spacing";
 import { useReveal } from "@/hooks/useReveal";
