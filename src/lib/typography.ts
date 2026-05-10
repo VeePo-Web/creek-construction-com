@@ -53,16 +53,19 @@ export const HEADLINE = {
 
   /**
    * Display — section opener larger than `section`, e.g. About hero.
+   * (Pass 45) Now identical to `section` — both render at 36 / 48 / 60px,
+   * tracking -0.035em. Kept distinct only for semantic readability at call sites.
    */
   display:
     "font-serif text-foreground text-4xl md:text-5xl lg:text-6xl leading-[1.05] tracking-[-0.035em] text-balance",
 
   /**
-   * Section — the standard <h2> for a homepage section.
-   * Same scale as `display` here; reserved for semantic distinction.
+   * Section — the canonical homepage / sub-page section <h2>.
+   * (Pass 45) Unified with `display` so every section across the site
+   * inherits the same Apple-grade scale.
    */
   section:
-    "font-serif text-foreground text-3xl md:text-4xl lg:text-5xl leading-[1.1] tracking-[-0.022em] text-balance",
+    "font-serif text-foreground text-4xl md:text-5xl lg:text-6xl leading-[1.05] tracking-[-0.035em] text-balance",
 
   /**
    * Sub — within-section heading, <h3>. Quieter than section.
@@ -78,23 +81,12 @@ export const HEADLINE = {
 } as const;
 
 // ─────────────────────────────────────────────────────────────────────
-// EYEBROW — uppercase, letter-spaced label above a heading
+// EYEBROW — removed in Pass 45. The canonical eyebrow lives in CSS:
+//   .eyebrow       (10px / 0.22em / 500, cedar/65)
+//   .eyebrow-base  (10px / 0.22em / 500, color inherited)
+//   .cta-label     (11px / 0.22em / 500, color inherited)
+// See src/index.css.
 // ─────────────────────────────────────────────────────────────────────
-
-/**
- * EYEBROW — uppercase, letter-spaced label above a heading.
- * @deprecated Prefer the `.eyebrow` CSS utility (defined in src/index.css).
- * It is the canonical Pass 32+ token: 11px, tracking 0.22em, cedar/65.
- * These constants remain only for legacy components mid-migration.
- */
-export const EYEBROW = {
-  default:
-    "text-[10px] tracking-[0.25em] uppercase text-muted-foreground/70 font-medium",
-  accent:
-    "text-[10px] tracking-[0.25em] uppercase text-cedar font-medium",
-  onDark:
-    "text-[10px] tracking-[0.25em] uppercase text-cedar/80 font-medium",
-} as const;
 
 // ─────────────────────────────────────────────────────────────────────
 // BODY — DM Sans, comfortable measure
