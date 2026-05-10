@@ -51,6 +51,7 @@ interface FormState {
   phone: string;
   email: string;
   addressOrArea: string;
+  voucher: string;
 }
 
 const INITIAL: FormState = {
@@ -61,6 +62,7 @@ const INITIAL: FormState = {
   phone: "",
   email: "",
   addressOrArea: "",
+  voucher: "",
 };
 
 const TIMELINE_OPTIONS = ["ASAP", "Within 1 month", "Just exploring"] as const;
@@ -143,13 +145,19 @@ const QuoteFormInline = ({
     setSubmitting(true);
     try {
       const serviceTitles = selectedItems.map((s) => s.title);
+      const baseDetails = form.projectDetails.trim();
+      const voucher = form.voucher.trim();
+      const combinedDetails =
+        [baseDetails || undefined, voucher ? `Voucher / referral: ${voucher}` : undefined]
+          .filter(Boolean)
+          .join("\n\n") || undefined;
       const payload = {
         name: form.name.trim(),
         phone: form.phone.trim(),
         email: form.email.trim() || undefined,
         addressOrArea: form.addressOrArea.trim() || undefined,
         services: serviceTitles,
-        projectDetails: form.projectDetails.trim() || undefined,
+        projectDetails: combinedDetails,
         propertyType: "Residential",
         timeline: form.timeline,
         contactPreference: "call" as const,
@@ -394,6 +402,19 @@ const QuoteFormInline = ({
               maxLength={2000}
               placeholder="e.g. 14×20 cedar deck, replacing a worn pressure-treated one."
               className="w-full rounded-[2px] border border-border bg-background px-3 py-2.5 text-sm focus:outline-none focus:border-cedar focus:ring-1 focus:ring-cedar/30 transition-colors resize-none"
+            />
+          </Field>
+
+          <Field label="Voucher or referral code" htmlFor="qfi-voucher" optional>
+            <input
+              id="qfi-voucher"
+              type="text"
+              value={form.voucher}
+              onChange={(e) => update("voucher", e.target.value)}
+              maxLength={80}
+              autoComplete="off"
+              placeholder="Optional"
+              className="w-full rounded-[2px] border border-border bg-background px-3 py-2.5 text-sm focus:outline-none focus:border-cedar focus:ring-1 focus:ring-cedar/30 transition-colors"
             />
           </Field>
         </div>

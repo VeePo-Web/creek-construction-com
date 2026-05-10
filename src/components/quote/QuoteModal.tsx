@@ -75,6 +75,7 @@ interface FormState {
   phone: string;
   email: string;
   addressOrArea: string;
+  voucher: string;
 }
 
 const INITIAL: FormState = {
@@ -85,6 +86,7 @@ const INITIAL: FormState = {
   phone: "",
   email: "",
   addressOrArea: "",
+  voucher: "",
 };
 
 const TIMELINE_OPTIONS = ["ASAP", "Within 1 month", "Just exploring"] as const;
@@ -205,11 +207,16 @@ const QuoteModal = () => {
         : selectedItems.map((s) => s.title);
 
       const detailsBody = form.projectDetails.trim();
-      const projectDetails = isInquiry
+      const baseDetails = isInquiry
         ? detailsBody
           ? `[General Inquiry] ${detailsBody}`
           : "[General Inquiry]"
         : detailsBody || undefined;
+      const voucherValue = form.voucher.trim();
+      const projectDetails =
+        [baseDetails, voucherValue ? `Voucher / referral: ${voucherValue}` : undefined]
+          .filter(Boolean)
+          .join("\n\n") || undefined;
 
       const payload = {
         name: form.name.trim(),
@@ -548,6 +555,20 @@ const QuoteModal = () => {
                         : "e.g. 14×20 cedar deck, replacing a worn pressure-treated one."
                     }
                     className="w-full rounded-[2px] border border-border bg-background px-3 py-2.5 text-sm focus:outline-none focus:border-cedar focus:ring-1 focus:ring-cedar/30 transition-colors resize-none"
+                  />
+                </Field>
+
+                {/* Voucher / referral — optional, last field */}
+                <Field label="Voucher or referral code" htmlFor="qm-voucher" optional>
+                  <input
+                    id="qm-voucher"
+                    type="text"
+                    value={form.voucher}
+                    onChange={(e) => update("voucher", e.target.value)}
+                    maxLength={80}
+                    autoComplete="off"
+                    placeholder="Optional"
+                    className="w-full rounded-[2px] border border-border bg-background px-3 py-2.5 text-sm focus:outline-none focus:border-cedar focus:ring-1 focus:ring-cedar/30 transition-colors"
                   />
                 </Field>
 
