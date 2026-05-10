@@ -1,101 +1,86 @@
-# Pass 46 — Container rhythm: one canonical page-container
+# Pass 47 — Section-intro rhythm: gaps, subhead voice, body token discipline
 
-Pass 45 unified the H2 ladder. Now the sections themselves drift horizontally: at every breakpoint, different sections begin at different x-coordinates, so the eye sees a "wobble" scrolling Home top to bottom. The fix is one utility, one migration sweep.
+After Pass 45 (one H2 ladder) and Pass 46 (one container), the rhythm *inside* a section intro still drifts: the gaps between eyebrow → H2 → subhead are wrong order of magnitude, and the subhead reads in a heavier voice than the body that follows it. Apple, Stripe, and Fly4Me all keep one calm voice from intro to body. This pass codifies that. GET RID OF THE EYEBROWS THEY CAUSE CLUTTER
 
-## Audit — what's on the page today
+## Audit — current `SectionHeader` rhythm
 
-Container patterns currently in use across the codebase (top occurrences):
-
-| Pattern | Count | Effective max-width @ 1440px viewport |
-|---|---|---|
-| `container mx-auto px-5 sm:px-6` | 11 | **1280px** (Tailwind default `container`, no md/lg gutter expansion) |
-| `container mx-auto max-w-[1440px] px-5 sm:px-6` | 2 | 1440px, narrow gutters |
-| `container mx-auto max-w-[1440px] container-x` | 2 | 1440px, full progressive gutters (20→24→40→64) |
-| `container mx-auto px-6` | 2 | 1280px, 24px flat gutter |
-| Hand-rolled chrome variants (`max-w-7xl`, `px-6 md:px-10`, etc.) | ~6 | various |
-
-Concrete consequence on Home at 1440px:
-- Services H2 starts ~64px from edge.
-- CrewMoment H2 starts ~24px from edge AND its column caps 160px earlier (1280 vs 1440).
-- TestimonialStrip same as CrewMoment.
-- FeaturedProjects starts at 24px but caps at 1440.
-
-Three different start-x and two different end-x in one scroll — the exact drift Fly4Me / Apple eliminate.
-
-## A. New utility — `.container-page`
-
-Add to `src/index.css` directly under `.container-x` (line ~196):
-
-```css
-.container-page {
-  @apply mx-auto w-full max-w-[1440px] px-5 sm:px-6 md:px-10 lg:px-16;
-}
+```text
+eyebrow              ← font-medium 10px cedar/65
+   ↕ mb-5  (20px)
+H2 (HEADLINE.section)
+   ↕ mb-3  (12px)    ← TOO TIGHT — undercuts the H2's gravity
+subhead (literal)    ← text-muted-foreground (heavy), text-base md:text-lg
+   ↕ mb-6  (24px)
+content
 ```
 
-This is the **single canonical page container**. Drops `container` (the Tailwind plugin) entirely — we manage max-width and gutters ourselves so every section is identical.
+Two problems:
 
-Keep `.container-x` for legacy sub-uses (e.g. provenance card overlays inside heroes) but mark deprecated in a comment.
+1. **H2→subhead gap (12px)** is *narrower* than eyebrow→H2 gap (20px). The relationship is inverted — the H2 deserves the bigger downstream gap so the subhead reads as a continuation, not a label. Apple/Fly4Me both use ~24–32px here.
+2. **Subhead voice** uses `text-muted-foreground` (full mute) and `text-base md:text-lg` (16→18px). The body paragraphs that follow use `BODY.lead` (`text-foreground/75`, 15→16px, 1.65 leading). So the *introductory* line is louder, larger, and grayer than the actual content. Backwards.
 
-## B. Migration sweep — Home + shared section components
+## A. Fix the rhythm in `src/components/SectionHeader.tsx`
 
-Replace the wrapper `<div>` opening in each file. Drop redundant `container mx-auto max-w-[1440px]` chains.
 
-| File | Line | Before | After |
-|---|---|---|---|
-| `src/components/Services.tsx` | 24 | `container mx-auto max-w-[1440px] container-x` | `container-page` |
-| `src/components/BrandStatement.tsx` | 19 | `container mx-auto max-w-[1440px] container-x` | `container-page` |
-| `src/components/FeaturedProjects.tsx` | 157 | `container mx-auto max-w-[1440px] px-5 sm:px-6` | `container-page` |
-| `src/components/QuoteCloserCard.tsx` | 56 | `container mx-auto max-w-[1440px] px-5 sm:px-6` | `container-page` |
-| `src/components/CrewMoment.tsx` | 113 | `container mx-auto px-5 sm:px-6` | `container-page` |
-| `src/components/TestimonialStrip.tsx` | 91 | `container mx-auto px-5 sm:px-6` | `container-page` |
-| `src/components/MiniFaq.tsx` | (wrapper) | `container mx-auto px-5 sm:px-6` | `container-page` |
-| `src/components/media/FieldClipsStrip.tsx` | (wrapper) | `container mx-auto px-5 sm:px-6` | `container-page` |
-| `src/pages/About.tsx` | three section wrappers | `container mx-auto px-5 sm:px-6` (or similar) | `container-page` |
-| `src/pages/Services.tsx` | section wrappers | same | `container-page` |
-| `src/pages/Work.tsx` | section wrappers | same | `container-page` |
+| Element                                                             | Before                                                                             | After                                                                                                                                                                                                                                                                                 |
+| ------------------------------------------------------------------- | ---------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Eyebrow `<p>` margin                                                | `mb-5` (20px)                                                                      | `mb-4` (16px) — Apple-typical eyebrow-to-headline pull                                                                                                                                                                                                                                |
+| H2 `mb-3` baked into `${HEADLINE.section} mb-3 [&:last-child]:mb-0` | `mb-3`                                                                             | `mb-6 md:mb-7` (24→28px) — gives the H2 its breath                                                                                                                                                                                                                                    |
+| Subhead `<p>` className                                             | literal `text-base md:text-lg text-muted-foreground mb-6 text-pretty max-w-[56ch]` | `${BODY.lead} mb-2 text-pretty max-w-[56ch]` — calmer voice, native lead leading (1.65), keeps the bottom margin only because most call-sites add their own `mt-*` on the next block. Net rhythm below the subhead: subhead `mb-2` + content's `mt-6/8/10` = unchanged effective gap. |
+| Badge `<p>` margin                                                  | `mt-2`                                                                             | `mt-2` — unchanged                                                                                                                                                                                                                                                                    |
 
-(Exact line numbers will be verified at edit time; pattern is mechanical.)
 
-## C. Out of scope (deliberate)
+Gap sequence becomes:
 
-- **PageHero variants** (architect-bleed, evergreen-typographic, editorial-split, cinematic-bleed) — these intentionally use `px-5 sm:px-6 md:px-10` *without* `lg:px-16` and *with* their own vertical paddings (`pt-28 md:pt-36`). Heroes are full-bleed by design; their inner type column lives independently of the body section grid. Leaving them untouched preserves the cinematic edge-of-bleed look.
-- **Footer** — uses `max-w-7xl` (1280px) deliberately so legal microcopy doesn't stretch to 1440px on ultrawide monitors. Editorial precedent (NYT, Stripe). Stays.
-- **Top nav chrome** (`Navigation.tsx`, `SectionRail.tsx`, etc.) — chrome max-width is `max-w-7xl` for the same reason: nav items shouldn't fly to the edges of a 1440px screen. Stays.
-- **QuoteModal inner column** — modal manages its own width. Stays.
-- **`MAX_WIDTH.wide` (`max-w-6xl`) inside section-content `<div>`s** — these are *content* width caps inside an already-padded container. Different concern, untouched.
+```
+eyebrow → mb-4 (16) → H2 → mb-6/7 (24-28) → subhead → mb-2 + (caller mt) → content
+```
+
+Doubles the H2's downstream breath; the subhead becomes a true sub-line, not a competing label.
+
+## B. Token import in SectionHeader
+
+Add `BODY` to the existing import: `import { HEADLINE, BODY } from "@/lib/typography";`
+
+## C. QuoteCloserCard body — migrate literal to `BODY.lead` pattern
+
+`src/components/QuoteCloserCard.tsx` line 37:
+
+```
+text-evergreen-foreground/70 leading-relaxed mb-8 max-w-[52ch]
+```
+
+→
+
+```
+font-sans text-evergreen-foreground/75 text-[15px] sm:text-base leading-[1.65] text-balance mb-8 max-w-[52ch]
+```
+
+This is `BODY.lead`'s computed CSS with the `text-foreground/75` color swapped for `text-evergreen-foreground/75` (since `BODY.lead` itself is a string, we can't override one class — we inline the equivalent). Same calm voice as every other lead paragraph on the site, only re-tinted for the dark plate.
+
+Reads identically to CrewMoment / About lead paragraphs; only the surface changes.
 
 ## D. Verification
 
-1. `rg "container mx-auto max-w-\[1440px\]" src/components src/pages | grep -v PageHero | grep -v page-hero` → **zero matches**.
-2. `rg "container mx-auto px-5 sm:px-6\"" src/components src/pages | grep -v page-hero | grep -v "Navigation\|SectionRail\|MobileSubNav\|HeaderBreadcrumb\|GlobalMenu"` → **zero matches**.
-3. `rg "container-page" src/components src/pages` → **~10–12 matches** (one per migrated section).
-4. Visual sweep at 360 / 414 / 768 / 1024 / 1280 / 1440 / 1920:
-   - Lay a vertical guide at the left edge of the Hero type column (set by hero's own `px-5 sm:px-6 md:px-10`). At lg+ the *body* sections (BrandStatement, Services, FeaturedProjects, CrewMoment, TestimonialStrip, QuoteCloserCard) will start one step further inset (`lg:px-16` = 64px) than the hero (`md:px-10` = 40px) — this is the intentional editorial inset that signals "you've left the hero, you're in the magazine".
-   - Within the body group, every section starts at the SAME x at every breakpoint. Scroll Home — the eye should track a single vertical rule.
-   - Right edge: every body section now caps at 1440 - 64 = 1376px content width on lg+. Previously CrewMoment/Testimonial capped at 1280 - 24 = 1256px. The 120px gain is real and welcome.
-5. No horizontal scrollbar on 360px (the smallest supported viewport) — `px-5` = 20px each side leaves 320px content, fine.
+1. Visual sweep at 360 / 768 / 1440 on Home:
+  - **FeaturedProjects** (uses SectionHeader): H2 → subhead gap doubles. The "Featured projects" subhead now reads at 15→16px (was 16→18px) in `text-foreground/75` (was full-muted). The eye reads the H2 as the headline, the subhead as a beat under it, then the project grid — three clear tiers.
+  - **TestimonialStrip** (uses SectionHeader): same rhythm correction, same calmer subhead voice.
+  - **MiniFaq** (uses SectionHeader on Services / Contact pages): same.
+  - **CrewMoment** (uses SectionHeader with `subheading` empty most places): unchanged where no subhead exists; cleaner where present.
+  - **QuoteCloserCard**: body paragraph reads at the same scale as lead paragraphs across the rest of the site.
+2. `rg "text-base md:text-lg text-muted-foreground" src/components` → **zero matches** (the SectionHeader literal was the only one).
+3. Lighthouse a11y: contrast ratios verified for `text-foreground/75` on `bg-background` (≥7:1) and `text-evergreen-foreground/75` on `bg-evergreen` (≥4.5:1).
+4. No regression in Hero, Services, BrandStatement (bespoke editorial typography — out of scope).
 
-## E. Documentation update
+## E. Out of scope
 
-Add a one-line memory note (in this pass's edit, not a separate write) inside `src/lib/spacing.ts` near the SECTION_PADDING block:
-
-```
-// CONTAINER UTILITY: every body section uses `.container-page` from index.css.
-// Hero variants and chrome use bespoke containers — see PageHero / Navigation.
-```
+- **Hero subtitle** (`src/components/ui/page-hero.tsx` architect-bleed) — uses bespoke `clamp(0.95rem, 1.05vw, 1.125rem)` for cinematic legibility on the hero photo. Stays.
+- **Services row descriptions** (line 69) — `<p className="hidden md:block md:col-span-5 text-base text-muted-foreground/85 leading-relaxed text-pretty">`. This sits in a 12-column row, not a section intro. Different rhythm contract, untouched.
+- **BrandStatement single-line statement** — already on `HEADLINE.section`, no separate subhead. Untouched.
+- **FeaturedProjects card descriptions** (line 101 — `text-sm`) — card-tier copy, not section intro. Untouched.
+- `**BODY.default` token** — kept as-is for any future call-site that genuinely wants the louder voice; just nothing on Home uses it after this pass.
 
 ## Files touched
 
-1. `src/index.css` (add `.container-page`)
-2. `src/lib/spacing.ts` (one-line doc note)
-3. `src/components/Services.tsx`
-4. `src/components/BrandStatement.tsx`
-5. `src/components/FeaturedProjects.tsx`
-6. `src/components/QuoteCloserCard.tsx`
-7. `src/components/CrewMoment.tsx`
-8. `src/components/TestimonialStrip.tsx`
-9. `src/components/MiniFaq.tsx`
-10. `src/components/media/FieldClipsStrip.tsx`
-11. `src/pages/About.tsx`
-12. `src/pages/Services.tsx`
-13. `src/pages/Work.tsx`
+1. `src/components/SectionHeader.tsx` (4-line edit: eyebrow margin, H2 margin, subhead className, import)
+2. `src/components/QuoteCloserCard.tsx` (1-line className swap)
