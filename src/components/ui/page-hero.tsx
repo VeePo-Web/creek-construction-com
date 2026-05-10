@@ -686,23 +686,14 @@ const ArchitectBleed = (props: ArchitectBleedProps) => {
 
   useHeroPreload(imgSrc, MEDIA_SIZES.HERO_FULL);
 
-  const captionLine = useMemo(() => {
-    const c = props.caption ?? {};
-    const fallbackLocation = item?.alt?.split(" in ")[1]?.split(",")[0];
-    const service = c.service ?? item?.service ?? undefined;
-    const location = c.location ?? fallbackLocation;
-    const year = c.year ?? undefined;
-    return [service, location, year ? String(year) : null]
-      .filter(Boolean)
-      .join(" · ");
-  }, [props.caption, item]);
+  // captionLine removed (Pass 52) — no auto-derived "service · location" chip.
 
   return (
     <section
       id="section-hero"
       className={cn(
         "relative overflow-hidden flex flex-col justify-between",
-        "min-h-[78vh] sm:min-h-[84vh] md:min-h-[78vh] lg:min-h-[760px] xl:min-h-[820px] 2xl:min-h-[900px]",
+        "min-h-[100svh]",
         props.className,
       )}
       style={{ backgroundColor: inColor ? "hsl(28 16% 10%)" : "hsl(0 0% 4%)", contain: "layout style paint" }}
@@ -782,29 +773,7 @@ const ArchitectBleed = (props: ArchitectBleedProps) => {
         aria-hidden
       />
 
-      {/* ── Top: hairline + uppercase eyebrow ── */}
-      <div className="container mx-auto max-w-[1440px] px-5 sm:px-6 md:px-10 relative z-10 pt-20 sm:pt-24 md:pt-32">
-        <div
-          className="flex items-center gap-4 hero-provenance-enter"
-          style={{ ["--kinetic-delay" as never]: "200ms" }}
-        >
-          <span
-            aria-hidden
-            className="block h-px w-10 md:w-16"
-            style={{ backgroundColor: "hsl(0 0% 100% / 0.55)" }}
-          />
-          <span
-            className="text-[10px] md:text-[11px] uppercase tabular-nums"
-            style={{
-              color: "hsl(0 0% 100% / 0.82)",
-              letterSpacing: "0.24em",
-              fontFamily: "var(--font-sans, 'DM Sans', system-ui, sans-serif)",
-            }}
-          >
-            {props.sectionLabel}
-          </span>
-        </div>
-      </div>
+      {/* Top eyebrow row removed (Pass 52) — chrome owns wayfinding, H1 carries the page. */}
 
       {/* ── Middle: oversized light serif headline ── */}
       <div className="container mx-auto max-w-[1440px] px-5 sm:px-6 md:px-10 relative z-10 flex-1 flex items-center justify-start">
@@ -903,30 +872,7 @@ const ArchitectBleed = (props: ArchitectBleedProps) => {
             )}
           </div>
 
-          {captionLine && (
-            <div className="md:col-span-5 lg:col-span-5 text-right md:mt-2">
-              <div
-                className="inline-flex items-center gap-3 hero-provenance-enter"
-                style={{ ["--kinetic-delay" as never]: "1600ms" }}
-              >
-                <span
-                  aria-hidden
-                  className="block h-px w-8"
-                  style={{ backgroundColor: "hsl(0 0% 100% / 0.45)" }}
-                />
-                <span
-                  className="text-[10px] md:text-[11px] uppercase tabular-nums whitespace-nowrap"
-                  style={{
-                    color: "hsl(0 0% 100% / 0.7)",
-                    letterSpacing: "0.22em",
-                    fontFamily: "var(--font-sans, 'DM Sans', system-ui, sans-serif)",
-                  }}
-                >
-                  {captionLine}
-                </span>
-              </div>
-            </div>
-          )}
+          {/* Bottom-right captionLine rail removed (Pass 52). */}
         </div>
       </div>
     </section>
