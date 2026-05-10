@@ -322,16 +322,8 @@ const EditorialSplit = (props: EditorialSplitProps) => {
         >
           {/* ─── Left column ─── */}
           <div className={hasMedia ? "lg:col-span-7 max-w-2xl" : ""}>
-            {/* Breadcrumb intentionally omitted — HeaderBreadcrumb in the chrome
-                owns wayfinding (v3.1). On Home there's no sub-page context, so
-                the eyebrow comes from BronzeRule's sectionLabel only. */}
+            {/* sectionLabel/eyebrow chip removed (Pass 52) — H1 carries the page. */}
 
-            <BronzeRule
-              numeral={props.numeral}
-              label={props.sectionLabel}
-              variant="onDark"
-              className="mb-6 hero-rule-draw"
-            />
 
             <KineticHeadline
               lines={lines}
