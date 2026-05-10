@@ -47,7 +47,7 @@ const Footer = () => {
 
           {/* ── Navigate ── */}
           <div className="lg:col-span-4 lg:px-10 lg:border-l lg:border-evergreen-foreground/10">
-            <p className="text-[11px] tracking-[0.22em] uppercase text-cedar/70 mb-4 text-center lg:text-left">
+            <p className="eyebrow mb-4 text-center lg:text-left">
               Navigate
             </p>
             <nav aria-label="Footer">
