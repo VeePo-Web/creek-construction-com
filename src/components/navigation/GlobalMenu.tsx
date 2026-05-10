@@ -372,7 +372,7 @@ const GlobalMenu = ({ isOpen, onClose, id = "global-menu" }: GlobalMenuProps) =>
                             >
                               <span>{city}</span>
                               {isHomeBase && (
-                                <span className="text-[9px] tracking-[0.22em] uppercase text-cedar/70 font-medium">
+                                <span className="text-[10px] tracking-[0.22em] uppercase text-cedar/70 font-medium">
                                   Home base
                                 </span>
                               )}
@@ -410,7 +410,7 @@ const GlobalMenu = ({ isOpen, onClose, id = "global-menu" }: GlobalMenuProps) =>
         >
           <div className="max-w-7xl mx-auto px-6 md:px-12 lg:px-20 pt-5 pb-5">
             <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-              <div className="flex items-center gap-2 text-[11px] tracking-[0.18em] uppercase text-muted-foreground">
+              <div className="flex items-center gap-2 text-[10px] tracking-[0.22em] uppercase font-medium text-muted-foreground">
                 <ShieldCheck className="h-4 w-4 text-cedar shrink-0" aria-hidden />
                 <span>{TRUST_LINE}</span>
               </div>
