@@ -58,7 +58,6 @@ const MiniFaq = ({
       <FaqAccordion items={items} className="mt-10" />
       {showPhoneFallback && (
         <p className="hairline mt-10 pt-7 text-xs text-muted-foreground/70 text-left">
-
           Have more questions?{" "}
           <a
             href={`tel:${CONTACT.phoneTel}`}
