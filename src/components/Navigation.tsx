@@ -8,13 +8,9 @@ import { cn } from "@/lib/utils";
 import { BUTTON } from "@/lib/colors";
 
 import BrandMark from "@/components/navigation/BrandMark";
-import SectionRail from "@/components/navigation/SectionRail";
-import SectionRailCompact from "@/components/navigation/SectionRailCompact";
 import HeaderBreadcrumb from "@/components/navigation/HeaderBreadcrumb";
 import MenuTrigger from "@/components/navigation/MenuTrigger";
 import GlobalMenu from "@/components/navigation/GlobalMenu";
-import MobileSubNav from "@/components/navigation/MobileSubNav";
-import { getPageSections } from "@/lib/page-sections";
 import { getRouteBreadcrumb } from "@/lib/route-meta";
 import { useScrollChrome } from "@/hooks/useScrollChrome";
 
@@ -49,8 +45,7 @@ const Navigation = ({ transparent: _transparent }: NavigationProps) => {
   const { openModal } = useQuoteModal();
   const location = useLocation();
 
-  const sections = getPageSections(location.pathname);
-  const { isScrolled, isAtFooter } = useScrollChrome();
+  const { isScrolled } = useScrollChrome();
 
   // Compact mobile Quote pill — distinct from the full desktop CTA.
   const mobileCta = cn(
@@ -99,18 +94,9 @@ const Navigation = ({ transparent: _transparent }: NavigationProps) => {
           {/* Left — brand */}
           <BrandMark className="shrink-0" />
 
-          {/* Center — wayfinding. Three states, mutually exclusive at any breakpoint:
-              - Desktop (lg+): centered editorial section rail (n>=3) OR n=2 sub-bar
-              - Tablet (md to lg): SectionRailCompact with overflow into the menu
-              - All breakpoints, sub-pages: HeaderBreadcrumb chip */}
+          {/* Center — single quiet sub-page breadcrumb chip; no per-page rail */}
           <div className="flex-1 flex items-center justify-center gap-3 min-w-0">
             <HeaderBreadcrumb />
-            <SectionRailCompact
-              sections={sections}
-              onOverflow={() => setMenuOpen(true)}
-              faded={isAtFooter}
-            />
-            <SectionRail sections={sections} faded={isAtFooter} />
           </div>
 
           {/* Right cluster — never fades, never hides on mobile.
