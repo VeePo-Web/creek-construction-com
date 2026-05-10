@@ -58,7 +58,7 @@ const Services = () => {
         <CedarCTA />
       </PageHero>
 
-      {/* Catalogue — five groups, fifteen items */}
+      {/* Catalogue — single flat list of every service we offer */}
       <section
         id="section-catalogue"
         className={`${SECTION_PADDING.default}`}
@@ -74,57 +74,43 @@ const Services = () => {
               />
             </div>
 
-            <div className="mt-16 space-y-10 md:space-y-14">
-              {SERVICE_GROUPS.map((group, gIdx) => {
-                const items = getItemsForGroup(group.id);
+            <ul role="list" className="mt-14 md:mt-16">
+              {SERVICES.map((service, i) => {
+                const n = String(i + 1).padStart(2, "0");
                 return (
-                  <div key={group.id} aria-labelledby={`group-${group.id}`} className={gIdx > 0 ? "pt-10 md:pt-14 hairline" : ""}>
-                    <div className="mb-6 md:mb-8 flex items-baseline gap-3">
-                      <span className="eyebrow tabular-nums opacity-60">
-                        {String(gIdx + 1).padStart(2, "0")}
+                  <li key={service.id} role="listitem" className="hairline">
+                    <button
+                      type="button"
+                      onClick={() => openModal([service.id])}
+                      aria-label={`Get my free quote for ${service.title}`}
+                      className="group relative w-full text-left grid grid-cols-12 gap-x-4 sm:gap-x-6 gap-y-2 items-baseline py-6 md:py-7 pl-3 md:pl-5 transition-colors duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cedar/40 focus-visible:ring-offset-2 focus-visible:ring-offset-background min-h-[44px]"
+                    >
+                      <span
+                        aria-hidden
+                        className="absolute left-0 top-3 bottom-3 w-0 bg-cedar transition-all duration-300 group-hover:w-[2px]"
+                      />
+                      <span className="col-span-2 md:col-span-1 eyebrow-base text-cedar/55 tabular-nums text-right md:text-left">
+                        {n}
                       </span>
-                      <h3
-                        id={`group-${group.id}`}
-                        className={HEADLINE.sub}
-                      >
-                        {group.title}
+                      <h3 className="col-span-10 md:col-span-5 font-serif text-xl md:text-2xl text-foreground tracking-[-0.02em] leading-[1.2]">
+                        <span className="link-underline group-hover:[background-size:100%_1px]">
+                          {service.title}
+                        </span>
                       </h3>
-                    </div>
-
-                    <ul role="list" className="grid sm:grid-cols-2 gap-x-6 sm:gap-x-10">
-                      {items.map((item) => (
-                        <li key={item.id} role="listitem" className="border-b border-cedar/12">
-                          <button
-                            type="button"
-                            onClick={() => openModal([item.id])}
-                            className="group relative w-full flex items-baseline justify-between gap-4 py-4 md:py-5 pl-3 sm:pl-4 pr-2 text-left transition-colors duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cedar/40 focus-visible:ring-offset-2 focus-visible:ring-offset-background min-h-[44px]"
-                            aria-label={`Get my free quote for ${item.title}`}
-                          >
-                            <span
-                              aria-hidden
-                              className="absolute left-0 top-3 bottom-3 w-0 bg-cedar transition-all duration-300 group-hover:w-[2px]"
-                            />
-                            <div className="flex-1 min-w-0">
-                              <p className="text-base text-foreground">
-                                {item.title}
-                              </p>
-                              {item.short && (
-                                <p className="text-xs text-muted-foreground mt-1">{item.short}</p>
-                              )}
-                            </div>
-                            <ArrowUpRight
-                              className="hidden sm:block h-4 w-4 text-cedar/45 group-hover:text-cedar opacity-0 group-hover:opacity-100 transition-all duration-300 flex-shrink-0"
-                              strokeWidth={1.5}
-                              aria-hidden
-                            />
-                          </button>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
+                      <p className="col-span-12 md:col-span-5 text-sm text-muted-foreground/85 leading-relaxed text-pretty">
+                        {service.description}
+                      </p>
+                      <span
+                        aria-hidden
+                        className="hidden md:flex md:col-span-1 md:items-center md:justify-end text-cedar/45 group-hover:text-cedar transition-colors"
+                      >
+                        <ArrowUpRight className="h-5 w-5" strokeWidth={1.5} />
+                      </span>
+                    </button>
+                  </li>
                 );
               })}
-            </div>
+            </ul>
           </div>
         </div>
       </section>
