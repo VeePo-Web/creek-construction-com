@@ -101,7 +101,7 @@ const MobileSubNav = ({ faded = false }: MobileSubNavProps) => {
               return (
                 <span key={section.anchor} className="flex items-center shrink-0" style={{ scrollSnapAlign: "end" }}>
                   {i > 0 && (
-                    <span aria-hidden className="mx-1 text-foreground/25 text-[9px]">
+                    <span aria-hidden className="mx-1 text-foreground/25 text-[10px]">
                       ·
                     </span>
                   )}
