@@ -92,8 +92,13 @@ interface CinematicBleedProps extends BaseProps {
 
 interface ArchitectBleedProps extends BaseProps {
   variant: "architect-bleed";
-  /** Single full-bleed photograph that anchors the hero. */
+  /** Single full-bleed photograph that anchors the hero (queried from media library). */
   query: MediaQuery;
+  /** Optional static image override — when set, bypasses the media query and uses this asset directly. */
+  imageSrc?: string;
+  imageAlt?: string;
+  /** When true (default), renders the image in full color. Set false to keep the legacy B&W treatment. */
+  inColor?: boolean;
   /** Bottom-right caption rail. Falls back to derived values from media. */
   caption?: { service?: string; location?: string; year?: number };
   /** Primary CTA label (renders a white-outline button that opens QuoteModal via children-replacement when omitted). */
