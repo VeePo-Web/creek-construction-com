@@ -3,137 +3,55 @@ import SkipToContent from "@/components/ui/skip-to-content";
 import Footer from "@/components/Footer";
 import CedarCTA from "@/components/CedarCTA";
 import QuoteCloserCard from "@/components/QuoteCloserCard";
-import SectionHeader from "@/components/SectionHeader";
 import PageHero from "@/components/ui/page-hero";
-import ProjectTile from "@/components/ui/project-tile";
-import ProjectGallery from "@/components/ProjectGallery";
+import GalleryWall from "@/components/GalleryWall";
 import TestimonialStrip from "@/components/TestimonialStrip";
-
-import { ProjectsJsonLd } from "@/components/JsonLd";
 import { useDocumentTitle } from "@/hooks/useDocumentTitle";
-import { Hammer, Fence, Paintbrush, Home, Trees, type LucideIcon } from "lucide-react";
-import { useQuoteModal } from "@/components/quote/QuoteModalProvider";
-import { PROJECTS, formatStatus } from "@/data/projects";
 import { SECTION_PADDING, MAX_WIDTH } from "@/lib/spacing";
-import { HEADLINE } from "@/lib/typography";
-
-interface PlaceholderItem {
-  title: string;
-  location: string;
-  service: string;
-  description: string;
-  icon: LucideIcon;
-}
-
-/** Service categories that don’t yet have a real photographed project — render as icon placeholders. */
-const PLACEHOLDERS: PlaceholderItem[] = [
-  { title: "Two-Tier Cedar Deck", location: "Calgary NW", service: "decks", icon: Hammer, description: "Cedar deck on a sloped lot with a built-in bench and integrated planter boxes." },
-  { title: "Cedar Privacy Fence", location: "Sherwood Park", service: "fencing", icon: Fence, description: "Six-foot fence with horizontal slats and a custom side gate." },
-  { title: "Full Exterior Repaint", location: "Calgary SW", service: "painting", icon: Paintbrush, description: "Two coats over proper prep, all trim and fascia repainted, hand-cut lines." },
-  { title: "Soffit & Fascia Replace", location: "Edmonton", service: "siding", icon: Home, description: "Old aluminum stripped, water damage repaired, new pre-finished metal install." },
-  { title: "Cedar Pergola", location: "Okotoks", service: "pergolas", icon: Trees, description: "12×14 pergola over an existing patio with stained cedar and powder-coated brackets." },
-];
 
 const Work = () => {
   useDocumentTitle(
-    "Our Work",
-    "Recent residential exterior projects across Calgary, Edmonton, and surrounding Alberta — decks, fencing, sheds, painting, siding, pergolas.",
+    "Gallery",
+    "A look at recent residential exterior work across Calgary, Edmonton, and surrounding Alberta.",
   );
-  const { openModal } = useQuoteModal();
 
   return (
-    <main id="main-content" className="min-h-screen overflow-x-clip bg-background" aria-label="Our Work — Creek Construction">
-      <ProjectsJsonLd />
-      <SkipToContent target={PROJECTS.length > 0 ? "section-featured" : "section-gallery"} />
+    <main
+      id="main-content"
+      className="min-h-screen overflow-x-clip bg-background"
+      aria-label="Gallery — Creek Construction"
+    >
+      <SkipToContent target="section-gallery" />
       <Navigation />
 
       <PageHero
         variant="cinematic-bleed"
-        breadcrumb={[{ label: "Home", to: "/" }, { label: "Our Work" }]}
-        sectionLabel="Selected Work"
-        title={["The work", "speaks first."]}
-        subtitle="Selected projects across Calgary, Edmonton, and the towns in between."
+        breadcrumb={[{ label: "Home", to: "/" }, { label: "Gallery" }]}
+        sectionLabel="Gallery"
+        title={["The work."]}
         query={{ shot_type: ["hero", "elevation", "wide"], min_quality: "reference", kind: "image" }}
         videoQuery={{ kind: "video", min_quality: "portfolio" }}
-        height="84vh"
-        minHeight="640px"
+        height="78vh"
+        minHeight="600px"
       >
         <CedarCTA />
       </PageHero>
 
-      {/* Featured editorial galleries — real photographed projects */}
-      {PROJECTS.length > 0 && (
-        <section id="section-featured" className={`${SECTION_PADDING.default}`} aria-labelledby="featured-heading">
-          <div className="container-page">
-            <div className={`${MAX_WIDTH.wide} mx-auto`}>
-              <SectionHeader
-                label="FEATURED PROJECT"
-                headingId="featured-heading"
-                heading={PROJECTS[0].title.replace(/\.$/, "") + "."}
-                subheading={PROJECTS[0].summary}
-              />
-
-              <div className="mt-12 space-y-20">
-                {PROJECTS.map((project, idx) => (
-                  <article key={project.slug} aria-labelledby={`project-${project.slug}-heading`}>
-                    {idx > 0 && (
-                      <header className="mb-6 pt-10 hairline flex flex-col items-start gap-2 md:flex-row md:items-baseline md:justify-between md:gap-8">
-                        <h2
-                          id={`project-${project.slug}-heading`}
-                          className={HEADLINE.section}
-                        >
-                          {project.title}
-                        </h2>
-                        <p className="eyebrow tabular-nums opacity-75 shrink-0">
-                          {project.location} · {formatStatus(project.status)} · {project.year}
-                        </p>
-                      </header>
-                    )}
-                    <ProjectGallery project={project} priority={idx === 0} />
-                  </article>
-                ))}
-              </div>
-            </div>
-          </div>
-        </section>
-      )}
-
-      {/* Service-category placeholder grid — replaced as real photos arrive */}
-      <section id="section-gallery" className={`${SECTION_PADDING.default} bg-secondary`} aria-labelledby="gallery-heading">
+      <section
+        id="section-gallery"
+        className={`${SECTION_PADDING.default}`}
+        aria-label="Photography wall"
+      >
         <div className="container-page">
           <div className={`${MAX_WIDTH.wide} mx-auto`}>
-            <SectionHeader
-              label="MORE WORK"
-              headingId="gallery-heading"
-              heading="Across every service."
-              subheading="Photography in progress — click any category to request a quote."
-              align="center"
-            />
-
-            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 mt-12" role="list">
-              {PLACEHOLDERS.map((w, i) => (
-                <ProjectTile
-                  key={i}
-                  item={{
-                    title: w.title,
-                    location: w.location,
-                    description: w.description,
-                    icon: w.icon,
-                    service: w.service as import("@/lib/api/public-media").ServiceCategory,
-                  }}
-                  index={i}
-                  total={PLACEHOLDERS.length}
-                  onClick={() => openModal([w.service])}
-                />
-              ))}
-            </div>
+            <GalleryWall priorityCount={6} />
           </div>
         </div>
       </section>
 
-      <TestimonialStrip background="background" />
+      <TestimonialStrip background="secondary" />
 
-      <QuoteCloserCard eyebrow="Quote a similar build" background="secondary" />
+      <QuoteCloserCard background="background" />
 
       <Footer />
     </main>
