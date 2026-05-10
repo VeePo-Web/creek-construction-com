@@ -1,16 +1,15 @@
 import { ArrowUpRight } from "lucide-react";
 import { Link } from "react-router-dom";
-import { SERVICE_GROUPS, getItemsForGroup } from "@/config/services";
+import { SERVICES } from "@/config/services";
 import { useQuoteModal } from "@/components/quote/QuoteModalProvider";
 import { SECTION_PADDING, MAX_WIDTH } from "@/lib/spacing";
 import { HEADLINE } from "@/lib/typography";
 import { useReveal } from "@/hooks/useReveal";
 
 /**
- * Services — homepage editorial rows. Pass 33: tightened rhythm,
- * removed duplicate "Start a quote" header CTA in favor of an end-of-list
- * footnote, added a left-edge cedar marker that animates in on hover
- * (no row-height shift), uniform .hairline dividers throughout.
+ * Services — homepage editorial list. Pass 48: collapsed to a single
+ * flat list of 16 services with one description each. Same hairline
+ * rhythm and hover-cedar marker as before.
  */
 const Services = () => {
   const { openModal } = useQuoteModal();
@@ -24,7 +23,6 @@ const Services = () => {
     >
       <div className="container-page">
         <div ref={ref} className={`${MAX_WIDTH.wide} mx-auto ${cls}`} style={style}>
-          {/* Calm editorial header — single eyebrow + headline, no trailing CTA */}
           <div className="grid grid-cols-1 md:grid-cols-12 gap-y-6 mb-14 md:mb-20">
             <p className="eyebrow md:col-span-3">What we build</p>
             <div className="md:col-span-9">
@@ -32,28 +30,24 @@ const Services = () => {
                 id="services-heading"
                 className={`${HEADLINE.section} leading-[1.02]`}
               >
-                Five categories.
+                Sixteen services.
                 <br />
-                Fifteen services.
+                One crew.
               </h2>
             </div>
           </div>
 
-          {/* Numbered rows — top hairline; rows divided by .hairline */}
           <ul role="list">
-            {SERVICE_GROUPS.map((group, i) => {
-              const groupItemIds = getItemsForGroup(group.id).map((s) => s.id);
+            {SERVICES.map((service, i) => {
               const n = String(i + 1).padStart(2, "0");
-              const isFirst = i === 0;
               return (
-                <li key={group.id} role="listitem" className={isFirst ? "hairline" : "hairline"}>
+                <li key={service.id} role="listitem" className="hairline">
                   <button
                     type="button"
-                    onClick={() => openModal(groupItemIds)}
-                    aria-label={`Get my free quote — ${group.title}`}
-                    className="group relative w-full text-left grid grid-cols-12 gap-x-4 sm:gap-x-6 gap-y-2 items-baseline py-7 md:py-9 pl-3 md:pl-5 transition-colors duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cedar/40 focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+                    onClick={() => openModal([service.id])}
+                    aria-label={`Get my free quote — ${service.title}`}
+                    className="group relative w-full text-left grid grid-cols-12 gap-x-4 sm:gap-x-6 gap-y-2 items-baseline py-6 md:py-7 pl-3 md:pl-5 transition-colors duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cedar/40 focus-visible:ring-offset-2 focus-visible:ring-offset-background"
                   >
-                    {/* Apple-style left index marker — 0 → 2px on hover */}
                     <span
                       aria-hidden
                       className="absolute left-0 top-2 bottom-2 w-0 bg-cedar transition-all duration-300 group-hover:w-[2px]"
@@ -61,13 +55,13 @@ const Services = () => {
                     <span className="col-span-2 md:col-span-1 eyebrow-base text-cedar/55 tabular-nums text-right md:text-left">
                       {n}
                     </span>
-                    <h3 className="col-span-10 md:col-span-5 font-serif text-2xl md:text-3xl text-foreground tracking-[-0.02em] leading-[1.15]">
+                    <h3 className="col-span-10 md:col-span-5 font-serif text-xl md:text-2xl text-foreground tracking-[-0.02em] leading-[1.2]">
                       <span className="link-underline group-hover:[background-size:100%_1px]">
-                        {group.title}
+                        {service.title}
                       </span>
                     </h3>
-                    <p className="hidden md:block md:col-span-5 text-base text-muted-foreground/85 leading-relaxed text-pretty">
-                      {group.description}
+                    <p className="hidden md:block md:col-span-5 text-sm text-muted-foreground/85 leading-relaxed text-pretty">
+                      {service.description}
                     </p>
                     <span
                       aria-hidden
@@ -79,7 +73,6 @@ const Services = () => {
                 </li>
               );
             })}
-            {/* End-of-list footnote — Apple-grade calm closer */}
             <li className="hairline">
               <Link
                 to="/contact"
@@ -97,4 +90,3 @@ const Services = () => {
 };
 
 export default Services;
-

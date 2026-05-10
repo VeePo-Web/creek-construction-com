@@ -3,7 +3,7 @@ import SkipToContent from "@/components/ui/skip-to-content";
 import { useDocumentTitle } from "@/hooks/useDocumentTitle";
 import Hero from "@/components/Hero";
 import Services from "@/components/Services";
-import FeaturedProjects from "@/components/FeaturedProjects";
+import HomeGalleryStrip from "@/components/HomeGalleryStrip";
 import QuoteCloserCard from "@/components/QuoteCloserCard";
 import Footer from "@/components/Footer";
 import { LocalBusinessJsonLd } from "@/components/JsonLd";
@@ -35,7 +35,7 @@ const Index = () => {
       <Hero />
       <BrandStatement />
       <Services />
-      <FeaturedProjects background="secondary" />
+      <HomeGalleryStrip background="secondary" />
       <CrewMoment background="background" topRule />
       <TestimonialStrip background="secondary" />
       <QuoteCloserCard id="section-contact" background="background" />
