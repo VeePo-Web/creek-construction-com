@@ -92,8 +92,13 @@ interface CinematicBleedProps extends BaseProps {
 
 interface ArchitectBleedProps extends BaseProps {
   variant: "architect-bleed";
-  /** Single full-bleed photograph that anchors the hero. */
+  /** Single full-bleed photograph that anchors the hero (queried from media library). */
   query: MediaQuery;
+  /** Optional static image override — when set, bypasses the media query and uses this asset directly. */
+  imageSrc?: string;
+  imageAlt?: string;
+  /** When true (default), renders the image in full color. Set false to keep the legacy B&W treatment. */
+  inColor?: boolean;
   /** Bottom-right caption rail. Falls back to derived values from media. */
   caption?: { service?: string; location?: string; year?: number };
   /** Primary CTA label (renders a white-outline button that opens QuoteModal via children-replacement when omitted). */
@@ -743,6 +748,20 @@ const ArchitectBleed = (props: ArchitectBleedProps) => {
   const [photoLoaded, setPhotoLoaded] = useState(false);
   const localImgRef = useRef<HTMLImageElement | null>(null);
 
+  // Static override wins over the media-library query when supplied.
+  const hasStatic = Boolean(props.imageSrc);
+  const inColor = props.inColor !== false; // default: color (Pass 44)
+  const photoFilter = inColor
+    ? "contrast(1.02) saturate(1.02) brightness(0.94)"
+    : "grayscale(100%) contrast(1.04) brightness(0.86)";
+  const lqipFilter = inColor
+    ? "blur(18px) brightness(0.92)"
+    : "grayscale(100%) blur(18px) brightness(0.82)";
+
+  const imgSrc = props.imageSrc ?? item?.url;
+  const imgAlt = props.imageAlt ?? item?.alt ?? "";
+  const imgLqip = hasStatic ? null : item?.lqip;
+
   // Reset load state if the source changes; mark loaded immediately if cached.
   useEffect(() => {
     setPhotoLoaded(false);
@@ -750,9 +769,9 @@ const ArchitectBleed = (props: ArchitectBleedProps) => {
     if (node?.complete && node.naturalWidth > 0) {
       setPhotoLoaded(true);
     }
-  }, [item?.url]);
+  }, [imgSrc]);
 
-  useHeroPreload(item?.url, MEDIA_SIZES.HERO_FULL);
+  useHeroPreload(imgSrc, MEDIA_SIZES.HERO_FULL);
 
   const captionLine = useMemo(() => {
     const c = props.caption ?? {};
@@ -773,36 +792,32 @@ const ArchitectBleed = (props: ArchitectBleedProps) => {
         "min-h-[78vh] sm:min-h-[84vh] md:min-h-[78vh] lg:min-h-[760px] xl:min-h-[820px] 2xl:min-h-[900px]",
         props.className,
       )}
-      style={{ backgroundColor: "hsl(0 0% 4%)", contain: "layout style paint" }}
+      style={{ backgroundColor: inColor ? "hsl(28 16% 10%)" : "hsl(0 0% 4%)", contain: "layout style paint" }}
       aria-label={lines.join(" ")}
     >
-      {/* Background photograph — LQIP-backed progressive layer.
-          The section reserves min-h-[88vh] so layout never shifts; the LQIP
-          paints instantly (data URI in HTML) so the user never sees a black
-          flash before the full image decodes. */}
-      {item ? (
+      {/* Background photograph — LQIP-backed progressive layer. */}
+      {imgSrc ? (
         <>
-          {/* LQIP backdrop — blurred + grayscale to match the hero treatment */}
-          {item.lqip && (
+          {imgLqip && (
             <div
               aria-hidden
               className="absolute inset-0 transition-opacity duration-500"
               style={{
-                backgroundImage: `url(${item.lqip.startsWith("data:") ? item.lqip : `data:image/jpeg;base64,${item.lqip}`})`,
+                backgroundImage: `url(${imgLqip.startsWith("data:") ? imgLqip : `data:image/jpeg;base64,${imgLqip}`})`,
                 backgroundSize: "cover",
                 backgroundPosition: "center",
-                filter: "grayscale(100%) blur(18px) brightness(0.82)",
+                filter: lqipFilter,
                 transform: "scale(1.04)",
                 opacity: photoLoaded ? 0 : 1,
               }}
             />
           )}
-          {/* When no LQIP exists, paint a soft warm-grey wash so the box isn't stark black */}
-          {!item.lqip && !photoLoaded && (
+          {/* When no LQIP exists, paint a soft warm wash so the box isn't stark black */}
+          {!imgLqip && !photoLoaded && (
             <div
               aria-hidden
               className="absolute inset-0"
-              style={{ backgroundColor: "hsl(0 0% 10%)" }}
+              style={{ backgroundColor: inColor ? "hsl(28 16% 14%)" : "hsl(0 0% 10%)" }}
             />
           )}
           <img
@@ -814,10 +829,10 @@ const ArchitectBleed = (props: ArchitectBleedProps) => {
                 (heroImgRef as React.MutableRefObject<HTMLImageElement | null>).current = node;
               }
             }}
-            src={item.url}
-            alt={item.alt}
-            width={item.width ?? 1920}
-            height={item.height ?? 1080}
+            src={imgSrc}
+            alt={imgAlt}
+            width={item?.width ?? 1920}
+            height={item?.height ?? 1080}
             className="absolute inset-0 w-full h-full object-cover hero-kenburns transition-opacity duration-[900ms]"
             loading="eager"
             {...({ fetchpriority: "high" } as Record<string, string>)}
@@ -825,29 +840,31 @@ const ArchitectBleed = (props: ArchitectBleedProps) => {
             sizes={MEDIA_SIZES.HERO_FULL}
             onLoad={() => setPhotoLoaded(true)}
             style={{
-              filter: "grayscale(100%) contrast(1.04) brightness(0.86)",
+              filter: photoFilter,
               opacity: photoLoaded ? 1 : 0,
             }}
           />
         </>
       ) : (
-        <div className="absolute inset-0" style={{ backgroundColor: "hsl(0 0% 8%)" }} aria-hidden />
+        <div className="absolute inset-0" style={{ backgroundColor: inColor ? "hsl(28 16% 14%)" : "hsl(0 0% 8%)" }} aria-hidden />
       )}
 
-      {/* Architect scrim stack: bottom-weighted black + faint left wash for type legibility */}
+      {/* Scrim stack tuned for color: lighter overall, bottom-weighted for type legibility */}
       <div
         className="absolute inset-0 pointer-events-none"
         style={{
-          background:
-            "linear-gradient(180deg, hsl(0 0% 0% / 0.42) 0%, hsl(0 0% 0% / 0.18) 38%, hsl(0 0% 0% / 0.62) 100%)",
+          background: inColor
+            ? "linear-gradient(180deg, hsl(0 0% 0% / 0.32) 0%, hsl(0 0% 0% / 0.08) 40%, hsl(0 0% 0% / 0.58) 100%)"
+            : "linear-gradient(180deg, hsl(0 0% 0% / 0.42) 0%, hsl(0 0% 0% / 0.18) 38%, hsl(0 0% 0% / 0.62) 100%)",
         }}
         aria-hidden
       />
       <div
         className="absolute inset-0 pointer-events-none"
         style={{
-          background:
-            "linear-gradient(90deg, hsl(0 0% 0% / 0.38) 0%, hsl(0 0% 0% / 0.10) 46%, transparent 70%)",
+          background: inColor
+            ? "linear-gradient(90deg, hsl(0 0% 0% / 0.50) 0%, hsl(0 0% 0% / 0.18) 42%, transparent 68%)"
+            : "linear-gradient(90deg, hsl(0 0% 0% / 0.38) 0%, hsl(0 0% 0% / 0.10) 46%, transparent 70%)",
         }}
         aria-hidden
       />
