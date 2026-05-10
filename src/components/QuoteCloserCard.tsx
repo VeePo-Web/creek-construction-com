@@ -34,7 +34,7 @@ const QuoteCloserCard = ({
         <h2 className={cn(HEADLINE.section, "text-evergreen-foreground leading-[1.1] mb-5 max-w-[22ch]")}>
           {heading}
         </h2>
-        <p className="text-evergreen-foreground/70 leading-relaxed mb-8 max-w-[52ch]">
+        <p className="font-sans text-evergreen-foreground/75 text-[15px] sm:text-base leading-[1.65] text-balance mb-8 max-w-[52ch]">
           {body}
         </p>
 
