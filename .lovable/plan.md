@@ -1,40 +1,73 @@
-# Pass 49 — Add optional "Voucher / referral code" field to lead forms
+# Pass 50 — Forensic audit: zero project descriptions, anywhere
 
-Add a final, optional, single-line text field labelled **"Voucher or referral code"** as the last input above the submit CTA on both the QuoteModal and the inline contact form. No validation beyond a length cap. The value rides along on submit and gets appended to `projectDetails` so it lands in the existing email + DB row without a schema change.
+## Audit results
 
-## Why append to `projectDetails` (not a new DB column)
+I traced every surface that could render project metadata (titles, locations, years, summaries, captions). Here is the complete picture.
 
-The edge function (`supabase/functions/submit-quote-request/index.ts`) already accepts `projectDetails` and writes it to `quote_requests.project_details`. Adding a dedicated `voucher` column means a migration + edge-function edit + types regeneration for one optional string. Appending `\n\nVoucher / referral: <value>` to `projectDetails` on the client gives the owner the info immediately in the same email body and DB row, with zero backend churn. Easy to promote to a real column later if it becomes high-volume.
+### ✅ Live render surfaces — already clean
 
-## Files touched
+| Surface | Renders | Verdict |
+|---|---|---|
+| `/work` (`src/pages/Work.tsx`) | `<GalleryWall>` — pure `<img>` grid, only `alt` text, no `<figcaption>`, no overlay | Image-only ✅ |
+| `/` homepage (`src/pages/Index.tsx`) | `<HomeGalleryStrip>` — 3-up `<img>`, only `alt` text, no captions | Image-only ✅ |
+| `/services` | Service rows only, no project references | Clean ✅ |
+| `PageHero` cinematic-bleed (Work hero) | Supports optional `caption={service, location, year}` prop, but **no page passes it** (`rg "caption=\{" src/pages/` returns zero hits) | Inert ✅ |
+| `ProjectsJsonLd` (in `src/components/JsonLd.tsx`) | Exported but **not mounted in App.tsx, index.html, or any page** | Inert ✅ |
 
-### 1. `src/components/quote/QuoteFormInline.tsx`
-- Add `voucher: ""` to `INITIAL` `FormState` and the interface.
-- After the existing "Anything we should know?" textarea (≈ line 398), add a new `<Field label="Voucher or referral code" htmlFor="qfi-voucher" optional>` with a single-line `<Input id="qfi-voucher" maxLength={80} placeholder="Optional" autoComplete="off" />` bound to `form.voucher`.
-- In `handleSubmit`, build the final `projectDetails` as:
-  ```ts
-  const baseDetails = form.projectDetails.trim();
-  const voucher = form.voucher.trim();
-  const combinedDetails = [
-    baseDetails || undefined,
-    voucher ? `Voucher / referral: ${voucher}` : undefined,
-  ].filter(Boolean).join("\n\n") || undefined;
-  ```
-  and pass `projectDetails: combinedDetails` in the payload.
+### ⚠️ Dead code that still contains project descriptions
 
-### 2. `src/components/quote/QuoteModal.tsx`
-- Same `voucher` addition to `INITIAL`, `FormState`, and the reset path in the `useEffect(open)`.
-- Add the same `<Field>` immediately below the existing project-details textarea (≈ line 545) so it's the very last input before the trust strip + CTA.
-- In `handleSubmit`, fold `voucher` into the `projectDetails` string the same way (preserves the existing `[General Inquiry]` prefix when in inquiry mode — voucher line appended after).
+These files are orphaned (no live import path mounts them) but the metadata still lives in the repo, which is a forensic risk — a future agent could re-introduce them, or a stray import could light them up. The user's instruction is "make sure this is the case on ALL THINGS," so we scrub them.
 
-### 3. No schema, edge-function, or memory changes
-- `quote_requests.project_details` already accommodates 2000 chars.
-- Edge function passes `projectDetails` straight through.
-- No design tokens or rules affected — reuses the existing `Field` + `Input` primitives, so styling matches the rest of the form automatically.
+| File | Risk |
+|---|---|
+| `src/data/projects.ts` | Defines `Project` type with `title`, `location`, `year`, `summary`, `status`, plus the full **Riverbend Studio Shed** entry with marketing copy ("A backyard studio shed with a curved cantilever roofline…") |
+| `src/components/FeaturedProjects.tsx` | Renders titles, locations, summaries from `PROJECTS` |
+| `src/components/ProjectGallery.tsx` | Renders project metadata grid |
+| `src/components/media/HomeProjectRecapStrip.tsx` | Imports `PROJECTS` for a recap strip |
+| `src/components/JsonLd.tsx` — `ProjectsJsonLd` export | Emits `name` + `description` from `PROJECTS` into structured data |
+
+### ✅ What is allowed to remain
+
+- **`alt` attributes** on `<img>` elements in `src/config/gallery.ts` ("Modern Alberta home with cedar siding…", etc.). These are accessibility text for screen readers and SEO crawlers — they are never rendered visibly. Per WCAG, removing them would break the site for blind users. Leaving as-is.
+- **Region/locale text** unrelated to projects ("Calgary · Edmonton · Alberta" in Hero, Footer, About). This is service-area copy, not project descriptions.
+
+## Changes
+
+### 1. Delete dead project artifacts
+
+- `rm src/components/FeaturedProjects.tsx`
+- `rm src/components/ProjectGallery.tsx`
+- `rm src/components/media/HomeProjectRecapStrip.tsx`
+- `rm src/data/projects.ts`
+- `rm -r src/assets/projects/riverbend-studio-shed/` (only its three JPEGs are imported by `gallery.ts`; we'll re-source those)
+
+### 2. Update `src/config/gallery.ts`
+
+Three of the gallery images currently import from the `projects/riverbend-studio-shed/` folder we're deleting. Move those JPEGs to `src/assets/gallery/` with neutral filenames (`gallery-shed-01.jpg`, `gallery-shed-02.jpg`, `gallery-shed-03.jpg`) and update the imports. Strip the file's header comment reference to "no project metadata" → reword to "captionless gallery, alt text only" so the intent is unambiguous on its own.
+
+### 3. Strip `ProjectsJsonLd` from `src/components/JsonLd.tsx`
+
+Remove the `ProjectsJsonLd` export entirely and its `PROJECTS` import. Other JSON-LD exports in the file (Organization, LocalBusiness, etc.) stay untouched.
+
+### 4. Strip dead reference in `src/components/ui/bronze-rule.tsx`
+
+The doc comment mentions "FeaturedProjects" — change to "FeaturedWork" or remove that one word so a future grep for `FeaturedProjects` returns truly zero hits.
+
+### 5. Strip the `caption` prop pathway in `PageHero` (optional, lower priority)
+
+`PageHero` still accepts `caption={service, location, year}` and renders a provenance rail when passed. No page passes it today, so it's dormant. Leaving it in keeps the component flexible but means a future agent could enable it. **Recommendation: leave as-is** — removing it would touch ~80 lines across three hero variants for zero current visual change. Flag in commit message instead.
 
 ## Verification
 
-1. Open QuoteModal: scroll to bottom of the form — voucher field is the last input above the trust micro-strip and "Get my free quote" CTA.
-2. Submit with a voucher value: confirm the email + Supabase row contain `Voucher / referral: <value>` appended to project details.
-3. Submit without a voucher: row reads exactly as it did before — no trailing whitespace or empty label.
-4. Inline form (anywhere `QuoteFormInline` is mounted) shows the same field in the same position with identical behaviour.
+After changes, these greps must all return zero hits in `src/`:
+
+```bash
+rg "PROJECTS\b" src/
+rg "FeaturedProjects" src/
+rg "HomeProjectRecapStrip" src/
+rg "ProjectGallery" src/
+rg "ProjectsJsonLd" src/
+rg "Riverbend|cantilever|studio shed" src/
+```
+
+Then visit `/`, `/work`, `/services`, `/about`, `/contact` and confirm no titles, captions, locations, years, or summaries appear over or beside any image.

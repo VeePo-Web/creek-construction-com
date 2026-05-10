@@ -32,7 +32,7 @@ const labelClass = {
  *   numeral  —————  EYEBROW LABEL
  *
  * Replaces ~15 hand-rolled `<div className="w-X h-px bg-cedar/Y">` blocks
- * across Hero, About, FeaturedProjects, Services. Always renders the
+ * across Hero, About, Gallery, Services. Always renders the
  * numeral with tabular-nums and consistent letter-spacing.
  */
 const BronzeRule = ({
