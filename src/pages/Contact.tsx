@@ -8,6 +8,7 @@ import { useDocumentTitle } from "@/hooks/useDocumentTitle";
 import { Phone, Mail, MapPin } from "lucide-react";
 import { CONTACT } from "@/config/contact";
 import { MAX_WIDTH } from "@/lib/spacing";
+import saunaInteriorDetail from "@/assets/sauna-interior-detail.jpg";
 
 /**
  * Contact — single-screen conversion page.
@@ -32,6 +33,23 @@ const Contact = () => {
     <main id="main-content" className="min-h-screen overflow-x-clip bg-background" aria-label="Contact — Creek Construction">
       <NavigationMinimal />
       <SkipToContent target="section-contact" />
+
+      <div
+        aria-hidden
+        className="relative w-full overflow-hidden h-[24vh] sm:h-[28vh] md:h-[32vh] max-h-[320px]"
+      >
+        <img
+          src={saunaInteriorDetail}
+          alt=""
+          className="block w-full h-full object-cover"
+          loading="eager"
+          decoding="async"
+          width={1920}
+          height={640}
+        />
+        <div className="absolute inset-x-0 bottom-0 h-24 pointer-events-none bg-gradient-to-t from-background to-transparent" />
+        <div className="absolute inset-x-0 top-0 h-12 pointer-events-none bg-gradient-to-b from-background/40 to-transparent" />
+      </div>
 
       <section
         id="section-contact"
