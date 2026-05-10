@@ -63,7 +63,7 @@ const SectionRailCompact = ({
             onClick={(e) => handleClick(e, section.anchor)}
             aria-current={isActive ? "location" : undefined}
             className={cn(
-              "relative px-2.5 py-2 text-[10px] tracking-[0.22em] uppercase font-medium",
+              "relative px-2.5 py-2 eyebrow-base",
               "transition-colors duration-300 min-h-[44px] flex items-center",
               isActive ? "text-cedar" : "text-cedar/65 hover:text-cedar",
             )}
@@ -84,7 +84,7 @@ const SectionRailCompact = ({
           type="button"
           onClick={onOverflow}
           className={cn(
-            "px-2.5 py-2 text-[10px] tracking-[0.22em] uppercase font-medium",
+            "px-2.5 py-2 eyebrow-base",
             "text-foreground/55 hover:text-cedar transition-colors duration-300",
             "min-h-[44px] flex items-center gap-1.5",
             "focus-visible:outline-none focus-visible:text-cedar",

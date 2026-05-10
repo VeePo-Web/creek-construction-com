@@ -122,7 +122,7 @@ export function EditorialFallback({
       {caption && (
         <p
           className={cn(
-            "absolute bottom-5 left-5 right-5 text-[10px] tracking-[0.22em] uppercase font-medium",
+            "absolute bottom-5 left-5 right-5 eyebrow-base",
             PLATE_CAPTION_COLOR[variant],
           )}
         >

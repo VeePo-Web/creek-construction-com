@@ -187,7 +187,7 @@ const GlobalMenu = ({ isOpen, onClose, id = "global-menu" }: GlobalMenuProps) =>
               <span className="absolute left-0 right-0 top-1/2 h-px bg-foreground -translate-y-1/2 rotate-45" />
               <span className="absolute left-0 right-0 top-1/2 h-px bg-foreground -translate-y-1/2 -rotate-45" />
             </span>
-            <span className="text-[10px] tracking-[0.22em] uppercase font-medium text-foreground/75">
+            <span className="eyebrow-base text-foreground/75">
               Close
             </span>
           </button>
@@ -410,7 +410,7 @@ const GlobalMenu = ({ isOpen, onClose, id = "global-menu" }: GlobalMenuProps) =>
         >
           <div className="max-w-7xl mx-auto px-6 md:px-12 lg:px-20 pt-5 pb-5">
             <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-              <div className="flex items-center gap-2 text-[10px] tracking-[0.22em] uppercase font-medium text-muted-foreground">
+              <div className="flex items-center gap-2 eyebrow-base text-muted-foreground">
                 <ShieldCheck className="h-4 w-4 text-cedar shrink-0" aria-hidden />
                 <span>{TRUST_LINE}</span>
               </div>

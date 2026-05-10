@@ -461,7 +461,7 @@ const Field = ({
     <div className="flex items-center justify-between mb-1.5 min-h-[16px]">
       <label
         htmlFor={htmlFor}
-        className="block text-[10px] tracking-[0.22em] uppercase font-medium text-muted-foreground"
+        className="block eyebrow-base text-muted-foreground"
       >
         {label}
         {required && <span className="text-cedar ml-1">*</span>}

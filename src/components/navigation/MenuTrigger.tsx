@@ -80,7 +80,7 @@ const MenuTrigger = ({
       {withLabel && (
         <span
           className={cn(
-            "text-[10px] tracking-[0.22em] uppercase font-medium",
+            "eyebrow-base",
             labelColor,
           )}
         >
