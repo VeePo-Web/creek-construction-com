@@ -67,10 +67,10 @@ const ServiceTile = ({
           </div>
           <div className="flex-1">
             <div className="flex items-baseline justify-between gap-3 mb-2">
-              <h3 className={cn(HEADLINE.card, "group-hover:text-cedar transition-colors duration-500")}>
+              <h3 className={HEADLINE.card}>
                 {item.title}
               </h3>
-              <span className="text-[10px] tracking-[0.2em] uppercase text-muted-foreground/40 tabular-nums">
+              <span className="eyebrow tabular-nums opacity-40">
                 {String(index + 1).padStart(2, "0")}
               </span>
             </div>
@@ -85,20 +85,15 @@ const ServiceTile = ({
               aria-hidden
               strokeWidth={1.5}
             />
-            <span className="text-[10px] tracking-[0.2em] uppercase text-muted-foreground/50 tabular-nums">
+            <span className="eyebrow tabular-nums opacity-50">
               {String(index + 1).padStart(2, "0")}
             </span>
           </div>
-          <h3
-            className={cn(
-              HEADLINE.card,
-              "mb-2 transition-colors duration-500 group-hover:text-cedar",
-            )}
-          >
+          <h3 className={cn(HEADLINE.card, "mb-2")}>
             {item.title}
           </h3>
           <p className="text-sm text-muted-foreground leading-relaxed flex-1">{item.description}</p>
-          <span className="text-[10px] tracking-[0.18em] uppercase text-cedar/70 group-hover:text-cedar transition-colors duration-500 mt-4">
+          <span className="eyebrow mt-4 transition-opacity duration-500 opacity-80 group-hover:opacity-100">
             Quote this →
           </span>
         </>

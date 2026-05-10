@@ -85,7 +85,7 @@ const CrewMoment = ({
                   <p className="font-serif text-2xl md:text-[1.75rem] text-foreground leading-none tabular-nums">
                     {s.value}
                   </p>
-                  <p className="text-[10px] tracking-[0.22em] uppercase text-muted-foreground/70 mt-2 leading-tight">
+                  <p className="eyebrow opacity-70 mt-2">
                     {s.label}
                   </p>
                 </div>

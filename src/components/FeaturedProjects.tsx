@@ -92,7 +92,7 @@ const ProjectCard = ({ project, variant, index }: ProjectCardProps) => {
           </div>
 
           <h3
-            className={`font-serif ${headingSize} text-foreground mt-2 leading-tight group-hover:text-cedar transition-colors duration-300`}
+            className={`font-serif ${headingSize} text-foreground mt-2 leading-tight`}
           >
             {project.title}
           </h3>
@@ -103,7 +103,7 @@ const ProjectCard = ({ project, variant, index }: ProjectCardProps) => {
             </p>
           )}
 
-          <span className="mt-4 inline-flex items-center gap-2 text-[10px] tracking-[0.18em] uppercase text-cedar/70 group-hover:text-cedar transition-colors duration-300">
+          <span className="mt-4 inline-flex items-center gap-2 eyebrow opacity-80 group-hover:opacity-100 transition-opacity duration-300">
             View project
             <ArrowRight
               className="h-3 w-3 group-hover:translate-x-1 transition-transform duration-300"
