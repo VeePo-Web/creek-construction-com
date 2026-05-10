@@ -2,14 +2,14 @@ import { Phone } from "lucide-react";
 import CedarCTA from "@/components/CedarCTA";
 import { CONTACT } from "@/config/contact";
 import PageHero from "@/components/ui/page-hero";
+import heroArchitectColor from "@/assets/hero-architect-color.jpg";
 
 /**
  * Hero — homepage opener.
  *
- * Pass 31: stripped to Fly4Me-grade calm. One photograph, eyebrow,
- * 2-line serif headline, single sentence, primary CTA + ghost call link.
- * Stat trio moved off the hero — proof now lives in the dedicated
- * sub-pages and the closer.
+ * Pass 44: full-color architect-bleed treatment. Uses a curated AI-rendered
+ * cedar deck at golden hour with negative space on the left for typography.
+ * Grayscale dropped sitewide on this variant.
  */
 const Hero = () => {
   return (
@@ -24,6 +24,9 @@ const Hero = () => {
         min_quality: "reference",
         kind: "image",
       }}
+      imageSrc={heroArchitectColor}
+      imageAlt="Cedar deck on a modern Alberta home at golden hour, prairie horizon beyond."
+      inColor
     >
       <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4">
         <CedarCTA />
