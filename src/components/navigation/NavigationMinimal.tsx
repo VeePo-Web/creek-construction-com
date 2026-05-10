@@ -42,7 +42,7 @@ const NavigationMinimal = () => {
               <span className="text-[13px] md:text-sm font-medium text-foreground tracking-tight">
                 {CONTACT.phone}
               </span>
-              <span className="hidden sm:inline text-[9px] tracking-[0.22em] uppercase text-muted-foreground/70 mt-1">
+              <span className="hidden sm:inline text-[10px] tracking-[0.22em] uppercase font-medium text-muted-foreground/70 mt-1">
                 Call or text
               </span>
             </span>
