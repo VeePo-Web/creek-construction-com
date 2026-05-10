@@ -599,7 +599,7 @@ const QuoteModal = () => {
                     onClick={handleSubmit}
                     disabled={!canSubmit}
                     aria-label={ctaLabel}
-                    className="w-full inline-flex items-center justify-center gap-2 bg-cedar text-cedar-foreground px-6 py-3.5 rounded-[2px] text-[11px] tracking-[0.22em] uppercase font-medium hover:bg-cedar-hover disabled:opacity-50 disabled:cursor-not-allowed transition-colors min-h-[52px]"
+                    className="w-full inline-flex items-center justify-center gap-2 bg-cedar text-cedar-foreground px-6 py-3.5 rounded-[2px] cta-label hover:bg-cedar-hover disabled:opacity-50 disabled:cursor-not-allowed transition-colors min-h-[52px]"
                   >
                     {submitting ? (
                       <>
@@ -719,7 +719,7 @@ const SuccessPanel = ({
     <div className="flex flex-col sm:flex-row items-center gap-4">
       <a
         href={`tel:${CONTACT.phoneTel}`}
-        className="inline-flex items-center gap-2 bg-cedar text-cedar-foreground px-6 py-3 rounded-[2px] text-[11px] tracking-[0.22em] uppercase font-medium hover:bg-cedar-hover transition-colors min-h-[44px]"
+        className="inline-flex items-center gap-2 bg-cedar text-cedar-foreground px-6 py-3 rounded-[2px] cta-label hover:bg-cedar-hover transition-colors min-h-[44px]"
       >
         <Phone className="h-3.5 w-3.5" aria-hidden /> Call us now
       </a>
@@ -727,14 +727,14 @@ const SuccessPanel = ({
         type="button"
         ref={doneBtnRef}
         onClick={onClose}
-        className="bg-evergreen text-evergreen-foreground px-6 py-3 rounded-[2px] text-[11px] tracking-[0.22em] uppercase font-medium hover:bg-evergreen/90 transition-colors min-h-[44px]"
+        className="bg-evergreen text-evergreen-foreground px-6 py-3 rounded-[2px] cta-label hover:bg-evergreen/90 transition-colors min-h-[44px]"
       >
         Done
       </button>
       <button
         type="button"
         onClick={onSendAnother}
-        className="text-[11px] tracking-[0.22em] uppercase text-muted-foreground hover:text-cedar transition-colors min-h-[44px] px-2"
+        className="cta-label text-muted-foreground hover:text-cedar transition-colors min-h-[44px] px-2"
       >
         Send another →
       </button>
