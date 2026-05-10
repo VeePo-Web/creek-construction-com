@@ -45,7 +45,6 @@ import {
 } from "@/lib/colors";
 import {
   HEADLINE,
-  EYEBROW,
   BODY,
   QUOTE,
   STAT,
@@ -1120,10 +1119,11 @@ const TypographySection = () => (
       />
     </Card>
 
-    <Subhead>Eyebrows</Subhead>
+    <Subhead>Eyebrows (CSS utilities — see src/index.css)</Subhead>
     <Card>
-      <TypeSpecimen label="EYEBROW.default" className={EYEBROW.default} example="The Work" />
-      <TypeSpecimen label="EYEBROW.accent" className={EYEBROW.accent} example="Featured Project" />
+      <TypeSpecimen label=".eyebrow" className="eyebrow" example="The Work" />
+      <TypeSpecimen label=".eyebrow-base + text-cedar" className="eyebrow-base text-cedar" example="Featured Project" />
+      <TypeSpecimen label=".cta-label + text-cedar" className="cta-label text-cedar" example="Get my free quote" />
     </Card>
 
     <Subhead>Body</Subhead>
