@@ -1,5 +1,4 @@
 import { cn } from "@/lib/utils";
-import { EYEBROW } from "@/lib/typography";
 
 interface BronzeRuleProps {
   /** Optional roman numeral or short tag rendered before the rule. */
@@ -19,10 +18,12 @@ const widthMap = {
   long: "w-12 sm:w-14 md:w-16",
 } as const;
 
+// Pass 45 — labels now use the canonical .eyebrow-base utility (10px / 0.22em / 500)
+// with per-variant color overrides only.
 const labelClass = {
-  default: EYEBROW.default,
-  accent: EYEBROW.accent,
-  onDark: EYEBROW.onDark,
+  default: "eyebrow-base text-muted-foreground/70",
+  accent: "eyebrow-base text-cedar",
+  onDark: "eyebrow-base text-cedar/80",
 } as const;
 
 /**
