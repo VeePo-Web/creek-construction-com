@@ -193,6 +193,12 @@ section[id^="section-"] {
     transform: translate(3px, -3px);
   }
 
+  /* Pass 46 — canonical body-section container. Every body section uses this. */
+  .container-page {
+    @apply mx-auto w-full max-w-[1440px] px-5 sm:px-6 md:px-10 lg:px-16;
+  }
+
+  /* Legacy progressive-gutter utility — kept for hero overlays only. */
   .container-x {
     @apply px-5 sm:px-6 md:px-10 lg:px-16;
   }

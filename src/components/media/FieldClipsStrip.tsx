@@ -49,7 +49,7 @@ const FieldClipsStrip = () => {
       className={cn(SECTION_PADDING.default, "bg-secondary relative")}
       aria-labelledby="field-clips-heading"
     >
-      <div className="container mx-auto px-6">
+      <div className="container-page">
         <div className={`${MAX_WIDTH.wide} mx-auto`}>
           <div className="mb-12">
             <SectionHeader

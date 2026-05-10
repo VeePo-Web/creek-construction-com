@@ -41,7 +41,7 @@ const About = () => {
       </PageHero>
 
       <section id="section-story" className={`${SECTION_PADDING.default}`} aria-labelledby="story-heading">
-        <div className="container mx-auto px-5 sm:px-6">
+        <div className="container-page">
           <div className={`${MAX_WIDTH.content} mx-auto`}>
             <SectionHeader
               label="WHO WE ARE"
@@ -68,7 +68,7 @@ const About = () => {
       </section>
 
       <section id="section-process" className={`${SECTION_PADDING.default} bg-secondary`} aria-labelledby="process-heading">
-        <div className="container mx-auto px-5 sm:px-6">
+        <div className="container-page">
           <div className={`${MAX_WIDTH.content} mx-auto`}>
             <SectionHeader
               label="HOW WE WORK"
@@ -101,7 +101,7 @@ const About = () => {
       </section>
 
       <section id="section-areas" className={`${SECTION_PADDING.default}`} aria-labelledby="areas-heading">
-        <div className="container mx-auto px-5 sm:px-6">
+        <div className="container-page">
           <div className={`${MAX_WIDTH.content} mx-auto`}>
             <SectionHeader
               label="WHERE WE WORK"

@@ -17,6 +17,9 @@
 
 // ─────────────────────────────────────────────────────────────────────
 // SECTION PADDING — vertical breathing room per section type
+// (Pass 46) Horizontal container is `.container-page` from index.css —
+// every body section uses it. Hero variants and chrome use bespoke
+// containers — see PageHero / Navigation.
 // ─────────────────────────────────────────────────────────────────────
 
 export const SECTION_PADDING = {
