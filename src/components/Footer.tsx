@@ -97,8 +97,8 @@ const Footer = () => {
         </div>
 
         {/* © line */}
-        <div className="max-w-6xl mx-auto mt-14 pt-6 border-t border-evergreen-foreground/10">
-          <div className="flex flex-col md:flex-row items-center md:justify-between gap-2 text-[11px] tracking-[0.18em] uppercase text-evergreen-foreground/55">
+        <div className="max-w-6xl mx-auto mt-16 pt-8 border-t border-evergreen-foreground/10">
+          <div className="flex flex-col md:flex-row items-center md:justify-between gap-2 eyebrow opacity-55">
             <span>© Creek Construction — All rights reserved</span>
             <span>Made in Alberta</span>
           </div>
