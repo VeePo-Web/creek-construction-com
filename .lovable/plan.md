@@ -1,83 +1,88 @@
-# Pass 44 — Codify the CTA caption tier (`.cta-label`) and migrate
+# Pass 45 — Section-header rhythm: one H2, one eyebrow
 
-After Pass 43 collapsed every eyebrow to one utility, the **CTA tier** is still expressed as a hand-rolled string `text-[11px] tracking-[0.22em] uppercase font-medium` in **8 places**. The Pass 43 comment in `index.css` documents the tier, but doesn't enforce it — any future drift (e.g. a designer using 0.18em) will go uncaught. This pass turns the documented rule into a real CSS utility and migrates every consumer. AND UPGRADE THE HERO DESIGN ASWELL IT LOOKS CHEAP. REPLACE THE IMAGE THAT IS THERE WITH AN AI CREATED IMAGE AND DONT USE THE BLACK AND WHITE
+The homepage currently runs **four different H2 typographic scales** across Hero → BrandStatement → Services → FeaturedProjects → CrewMoment → TestimonialStrip → QuoteCloserCard. Pass 44 unified the caption tier (`.eyebrow-base`) and the CTA tier (`.cta-label`); Pass 45 finishes the trio by codifying **one canonical section-heading scale** and migrating every literal to it. This is the single highest-leverage rhythm fix left on Home.
 
-## A. New utility — `.cta-label`
+## Audit — current scales on Home
 
-Add directly under `.eyebrow-base` in `src/index.css` (so the two tiers sit side by side and are visually obvious to the next reader):
+| Section | Token used | Scale (sm / md / lg) | Tracking |
+|---|---|---|---|
+| Services | literal | 36 / 48 / 60px | -0.035em |
+| QuoteCloserCard | literal | 30 / 36 / 48px | -0.022em |
+| BrandStatement | literal `clamp(26→46px)` | fluid | -0.030em |
+| CrewMoment, FeaturedProjects, TestimonialStrip | `HEADLINE.section` | 30 / 36 / 48px | -0.022em |
+| Sub-page heroes (About, Services-page) | `HEADLINE.display` | 36 / 48 / 60px | -0.035em |
 
-```css
-.cta-label {
-  font-size: 11px;
-  line-height: 1;
-  text-transform: uppercase;
-  letter-spacing: 0.22em;
-  font-weight: 500;
-  /* color inherited / set by caller (cedar-foreground, white, muted-foreground) */
-}
+Two tokens, two literal scales, fluid clamp — every section reads at a different size.
+
+## A. Reconcile `HEADLINE.section` and `HEADLINE.display` into one
+
+Edit `src/lib/typography.ts` lines 54–65:
+
+- `HEADLINE.display` keeps its current value (36/48/60, -0.035em) — this becomes the canonical "any homepage / sub-page section H2".
+- `HEADLINE.section` is **redefined to equal `HEADLINE.display`** (same string), with an updated comment that says it now exists only for semantic readability ("use `.display` for visual primacy, `.section` when you want the reader to know it's a section H2"). Same computed CSS — zero risk to any consumer.
+- Update the lying comment on line 62 ("Same scale as `display` here") — make it true.
+
+Result: every consumer of `HEADLINE.section` (CrewMoment, TestimonialStrip, FeaturedProjects, SectionHeader, Work.tsx, kinetic-headline `compact`) **automatically jumps from 30/36/48 → 36/48/60**. This is the desired Apple-grade lift.
+
+## B. Migrate the three literal H2s to `HEADLINE.section`
+
+| File | Line | Action |
+|---|---|---|
+| `src/components/Services.tsx` | 30–37 | Replace `font-serif text-4xl sm:text-5xl md:text-6xl text-foreground leading-[1.02] tracking-[-0.035em] text-balance` → `${HEADLINE.section} leading-[1.02]` (keep tighter leading override; everything else is in the token) |
+| `src/components/QuoteCloserCard.tsx` | 32 | Replace `font-serif text-evergreen-foreground text-3xl md:text-4xl lg:text-5xl leading-[1.1] tracking-[-0.022em] text-balance` → `${HEADLINE.section.replace("text-foreground", "text-evergreen-foreground")} leading-[1.1]` — or simpler: split out a tiny inline override `${HEADLINE.section}` and add `text-evergreen-foreground` after to override the foreground class via Tailwind's later-wins ordering. |
+| `src/components/BrandStatement.tsx` | 27 | Replace `font-serif text-[clamp(...)] text-foreground leading-[1.1] tracking-[-0.03em] text-balance` → `${HEADLINE.section} leading-[1.1]` |
+
+For (B-2) the cleanest pattern is `cn(HEADLINE.section, "text-evergreen-foreground leading-[1.1]")` so the override wins (cn dedupes; Tailwind's later utility wins for `text-*` color). Add `import { cn } from "@/lib/utils"` if absent.
+
+## C. Migrate the Services-row numerals to the caption tier
+
+`src/components/Services.tsx` line 60 currently:
 ```
-
-This is the **one and only** caption-style for buttons, links-acting-as-buttons, and ghost-CTAs. Body buttons (filled cedar, ghost border, ghost text) all share this typography; they differ only in background + padding.
-
-## B. Migrate the 8 literal CTA-tier strings
-
-For each occurrence, replace `text-[11px] tracking-[0.22em] uppercase font-medium` (and `text-[11px] tracking-[0.22em] uppercase` where `font-medium` is missing) with `cta-label`. Keep all other classes (color, padding, hover, `tabular-nums`, `whitespace-nowrap`, `min-h-[44px]`, `rounded-[2px]`) untouched.
-
-
-| File                                       | Line | Where                                    |
-| ------------------------------------------ | ---- | ---------------------------------------- |
-| `src/components/Navigation.tsx`            | 125  | Desktop phone-link in topbar             |
-| `src/components/Hero.tsx`                  | 32   | Hero ghost CTA (white/40 border)         |
-| `src/components/quote/QuoteFormInline.tsx` | 214  | Inline form mode-toggle pill             |
-| `src/components/quote/QuoteFormInline.tsx` | 424  | Inline form primary submit               |
-| `src/components/quote/QuoteModal.tsx`      | 602  | Modal primary submit                     |
-| `src/components/quote/QuoteModal.tsx`      | 722  | SuccessPanel "Call us now" CTA           |
-| `src/components/quote/QuoteModal.tsx`      | 730  | SuccessPanel "Done" CTA                  |
-| `src/components/quote/QuoteModal.tsx`      | 737  | SuccessPanel ghost "Send another →" link |
-
-
-Mechanical sweep:
-
+text-[11px] uppercase tracking-[0.22em] text-cedar/55 tabular-nums text-right md:text-left
 ```
-text-[11px] tracking-[0.22em] uppercase font-medium  →  cta-label
-text-[11px] tracking-[0.22em] uppercase              →  cta-label   (only Hero.tsx ghost — re-add font-medium via the utility, fixes that ghost CTA which today is missing the weight class)
+→
 ```
-
-The Hero.tsx ghost CTA currently lacks `font-medium`, rendering it 400-weight while every other CTA renders 500. The migration silently corrects this — a real visual fix, not just a refactor.
-
-## C. Verification
-
-1. `rg "text-\[11px\] tracking-\[0\.22em\]" src/components` returns **zero** matches outside `src/pages/StyleGuide.tsx` and `src/components/QuickNav.tsx` after the sweep.
-2. `rg "cta-label" src/components` returns exactly **8** matches.
-3. Visual sweep at 390 / 768 / 1440:
-  - Hero ghost CTA: weight now matches the cedar primary CTA below it (Hero today is visibly lighter — fix lands).
-  - QuoteFormInline submit + QuoteModal submit + SuccessPanel CTAs: identical typography.
-  - Navigation phone link: unchanged metrics (already had font-medium).
-4. Open `/contact`, click "Get a quote" → submit form → SuccessPanel renders. All three buttons share identical caption metrics.
-5. No layout drift expected — utility produces the exact same computed CSS as the literals it replaces (except Hero gains `font-weight: 500`, which was the bug).
-
-## D. Documentation update in `index.css`
-
-Update the existing Pass 43 comment block to reference both utilities concretely:
-
+eyebrow-base text-cedar/55 tabular-nums text-right md:text-left
 ```
-/* ─────────────────────────────────────────────────────────────
-   EDITORIAL ATOMICS — eyebrow + cta-label + hairline
-   Caption tier:  .eyebrow / .eyebrow-base  → 10px / 0.22em / 500
-   CTA tier:      .cta-label                → 11px / 0.22em / 500
-   ───────────────────────────────────────────────────────────── */
-```
+Drops the row-numeral from the CTA tier (11px) into the calmer caption tier (10px), letting the H3 service title carry the eye. Aligns Services row rhythm with FeaturedProjects metadata captions.
 
-## E. Out of scope
+## D. Delete the deprecated `EYEBROW` constant block
 
-- `BronzeRule` line 47 (`text-[11px] tracking-[0.2em] font-light tabular-nums`) — numeric tag, not a caption. Stays.
-- `About.tsx` line 89 mono numeral — same reason, stays at 11px / mono.
-- StyleGuide / admin / shadcn primitives — unchanged.
+`src/lib/typography.ts` lines 80–97. Audit confirms zero consumers in `src/components` and `src/pages` outside `StyleGuide.tsx` and `bronze-rule.tsx`.
+
+- `bronze-rule.tsx` — read it; if it references `EYEBROW.*`, migrate to literal eyebrow class strings (`eyebrow-base`/`eyebrow`) before removing the export.
+- `StyleGuide.tsx` — keep one demo cell that shows the new `.eyebrow` / `.eyebrow-base` / `.cta-label` triplet. Remove old `EYEBROW.default/accent/onDark` rows.
+
+After migration, delete the entire `EYEBROW` export. One source of truth lives in `index.css`.
+
+## E. Tiny semantic fix in BrandStatement
+
+`<p className="hairline" aria-hidden />` × 2 (lines 25, 34) → `<hr className="hairline border-0" aria-hidden />` × 2. Empty `<p>` is a screen-reader hiccup and an HTML lint signal; `<hr>` is the right element for a thematic break. The `.hairline` utility already paints the top border, so we zero the default `<hr>` border via `border-0` and let the utility's `border-top` win. Visual output is identical.
+
+## F. Verification
+
+1. `rg "text-3xl md:text-4xl lg:text-5xl|text-4xl sm:text-5xl md:text-6xl" src/components src/pages | grep -v StyleGuide` → **zero matches**.
+2. `rg "EYEBROW\." src/components src/pages | grep -v StyleGuide` → **zero matches**.
+3. `rg "text-\[11px\] uppercase tracking-\[0\.22em\]" src/components` → **zero matches**.
+4. Visual sweep at 390 / 768 / 1024 / 1440:
+   - All five homepage H2s (BrandStatement, Services, FeaturedProjects, CrewMoment, TestimonialStrip, QuoteCloserCard) render at the same scale and tracking.
+   - QuoteCloserCard heading remains evergreen-foreground (white-on-green) — confirm via inspector.
+   - Services row "01 / 02 / 03 …" numerals shrink to 10px, stay cedar/55, alignment unchanged.
+   - BrandStatement: no double line break around the hairlines.
+5. Lighthouse a11y: ≥ previous score (we're removing two empty-`<p>` warnings).
+
+## G. Out of scope
+
+- Sub-page heroes (`PageHero` variants) — they already use `KineticHeadline` with their own clamp; not on the section-H2 ladder.
+- Footer headings — visually distinct tier (DM Sans uppercase), unrelated.
+- `bronze-rule.tsx` *internal* literal classes — only migrate the `EYEBROW.*` reference (if any), leave the rest.
+- `STATS_TRIO` numerals in CrewMoment — already on a deliberate display tier (`text-2xl md:text-[1.75rem]`), unchanged.
 
 ## Files touched
 
-1. `src/index.css` (new utility + comment)
-2. `src/components/Navigation.tsx`
-3. `src/components/Hero.tsx`
-4. `src/components/quote/QuoteFormInline.tsx`
-5. `src/components/quote/QuoteModal.tsx`
+1. `src/lib/typography.ts` (reconcile + delete `EYEBROW`)
+2. `src/components/Services.tsx` (H2 + row numerals)
+3. `src/components/QuoteCloserCard.tsx` (H2)
+4. `src/components/BrandStatement.tsx` (H2 + `<hr>` semantics)
+5. `src/components/ui/bronze-rule.tsx` (only if it consumes `EYEBROW.*`)
+6. `src/pages/StyleGuide.tsx` (drop deprecated demo rows, keep one new triplet)
