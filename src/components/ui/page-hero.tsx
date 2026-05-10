@@ -5,7 +5,7 @@ import { BACKDROP, SCRIM, TEXT } from "@/lib/colors";
 import BreadcrumbTrail, { type BreadcrumbItem } from "@/components/ui/breadcrumb-trail";
 import BronzeRule from "@/components/ui/bronze-rule";
 import KineticHeadline, { type KineticSize } from "@/components/ui/kinetic-headline";
-import HeroProvenanceCard from "@/components/ui/hero-provenance-card";
+
 import MediaSlot from "@/components/media/MediaSlot";
 import HeroTriptych from "@/components/media/HeroTriptych";
 import { useApprovedMedia, useFirstApprovedMedia } from "@/hooks/useApprovedMedia";
@@ -176,7 +176,7 @@ const EvergreenTypographic = (props: EvergreenTypographicProps) => {
   return (
     <section
       className={cn(
-        "relative overflow-hidden text-evergreen-foreground min-h-[68vh] md:min-h-[78vh] flex items-end",
+        "relative overflow-hidden text-evergreen-foreground min-h-[100svh] flex items-end",
         props.className,
       )}
       aria-label={lines.join(" ")}
@@ -187,11 +187,6 @@ const EvergreenTypographic = (props: EvergreenTypographicProps) => {
         rhythm="equal"
         scrim="left"
         priority
-        fallbackCaptions={[
-          "Photographing this season",
-          "On the boards",
-          "Across Alberta",
-        ]}
       />
 
       {/* Spine — left vertical bronze hairline */}
@@ -224,16 +219,7 @@ const EvergreenTypographic = (props: EvergreenTypographicProps) => {
 
       <div className="container mx-auto px-5 sm:px-6 md:px-10 relative z-10 pt-28 md:pt-36 pb-16 md:pb-24 lg:pb-28">
         <div className="max-w-2xl">
-          {/* Breadcrumb intentionally omitted — HeaderBreadcrumb in the chrome
-              owns sub-page wayfinding (v3.1). The `breadcrumb` prop is still
-              accepted for back-compat but no longer renders here. */}
-
-          <BronzeRule
-            numeral={props.numeral}
-            label={props.sectionLabel}
-            variant="onDark"
-            className="mb-6 md:mb-9 lg:mb-10 hero-rule-draw"
-          />
+          {/* sectionLabel/eyebrow chip removed (Pass 52) — H1 carries the page. */}
 
           <KineticHeadline
             lines={lines}
