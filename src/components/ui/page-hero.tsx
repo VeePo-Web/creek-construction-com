@@ -292,24 +292,16 @@ const EditorialSplit = (props: EditorialSplitProps) => {
     <section
       id="section-hero"
       className={cn(
-        "relative min-h-[78vh] md:min-h-screen flex items-center overflow-hidden text-evergreen-foreground",
+        "relative min-h-[100svh] flex items-center overflow-hidden text-evergreen-foreground",
         props.className,
       )}
       aria-label={lines.join(" ")}
     >
-      {/* Photographic triptych backdrop — replaces the old solid evergreen.
-          leftWide scrim holds heavier black through 56% so the headline column
-          AND the floating provenance card both stay legible. */}
       <HeroTriptych
         queries={triptychQueries}
         rhythm="asymmetric"
         scrim="leftWide"
         priority
-        fallbackCaptions={[
-          "Decks · Calgary",
-          "Cedar · detail",
-          "Across Alberta",
-        ]}
       />
 
       <div className="container mx-auto px-5 sm:px-6 md:px-10 relative z-10 py-20 md:py-28 lg:py-32">
@@ -407,17 +399,12 @@ const CinematicBleed = (props: CinematicBleedProps) => {
   // is the photo and it is what the user sees first).
   useHeroPreload(photo.item?.url, MEDIA_SIZES.HERO_FULL);
 
-  const captionLine = useMemo(() => {
-    if (!props.caption) return null;
-    const { service, location, year } = props.caption;
-    return [service, location, year ? String(year) : null].filter(Boolean).join(" · ");
-  }, [props.caption]);
+  // captionLine removed (Pass 52).
 
   return (
     <section
       className={cn(
-        "relative overflow-hidden flex items-end",
-        "min-h-[68vh] md:min-h-[78vh] lg:min-h-[720px] xl:min-h-[780px]",
+        "relative overflow-hidden flex items-end min-h-[100svh]",
         props.className,
       )}
       style={{
@@ -484,15 +471,7 @@ const CinematicBleed = (props: CinematicBleedProps) => {
       {/* Content */}
       <div className="container mx-auto max-w-[1440px] px-5 sm:px-6 md:px-10 relative z-10 pt-28 md:pt-36 pb-16 md:pb-24 lg:pb-28">
         <div className="max-w-3xl">
-          {/* Breadcrumb intentionally omitted — HeaderBreadcrumb in the
-              chrome owns sub-page wayfinding so the hero photo stays clean. */}
-
-          <BronzeRule
-            numeral={props.numeral}
-            label={props.sectionLabel}
-            variant="onDark"
-            className="mb-6 md:mb-9 lg:mb-10 hero-rule-draw"
-          />
+          {/* sectionLabel/eyebrow chip removed (Pass 52). */}
 
           <KineticHeadline
             lines={lines}
@@ -524,16 +503,7 @@ const CinematicBleed = (props: CinematicBleedProps) => {
             </div>
           )}
 
-          {captionLine && (
-            <div
-              className="mt-8 pt-5 border-t border-evergreen-foreground/10 hero-provenance-enter"
-              style={{ ["--kinetic-delay" as never]: "1700ms" }}
-            >
-              <p className="text-[10px] tracking-[0.25em] uppercase text-evergreen-foreground/60 tabular-nums">
-                {captionLine}
-              </p>
-            </div>
-          )}
+          {/* Bottom caption rail removed (Pass 52). */}
         </div>
       </div>
     </section>
