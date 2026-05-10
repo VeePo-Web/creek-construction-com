@@ -58,7 +58,7 @@ const FieldClipsStrip = () => {
               headingId="field-clips-heading"
               heading="Process clips."
               subheading="Short field recordings from active builds — silent, no edits."
-              badge={`${String(items.length).padStart(2, "0")} Clips · Calgary & Edmonton`}
+              
             />
           </div>
 

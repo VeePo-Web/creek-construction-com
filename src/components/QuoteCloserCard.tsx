@@ -52,7 +52,7 @@ const QuoteCloserCard = ({
   return (
     <section
       id={id}
-      className={`${SECTION_PADDING.default} ${background === "secondary" ? "bg-secondary" : "bg-background"}`}
+      className={`${SECTION_PADDING.default} ${background === "secondary" ? "bg-secondary" : "bg-background"} min-h-[100svh] flex flex-col justify-center`}
       aria-label="Request a quote"
     >
       <div className="container-page">

@@ -15,7 +15,7 @@ const BrandStatement = () => {
   return (
     <section
       aria-label="Creek Construction philosophy"
-      className={`${SECTION_PADDING.calm} bg-background`}
+      className={`${SECTION_PADDING.calm} bg-background min-h-[100svh] flex flex-col justify-center`}
     >
       <div className="container-page">
         <div

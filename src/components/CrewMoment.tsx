@@ -56,7 +56,7 @@ const CrewMoment = ({
             cedarHover
             fallbackVariant="cedar"
           />
-          <p className="eyebrow mt-4">On the boards · Alberta</p>
+          
         </div>
 
         <div>
@@ -107,7 +107,7 @@ const CrewMoment = ({
   return (
     <section
       id="section-crew"
-      className={`${SECTION_PADDING.default} ${background === "secondary" ? "bg-secondary" : "bg-background"} ${topRule ? "hairline" : ""}`}
+      className={`${SECTION_PADDING.default} ${background === "secondary" ? "bg-secondary" : "bg-background"} ${topRule ? "hairline" : ""} min-h-[100svh] flex flex-col justify-center`}
       aria-labelledby={headingId}
     >
       <div className="container-page">{inner}</div>

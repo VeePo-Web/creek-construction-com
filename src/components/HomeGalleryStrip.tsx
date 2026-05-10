@@ -22,7 +22,7 @@ const HomeGalleryStrip = ({ background = "secondary" }: HomeGalleryStripProps) =
   return (
     <section
       id="section-gallery-strip"
-      className={`${SECTION_PADDING.default} ${bg}`}
+      className={`${SECTION_PADDING.default} ${bg} min-h-[100svh] flex flex-col justify-center`}
       aria-labelledby="home-gallery-heading"
     >
       <div className="container-page">
@@ -62,18 +62,6 @@ const HomeGalleryStrip = ({ background = "secondary" }: HomeGalleryStripProps) =
             </div>
           </Link>
 
-          <div className="mt-10 md:mt-12 hairline pt-6 flex items-center justify-between">
-            <p className="eyebrow opacity-70">More photographs in the gallery</p>
-            <Link
-              to="/work"
-              className="group inline-flex items-center gap-2 cta-label text-foreground hover:text-cedar transition-colors"
-            >
-              <span className="link-underline group-hover:[background-size:100%_1px]">
-                See the full gallery
-              </span>
-              <ArrowUpRight className="h-4 w-4 link-arrow" strokeWidth={1.5} aria-hidden />
-            </Link>
-          </div>
         </div>
       </div>
     </section>
