@@ -1,115 +1,223 @@
-# Pass 51 — Visual rhythm audit: zero text-only sections
+# Pass 52 — Fantasy.co simplification: zero clutter, one section per viewport
 
-## Audit results
+A two-axis cleanup. Axis 1 strips every chip, eyebrow-with-location, metadata caption, redundant rail, and dead nav link. Axis 2 reshapes every section to fit a single viewport on mobile, tablet, and desktop using a shared `min-h-[100svh]` discipline so the experience reads as a deck of full-screen plates.
 
-I walked every public route and flagged each block by image density. Anything that renders only type, hairlines, or icons is a candidate.
+---
 
-### Findings
+## Axis 1 — Clutter inventory & removal
 
-| Page | Block | Currently | Verdict |
-|---|---|---|---|
-| `/` Index | Hero | Full-bleed image | ✅ |
-| `/` Index | **BrandStatement** ("How we work shows up…") | Type + hairlines only | ⚠️ user's example |
-| `/` Index | Services list | Type only (intentional editorial list) | ⚠️ flank with image |
-| `/` Index | HomeGalleryStrip | Images | ✅ |
-| `/` Index | CrewMoment | Photo + copy | ✅ |
-| `/` Index | TestimonialStrip | Type only | ⚠️ |
-| `/` Index | QuoteCloserCard | Solid evergreen plate | ✅ (intentional brand block) |
-| `/about` | PageHero (evergreen-typographic) | Triptych | ✅ |
-| `/about` | **section-story** | Type + hairline quote | ⚠️ |
-| `/about` | **section-process** (5 numbered steps) | Type + numerals | ⚠️ |
-| `/about` | **section-areas** (city tags) | Tag grid | ⚠️ |
-| `/services` | PageHero (service-portrait) | Triptych | ✅ |
-| `/services` | section-catalogue (16 services) | Type list | ⚠️ flank with image |
-| `/services` | **section-contract** (We/You handle) | Type only | ⚠️ |
-| `/services` | MiniFaq | Type | ⚠️ |
-| `/contact` | Whole page | Form + info card, **zero photography** | ⚠️ |
-| `/work` | Hero + GalleryWall | Images | ✅ |
+Every item below has been confirmed by code search. Each row is removed in this pass.
 
-Every ⚠️ row is a Pass 51 target.
+### A. Auto-derived "service · location" caption rail (the user's example)
 
-## Approach
+The homepage hero is the `architect-bleed` PageHero variant. It does NOT receive a `caption` prop, but it derives one anyway from `item.service` + parsed `item.alt` and renders a bottom caption rail (`page-hero.tsx` 776–785, 993–1015). When MediaSlot returns a "sheds in Edmonton" photo, "**Sheds · Edmonton**" appears at the bottom-right of the hero. **Remove entirely.**
 
-One reusable primitive does most of the heavy lifting. Two surgical conversions handle the rest.
+- Delete the `caption` prop from `ArchitectBleedProps`, the `useMemo captionLine`, and the bottom-right rail JSX (lines ~993–1016).
+- Sweep the same `caption` mechanism out of `EvergreenTypographic` (lines ~446–450, 563–571) — the only other variant that exposes it. No live page passes `caption=`, so this is dead surface area inviting accidental re-introduction.
 
-### 1. New component: `src/components/media/EditorialImageBreak.tsx`
+### B. Triptych column captions ("Decks · Calgary", "Sheds · Edmonton", "Cedar · detail", "Across Alberta", "On the boards", "Fences · Alberta")
 
-A restrained Creek-toned answer to Hickory & Rose's `EditorialImageBreak`. Full-bleed photography, no overlay copy, cedar-tinted edge gradients, gentle parallax via `useReveal` + `transform: translateY()` on scroll. **No caption. No "&" diamond. No letterbox bars on hover** — those belong to the wedding brand. Creek's version is quieter.
+`HeroTriptych` accepts `fallbackCaptions` and renders them in `EditorialFallback` when an image is missing (`MediaSlot.tsx` 122–131). Today every PageHero variant passes a 3-tuple of these. They show only when an image fails to load — but that fallback state has been visible during dev/cold-cache more than once. Remove the captions from the fallback so a missing image is just warm stone with the cedar hairline; no text. Keep the icon and plate.
 
-Props:
+- `EditorialFallback`: drop the `caption` prop and its JSX. Keep `variant`, `icon`.
+- `TriptychColumn`: drop `caption` from the props and the call to `EditorialFallback`.
+- `HeroTriptych`: drop `fallbackCaptions` from `HeroTriptychProps` and its 3 child calls.
+- All 4 PageHero variants: drop the `fallbackCaptions={[…]}` arg.
+
+### C. PageHero "sectionLabel" eyebrow chips on Hero variants
+
+The home hero shows `CALGARY · EDMONTON · ALBERTA` as a top-left eyebrow above the headline (architect-bleed line 891). On `/about` it's "OUR STORY", on `/services` "EXTERIOR CONSTRUCTION". These are redundant labels — the H1 already says it. Fantasy.co ships pure headline + supporting line, no eyebrow chip.
+
+- `Hero.tsx`: remove `sectionLabel` and `breadcrumb` props (the breadcrumb prop is also unused inside architect-bleed but kept for API consistency — drop it from the call).
+- `architect-bleed` variant: remove the top hairline+sectionLabel block (lines 873–894). The hero becomes: photograph → headline → subtitle → CTA. Nothing else.
+- Same treatment on `/about` and `/services` PageHero — the H1 carries the page; no eyebrow needed above it. Delete the `BronzeRule + sectionLabel` row inside `EvergreenTypographic` and `ServicePortrait`.
+
+### D. Header section rail (STORY · PROCESS · SERVICE AREAS, CATALOGUE · CONTRACT · FAQ, etc.)
+
+The fixed header renders a per-route SectionRail with 3+ in-page anchors (visible at 1280px in screenshots: "HOME / ABOUT  STORY  PROCESS  SERVICE AREAS"). On Fantasy.co, the chrome is brand + menu only. The rail is fragmenting attention and adding 5–7 extra interactive elements per page.
+
+- `src/lib/page-sections.ts`: replace every entry with `[]`. SectionRail's empty-array branch already renders nothing, so the chrome collapses to brand + phone + Quote + MENU.
+- After verifying the rail is empty everywhere, delete `SectionRail.tsx`, `SectionRailCompact.tsx`, `MobileSubNav.tsx`, and the imports/calls in `Navigation.tsx`. Keep `HeaderBreadcrumb` (small "HOME / ABOUT" chip on sub-pages) for now — it's a single quiet wayfinding crumb, not a rail.
+- `useActiveSection` hook: delete (no longer consumed).
+
+### E. Dead anchor entries
+
+Even if we keep the rail mechanism (we don't), the home registry references `section-quote`, `section-featured`, `section-faq`, `section-testimonials` — IDs that don't exist on `Index.tsx`. With the rail deleted this becomes moot, but the registry file gets emptied to enforce it.
+
+### F. Caption labels under inline media
+
+- `CrewMoment.tsx` line 59: `On the boards · Alberta` under the photo. **Delete.**
+- `HomeGalleryStrip.tsx` lines 65–76: the bottom hairline strip with `More photographs in the gallery` + `See the full gallery` link is a duplicate CTA — the entire image grid is already a Link to `/work`. **Delete the hairline row.**
+- `FieldClipsStrip.tsx` line 61: `${count} Clips · Calgary & Edmonton` badge on hero clips. **Delete.** (FieldClipsStrip is currently unmounted, but cleanup keeps it from re-introducing clutter if mounted later.)
+- About `section-areas`: the `Not on the list? Ask anyway — we'll let you know if we can travel.` italic helper line under the city tag grid. **Delete.** (The grid is self-explanatory.)
+- Services `section-contract`: the right-aligned `${n} ITEMS` counter chips inside both columns. **Delete.** (Decorative metadata, not informative.)
+- Services `section-catalogue`: the trailing "Don't see what you need? Ask anyway." link row at the bottom of the homepage Services list. **Delete.**
+
+### G. Floating + duplicated CTAs
+
+- `FloatingQuoteCTA` is mounted globally in `App.tsx` and shows on every page except `/` and `/contact`. `/about`, `/services`, `/work` already have CedarCTA in the hero, in QuoteCloserCard at the bottom, and the FREE QUOTE button in the chrome. Three instances of the same CTA per page is clutter. **Remove the `<FloatingQuoteCTA />` mount** from `App.tsx` and delete the file.
+- `Navigation.tsx`: keep `Quote` (FREE QUOTE) and phone link in the desktop header, but consolidate. The mobile QuickNav bar already covers mobile.
+
+### H. Subtitle + description double-up
+
+PageHero variants accept both `subtitle` and `description`. No live page passes `description`. Drop the prop from the type and its render branches across all variants — pure dead surface that whispers "add a third line of text here".
+
+### I. Provenance card pathway
+
+`HeroProvenanceCard` and the `provenance` prop on PageHero (lines 69–82) are unused on every live page but still render a card overlay if anyone passes `provenance={…}`. Drop the prop, the import, and delete `src/components/ui/hero-provenance-card.tsx`.
+
+---
+
+## Axis 2 — One section, one viewport
+
+### Discipline
+
+Every full-width section component clamps to **`min-h-[100svh]` and `flex flex-col justify-center`** so its inner content is centered in a viewport-tall plate. Hero and Footer keep their special heights. The change is centralized via a new spacing token so we don't sprinkle `min-h-[100svh]` across 20 files.
+
 ```ts
-{
-  src: string;                     // imported asset path
-  alt: string;                     // descriptive
-  aspect?: "21/9" | "16/9" | "3/2"; // default 21/9 desktop, 4/3 mobile
-  intensity?: "calm" | "cinematic"; // edge-gradient strength
-  topBlend?: boolean;              // gradient bleed into bg above
-  bottomBlend?: boolean;
-  priority?: boolean;              // eager-load when above the fold
-}
+// src/lib/spacing.ts (additions)
+export const SECTION_HEIGHT = {
+  /** Default — every editorial plate is one full small-viewport tall. */
+  fullScreen: "min-h-[100svh]",
+  /** Reduced for media-only bleeds so they read as breaks, not plates. */
+  bleed:      "min-h-[68svh] md:min-h-[78svh]",
+} as const;
+
+export const SECTION_LAYOUT = {
+  /** Apply with SECTION_HEIGHT.fullScreen for centered single-screen sections. */
+  centered:   "flex flex-col justify-center",
+} as const;
 ```
 
-Behavior:
-- Aspect: `aspect-[4/3] md:aspect-[21/9]` — phones get a closer crop so the bleed never feels stretched.
-- Image rendered at 110% height with subtle `translateY` parallax (-3% → +3% across viewport scroll). Honors `prefers-reduced-motion`.
-- Cedar-tinted radial vignette at 8% opacity (uses existing `--cedar` token via `hsl(var(--cedar) / …)`).
-- Optional top/bottom `bg-gradient-to-b from-background to-transparent` blends so image dissolves into the cream surround instead of ending in a hard edge.
-- Hover: image scales to 1.02 over 700ms (`transition-transform`), no filter shifts.
-- `loading={priority ? "eager" : "lazy"}`, `decoding="async"`, explicit `width`/`height` to lock CLS.
+Why `svh` not `vh`: small-viewport-height excludes mobile browser chrome (Safari URL bar), preventing the "section is 90vh until you scroll and it grows" jump.
 
-### 2. Insertions — drop the bleed into every text-only zone
+### Per-section sizing pass
 
-Pull from existing `src/assets/` library — no new asset generation needed.
+Each row below documents the new container shape and what changes inside to fit one viewport without crowding.
 
-| Page | Position | Image | Aspect | Intensity |
-|---|---|---|---|---|
-| `/` Index | After **BrandStatement**, before Services | `hero-architect-color.jpg` (re-uses hero asset, fine — it's a different crop emphasis) **or** `sauna-backyard-premium.jpg` | 21/9 | cinematic |
-| `/` Index | After TestimonialStrip, before Closer | `sauna-mountain-premium.jpg` | 21/9 | calm |
-| `/about` | After section-story, before section-process | `sauna-interior-editorial.jpg` (process/detail mood) | 21/9 | calm |
-| `/about` | After section-process, before section-areas | `sauna-acreage-premium.jpg` (Alberta horizon) | 21/9 | cinematic |
-| `/services` | After section-catalogue, before section-contract | `sauna-stones-premium.jpg` (material/detail) | 21/9 | calm |
-| `/services` | After MiniFaq, before Closer | `hero-architecture.jpg` | 16/9 | calm |
+#### Home (`/`)
 
-### 3. `/contact` — single funnel-friendly bleed
+| Block | Old height | New height | Internal change |
+|---|---|---|---|
+| `Hero` (architect-bleed) | `min-h-[78vh]` desktop | `min-h-[100svh]` everywhere | Remove eyebrow chip + caption rail (axis 1) → headline gets more breathing room, fits on phones without overflow |
+| `BrandStatement` | `SECTION_PADDING.calm` (~600px) | `min-h-[100svh] flex justify-center` | Centered serif sentence, hairline above + below — reads as a wall plate |
+| `EditorialImageBreak` (1) | aspect-[4/3] mobile / [21/9] desktop | `SECTION_HEIGHT.bleed` (68svh / 78svh), `object-cover`, no internal aspect | Bleed becomes a true break, not a stub |
+| `Services` (homepage list) | content-driven (~1400px) | `min-h-[100svh]` with internal `overflow-y-auto md:overflow-visible` and **truncate to 8 services on mobile** + "see all" link to `/services` | The 16-service list cannot legibly fit one mobile viewport. Mobile shows 8 + CTA; tablet shows 12; desktop shows all 16 in a 2-column grid (`md:columns-2`) so it fits 100svh |
+| `HomeGalleryStrip` | content-driven | `min-h-[100svh]` with the 3 figures using `aspect-[3/4]` and the heading row collapsed to a single line | |
+| `CrewMoment` | content-driven | `min-h-[100svh]`, image `aspect-[4/5]` mobile / `aspect-[3/4]` desktop, body trimmed to one paragraph (already one) | Drop "On the boards · Alberta" caption (axis 1) |
+| `TestimonialStrip` | content-driven | `min-h-[100svh]` with **single rotating testimonial** instead of the current strip; auto-rotate every 6s, dots underneath | A wall of quotes can't fit one screen. One quote fits beautifully. |
+| `EditorialImageBreak` (2) | as above | `SECTION_HEIGHT.bleed` | |
+| `QuoteCloserCard` | `SECTION_PADDING.default` (~500px) | `min-h-[100svh]`, plate centered inside | The evergreen plate stays the same shape; just the section around it is centered to one screen |
 
-Contact is intentionally stripped (`NavigationMinimal`, no rail). Inserting a 21:9 break above the form would steal conversion focus. Instead, add a **slim 32vh photo band ABOVE the headline strip** using `sauna-interior-detail.jpg` — sets tone without competing with the form. Edges blend into background. No copy overlay.
+#### About (`/about`)
 
-### 4. About `section-story` — convert to 2-column
+| Block | New height | Internal change |
+|---|---|---|
+| `PageHero` (evergreen-typographic, triptych) | `min-h-[100svh]` (already ~100vh-ish) | Remove `sectionLabel`, drop `OUR STORY` eyebrow, drop fallback captions |
+| `section-story` (2-col) | `min-h-[100svh]` centered | Trim 2 paragraphs to 1, drop the pull-quote (it's a third text moment in the same screen) — image and one paragraph + CTA fits cleanly |
+| `EditorialImageBreak` | `SECTION_HEIGHT.bleed` | |
+| `section-process` | `min-h-[100svh]` centered | Five steps stay; cap each step description to one line (`line-clamp-1`) so the whole list fits portrait viewports |
+| `EditorialImageBreak` | `SECTION_HEIGHT.bleed` | |
+| `section-areas` | `min-h-[100svh]` centered | Drop the helper italic line; the city grid is self-contained |
+| `QuoteCloserCard` | `min-h-[100svh]` | as above |
 
-Currently centered prose. Convert to `grid lg:grid-cols-[6fr_5fr]` with the prose on the left and a portrait-aspect (`aspect-[3/4]`) image on the right (`sauna-backyard-premium.jpg` cropped portrait). The pull-quote stays centered below the row, full-width. This gives the page its first photograph before users hit `section-process`.
+#### Services (`/services`)
 
-### 5. Services `section-contract` — anchor with a side image
+| Block | New height | Internal change |
+|---|---|---|
+| `PageHero` (service-portrait, triptych) | `min-h-[100svh]` | Drop sectionLabel + fallback captions |
+| `section-catalogue` | `min-h-[100svh]` with internal scroll on mobile, 2-column on lg | Truncate to 12 items mobile / show all 16 in 2 columns desktop. Drop the "Don't see what you need" footer row |
+| `EditorialImageBreak` | `SECTION_HEIGHT.bleed` | |
+| `section-contract` | `min-h-[100svh]` centered | Drop the `${n} ITEMS` counters; cap each row to one line; grid: image col-4 + matrix col-8 (existing) |
+| `MiniFaq` | `min-h-[100svh]` centered, **only first 4 FAQs**, "see all" link removed | |
+| `EditorialImageBreak` | `SECTION_HEIGHT.bleed` | |
+| `QuoteCloserCard` | `min-h-[100svh]` | |
 
-Currently a 2-column "What we handle / What you handle" grid. Wrap it in a 12-column outer grid: image (col-span-4, aspect-[4/5], `cedar-texture-premium.jpg`) + matrix (col-span-8). On mobile the image stacks above the matrix with `aspect-[16/9]`. Subtle, doesn't change the matrix mechanics.
+#### Contact (`/contact`)
 
-## What stays text-only on purpose
+| Block | New height | Internal change |
+|---|---|---|
+| Slim photo band (added Pass 51) | `min-h-[24svh]` capped — ornament, not a plate | |
+| Form section | `min-h-[100svh]` centered | Already approximately fits; tighten vertical padding so the headline + 2-col grid lands on one phone screen |
 
-- **QuoteCloserCard** — flat evergreen plate is the canonical CTA brand block. Adding imagery dilutes it.
-- **The service catalogue list** — the typographic list IS the editorial statement. The new bleed below it is the relief.
-- **MiniFaq** — also intentional negative space; the bleeds we add on either side of it provide the rhythm.
-- **TestimonialStrip** — same reasoning; bleeds adjacent to it give the breathing room.
+#### Work (`/work`)
 
-## Technical details
+| Block | New height | Internal change |
+|---|---|---|
+| `PageHero` (cinematic-bleed, triptych) | `min-h-[100svh]` | Drop sectionLabel + fallback captions |
+| `GalleryWall` | natural CSS-columns masonry | **Exempt** — a wall is meant to scroll; locking it to 100svh would crop the gallery. Keep as-is. |
+| `TestimonialStrip` | `min-h-[100svh]` rotating | as above |
+| `QuoteCloserCard` | `min-h-[100svh]` | |
 
-- All inserted images already exist in `src/assets/` (no AI gen, no new asset budget).
-- `EditorialImageBreak` is lazy by default; mark the homepage's first insertion `priority` only if it lands above the fold on common viewports (likely lazy is fine — Hero + BrandStatement push it well below).
-- Reuse `useReveal` for fade-in to match site-wide motion language.
-- Honor `motion.ts` reduced-motion guard for the parallax.
-- No changes to `tailwind.config.ts`, design tokens, or fonts. Strictly cream + cedar palette.
-- No changes to navigation, gallery config, services config, or any CTA flow.
+### Mobile / tablet / desktop verification matrix
+
+For each route × viewport (375×812, 768×1024, 1280×800, 1920×1080) we step through every section and confirm:
+
+1. The section height equals or exceeds the viewport height (`100svh`).
+2. The content is **vertically centered** with no clipping at top or bottom.
+3. No horizontal overflow.
+4. Touch targets ≥ 44px (already enforced).
+
+Any section that exceeds 100svh because of content overflow on mobile (services list, FAQ, testimonials) gets one of three remedies — **truncate**, **paginate** (rotating quote), or **internal scroll with a visible hairline cue**. No section is allowed to push the next section off-screen by more than 5%.
+
+---
 
 ## File changes
 
-1. **NEW** `src/components/media/EditorialImageBreak.tsx`
-2. `src/pages/Index.tsx` — import + insert two breaks
-3. `src/pages/About.tsx` — convert story to 2-col + insert two breaks
-4. `src/pages/Services.tsx` — wrap contract in image+matrix grid + insert two breaks
-5. `src/pages/Contact.tsx` — slim photo band above headline
+### New
+- *(none — only edits and deletes)*
+
+### Edits
+1. `src/lib/spacing.ts` — add `SECTION_HEIGHT`, `SECTION_LAYOUT` tokens.
+2. `src/lib/page-sections.ts` — empty every entry to `[]`.
+3. `src/components/Navigation.tsx` — remove `SectionRail` + `SectionRailCompact` imports/calls. Keep `HeaderBreadcrumb`.
+4. `src/App.tsx` — remove `<FloatingQuoteCTA />` mount and import.
+5. `src/components/Hero.tsx` — remove `sectionLabel`, `breadcrumb` props.
+6. `src/components/ui/page-hero.tsx`:
+   - Drop `caption`, `description`, `provenance`, `fallbackCaptions` props from interfaces.
+   - Delete the architect-bleed top eyebrow row (~873–894).
+   - Delete the architect-bleed bottom captionLine row (~993–1016).
+   - Same for evergreen-typographic + service-portrait + cinematic-bleed: remove sectionLabel BronzeRule.
+   - Drop the auto-derived `captionLine` `useMemo`s.
+   - Apply `min-h-[100svh] flex flex-col justify-center` to each variant root.
+7. `src/components/media/HeroTriptych.tsx` — drop `fallbackCaptions` from props, the column tuple, and pass-through.
+8. `src/components/media/MediaSlot.tsx` — drop `caption` from `EditorialFallback` and the JSX that renders it.
+9. `src/components/BrandStatement.tsx` — wrap in `min-h-[100svh] flex flex-col justify-center`.
+10. `src/components/Services.tsx` (homepage list) — `min-h-[100svh] flex flex-col justify-center`; mobile shows first 8 + "see all 16 services" link; desktop renders all 16 in 2-column. Drop "Don't see what you need" trailing row.
+11. `src/components/HomeGalleryStrip.tsx` — `min-h-[100svh]`; delete the bottom "More photographs / See the full gallery" hairline row.
+12. `src/components/CrewMoment.tsx` — `min-h-[100svh] flex justify-center`; delete `On the boards · Alberta` caption.
+13. `src/components/TestimonialStrip.tsx` — refactor to **single rotating quote** (auto-rotate, prefers-reduced-motion freezes on first); `min-h-[100svh] flex justify-center`.
+14. `src/components/MiniFaq.tsx` — `min-h-[100svh] flex justify-center`; cap to first 4 items; remove "see all" link if present.
+15. `src/components/QuoteCloserCard.tsx` — `min-h-[100svh] flex justify-center` on the section wrapper.
+16. `src/components/media/EditorialImageBreak.tsx` — replace `aspect-[4/3] md:aspect-[21/9]` with `min-h-[68svh] md:min-h-[78svh]`, image becomes `absolute inset-0 object-cover`. Stays a "break", not a plate.
+17. `src/components/media/FieldClipsStrip.tsx` — drop the `${count} Clips · Calgary & Edmonton` badge.
+18. `src/pages/Index.tsx` — no structural change; section components handle their own heights.
+19. `src/pages/About.tsx` — `section-story` 2-col: trim to one paragraph, remove pull-quote; `section-process`: cap each step description with `line-clamp-2`; `section-areas`: drop italic helper line. All three sections wrapped in `${SECTION_PADDING.default} ${SECTION_HEIGHT.fullScreen} ${SECTION_LAYOUT.centered}`.
+20. `src/pages/Services.tsx` — `section-catalogue` mobile-truncate or 2-column; `section-contract`: drop `${n} ITEMS` counters and `${n} ITEMS` chips. All sections clamped to one viewport.
+21. `src/pages/Contact.tsx` — tighten paddings so the form fits one phone viewport.
+22. `src/pages/Work.tsx` — tweak `PageHero` to drop sectionLabel; GalleryWall exempt from 100svh rule.
+
+### Deletes
+- `src/components/FloatingQuoteCTA.tsx`
+- `src/components/navigation/SectionRail.tsx`
+- `src/components/navigation/SectionRailCompact.tsx`
+- `src/components/navigation/MobileSubNav.tsx`
+- `src/hooks/useActiveSection.ts`
+- `src/components/ui/hero-provenance-card.tsx`
+
+---
 
 ## Verification
 
-1. Visit `/`, `/about`, `/services`, `/contact`, `/work` and confirm no consecutive text-only sections remain.
-2. Mobile (375px), tablet (768px), desktop (1280px+) — bleeds adapt aspect, no horizontal scroll.
-3. Lighthouse: CLS unchanged (explicit width/height on every new img); LCP unaffected (Hero is still the LCP, all bleeds lazy).
-4. Screen reader: every new image has descriptive alt; sections retain `aria-label` where needed.
-5. `prefers-reduced-motion`: parallax + scale transitions disabled.
+After implementation, walk every page at four viewports and screenshot. Expectations:
+
+1. **No chip, eyebrow, or service-location caption appears anywhere outside primary headlines.**
+2. **Every section's content is centered in a single viewport** (no scroll required to reach a section's footer before it ends — except `/work`'s gallery, which is exempt).
+3. **No floating CTA, no section rail, no breadcrumb chip on `/`** (the breadcrumb chip stays only on sub-pages).
+4. Headers contain only: brand mark + (phone · Quote · MENU) on desktop, brand + MENU on mobile.
+5. `rg "·.[A-Z]" src/components/ui/page-hero.tsx src/components/media/` returns zero "X · Y" caption strings.
+6. `rg "fallbackCaptions|sectionLabel|caption=" src/pages src/components/Hero.tsx` returns zero hits.
+7. Lighthouse: CLS ≤ 0.05 (svh prevents resize jumps); LCP unchanged.
+8. Screen reader: every section retains its `aria-labelledby`/`aria-label`; nothing decorative gets a label.
+
+This is the largest refactor since the navigation pass — but it is purely subtractive. Every change removes mass; no new patterns are introduced beyond two spacing tokens.
