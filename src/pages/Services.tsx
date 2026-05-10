@@ -150,8 +150,8 @@ const Services = () => {
                 className="hairline pt-7 sm:pt-8 md:pt-10 px-1 sm:px-2 h-full"
               >
                 <div className="flex items-baseline justify-between gap-2 flex-wrap mb-8">
-                  <h3 className="text-minimal text-cedar">WE HANDLE</h3>
-                  <span className="text-[10px] tracking-[0.2em] text-cedar/50 tabular-nums">
+                  <p className="eyebrow">WE HANDLE</p>
+                  <span className="eyebrow tabular-nums opacity-60">
                     {String(WE_HANDLE.length).padStart(2, "0")} ITEMS
                   </span>
                 </div>
@@ -174,8 +174,8 @@ const Services = () => {
                 className="hairline pt-7 sm:pt-8 md:pt-10 px-1 sm:px-2 h-full"
               >
                 <div className="flex items-baseline justify-between gap-2 flex-wrap mb-8">
-                  <h3 className="text-minimal text-muted-foreground">YOU HANDLE</h3>
-                  <span className="text-[10px] tracking-[0.2em] text-muted-foreground/55 tabular-nums">
+                  <p className="eyebrow opacity-65">YOU HANDLE</p>
+                  <span className="eyebrow tabular-nums opacity-60">
                     {String(YOU_HANDLE.length).padStart(2, "0")} ITEMS
                   </span>
                 </div>
