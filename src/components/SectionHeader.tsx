@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 import ScrollRevealMotion from "@/components/ScrollRevealMotion";
-import { HEADLINE } from "@/lib/typography";
+import { HEADLINE, BODY } from "@/lib/typography";
 
 interface SectionHeaderProps {
   /** Roman numeral or number string. Ignored when variant="quiet". */
@@ -55,41 +55,31 @@ const SectionHeader = ({
   disableMotion = false,
   align = "left",
 }: SectionHeaderProps) => {
-  const showNumeral = variant === "default" && numeral;
-  const showBadge = variant === "default" && badge;
   const centered = align === "center";
+
+  // Eyebrows, numerals, and counter badges are intentionally not rendered.
+  // They added visual clutter; the H2 + optional subhead carry the section.
+  void label; void numeral; void badge; void cedarLabel; void variant;
 
   const Wrap = ({ delay, children }: { delay: number; children: ReactNode }) =>
     disableMotion ? <>{children}</> : <ScrollRevealMotion delay={delay}>{children}</ScrollRevealMotion>;
 
   return (
     <div className={centered ? "flex flex-col items-center text-center" : ""}>
-      {label && (
-        <Wrap delay={baseDelay}>
-          <p className={`eyebrow mb-5 ${centered ? "text-center" : ""}`}>
-            {showNumeral && (
-              <span className="tabular-nums mr-3 opacity-55">{numeral}</span>
-            )}
-            {label}
-          </p>
-        </Wrap>
-      )}
-
-      <Wrap delay={baseDelay + 0.1}>
-        <h2 id={headingId} className={`${HEADLINE.section} mb-3 [&:last-child]:mb-0`}>{heading}</h2>
+      <Wrap delay={baseDelay}>
+        <h2
+          id={headingId}
+          className={`${HEADLINE.section} ${subheading ? "mb-6 md:mb-7" : ""} [&:last-child]:mb-0`}
+        >
+          {heading}
+        </h2>
       </Wrap>
 
       {subheading && (
-        <Wrap delay={baseDelay + 0.15}>
-          <p className="text-base md:text-lg text-muted-foreground mb-6 text-pretty max-w-[56ch]">
+        <Wrap delay={baseDelay + 0.1}>
+          <p className={`${BODY.lead} text-pretty max-w-[56ch] ${centered ? "mx-auto" : ""}`}>
             {subheading}
           </p>
-        </Wrap>
-      )}
-
-      {showBadge && (
-        <Wrap delay={baseDelay + 0.2}>
-          <p className="eyebrow mt-2">{badge}</p>
         </Wrap>
       )}
     </div>
