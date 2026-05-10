@@ -498,16 +498,26 @@ section[id^="section-"] {
   }
 
   /* ─────────────────────────────────────────────────────────────
-     EDITORIAL ATOMICS — eyebrow + hairline (Pass 32)
-     Use these instead of hand-rolled tracking/border strings.
+     EDITORIAL ATOMICS — eyebrow + hairline (Pass 32, retuned Pass 43)
+     Caption tier:  .eyebrow / .eyebrow-base  → 10px / 0.22em / 500
+     CTA tier:      text-[11px] tracking-[0.22em] uppercase font-medium
+                    → reserved for primary/secondary CTAs only
      ───────────────────────────────────────────────────────────── */
   .eyebrow {
-    font-size: 11px;
+    font-size: 10px;
     line-height: 1;
     text-transform: uppercase;
     letter-spacing: 0.22em;
     color: hsl(var(--cedar) / 0.65);
     font-weight: 500;
+  }
+  .eyebrow-base {
+    font-size: 10px;
+    line-height: 1;
+    text-transform: uppercase;
+    letter-spacing: 0.22em;
+    font-weight: 500;
+    /* color inherited / set by caller */
   }
   .hairline { border-top: 1px solid hsl(var(--cedar) / 0.12); }
   .hairline-l { border-left: 1px solid hsl(var(--cedar) / 0.12); }

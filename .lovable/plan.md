@@ -1,65 +1,126 @@
-# Pass 42 — Caption & QuoteModal Token Normalization
+# Pass 43 — Collapse the eyebrow utility (single source of truth)
 
-After Passes 40–41 standardized navigation, GlobalMenu, and the inline quote form, the remaining offenders breaking the Fly4Me-grade calm are: **QuoteModal** (the modal still ships legacy 0.18em / 0.25em tracking, 11–12px eyebrows, and `rounded-sm` on its primary CTAs) and the **public media caption layer** (HomeProjectRecapStrip, MediaSlot overlay, ProvenanceCaption, ProgressiveImage placeholder) which still uses `tracking-[0.25em]` and inconsistent 9/10px sizing. This pass collapses every public-surface eyebrow to the canonical `text-[10px] tracking-[0.22em] uppercase font-medium` and every form/CTA corner to `rounded-[2px]`. Admin and shadcn primitives are explicitly out of scope.
+Pass 42 normalized every public-surface eyebrow literal to `text-[10px] tracking-[0.22em] uppercase font-medium`. But the project already ships a `.eyebrow` utility class in `src/index.css` that resolves to **11px** at 0.22em. That means two parallel systems now coexist:
 
-## A. `src/components/quote/QuoteModal.tsx` — full sweep
+- **`.eyebrow` utility (11px)** → used by `Footer.tsx`, `QuoteFormInline.tsx` (Pass 41).
+- **Literal 10px string** → used by `QuoteModal.tsx`, every nav surface, every media caption (Pass 40–42).
 
-Rules applied:
-- Every `tracking-[0.18em]` → `tracking-[0.22em]`.
-- Every `tracking-[0.25em]` → `tracking-[0.22em]`.
-- Every `text-[9px]` eyebrow → `text-[10px]`.
-- Every `text-[11px]` / `text-[12px]` uppercase eyebrow on body copy or pills → `text-[10px]`. (The single exception is the primary submit CTA, which stays `text-[11px]` to match `QuoteFormInline`'s submit.)
-- Every `rounded-sm` on form controls and CTAs → `rounded-[2px]`.
-- Add `font-medium` wherever the eyebrow currently lacks it (visual weight parity with nav + GlobalMenu).
+The Footer eyebrow is visibly 1px taller than the nav rail eyebrow today — exactly the inconsistency this audit is meant to eliminate. Pass 43 collapses both into one.
 
-Specific lines (current → target):
+## A. Promote `.eyebrow` to the canonical 10px tier
 
-1. **Line 304** category eyebrow: `text-[10px] tracking-[0.25em] uppercase text-cedar/80` → `text-[10px] tracking-[0.22em] uppercase font-medium text-cedar/80`.
-2. **Line 341** "selected" tag: `text-[9px] tracking-[0.25em] uppercase text-cedar/80` → `text-[10px] tracking-[0.22em] uppercase font-medium text-cedar/80`.
-3. **Line 362** sub-section eyebrow: `text-[10px] tracking-[0.25em] uppercase text-cedar` → `text-[10px] tracking-[0.22em] uppercase font-medium text-cedar`.
-4. **Line 389** chip caption: `text-[10px] tracking-[0.18em] uppercase text-cedar` → `text-[10px] tracking-[0.22em] uppercase font-medium text-cedar`.
-5. **Line 464** field group label: `text-[11px] tracking-[0.18em] uppercase text-muted-foreground` → `text-[10px] tracking-[0.22em] uppercase font-medium text-muted-foreground`.
-6. **Line 506** field group label (timeline): same change as #5.
-7. **Line 580** trust micro-strip in modal footer: `text-[10px] tracking-[0.18em] uppercase text-muted-foreground` → `text-[10px] tracking-[0.22em] uppercase font-medium text-muted-foreground`.
-8. **Line 602** primary submit CTA: `rounded-sm text-[12px] tracking-[0.18em]` → `rounded-[2px] text-[11px] tracking-[0.22em]` (height/padding unchanged → still 52px hit target).
-9. **Line 722** floating "Get a quote" trigger: `rounded-sm text-[11px] tracking-[0.18em]` → `rounded-[2px] text-[11px] tracking-[0.22em]`.
-10. **Line 730** evergreen secondary CTA: same change as #9 (rounded + tracking).
-11. **Line 737** ghost cancel link: `text-[11px] tracking-[0.18em]` → `text-[11px] tracking-[0.22em]` (no rounding to change).
-12. Sweep any remaining `rounded-sm` on form inputs / chip buttons inside this file (textarea, inputs, day pills) → `rounded-[2px]`. Verify with `rg "rounded-sm" src/components/quote/QuoteModal.tsx` post-edit returns zero.
+**`src/index.css`** lines 504–511:
 
-## B. Media caption layer — public surfaces only
+```
+.eyebrow {
+  font-size: 10px;          /* was 11px */
+  line-height: 1;
+  text-transform: uppercase;
+  letter-spacing: 0.22em;
+  color: hsl(var(--cedar) / 0.65);
+  font-weight: 500;
+}
+```
 
-13. **`src/components/media/HomeProjectRecapStrip.tsx`** lines 55 & 67: `text-[10px] tracking-[0.25em] uppercase` → `text-[10px] tracking-[0.22em] uppercase font-medium` (preserve color tokens `text-cedar/70` and `text-muted-foreground/60 tabular-nums`).
-14. **`src/components/media/MediaSlot.tsx`** line 125 caption overlay: `text-[10px] tracking-[0.25em] uppercase font-medium` → `text-[10px] tracking-[0.22em] uppercase font-medium`.
-15. **`src/components/media/ProvenanceCaption.tsx`** line 42 small variant: `text-[9px] tracking-[0.22em]` → `text-[10px] tracking-[0.22em]` (font-medium already inherited from base; verify and add if missing). The default variant already at 10px stays put.
-16. **`src/components/ProgressiveImage.tsx`** line 142 placeholder eyebrow: `text-[9px] tracking-[0.2em] uppercase text-white/30` → `text-[10px] tracking-[0.22em] uppercase font-medium text-white/30`.
+Add a sibling utility for surfaces that override the cedar color (so consumers can write `eyebrow-base text-muted-foreground/70` without re-specifying the cedar color and then fighting it):
 
-## C. Mobile sub-nav micro-fix
+```
+.eyebrow-base {
+  font-size: 10px;
+  line-height: 1;
+  text-transform: uppercase;
+  letter-spacing: 0.22em;
+  font-weight: 500;
+  /* color inherited / set by caller */
+}
+```
 
-17. **`src/components/navigation/MobileSubNav.tsx`** line 104 separator dot: `text-[9px]` → `text-[10px]` so the dot height matches the 10px caption rhythm of the items it separates. Color (`text-foreground/25`) unchanged.
+Rationale: 10px at 0.22em is the rhythm chosen for the dense chrome (nav rail, GlobalMenu, modal eyebrows, media captions). The Footer and inline form are equally chrome, not body — they should match, not stand a pixel taller.
 
-## D. Out of scope (explicit)
+## B. Migrate high-value literal eyebrows to the utility
 
-- `src/pages/StyleGuide.tsx` — internal reference page; its 0.25em / 0.18em values are intentional documentation of legacy versus canonical tokens.
-- `src/pages/admin/*` — operator UI, not customer-facing.
-- `src/components/ui/*` (dialog, tabs, command, context-menu, resizable) — shadcn primitives whose `rounded-sm` is part of the library contract; they are not visible enough on public surfaces to justify forking.
-- `src/components/QuickNav.tsx` line 186 — dev-only floating helper.
+Replace the literal string `text-[10px] tracking-[0.22em] uppercase font-medium` with `eyebrow-base` (keeping any explicit color class) in the highest-traffic files. This is a mechanical sweep: where the caller passes its own color (e.g. `text-cedar/80`, `text-muted-foreground`, `text-white/30`), use `eyebrow-base`; where the caller wants the default cedar/65, use `eyebrow`.
 
-## E. Verification
+Files & expected counts (from `rg`):
 
-- `rg "tracking-\[0\.(18|25)em\]|text-\[9px\]" src/components/quote src/components/media src/components/navigation` returns **zero** matches after the pass.
-- `rg "rounded-sm" src/components/quote/QuoteModal.tsx` returns **zero** matches.
-- Visual sweep at 390 / 768 / 1440:
-  - Open `/contact`, click "Get a quote" → confirm modal eyebrows all read at the same weight & spacing as the inline form.
-  - Scroll homepage past `HomeProjectRecapStrip` → captions and year tabular-nums sit on the same baseline rhythm as nav rail captions.
-  - Hover any project tile w/ `MediaSlot` overlay caption → tracking matches the surrounding chrome.
-- No layout drift: 10px at 0.22em is ~1px narrower per word vs 0.25em, well within existing padding budgets.
+| File | Literal occurrences | Action |
+|---|---|---|
+| `src/components/quote/QuoteModal.tsx` | 9 | Replace each → `eyebrow-base <color-class>` |
+| `src/components/navigation/GlobalMenu.tsx` | 9 | Replace each → `eyebrow-base <color-class>` |
+| `src/components/navigation/SectionRail.tsx` | 3 | Replace each → `eyebrow-base <color-class>` |
+| `src/components/navigation/SectionRailCompact.tsx` | 2 | Replace each |
+| `src/components/navigation/MobileSubNav.tsx` | 2 | Replace each |
+| `src/components/media/HomeProjectRecapStrip.tsx` | 2 | Replace each |
+| `src/components/media/MediaSlot.tsx` | 1 | Replace |
+| `src/components/media/EditorialBleedSection.tsx` | 1 | Replace |
+| `src/components/media/ProvenanceCaption.tsx` | (built dynamically) | Refactor sizeClass → `"eyebrow-base"` |
+| `src/components/ProgressiveImage.tsx` | 1 + line 138 | Replace + see §C |
+| `src/components/ui/hero-provenance-card.tsx` | 1 | Replace |
+| `src/components/navigation/NavigationMinimal.tsx` | 1 | Replace |
+| `src/components/navigation/MenuTrigger.tsx` | 1 | Replace |
+| `src/components/navigation/HeaderBreadcrumb.tsx` | 1 | Replace |
+| `src/components/quote/QuoteFormInline.tsx` | 1 stray literal | Replace |
+| `src/components/QuickNav.tsx` | 1 | Skip (dev helper) |
+
+For each match, the rewrite is:
+```
+text-[10px] tracking-[0.22em] uppercase font-medium  →  eyebrow-base
+```
+…leaving the explicit color/opacity utility untouched. Result: one font-size, one tracking, one weight defined in CSS — every consumer inherits.
+
+## C. Address the last 11px / 0.2em outlier on a public surface
+
+**`src/components/ProgressiveImage.tsx`** line 138 still reads `text-[11px] tracking-[0.2em] uppercase text-white/60`. Normalize to:
+```
+eyebrow-base text-white/60
+```
+(10px / 0.22em / weight 500). The placeholder counter on line 142 was already fixed in Pass 42.
+
+## D. Two-tier rule (codify going forward)
+
+After this pass the system has exactly two uppercase-caption tiers — document them in a one-line comment above `.eyebrow` in `index.css`:
+
+```
+/* Caption tier:   .eyebrow / .eyebrow-base   → 10px / 0.22em / 500
+   CTA tier:       text-[11px] tracking-[0.22em] uppercase font-medium
+                   → reserved for primary/secondary CTAs only           */
+```
+
+`Hero.tsx` ghost CTA, `QuoteFormInline` submit, `QuoteModal` submit + SuccessPanel buttons, `Navigation` phone link — all already conform to the CTA tier. No action needed there.
+
+## E. Out of scope (explicit)
+
+- `src/pages/StyleGuide.tsx` — internal reference (must continue to display legacy values for documentation).
+- `src/pages/admin/*` — operator UI.
+- `src/components/ui/*` shadcn primitives.
+- `src/pages/About.tsx` line 89 mono numeral (`font-mono text-[11px] tracking-[0.22em] tabular-nums`) — intentionally a numeric column tag, not an eyebrow caption. Leave at 11px to keep tabular-nums alignment with adjacent prose.
+
+## F. Verification
+
+1. `rg "text-\[10px\] tracking-\[0\.22em\] uppercase font-medium" src/components` returns **zero** matches outside `QuickNav.tsx` and `StyleGuide.tsx` after the sweep.
+2. `rg "text-\[11px\] tracking-\[0\.2em\]" src/components` returns **zero** matches.
+3. Visual sweep at 390 / 768 / 1440:
+   - Footer "Navigate" / "Direct Line" eyebrows now render at the same height as the nav rail captions above them.
+   - QuoteFormInline labels match QuoteModal labels exactly (same font-size, same tracking, same weight).
+   - GlobalMenu open: every cedar caption inherits identical metrics.
+   - HomeProjectRecapStrip "Field Notes" / "04 Frames" sit on the same baseline as the nav rail eyebrow on the page above them.
+4. No layout drift: 11px → 10px reduces line height by 1px in the Footer and inline form — both have generous padding (`py-3`, `mt-5`, `mb-4`) so no realignment is needed.
 
 ## Files touched
 
-1. `src/components/quote/QuoteModal.tsx`
-2. `src/components/media/HomeProjectRecapStrip.tsx`
-3. `src/components/media/MediaSlot.tsx`
-4. `src/components/media/ProvenanceCaption.tsx`
-5. `src/components/ProgressiveImage.tsx`
-6. `src/components/navigation/MobileSubNav.tsx`
+1. `src/index.css` (utility definition + rule comment)
+2. `src/components/quote/QuoteModal.tsx`
+3. `src/components/quote/QuoteFormInline.tsx`
+4. `src/components/navigation/GlobalMenu.tsx`
+5. `src/components/navigation/SectionRail.tsx`
+6. `src/components/navigation/SectionRailCompact.tsx`
+7. `src/components/navigation/MobileSubNav.tsx`
+8. `src/components/navigation/NavigationMinimal.tsx`
+9. `src/components/navigation/MenuTrigger.tsx`
+10. `src/components/navigation/HeaderBreadcrumb.tsx`
+11. `src/components/media/HomeProjectRecapStrip.tsx`
+12. `src/components/media/MediaSlot.tsx`
+13. `src/components/media/EditorialBleedSection.tsx`
+14. `src/components/media/ProvenanceCaption.tsx`
+15. `src/components/ui/hero-provenance-card.tsx`
+16. `src/components/ProgressiveImage.tsx`
