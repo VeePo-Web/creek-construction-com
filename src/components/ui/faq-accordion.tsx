@@ -41,10 +41,10 @@ const FaqAccordion = ({ items, className }: FaqAccordionProps) => {
             )}
           >
             <span className="flex items-baseline gap-4 flex-1 min-w-0">
-              <span className="text-[11px] tracking-[0.22em] text-cedar/55 tabular-nums shrink-0">
+              <span className="eyebrow tabular-nums opacity-55 shrink-0">
                 {String(i + 1).padStart(2, "0")}
               </span>
-              <span className="font-serif text-lg md:text-xl tracking-[-0.01em] text-foreground leading-snug group-hover:text-cedar transition-colors duration-300">
+              <span className="font-serif text-lg md:text-xl tracking-[-0.01em] text-foreground leading-snug">
                 {f.q}
               </span>
             </span>

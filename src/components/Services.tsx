@@ -82,7 +82,7 @@ const Services = () => {
             <li className="hairline">
               <Link
                 to="/contact"
-                className="group flex items-center justify-between py-6 md:py-7 pl-3 md:pl-5 text-[12px] tracking-[0.18em] uppercase text-muted-foreground/70 hover:text-cedar transition-colors"
+                className="group flex items-center justify-between py-6 md:py-7 pl-3 md:pl-5 eyebrow opacity-70 hover:opacity-100 transition-opacity"
               >
                 <span>Don’t see what you need? Ask anyway.</span>
                 <ArrowUpRight className="h-4 w-4 group-hover:text-cedar transition-colors" strokeWidth={1.5} aria-hidden />
