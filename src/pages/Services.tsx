@@ -6,6 +6,7 @@ import QuoteCloserCard from "@/components/QuoteCloserCard";
 import SectionHeader from "@/components/SectionHeader";
 import PageHero from "@/components/ui/page-hero";
 import MiniFaq from "@/components/MiniFaq";
+import EditorialImageBreak from "@/components/media/EditorialImageBreak";
 import { Check, Minus, ArrowUpRight } from "lucide-react";
 import { HEADLINE } from "@/lib/typography";
 import { useDocumentTitle } from "@/hooks/useDocumentTitle";
@@ -14,6 +15,9 @@ import { useQuoteModal } from "@/components/quote/QuoteModalProvider";
 
 import { SECTION_PADDING, MAX_WIDTH } from "@/lib/spacing";
 import { FAQS_SERVICES } from "@/config/faqs";
+import saunaStonesPremium from "@/assets/sauna-stones-premium.jpg";
+import heroArchitecture from "@/assets/hero-architecture.jpg";
+import cedarTexturePremium from "@/assets/cedar-texture-premium.jpg";
 
 const WE_HANDLE = [
   "Site assessment and accurate quote",
@@ -115,6 +119,12 @@ const Services = () => {
         </div>
       </section>
 
+      <EditorialImageBreak
+        src={saunaStonesPremium}
+        alt="Stone surface detail with steam and warm light — material craft."
+        intensity="calm"
+      />
+
       {/* Responsibility matrix */}
       <section
         id="section-contract"
@@ -130,55 +140,69 @@ const Services = () => {
               align="center"
             />
 
-            <div className="mt-12 grid lg:grid-cols-2 gap-6 lg:gap-8">
-              <div
-                aria-label="What we handle"
-                className="hairline pt-7 sm:pt-8 md:pt-10 px-1 sm:px-2 h-full"
-              >
-                <div className="flex items-baseline justify-between gap-2 flex-wrap mb-8">
-                  <p className="eyebrow">WE HANDLE</p>
-                  <span className="eyebrow tabular-nums opacity-60">
-                    {String(WE_HANDLE.length).padStart(2, "0")} ITEMS
-                  </span>
-                </div>
-                <div className="space-y-2.5" role="list">
-                  {WE_HANDLE.map((item, i) => (
-                    <div
-                      key={i}
-                      role="listitem"
-                      className="flex items-start gap-3 py-2"
-                    >
-                      <Check className="h-3.5 w-3.5 text-cedar/70 mt-1 flex-shrink-0" aria-hidden />
-                      <p className="text-foreground text-sm">{item}</p>
-                    </div>
-                  ))}
-                </div>
-              </div>
+            <div className="mt-12 grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10">
+              <figure className="lg:col-span-4 aspect-[16/9] lg:aspect-[4/5] w-full overflow-hidden">
+                <img
+                  src={cedarTexturePremium}
+                  alt="Macro of cedar grain — the material we work in every day."
+                  loading="lazy"
+                  decoding="async"
+                  className="block w-full h-full object-cover"
+                  width={1200}
+                  height={1500}
+                />
+              </figure>
 
-              <div
-                aria-label="What you handle"
-                className="hairline pt-7 sm:pt-8 md:pt-10 px-1 sm:px-2 h-full"
-              >
-                <div className="flex items-baseline justify-between gap-2 flex-wrap mb-8">
-                  <p className="eyebrow opacity-65">YOU HANDLE</p>
-                  <span className="eyebrow tabular-nums opacity-60">
-                    {String(YOU_HANDLE.length).padStart(2, "0")} ITEMS
-                  </span>
-                </div>
-                <div className="space-y-2.5" role="list">
-                  {YOU_HANDLE.map((item, i) => (
-                    <div
-                      key={i}
-                      role="listitem"
-                      className="flex items-start gap-3 py-2"
-                    >
-                      <Minus className="h-3.5 w-3.5 text-muted-foreground/40 mt-1 flex-shrink-0" aria-hidden />
-                      <div>
-                        <p className="text-foreground text-sm">{item.task}</p>
-                        <p className="text-xs text-muted-foreground mt-1">{item.note}</p>
+              <div className="lg:col-span-8 grid sm:grid-cols-2 gap-6 lg:gap-8">
+                <div
+                  aria-label="What we handle"
+                  className="hairline pt-7 sm:pt-8 md:pt-10 px-1 sm:px-2 h-full"
+                >
+                  <div className="flex items-baseline justify-between gap-2 flex-wrap mb-8">
+                    <p className="eyebrow">WE HANDLE</p>
+                    <span className="eyebrow tabular-nums opacity-60">
+                      {String(WE_HANDLE.length).padStart(2, "0")} ITEMS
+                    </span>
+                  </div>
+                  <div className="space-y-2.5" role="list">
+                    {WE_HANDLE.map((item, i) => (
+                      <div
+                        key={i}
+                        role="listitem"
+                        className="flex items-start gap-3 py-2"
+                      >
+                        <Check className="h-3.5 w-3.5 text-cedar/70 mt-1 flex-shrink-0" aria-hidden />
+                        <p className="text-foreground text-sm">{item}</p>
                       </div>
-                    </div>
-                  ))}
+                    ))}
+                  </div>
+                </div>
+
+                <div
+                  aria-label="What you handle"
+                  className="hairline pt-7 sm:pt-8 md:pt-10 px-1 sm:px-2 h-full"
+                >
+                  <div className="flex items-baseline justify-between gap-2 flex-wrap mb-8">
+                    <p className="eyebrow opacity-65">YOU HANDLE</p>
+                    <span className="eyebrow tabular-nums opacity-60">
+                      {String(YOU_HANDLE.length).padStart(2, "0")} ITEMS
+                    </span>
+                  </div>
+                  <div className="space-y-2.5" role="list">
+                    {YOU_HANDLE.map((item, i) => (
+                      <div
+                        key={i}
+                        role="listitem"
+                        className="flex items-start gap-3 py-2"
+                      >
+                        <Minus className="h-3.5 w-3.5 text-muted-foreground/40 mt-1 flex-shrink-0" aria-hidden />
+                        <div>
+                          <p className="text-foreground text-sm">{item.task}</p>
+                          <p className="text-xs text-muted-foreground mt-1">{item.note}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               </div>
             </div>
@@ -188,6 +212,13 @@ const Services = () => {
 
       {/* FAQ — shared module, single source of truth */}
       <MiniFaq items={FAQS_SERVICES} background="background" />
+
+      <EditorialImageBreak
+        src={heroArchitecture}
+        alt="Architectural exterior elevation with horizontal cedar cladding."
+        aspect="16/9"
+        intensity="calm"
+      />
 
       <QuoteCloserCard background="secondary" />
 

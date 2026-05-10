@@ -5,11 +5,15 @@ import CedarCTA from "@/components/CedarCTA";
 import QuoteCloserCard from "@/components/QuoteCloserCard";
 import SectionHeader from "@/components/SectionHeader";
 import PageHero from "@/components/ui/page-hero";
+import EditorialImageBreak from "@/components/media/EditorialImageBreak";
 import { useDocumentTitle } from "@/hooks/useDocumentTitle";
 import { CONTACT } from "@/config/contact";
 import { SECTION_PADDING, MAX_WIDTH } from "@/lib/spacing";
 import { BODY } from "@/lib/typography";
 import { CREEK_PROCESS as STEPS } from "@/config/process";
+import saunaBackyardPremium from "@/assets/sauna-backyard-premium.jpg";
+import saunaInteriorEditorial from "@/assets/sauna-interior-editorial.jpg";
+import saunaAcreagePremium from "@/assets/sauna-acreage-premium.jpg";
 
 const About = () => {
   useDocumentTitle(
@@ -49,23 +53,44 @@ const About = () => {
               heading="A small crew that takes the work seriously."
               align="center"
             />
-            <div className="space-y-6 mt-10 max-w-[62ch] mx-auto text-center">
-              <p className={BODY.lead}>
-                Creek Construction is a locally owned, residential-exterior contractor working
-                across the Calgary and Edmonton metros. We build decks, fences, sheds, pergolas —
-                and we paint, side, and repair the parts of your home that face the weather.
-              </p>
-              <p className={BODY.lead}>
-                We don’t subcontract the build. The crew you meet at the quote is the crew on-site
-                doing the work.
-              </p>
-              <p className="font-serif italic text-xl md:text-2xl text-foreground/85 text-balance mt-6 pt-8 hairline">
-                “We don’t subcontract, and that decides everything else.”
-              </p>
+
+            <div className="grid lg:grid-cols-[6fr_5fr] gap-10 lg:gap-14 items-center mt-12">
+              <div className="space-y-6">
+                <p className={BODY.lead}>
+                  Creek Construction is a locally owned, residential-exterior contractor working
+                  across the Calgary and Edmonton metros. We build decks, fences, sheds, pergolas —
+                  and we paint, side, and repair the parts of your home that face the weather.
+                </p>
+                <p className={BODY.lead}>
+                  We don’t subcontract the build. The crew you meet at the quote is the crew on-site
+                  doing the work.
+                </p>
+              </div>
+              <figure className="aspect-[3/4] w-full overflow-hidden">
+                <img
+                  src={saunaBackyardPremium}
+                  alt="Cedar exterior detail with warm light and clean joinery."
+                  loading="lazy"
+                  decoding="async"
+                  className="block w-full h-full object-cover"
+                  width={1200}
+                  height={1600}
+                />
+              </figure>
             </div>
+
+            <p className="font-serif italic text-xl md:text-2xl text-foreground/85 text-balance text-center mt-12 pt-8 hairline max-w-[62ch] mx-auto">
+              “We don’t subcontract, and that decides everything else.”
+            </p>
           </div>
         </div>
       </section>
+
+      <EditorialImageBreak
+        src={saunaInteriorEditorial}
+        alt="Interior cedar detail under soft directional light — process and craft."
+        intensity="calm"
+      />
 
       <section id="section-process" className={`${SECTION_PADDING.default} bg-secondary`} aria-labelledby="process-heading">
         <div className="container-page">
@@ -99,6 +124,12 @@ const About = () => {
           </div>
         </div>
       </section>
+
+      <EditorialImageBreak
+        src={saunaAcreagePremium}
+        alt="Cedar building set on prairie acreage at dusk — Alberta horizon."
+        intensity="cinematic"
+      />
 
       <section id="section-areas" className={`${SECTION_PADDING.default}`} aria-labelledby="areas-heading">
         <div className="container-page">
