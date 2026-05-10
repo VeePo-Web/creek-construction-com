@@ -155,9 +155,7 @@ const Navigation = ({ transparent: _transparent }: NavigationProps) => {
         </div>
       </header>
 
-      {/* Mobile sub-page wayfinding bar — pins under the chrome on every
-          sub-page (< md only). Renders nothing on `/`. */}
-      <MobileSubNav faded={isAtFooter} />
+
 
       {/* Spacer — header is fixed, so reserve the same height in the document
           flow. On mobile sub-pages we add another 40px for MobileSubNav. */}
