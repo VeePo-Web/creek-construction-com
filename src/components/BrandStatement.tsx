@@ -24,11 +24,11 @@ const BrandStatement = () => {
         >
           <p className="hairline pt-10 md:pt-14" aria-hidden />
           <p className="eyebrow mt-10 md:mt-14 mb-8 md:mb-10">Est. 2019 · Alberta</p>
-          <p className="font-serif text-[clamp(1.625rem,3.6vw,2.875rem)] text-foreground/90 leading-[1.1] tracking-[-0.03em] text-balance mx-auto max-w-[46ch]">
+          <p className="font-serif text-[clamp(1.625rem,3.6vw,2.875rem)] text-foreground leading-[1.1] tracking-[-0.03em] text-balance mx-auto max-w-[46ch]">
             How we work shows up in the work itself
-            <span className="text-cedar/55"> · </span>
+            <span className="text-cedar/40"> · </span>
             we don’t subcontract the build
-            <span className="text-cedar/55"> · </span>
+            <span className="text-cedar/40"> · </span>
             we’d rather do fewer projects exceptionally well.
           </p>
           <p className="hairline mt-10 md:mt-14" aria-hidden />
