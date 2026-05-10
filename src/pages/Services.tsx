@@ -9,7 +9,7 @@ import MiniFaq from "@/components/MiniFaq";
 import { Check, Minus, ArrowUpRight } from "lucide-react";
 import { HEADLINE } from "@/lib/typography";
 import { useDocumentTitle } from "@/hooks/useDocumentTitle";
-import { SERVICE_GROUPS, getItemsForGroup } from "@/config/services";
+import { SERVICES } from "@/config/services";
 import { useQuoteModal } from "@/components/quote/QuoteModalProvider";
 
 import { SECTION_PADDING, MAX_WIDTH } from "@/lib/spacing";
