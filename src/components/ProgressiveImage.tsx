@@ -135,7 +135,7 @@ const ProgressiveImage = ({
       {/* Provenance caption */}
       {caption && (
         <div className="absolute bottom-0 left-0 right-0 p-6 opacity-0 group-hover:opacity-100 transition-[opacity,transform] duration-700 translate-y-2 group-hover:translate-y-0 flex items-end justify-between">
-          <p className="text-[11px] tracking-[0.2em] uppercase text-white/60">
+          <p className="eyebrow-base text-white/60">
             {caption}
           </p>
           {counter && (
