@@ -47,7 +47,7 @@ const Footer = () => {
 
           {/* ── Navigate ── */}
           <div className="lg:col-span-4 lg:px-10 lg:border-l lg:border-evergreen-foreground/10">
-            <p className="text-[11px] tracking-[0.22em] uppercase text-cedar/70 mb-4 text-center lg:text-left">
+            <p className="eyebrow mb-4 text-center lg:text-left">
               Navigate
             </p>
             <nav aria-label="Footer">
@@ -73,7 +73,7 @@ const Footer = () => {
 
           {/* ── Direct line ── */}
           <div className="lg:col-span-4 lg:pl-10 lg:border-l lg:border-evergreen-foreground/10">
-            <p className="text-[11px] tracking-[0.22em] uppercase text-cedar/70 mb-4 text-center lg:text-left">
+            <p className="eyebrow mb-4 text-center lg:text-left">
               Direct Line
             </p>
             <div className="flex flex-col items-center lg:items-start space-y-2">
@@ -97,8 +97,8 @@ const Footer = () => {
         </div>
 
         {/* © line */}
-        <div className="max-w-6xl mx-auto mt-14 pt-6 border-t border-evergreen-foreground/10">
-          <div className="flex flex-col md:flex-row items-center md:justify-between gap-2 text-[11px] tracking-[0.18em] uppercase text-evergreen-foreground/55">
+        <div className="max-w-6xl mx-auto mt-16 pt-8 border-t border-evergreen-foreground/10">
+          <div className="flex flex-col md:flex-row items-center md:justify-between gap-2 eyebrow opacity-55">
             <span>© Creek Construction — All rights reserved</span>
             <span>Made in Alberta</span>
           </div>

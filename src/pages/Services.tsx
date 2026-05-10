@@ -6,7 +6,8 @@ import QuoteCloserCard from "@/components/QuoteCloserCard";
 import SectionHeader from "@/components/SectionHeader";
 import PageHero from "@/components/ui/page-hero";
 import MiniFaq from "@/components/MiniFaq";
-import { Check, Minus } from "lucide-react";
+import { Check, Minus, ArrowUpRight } from "lucide-react";
+import { HEADLINE } from "@/lib/typography";
 import { useDocumentTitle } from "@/hooks/useDocumentTitle";
 import { SERVICE_GROUPS, getItemsForGroup } from "@/config/services";
 import { useQuoteModal } from "@/components/quote/QuoteModalProvider";
@@ -78,38 +79,48 @@ const Services = () => {
                 const items = getItemsForGroup(group.id);
                 return (
                   <div key={group.id} aria-labelledby={`group-${group.id}`} className={gIdx > 0 ? "pt-10 md:pt-14 hairline" : ""}>
-                    <div className="mb-4 md:mb-6 flex items-baseline gap-3">
-                      <span className="font-mono text-[11px] tracking-[0.22em] text-cedar/45 tabular-nums">
+                    <div className="mb-6 md:mb-8 flex items-baseline gap-3">
+                      <span className="eyebrow tabular-nums opacity-60">
                         {String(gIdx + 1).padStart(2, "0")}
                       </span>
                       <h3
                         id={`group-${group.id}`}
-                        className="font-serif text-xl md:text-2xl text-foreground"
+                        className={HEADLINE.sub}
                       >
                         {group.title}
                       </h3>
                     </div>
 
-                    <div className="grid sm:grid-cols-2 gap-x-6">
+                    <ul role="list" className="grid sm:grid-cols-2 gap-x-6 sm:gap-x-10">
                       {items.map((item) => (
-                        <button
-                          key={item.id}
-                          type="button"
-                          onClick={() => openModal([item.id])}
-                          className="group flex items-baseline justify-between gap-4 py-3.5 md:py-4 text-left border-b border-cedar/8 transition-colors duration-300 hover:bg-cedar/[0.035] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cedar focus-visible:ring-offset-2 rounded-[4px] px-3 sm:px-4 -mx-3 sm:-mx-4 min-h-[44px]"
-                          aria-label={`Get my free quote for ${item.title}`}
-                        >
-                          <div className="flex-1 min-w-0">
-                            <p className="text-base text-foreground transition-colors duration-300 group-hover:text-cedar">
-                              {item.title}
-                            </p>
-                            {item.short && (
-                              <p className="text-xs text-muted-foreground mt-1">{item.short}</p>
-                            )}
-                          </div>
-                        </button>
+                        <li key={item.id} role="listitem" className="border-b border-cedar/12">
+                          <button
+                            type="button"
+                            onClick={() => openModal([item.id])}
+                            className="group relative w-full flex items-baseline justify-between gap-4 py-4 md:py-5 pl-3 sm:pl-4 pr-2 text-left transition-colors duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cedar/40 focus-visible:ring-offset-2 focus-visible:ring-offset-background min-h-[44px]"
+                            aria-label={`Get my free quote for ${item.title}`}
+                          >
+                            <span
+                              aria-hidden
+                              className="absolute left-0 top-3 bottom-3 w-0 bg-cedar transition-all duration-300 group-hover:w-[2px]"
+                            />
+                            <div className="flex-1 min-w-0">
+                              <p className="text-base text-foreground">
+                                {item.title}
+                              </p>
+                              {item.short && (
+                                <p className="text-xs text-muted-foreground mt-1">{item.short}</p>
+                              )}
+                            </div>
+                            <ArrowUpRight
+                              className="hidden sm:block h-4 w-4 text-cedar/45 group-hover:text-cedar opacity-0 group-hover:opacity-100 transition-all duration-300 flex-shrink-0"
+                              strokeWidth={1.5}
+                              aria-hidden
+                            />
+                          </button>
+                        </li>
                       ))}
-                    </div>
+                    </ul>
                   </div>
                 );
               })}
@@ -139,8 +150,8 @@ const Services = () => {
                 className="hairline pt-7 sm:pt-8 md:pt-10 px-1 sm:px-2 h-full"
               >
                 <div className="flex items-baseline justify-between gap-2 flex-wrap mb-8">
-                  <h3 className="text-minimal text-cedar">WE HANDLE</h3>
-                  <span className="text-[10px] tracking-[0.2em] text-cedar/50 tabular-nums">
+                  <p className="eyebrow">WE HANDLE</p>
+                  <span className="eyebrow tabular-nums opacity-60">
                     {String(WE_HANDLE.length).padStart(2, "0")} ITEMS
                   </span>
                 </div>
@@ -163,8 +174,8 @@ const Services = () => {
                 className="hairline pt-7 sm:pt-8 md:pt-10 px-1 sm:px-2 h-full"
               >
                 <div className="flex items-baseline justify-between gap-2 flex-wrap mb-8">
-                  <h3 className="text-minimal text-muted-foreground">YOU HANDLE</h3>
-                  <span className="text-[10px] tracking-[0.2em] text-muted-foreground/55 tabular-nums">
+                  <p className="eyebrow opacity-65">YOU HANDLE</p>
+                  <span className="eyebrow tabular-nums opacity-60">
                     {String(YOU_HANDLE.length).padStart(2, "0")} ITEMS
                   </span>
                 </div>

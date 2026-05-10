@@ -55,7 +55,6 @@ const CrewMoment = ({
             wrapperClassName="aspect-[4/5] lg:aspect-[3/4] w-full rounded-none overflow-hidden"
             cedarHover
             fallbackVariant="cedar"
-            fallbackCaption="On the boards · Alberta"
           />
           <p className="eyebrow mt-4">On the boards · Alberta</p>
         </div>

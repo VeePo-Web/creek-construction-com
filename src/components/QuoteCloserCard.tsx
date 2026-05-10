@@ -28,8 +28,8 @@ const QuoteCloserCard = ({
   const card = (
     <div className="relative bg-evergreen overflow-hidden before:content-[''] before:absolute before:left-0 before:top-0 before:bottom-0 before:w-[2px] before:bg-cedar">
       <div className="relative z-10 p-6 sm:p-8 md:p-10 lg:p-12">
-        <p className="eyebrow text-cedar/80 mb-4">{eyebrow}</p>
-        <h2 className="font-serif text-evergreen-foreground text-3xl sm:text-4xl md:text-[40px] lg:text-5xl xl:text-[56px] leading-[1.1] tracking-[-0.02em] text-pretty mb-5 max-w-[22ch]">
+        <p className="eyebrow mb-4">{eyebrow}</p>
+        <h2 className="font-serif text-evergreen-foreground text-3xl md:text-4xl lg:text-5xl leading-[1.1] tracking-[-0.022em] text-balance mb-5 max-w-[22ch]">
           {heading}
         </h2>
         <p className="text-evergreen-foreground/70 leading-relaxed mb-8 max-w-[52ch]">
@@ -38,7 +38,7 @@ const QuoteCloserCard = ({
 
         <CedarCTA preselectServices={preselectServices}>Get my free quote</CedarCTA>
 
-        <p className="mt-6 text-[11px] tracking-[0.22em] uppercase text-evergreen-foreground/55">
+        <p className="mt-6 eyebrow opacity-55">
           Free · No obligation · 24-hour reply
         </p>
       </div>
