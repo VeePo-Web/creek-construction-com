@@ -100,7 +100,7 @@ const SectionRail = ({ sections, faded = false, className }: SectionRailProps) =
                   onClick={(e) => handleClick(e, section.anchor)}
                   aria-current={isActive ? "location" : undefined}
                   className={cn(
-                    "relative px-2 py-2.5 text-[10px] tracking-[0.22em] uppercase",
+                    "relative px-2 py-2.5 text-[10px] tracking-[0.22em] uppercase font-medium",
                     "transition-colors duration-300 min-h-[44px] flex items-center group",
                     isActive ? "text-cedar" : "text-foreground/65 hover:text-cedar",
                   )}
@@ -143,7 +143,7 @@ const SectionRail = ({ sections, faded = false, className }: SectionRailProps) =
             onClick={(e) => handleClick(e, section.anchor)}
             aria-current={isActive ? "location" : undefined}
             className={cn(
-              "relative px-4 py-2.5 text-[10px] tracking-[0.24em] uppercase font-medium",
+              "relative px-4 py-2.5 text-[10px] tracking-[0.22em] uppercase font-medium",
               "transition-colors duration-300 min-h-[44px] flex items-center group",
               isActive ? "text-cedar" : "text-cedar/65 hover:text-cedar",
             )}

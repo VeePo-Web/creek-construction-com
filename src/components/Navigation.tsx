@@ -64,7 +64,7 @@ const Navigation = ({ transparent: _transparent }: NavigationProps) => {
   // Full desktop Quote CTA.
   const desktopCta = cn(
     BUTTON.primary.base,
-    "px-4 py-2.5 text-[11px] tracking-[0.18em] gap-2",
+    "px-4 py-2.5 text-[11px] gap-2",
     BUTTON.primary.hover,
     BUTTON.primary.focus,
     BUTTON.primary.transition,
@@ -122,7 +122,7 @@ const Navigation = ({ transparent: _transparent }: NavigationProps) => {
             {/* Desktop-only (lg+) phone link with the number spelled out */}
             <a
               href={`tel:${CONTACT.phoneTel}`}
-              className="hidden lg:inline-flex items-center gap-2 text-[11px] tracking-[0.18em] uppercase text-foreground/75 hover:text-cedar transition-colors min-h-[44px] px-2 tabular-nums"
+              className="hidden lg:inline-flex items-center gap-2 text-[11px] tracking-[0.22em] uppercase font-medium text-foreground/75 hover:text-cedar transition-colors min-h-[44px] px-2 tabular-nums"
               aria-label={`Call ${CONTACT.phone}`}
             >
               <span aria-hidden className="block w-1 h-1 rounded-full bg-cedar/60" />
