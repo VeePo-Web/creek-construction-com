@@ -73,7 +73,7 @@ const Footer = () => {
 
           {/* ── Direct line ── */}
           <div className="lg:col-span-4 lg:pl-10 lg:border-l lg:border-evergreen-foreground/10">
-            <p className="text-[11px] tracking-[0.22em] uppercase text-cedar/70 mb-4 text-center lg:text-left">
+            <p className="eyebrow mb-4 text-center lg:text-left">
               Direct Line
             </p>
             <div className="flex flex-col items-center lg:items-start space-y-2">
