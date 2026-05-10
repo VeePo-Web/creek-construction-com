@@ -301,7 +301,7 @@ const QuoteModal = () => {
               className="h-20 w-auto object-contain mb-5 drop-shadow-[0_4px_24px_hsl(0_0%_0%/0.3)]"
               loading="eager"
             />
-            <p className="text-[10px] tracking-[0.22em] uppercase font-medium text-cedar/80 mb-3">
+            <p className="eyebrow-base text-cedar/80 mb-3">
               Free · No obligation
             </p>
             <h2 className="font-serif text-xl leading-tight mb-3">
@@ -320,7 +320,7 @@ const QuoteModal = () => {
               <Star className="h-3 w-3 fill-cedar" aria-hidden />
               <Star className="h-3 w-3 fill-cedar" aria-hidden />
               <Star className="h-3 w-3 fill-cedar" aria-hidden />
-              <span className="text-[10px] tracking-[0.22em] uppercase font-medium text-evergreen-foreground/70 ml-1">
+              <span className="eyebrow-base text-evergreen-foreground/70 ml-1">
                 Verified builds
               </span>
             </div>
@@ -338,7 +338,7 @@ const QuoteModal = () => {
         <div className="md:hidden bg-evergreen text-evergreen-foreground px-5 py-2.5 flex items-center gap-2.5">
           <img src={logo} alt="" width={28} height={28} className="h-7 w-7 object-contain" />
           <p className="font-serif text-sm leading-none">Creek Construction</p>
-          <span className="ml-auto text-[10px] tracking-[0.22em] uppercase font-medium text-cedar/80">
+          <span className="ml-auto eyebrow-base text-cedar/80">
             Free Quote
           </span>
         </div>
@@ -359,7 +359,7 @@ const QuoteModal = () => {
             <>
               {/* Header — dynamic line replaces step counter */}
               <header className="px-6 md:px-8 pt-6 md:pt-7 pb-4">
-                <p className="text-[10px] tracking-[0.22em] uppercase font-medium text-cedar mb-2">
+                <p className="eyebrow-base text-cedar mb-2">
                   {mode === "inquiry" ? "Send us a message" : "Free quote"}
                 </p>
                 <h3
@@ -386,7 +386,7 @@ const QuoteModal = () => {
                     }
                     adornment={
                       phoneValid ? (
-                        <span className="inline-flex items-center gap-1 text-[10px] tracking-[0.22em] uppercase font-medium text-cedar">
+                        <span className="inline-flex items-center gap-1 eyebrow-base text-cedar">
                           <Check className="h-3 w-3" aria-hidden /> Ready
                         </span>
                       ) : null
@@ -461,7 +461,7 @@ const QuoteModal = () => {
                 {/* SERVICES — chip picker, grouped */}
                 {mode === "quote" && (
                   <div>
-                    <p className="text-[10px] tracking-[0.22em] uppercase font-medium text-muted-foreground mb-3">
+                    <p className="eyebrow-base text-muted-foreground mb-3">
                       What do you need? <span className="text-muted-foreground/60 normal-case tracking-normal">— pick any</span>
                     </p>
                     <div className="space-y-3">
@@ -469,7 +469,7 @@ const QuoteModal = () => {
                         const items = getItemsForGroup(group.id);
                         return (
                           <div key={group.id}>
-                            <p className="text-[10px] tracking-[0.22em] uppercase font-medium text-cedar/70 mb-1.5">
+                            <p className="eyebrow-base text-cedar/70 mb-1.5">
                               {group.title}
                             </p>
                             <div className="flex flex-wrap gap-1.5">
@@ -503,7 +503,7 @@ const QuoteModal = () => {
                 {/* Timeline — segmented, 3 options, defaults to "Within 1 month" */}
                 {mode === "quote" && (
                   <div>
-                    <p className="text-[10px] tracking-[0.22em] uppercase font-medium text-muted-foreground mb-2">
+                    <p className="eyebrow-base text-muted-foreground mb-2">
                       When?
                     </p>
                     <div className="grid grid-cols-3 gap-1.5" role="radiogroup">
@@ -577,7 +577,7 @@ const QuoteModal = () => {
                 className="sticky bottom-0 z-10 bg-muted border-t border-border/40"
                 style={{ paddingBottom: "max(0px, env(safe-area-inset-bottom))" }}
               >
-                <div className="px-6 md:px-8 py-2 flex items-center justify-center gap-4 text-[10px] tracking-[0.22em] uppercase font-medium text-muted-foreground border-b border-border/30">
+                <div className="px-6 md:px-8 py-2 flex items-center justify-center gap-4 eyebrow-base text-muted-foreground border-b border-border/30">
                   <span className="inline-flex items-center gap-1.5">
                     <Star className="h-3 w-3 fill-cedar text-cedar" aria-hidden />
                     Verified

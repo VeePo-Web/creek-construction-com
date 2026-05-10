@@ -27,7 +27,7 @@ const HeaderBreadcrumb = ({ className }: HeaderBreadcrumbProps) => {
         to="/"
         className={cn(
           "group/back inline-flex items-center gap-1.5 px-2.5 py-2 rounded-sm",
-          "text-[10px] tracking-[0.22em] uppercase font-medium",
+          "eyebrow-base",
           "text-foreground/55 hover:text-cedar transition-colors duration-300",
           "min-h-[44px]",
           "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cedar focus-visible:ring-offset-2",

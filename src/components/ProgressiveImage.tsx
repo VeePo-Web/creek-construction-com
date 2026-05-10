@@ -139,7 +139,7 @@ const ProgressiveImage = ({
             {caption}
           </p>
           {counter && (
-            <p className="text-[10px] tracking-[0.22em] uppercase font-medium text-white/30">
+            <p className="eyebrow-base text-white/30">
               {counter}
             </p>
           )}

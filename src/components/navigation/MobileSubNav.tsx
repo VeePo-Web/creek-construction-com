@@ -74,7 +74,7 @@ const MobileSubNav = ({ faded = false }: MobileSubNavProps) => {
           to={meta.parentPath}
           className={cn(
             "group/back inline-flex items-center gap-1 -ml-1 px-2 h-9 rounded-sm shrink-0",
-            "text-[10px] tracking-[0.22em] uppercase font-medium",
+            "eyebrow-base",
             "text-foreground/55 active:text-cedar transition-colors duration-200",
             "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cedar",
           )}
@@ -116,7 +116,7 @@ const MobileSubNav = ({ faded = false }: MobileSubNavProps) => {
                     }}
                     aria-current={isActive ? "location" : undefined}
                     className={cn(
-                      "relative px-2 h-9 inline-flex items-center text-[10px] tracking-[0.22em] uppercase font-medium",
+                      "relative px-2 h-9 inline-flex items-center eyebrow-base",
                       "transition-colors duration-200 whitespace-nowrap",
                       isActive ? "text-cedar" : "text-foreground/55 active:text-cedar",
                       isActive && "after:content-[''] after:absolute after:left-1/2 after:-translate-x-1/2 after:bottom-1 after:h-px after:w-4 after:bg-cedar",
