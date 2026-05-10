@@ -531,7 +531,7 @@ const ServicePortrait = (props: ServicePortraitProps) => {
     <section
       className={cn(
         "relative overflow-hidden text-evergreen-foreground",
-        "min-h-[68vh] md:min-h-[640px] lg:min-h-[720px] xl:min-h-[780px] flex items-end",
+        "min-h-[100svh] flex items-end",
         props.className,
       )}
       aria-label={lines.join(" ")}
@@ -541,26 +541,11 @@ const ServicePortrait = (props: ServicePortraitProps) => {
         rhythm="equal"
         scrim="bottom"
         priority
-        fallbackCaptions={[
-          "Decks · Calgary",
-          "Sheds · Edmonton",
-          "Fences · Alberta",
-        ]}
       />
-
-      {/* Top scrim provided by HeroTriptych (SCRIM.topNav + SCRIM.mobileTop). */}
 
       <div className="container mx-auto max-w-[1440px] px-5 sm:px-6 md:px-10 relative z-10 pt-28 md:pt-36 pb-16 md:pb-24 lg:pb-28">
         <div className="max-w-3xl">
-          {/* Breadcrumb intentionally omitted — see CinematicBleed for the
-              same rationale. HeaderBreadcrumb owns sub-page wayfinding. */}
-
-          <BronzeRule
-            numeral={props.numeral}
-            label={props.sectionLabel}
-            variant="onDark"
-            className="mb-6 md:mb-9 lg:mb-10 hero-rule-draw"
-          />
+          {/* sectionLabel/eyebrow chip removed (Pass 52). */}
 
           <KineticHeadline
             lines={lines}
@@ -643,12 +628,6 @@ const CinematicLegacy = (props: CinematicLegacyProps) => {
       <div className="container mx-auto px-5 sm:px-6 md:px-10 relative z-10 pb-16">
         <div className="max-w-3xl">
           <BreadcrumbTrail items={props.breadcrumb} onDark className="mb-6" />
-          <BronzeRule
-            numeral={props.numeral ?? "I"}
-            label={props.sectionLabel}
-            variant="onDark"
-            className="mb-4"
-          />
           <KineticHeadline lines={lines} italic={props.italic} size="cinematic" onDark />
           {props.subtitle && (
             <p
