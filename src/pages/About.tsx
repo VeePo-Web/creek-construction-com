@@ -125,6 +125,12 @@ const About = () => {
         </div>
       </section>
 
+      <EditorialImageBreak
+        src={saunaAcreagePremium}
+        alt="Cedar building set on prairie acreage at dusk — Alberta horizon."
+        intensity="cinematic"
+      />
+
       <section id="section-areas" className={`${SECTION_PADDING.default}`} aria-labelledby="areas-heading">
         <div className="container-page">
           <div className={`${MAX_WIDTH.content} mx-auto`}>
