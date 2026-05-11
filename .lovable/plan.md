@@ -1,76 +1,76 @@
-# Purge AI Imagery — Saunas + Unrealistic Renders
+## Goal
 
- **THE ONLY AI IMAGE YOU WILL KEEP IS ON THE HERO PAGE**** NONE ELSE. Forensic audit identified **27 AI-generated assets** in `src/assets/`:
-
-**AI saunas** (all to delete):
-`hero-sauna.jpg`, `hero-sauna-cinematic.jpg`, `hero-sauna-premium.jpg`, `hero-sauna-twilight.jpg`, `sauna-acreage.jpg`, `sauna-acreage-premium.jpg`, `sauna-backyard.jpg`, `sauna-backyard-hero.jpg`, `sauna-backyard-premium.jpg`, `sauna-interior.jpg`, `sauna-interior-detail.jpg`, `sauna-interior-editorial.jpg`, `sauna-interior-hero.jpg`, `sauna-interior-premium.jpg`, `sauna-mountain.jpg`, `sauna-mountain-hero.jpg`, `sauna-mountain-premium.jpg`, `sauna-stones-macro.jpg`, `sauna-stones-premium.jpg`, `sauna-stones-steam.jpg`, `sauna-winter-steam.jpg`
-
-**Other unreal AI renders** (delete):
-`hero-architect-color.jpg`, `hero-architecture.jpg`, `cedar-texture-premium.jpg`, `cedar-texture.jpg`, `404-steam-fog.jpg`, `blog-hero-loyly.jpg`, `blog-minimalist-living.jpg`, `blog-sauna-ritual.jpg`, `blog-sustainable-architecture.jpg`, `blog-urban-planning.jpg`
-
-**Real photos kept**: `gallery/gallery-shed-01..03.jpg` + 104 approved photos in the media library (`media_metadata.ai_review_status = 'approved'`) reachable via `useApprovedMedia` / `MediaSlot`.
+Push the site one notch closer to fantasy.co minimalism: strip every caption chip, breadcrumb, and decorative rail; saturate galleries with real cloud photography (Hero is the only AI image allowed); and make the contact form feel instant with a pre-filled, optional voucher code "pg2026".
 
 ---
 
-## Replacement strategy
+## 1. Eliminate clutter elements (sitewide)
 
-Every visible reference must either pull from the **media library** (preferred — already wired through `useApprovedMedia`) or use one of the 3 real shed photos. No new AI assets, no placeholders.
+**Breadcrumbs — remove entirely**
+- Delete the breadcrumb chip in the sticky header: `src/components/Navigation.tsx` (drop the `<HeaderBreadcrumb />` slot) and delete `src/components/navigation/HeaderBreadcrumb.tsx` + `src/lib/route-meta.ts`.
+- Delete the in-hero breadcrumb trail. Remove the `BreadcrumbTrail` render in `src/components/ui/page-hero.tsx`, drop `src/components/ui/breadcrumb-trail.tsx`, and remove the `breadcrumb` prop from PageHero's type.
+- Strip `breadcrumb={...}` props from `Hero.tsx`, `Work.tsx`, `Services.tsx`, `About.tsx`, `NotFound.tsx`.
 
-### `src/components/Hero.tsx`
+**Caption / provenance chips on imagery**
+- Delete `src/components/media/ProvenanceCaption.tsx` and any consumers (audit `EditorialBleedSection`, `MediaSlot`, `HeroTriptych`, `GalleryWall`, `HomeGalleryStrip`) — strip their caption/credit overlays. Galleries become pure image walls.
 
-- Remove hardcoded `imageSrc={heroArchitectColor}` + `imageAlt`.
-- PageHero `architect-bleed` already accepts a `query` prop and falls back to the media library — pass `query={{ shot_type: ["hero","elevation","wide"], min_quality: "reference", kind: "image" }}`.
-- Drop the `inColor` flag if its only purpose was the AI render.
+**Decorative rails / eyebrows that read as filler**
+- Remove the "Recent work" eyebrow column on `HomeGalleryStrip.tsx` (keep the H2 only).
+- Remove the "— pick any" italic micro-line and the `BronzeRule` eyebrow inside `QuoteFormInline.tsx` (services section title only).
+- Audit `Services.tsx`, `About.tsx`, `Contact.tsx`, `MiniFaq.tsx`, `CrewMoment.tsx`, `BrandStatement.tsx`, `QuoteCloserCard.tsx`, `TestimonialStrip.tsx`, `NotFound.tsx`: drop any `eyebrow` label that sits alone above a heading purely as decoration. Keep only eyebrows that carry real wayfinding meaning (e.g. "FREE QUOTE" on /contact stays — it's the page H1 partner).
+- Remove the `<HeroTriptych>` numeric "01/02/03" frame chrome if present, and any "Photographing this season" residue (already gone but re-verify).
 
-### `src/pages/Index.tsx`
-
-- Delete both `<EditorialImageBreak>` (saunaBackyardPremium, saunaMountainPremium) and their imports.
-- Homepage rhythm becomes: Hero → BrandStatement → Services → HomeGalleryStrip → CrewMoment → TestimonialStrip → Closer.
-- HomeGalleryStrip already pulls real photos.
-
-### `src/pages/About.tsx`
-
-- Delete both `<EditorialImageBreak>` (saunaInteriorEditorial, saunaAcreagePremium) and their imports.
-- Replace the story-section `<figure>` (currently `saunaBackyardPremium`) with a `<MediaSlot>` query for `{ shot_type: ["detail","elevation"], min_quality: "reference", kind: "image" }`. If no match, MediaSlot's stone fallback renders — no AI.
-
-### `src/pages/Services.tsx`
-
-- Delete both `<EditorialImageBreak>` (saunaStonesPremium, heroArchitecture) and their imports.
-- Replace the responsibility-matrix `cedarTexturePremium` `<figure>` with a `<MediaSlot>` query for `{ shot_type: ["detail","process"], min_quality: "reference", kind: "image" }`.
-
-### `src/pages/Contact.tsx`
-
-- Delete the top photo band (saunaInteriorDetail) entirely. Contact stays form-first per Pass-52 conversion discipline.
-- Drop the import.
-
-### `src/config/gallery.ts`
-
-- Drop every sauna/hero-architect/hero-architecture import + GALLERY entry.
-- GALLERY becomes the 3 real shed photos + an injection from `useApprovedMedia` (kind:image, min_quality:reference) inside `GalleryWall`. Keep `HOMEPAGE_GALLERY` referencing only the 3 real shed indices.
-- Audit `GalleryWall.tsx` to make sure it merges real shed assets + media-library query (already does for /work via PageHero, but the wall itself currently iterates GALLERY only — confirm and adapt).
-
-### Asset files
-
-- `rm` all 31 AI files listed above from `src/assets/` and `src/assets/blog/` if present.
-- Vite build will fail loudly if any straggler import survives — that's the safety net.
-
-### `src/index.css`
-
-- The line `* It does NOT own dark mode, sauna-brand effects…` is a code comment — leave or rephrase to `legacy brand effects`. Cosmetic only.
+**Acceptance:** ripgrep `breadcrumb|ProvenanceCaption|HeaderBreadcrumb` returns zero hits in `src/components` and `src/pages`. Visual sweep at desktop/tablet/mobile shows no floating labels over images and no breadcrumb chips anywhere.
 
 ---
 
-## Verification
+## 2. Galleries: real cloud photos only
 
-1. `rg -n "sauna|hero-architect|hero-architecture|cedar-texture-premium|blog-hero|blog-sauna|blog-minimal|blog-sustain|blog-urban|404-steam" src` returns **zero hits** in `src/pages`, `src/components`, `src/config`.
-2. `ls src/assets` shows no `sauna-*`, no `hero-sauna-*`, no `hero-architect*`, no `hero-architecture*`, no `cedar-texture*`, no `blog-*`, no `404-steam*`.
-3. Build passes (auto-run by harness).
-4. Visual sweep at 1280×800 + 390×844 of `/`, `/about`, `/services`, `/contact`, `/work`, `/404` confirms every previously-AI slot now shows either a real shed photo, a media-library photo, or is removed.
+**Rules**
+- The single permitted AI image is the homepage hero (`hero-architect-color.jpg` in `Hero.tsx`). Everything else must come from the approved cloud media library (`media_metadata` where `ai_review_status='approved'`).
+
+**GalleryWall (`/work`)**
+- Bump `useApprovedMedia` `limit` from 60 → 200 so the wall is dense.
+- Drop the seeded `GALLERY` constant (3 shed photos) so the wall is 100% cloud-driven; if cloud returns zero, render nothing rather than a stub. (Keep `HOMEPAGE_GALLERY` export for the strip.)
+- Render order: deterministic — sort by `taken_at` desc with hero/elevation/wide first.
+
+**HomeGalleryStrip**
+- Replace the hardcoded 3 `HOMEPAGE_GALLERY` images with a live `useApprovedMedia({ shot_type: ["hero","elevation","wide"], min_quality: "reference", kind: "image", limit: 3 })`. Fallback: keep current 3 real shed photos only if cloud returns nothing.
+
+**MediaSlot consumers (About, Services)**
+- Audit each `MediaSlot` query — confirm filters resolve to real cloud photos and not the deleted AI assets. No code changes if already pulling from cloud; just verify.
+
+**Acceptance:** the only `import …jpg` referencing imagery is `hero-architect-color.jpg` in `Hero.tsx` plus the 3 shed gallery fallbacks. Every other `<img>` resolves through `useApprovedMedia` / `MediaSlot`.
 
 ---
 
-## Technical notes
+## 3. Contact form — instant submit + auto-filled voucher
 
-- `useApprovedMedia` is the canonical hook for real photography pulled from `media_metadata` where `ai_review_status='approved'`.
-- `MediaSlot` is the drop-in primitive for a single approved photo with a stone fallback — exactly what AI `<img src=...>` calls should become.
-- No design tokens change. No section heights change. Pure asset purge + slot rewiring.
+**Voucher behavior** (`QuoteFormInline.tsx` and `QuoteModal.tsx`)
+- Initial state: `voucher: "pg2026"` (was `""`).
+- Field label stays "Voucher or referral code" with the existing `optional` flag — user can clear or change it.
+- Style hint: keep the field but make it visually unobtrusive (single line, no helper text).
+
+**Instant submit (perceived latency = 0)**
+- Switch `handleSubmit` to optimistic UI: on click, immediately set `success = true` and render the thank-you state. Fire `supabase.functions.invoke("submit-quote-request", …)` in the background without `await`-blocking the UI.
+- On background failure, swap state back and `toast.error` with the phone fallback. On success, no extra UI noise.
+- Remove the `submitting` spinner path from the button — it's no longer reached. Keep it in code as a safety fallback for slow validation only.
+- Validation runs synchronously before optimistic flip; if invalid, behavior unchanged (focus first invalid field).
+- Add `<link rel="preconnect">` to the Supabase functions origin in `index.html` so the network handshake is warm before submit.
+- Same change applied to the modal variant (`QuoteModal.tsx`) for consistency.
+
+**Acceptance:** clicking "Get my free quote" with a valid name+phone flips to the success card in <50ms regardless of network. Voucher field shows "pg2026" by default and is submitted unless cleared.
+
+---
+
+## Files touched
+
+Edits: `src/components/Navigation.tsx`, `src/components/ui/page-hero.tsx`, `src/components/Hero.tsx`, `src/components/HomeGalleryStrip.tsx`, `src/components/GalleryWall.tsx`, `src/components/quote/QuoteFormInline.tsx`, `src/components/quote/QuoteModal.tsx`, `src/pages/{Index,Work,Services,About,Contact,NotFound}.tsx`, `src/config/gallery.ts`, `index.html`, plus eyebrow/caption sweeps in `BrandStatement.tsx`, `CrewMoment.tsx`, `MiniFaq.tsx`, `QuoteCloserCard.tsx`, `TestimonialStrip.tsx`.
+
+Deletions: `src/components/navigation/HeaderBreadcrumb.tsx`, `src/components/ui/breadcrumb-trail.tsx`, `src/components/media/ProvenanceCaption.tsx`, `src/lib/route-meta.ts`.
+
+## Out of scope
+
+- No design-token changes (colors, typography, spacing untouched).
+- No backend/edge function changes — only the client submit timing.
+- Hero image stays as-is (the one allowed AI asset).
