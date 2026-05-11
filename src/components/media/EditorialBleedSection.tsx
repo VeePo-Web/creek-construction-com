@@ -1,5 +1,4 @@
 import MediaSlot from "@/components/media/MediaSlot";
-import ProvenanceCaption from "@/components/media/ProvenanceCaption";
 import type { MediaQuery } from "@/lib/api/public-media";
 import { MEDIA_SIZES } from "@/lib/media-sizes";
 import { cn } from "@/lib/utils";
@@ -101,17 +100,7 @@ const EditorialBleedSection = ({
           }}
         />
       </div>
-      {(numeral || location || year || subject) && (
-        <div className="container mx-auto px-6 -mt-2 mb-6">
-          <ProvenanceCaption
-            numeral={numeral}
-            location={location}
-            year={year}
-            subject={subject}
-            variant="standard"
-          />
-        </div>
-      )}
+      {/* ProvenanceCaption removed (clutter sweep). */}
     </section>
   );
 };

@@ -30,7 +30,6 @@ const NotFound = () => {
       <section id="section-not-found" aria-labelledby="not-found-heading">
         <PageHero
           variant="evergreen-typographic"
-          breadcrumb={[]}
           numeral="404"
           title={["Nothing here.", "But the work does."]}
           subtitle="That page doesn’t exist — but the projects, the crew, and the calendar all do."

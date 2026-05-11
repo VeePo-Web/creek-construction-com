@@ -2,8 +2,11 @@ import { useMemo, useState, useEffect, useRef, type ReactNode } from "react";
 
 import { cn } from "@/lib/utils";
 import { BACKDROP, SCRIM, TEXT } from "@/lib/colors";
-import BreadcrumbTrail, { type BreadcrumbItem } from "@/components/ui/breadcrumb-trail";
 import BronzeRule from "@/components/ui/bronze-rule";
+
+// Inline breadcrumb type — kept for back-compat on existing call sites.
+// The breadcrumb is no longer rendered anywhere; prop is accepted and ignored.
+export type BreadcrumbItem = { label: string; to?: string };
 import KineticHeadline, { type KineticSize } from "@/components/ui/kinetic-headline";
 
 import MediaSlot from "@/components/media/MediaSlot";
@@ -29,7 +32,8 @@ export type PageHeroVariant =
   | "cinematic";
 
 interface BaseProps {
-  breadcrumb: BreadcrumbItem[];
+  /** @deprecated removed in clutter sweep — kept optional for back-compat. */
+  breadcrumb?: BreadcrumbItem[];
   numeral?: string;
   /** @deprecated removed in clutter sweep — kept optional for back-compat. */
   sectionLabel?: string;
@@ -625,7 +629,6 @@ const CinematicLegacy = (props: CinematicLegacyProps) => {
 
       <div className="container mx-auto px-5 sm:px-6 md:px-10 relative z-10 pb-16">
         <div className="max-w-3xl">
-          <BreadcrumbTrail items={props.breadcrumb} onDark className="mb-6" />
           <KineticHeadline lines={lines} italic={props.italic} size="cinematic" onDark />
           {props.subtitle && (
             <p

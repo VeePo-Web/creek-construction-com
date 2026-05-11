@@ -23,18 +23,15 @@ const Services = () => {
     >
       <div className="container-page">
         <div ref={ref} className={`${MAX_WIDTH.wide} mx-auto ${cls}`} style={style}>
-          <div className="grid grid-cols-1 md:grid-cols-12 gap-y-6 mb-14 md:mb-20">
-            <p className="eyebrow md:col-span-3">What we build</p>
-            <div className="md:col-span-9">
-              <h2
-                id="services-heading"
-                className={`${HEADLINE.section} leading-[1.02]`}
-              >
-                Sixteen services.
-                <br />
-                One crew.
-              </h2>
-            </div>
+          <div className="mb-14 md:mb-20 max-w-3xl">
+            <h2
+              id="services-heading"
+              className={`${HEADLINE.section} leading-[1.02]`}
+            >
+              Sixteen services.
+              <br />
+              One crew.
+            </h2>
           </div>
 
           <ul role="list">

@@ -1,6 +1,7 @@
+import { useMemo } from "react";
 import { Link } from "react-router-dom";
-import { ArrowUpRight } from "lucide-react";
 import { HOMEPAGE_GALLERY } from "@/config/gallery";
+import { useApprovedMedia } from "@/hooks/useApprovedMedia";
 import { SECTION_PADDING, MAX_WIDTH } from "@/lib/spacing";
 import { HEADLINE } from "@/lib/typography";
 import { useReveal } from "@/hooks/useReveal";
@@ -12,12 +13,26 @@ interface HomeGalleryStripProps {
 /**
  * HomeGalleryStrip — a 3-up captionless image row on the homepage.
  *
- * No titles, no descriptions, no project metadata. Click anywhere
- * (or the closing link) to land on the full /work gallery wall.
+ * Pulls live from the approved cloud media library (real photos only).
+ * Falls back to the curated 3 shed photos if cloud returns nothing.
  */
 const HomeGalleryStrip = ({ background = "secondary" }: HomeGalleryStripProps) => {
   const { ref, cls, style } = useReveal();
   const bg = background === "secondary" ? "bg-secondary" : "bg-background";
+
+  const { items } = useApprovedMedia({
+    kind: "image",
+    min_quality: "reference",
+    shot_type: ["hero", "elevation", "wide"],
+    limit: 3,
+  });
+
+  const tiles = useMemo(() => {
+    if (items.length >= 3) {
+      return items.slice(0, 3).map((m) => ({ src: m.url, alt: m.alt }));
+    }
+    return HOMEPAGE_GALLERY;
+  }, [items]);
 
   return (
     <section
@@ -27,16 +42,13 @@ const HomeGalleryStrip = ({ background = "secondary" }: HomeGalleryStripProps) =
     >
       <div className="container-page">
         <div ref={ref} className={`${MAX_WIDTH.wide} mx-auto ${cls}`} style={style}>
-          <div className="grid grid-cols-1 md:grid-cols-12 gap-y-6 mb-12 md:mb-16">
-            <p className="eyebrow md:col-span-3">Recent work</p>
-            <div className="md:col-span-9">
-              <h2
-                id="home-gallery-heading"
-                className={`${HEADLINE.section} leading-[1.02]`}
-              >
-                A look at the work.
-              </h2>
-            </div>
+          <div className="mb-12 md:mb-16">
+            <h2
+              id="home-gallery-heading"
+              className={`${HEADLINE.section} leading-[1.02]`}
+            >
+              A look at the work.
+            </h2>
           </div>
 
           <Link
@@ -45,7 +57,7 @@ const HomeGalleryStrip = ({ background = "secondary" }: HomeGalleryStripProps) =
             className="group block focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cedar/40 focus-visible:ring-offset-4 focus-visible:ring-offset-background"
           >
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
-              {HOMEPAGE_GALLERY.map((img, i) => (
+              {tiles.map((img, i) => (
                 <figure
                   key={`${img.src}-${i}`}
                   className="overflow-hidden bg-background aspect-[4/5]"

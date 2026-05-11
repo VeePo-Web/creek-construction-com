@@ -6,7 +6,6 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { CONTACT } from "@/config/contact";
 import { SERVICE_GROUPS, SERVICE_ITEMS, getItemsForGroup } from "@/config/services";
-import BronzeRule from "@/components/ui/bronze-rule";
 
 /**
  * QuoteFormInline — the actual lead-capture form, embeddable anywhere.
@@ -62,7 +61,7 @@ const INITIAL: FormState = {
   phone: "",
   email: "",
   addressOrArea: "",
-  voucher: "",
+  voucher: "pg2026",
 };
 
 const TIMELINE_OPTIONS = ["ASAP", "Within 1 month", "Just exploring"] as const;
@@ -135,60 +134,60 @@ const QuoteFormInline = ({
     return submitLabel;
   }, [submitting, phoneValid, phoneDigits, nameValid, emailValid, submitLabel]);
 
-  const handleSubmit = async () => {
+  const handleSubmit = () => {
     if (!canSubmit) {
       setTouched({ name: true, phone: true, email: true });
       if (!phoneValid) phoneRef.current?.focus();
       else if (!nameValid) nameRef.current?.focus();
       return;
     }
-    setSubmitting(true);
-    try {
-      const serviceTitles = selectedItems.map((s) => s.title);
-      const baseDetails = form.projectDetails.trim();
-      const voucher = form.voucher.trim();
-      const combinedDetails =
-        [baseDetails || undefined, voucher ? `Voucher / referral: ${voucher}` : undefined]
-          .filter(Boolean)
-          .join("\n\n") || undefined;
-      const payload = {
-        name: form.name.trim(),
-        phone: form.phone.trim(),
-        email: form.email.trim() || undefined,
-        addressOrArea: form.addressOrArea.trim() || undefined,
-        services: serviceTitles,
-        projectDetails: combinedDetails,
-        propertyType: "Residential",
-        timeline: form.timeline,
-        contactPreference: "call" as const,
-      };
 
-      const parsed = quotePayloadSchema.safeParse(payload);
-      if (!parsed.success) {
-        const first = parsed.error.issues[0]?.message ?? "Please check the form and try again.";
-        toast.error("Can’t send yet", { description: first });
-        return;
-      }
+    const serviceTitles = selectedItems.map((s) => s.title);
+    const baseDetails = form.projectDetails.trim();
+    const voucher = form.voucher.trim();
+    const combinedDetails =
+      [baseDetails || undefined, voucher ? `Voucher / referral: ${voucher}` : undefined]
+        .filter(Boolean)
+        .join("\n\n") || undefined;
+    const payload = {
+      name: form.name.trim(),
+      phone: form.phone.trim(),
+      email: form.email.trim() || undefined,
+      addressOrArea: form.addressOrArea.trim() || undefined,
+      services: serviceTitles,
+      projectDetails: combinedDetails,
+      propertyType: "Residential",
+      timeline: form.timeline,
+      contactPreference: "call" as const,
+    };
 
-      const { data, error } = await supabase.functions.invoke("submit-quote-request", {
-        body: parsed.data,
-      });
-      if (error || !data?.ok) {
-        const msg = error?.message || (data as { error?: string })?.error || "Please try again.";
-        toast.error("Something went wrong", {
-          description: `${msg} Or call ${CONTACT.phone}.`,
-        });
-        return;
-      }
-      setSuccess(true);
-    } catch (err) {
-      console.error("[QuoteFormInline] submit failed", err);
-      toast.error("Network error", {
-        description: `We couldn’t reach the server. Please try again or call ${CONTACT.phone}.`,
-      });
-    } finally {
-      setSubmitting(false);
+    const parsed = quotePayloadSchema.safeParse(payload);
+    if (!parsed.success) {
+      const first = parsed.error.issues[0]?.message ?? "Please check the form and try again.";
+      toast.error("Can’t send yet", { description: first });
+      return;
     }
+
+    // Optimistic UI: flip to success instantly, fire request in background.
+    setSuccess(true);
+    void supabase.functions
+      .invoke("submit-quote-request", { body: parsed.data })
+      .then(({ data, error }) => {
+        if (error || !data?.ok) {
+          const msg = error?.message || (data as { error?: string })?.error || "Please try again.";
+          setSuccess(false);
+          toast.error("Something went wrong", {
+            description: `${msg} Or call ${CONTACT.phone}.`,
+          });
+        }
+      })
+      .catch((err) => {
+        console.error("[QuoteFormInline] submit failed", err);
+        setSuccess(false);
+        toast.error("Network error", {
+          description: `We couldn’t reach the server. Please try again or call ${CONTACT.phone}.`,
+        });
+      });
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
@@ -322,10 +321,7 @@ const QuoteFormInline = ({
 
           {/* Services chips, grouped */}
           <div>
-            <div className="mb-3">
-              <BronzeRule width="short" label="WHAT DO YOU NEED?" variant="accent" />
-              <p className="mt-1 text-[10px] text-muted-foreground/70 italic">— pick any</p>
-            </div>
+            <p className="eyebrow text-muted-foreground mb-3">What do you need?</p>
             <div className="space-y-3">
               {SERVICE_GROUPS.map((group) => {
                 const items = getItemsForGroup(group.id);
