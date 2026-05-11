@@ -60,7 +60,6 @@ const Contact = () => {
               {/* LEFT — direct contact card */}
               <div>
                 <SectionHeader
-                  label="DIRECT LINE"
                   headingId="direct-heading"
                   heading="Reach us directly."
                   subheading="The fastest way is the phone."
@@ -79,7 +78,6 @@ const Contact = () => {
                       <Phone className="h-4 w-4 text-cedar" aria-hidden />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="eyebrow opacity-70">Call or Text</p>
                       <p className="font-serif text-lg text-foreground group-hover/row:text-cedar transition-colors duration-200 tabular-nums">
                         {CONTACT.phone}
                       </p>
@@ -96,7 +94,6 @@ const Contact = () => {
                       <Mail className="h-4 w-4 text-cedar" aria-hidden />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="eyebrow opacity-70">Email</p>
                       <p className="text-base text-foreground group-hover/row:text-cedar transition-colors duration-200 truncate">
                         {CONTACT.email}
                       </p>
@@ -110,11 +107,7 @@ const Contact = () => {
                       <MapPin className="h-4 w-4 text-cedar" aria-hidden />
                     </div>
                     <div className="flex-1">
-                      <p className="eyebrow opacity-70 mb-1">Service Areas</p>
                       <p className="text-base text-foreground">Calgary, Edmonton &amp; surrounding Alberta</p>
-                      <p className="text-xs text-muted-foreground mt-1">
-                        Including {CONTACT.cities.slice(0, 3).join(", ")} — and the towns in between.
-                      </p>
                     </div>
                   </div>
                 </aside>
@@ -123,7 +116,6 @@ const Contact = () => {
               {/* RIGHT — the actual form, visually weighted */}
               <div>
                 <SectionHeader
-                  label="THE FORM"
                   headingId="form-heading"
                   heading="Tell us a few details."
                   subheading="Just your phone and name to start."

@@ -1,33 +1,37 @@
 import { useMemo } from "react";
-import { GALLERY, type GalleryImage } from "@/config/gallery";
+import type { GalleryImage } from "@/config/gallery";
 import { useApprovedMedia } from "@/hooks/useApprovedMedia";
 
 interface GalleryWallProps {
-  /** Override the default image set. */
+  /** Optional override for the image set. */
   images?: GalleryImage[];
   /** How many images load eagerly (above the fold). */
   priorityCount?: number;
 }
 
 /**
- * GalleryWall — captionless editorial masonry of images.
+ * GalleryWall — captionless editorial masonry of real photographs.
  *
- * Renders the curated GALLERY plus every approved real photograph in
- * the cloud media library. Real photos only — no AI imagery.
+ * 100% cloud-driven from the approved media library. No AI imagery,
+ * no captions, no overlays.
  */
-const GalleryWall = ({ images = GALLERY, priorityCount = 4 }: GalleryWallProps) => {
+const GalleryWall = ({ images, priorityCount = 6 }: GalleryWallProps) => {
   const { items } = useApprovedMedia({
     kind: "image",
     min_quality: "reference",
-    limit: 60,
+    limit: 200,
   });
 
   const merged = useMemo<GalleryImage[]>(() => {
-    const fromCloud: GalleryImage[] = items
+    if (images && images.length) {
+      return images;
+    }
+    return items
       .filter((m) => !m.is_video)
       .map((m) => ({ src: m.url, alt: m.alt }));
-    return [...images, ...fromCloud];
   }, [images, items]);
+
+  if (merged.length === 0) return null;
 
   return (
     <div
