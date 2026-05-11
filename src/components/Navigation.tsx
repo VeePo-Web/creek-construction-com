@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { useLocation } from "react-router-dom";
 
 
 import { useQuoteModal } from "@/components/quote/QuoteModalProvider";
@@ -8,10 +7,8 @@ import { cn } from "@/lib/utils";
 import { BUTTON } from "@/lib/colors";
 
 import BrandMark from "@/components/navigation/BrandMark";
-import HeaderBreadcrumb from "@/components/navigation/HeaderBreadcrumb";
 import MenuTrigger from "@/components/navigation/MenuTrigger";
 import GlobalMenu from "@/components/navigation/GlobalMenu";
-import { getRouteBreadcrumb } from "@/lib/route-meta";
 import { useScrollChrome } from "@/hooks/useScrollChrome";
 
 interface NavigationProps {
@@ -43,7 +40,6 @@ const MENU_ID = "global-menu";
 const Navigation = ({ transparent: _transparent }: NavigationProps) => {
   const [menuOpen, setMenuOpen] = useState(false);
   const { openModal } = useQuoteModal();
-  const location = useLocation();
 
   const { isScrolled } = useScrollChrome();
 
@@ -94,10 +90,8 @@ const Navigation = ({ transparent: _transparent }: NavigationProps) => {
           {/* Left — brand */}
           <BrandMark className="shrink-0" />
 
-          {/* Center — single quiet sub-page breadcrumb chip; no per-page rail */}
-          <div className="flex-1 flex items-center justify-center gap-3 min-w-0">
-            <HeaderBreadcrumb />
-          </div>
+          {/* Breadcrumb chip removed (clutter sweep) — chrome stays clean. */}
+          <div className="flex-1" aria-hidden />
 
           {/* Right cluster — never fades, never hides on mobile.
               Mobile: [📞] [Quote-pill] [☰]
@@ -157,14 +151,12 @@ const Navigation = ({ transparent: _transparent }: NavigationProps) => {
 
 
 
-      {/* Spacer — header is fixed, so reserve the same height in the document
-          flow. On mobile sub-pages we add another 40px for MobileSubNav. */}
+      {/* Spacer — header is fixed, so reserve the same height in the document flow. */}
       <div
         aria-hidden
         className={cn(
           "bg-background",
-          "sm:h-16 md:h-[4.5rem] lg:h-20",
-          getRouteBreadcrumb(location.pathname) ? "h-[6rem]" : "h-14",
+          "h-14 sm:h-16 md:h-[4.5rem] lg:h-20",
         )}
       />
 
