@@ -28,7 +28,7 @@ interface TestimonialStripProps {
  * thermal-crescendo border. Reused on Home, Services, About, Work.
  */
 const TestimonialStrip = ({
-  eyebrow = "WHAT NEIGHBORS SAY",
+  eyebrow: _eyebrow,
   heading = "Quiet recommendations.",
   subheading,
   items = TESTIMONIALS_TOP3,
@@ -44,7 +44,6 @@ const TestimonialStrip = ({
     <div ref={ref} className={`${MAX_WIDTH.wide} mx-auto ${cls}`} style={style}>
       <SectionHeader
         variant="quiet"
-        label={eyebrow}
         headingId={headingId}
         heading={heading}
         subheading={subheading}

@@ -32,7 +32,7 @@ interface MiniFaqProps {
  * still prefer to talk.
  */
 const MiniFaq = ({
-  eyebrow = "COMMON QUESTIONS",
+  eyebrow: _eyebrow,
   heading = "Straight answers.",
   subheading,
   items = FAQS_CORE,
@@ -49,7 +49,6 @@ const MiniFaq = ({
     <div ref={ref} className={`max-w-2xl mx-auto ${cls}`} style={style}>
       <SectionHeader
         variant="quiet"
-        label={eyebrow}
         headingId={headingId}
         heading={heading}
         subheading={subheading}

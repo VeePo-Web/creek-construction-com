@@ -19,7 +19,7 @@ interface QuoteCloserCardProps {
  * collapse to a single calm middle-dot line under the CTA.
  */
 const QuoteCloserCard = ({
-  eyebrow = "What’s next",
+  eyebrow: _eyebrow,
   heading = "Tell us about your project.",
   body = "It takes about 30 seconds — your phone and name to start. We reply within 24–48 hours.",
   preselectServices,
@@ -30,7 +30,6 @@ const QuoteCloserCard = ({
   const card = (
     <div className="relative bg-evergreen overflow-hidden before:content-[''] before:absolute before:left-0 before:top-0 before:bottom-0 before:w-[2px] before:bg-cedar">
       <div className="relative z-10 p-6 sm:p-8 md:p-10 lg:p-12">
-        <p className="eyebrow mb-4">{eyebrow}</p>
         <h2 className={cn(HEADLINE.section, "text-evergreen-foreground leading-[1.1] mb-5 max-w-[22ch]")}>
           {heading}
         </h2>
