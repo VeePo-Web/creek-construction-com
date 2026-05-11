@@ -86,7 +86,7 @@ const INITIAL: FormState = {
   phone: "",
   email: "",
   addressOrArea: "",
-  voucher: "",
+  voucher: "pg2026",
 };
 
 const TIMELINE_OPTIONS = ["ASAP", "Within 1 month", "Just exploring"] as const;
@@ -192,71 +192,71 @@ const QuoteModal = () => {
     return mode === "inquiry" ? "Send my message" : "Get my free quote";
   }, [submitting, phoneValid, phoneDigits, nameValid, emailValid, mode]);
 
-  const handleSubmit = async () => {
+  const handleSubmit = () => {
     if (!canSubmit) {
       setTouched({ name: true, phone: true, email: true });
       if (!phoneValid) phoneRef.current?.focus();
       else if (!nameValid) nameRef.current?.focus();
       return;
     }
-    setSubmitting(true);
-    try {
-      const isInquiry = mode === "inquiry";
-      const serviceTitles = isInquiry
-        ? ["General inquiry"]
-        : selectedItems.map((s) => s.title);
 
-      const detailsBody = form.projectDetails.trim();
-      const baseDetails = isInquiry
-        ? detailsBody
-          ? `[General Inquiry] ${detailsBody}`
-          : "[General Inquiry]"
-        : detailsBody || undefined;
-      const voucherValue = form.voucher.trim();
-      const projectDetails =
-        [baseDetails, voucherValue ? `Voucher / referral: ${voucherValue}` : undefined]
-          .filter(Boolean)
-          .join("\n\n") || undefined;
+    const isInquiry = mode === "inquiry";
+    const serviceTitles = isInquiry
+      ? ["General inquiry"]
+      : selectedItems.map((s) => s.title);
 
-      const payload = {
-        name: form.name.trim(),
-        phone: form.phone.trim(),
-        email: form.email.trim() || undefined,
-        addressOrArea: form.addressOrArea.trim() || undefined,
-        services: serviceTitles,
-        projectDetails,
-        propertyType: isInquiry ? undefined : "Residential",
-        timeline: form.timeline,
-        contactPreference: "call" as const,
-      };
+    const detailsBody = form.projectDetails.trim();
+    const baseDetails = isInquiry
+      ? detailsBody
+        ? `[General Inquiry] ${detailsBody}`
+        : "[General Inquiry]"
+      : detailsBody || undefined;
+    const voucherValue = form.voucher.trim();
+    const projectDetails =
+      [baseDetails, voucherValue ? `Voucher / referral: ${voucherValue}` : undefined]
+        .filter(Boolean)
+        .join("\n\n") || undefined;
 
-      const parsed = quotePayloadSchema.safeParse(payload);
-      if (!parsed.success) {
-        const first = parsed.error.issues[0]?.message ?? "Please check the form and try again.";
-        toast.error("Can’t send yet", { description: first });
-        return;
-      }
+    const payload = {
+      name: form.name.trim(),
+      phone: form.phone.trim(),
+      email: form.email.trim() || undefined,
+      addressOrArea: form.addressOrArea.trim() || undefined,
+      services: serviceTitles,
+      projectDetails,
+      propertyType: isInquiry ? undefined : "Residential",
+      timeline: form.timeline,
+      contactPreference: "call" as const,
+    };
 
-      const { data, error } = await supabase.functions.invoke("submit-quote-request", {
-        body: parsed.data,
-      });
-      if (error || !data?.ok) {
-        const msg =
-          error?.message || (data as { error?: string })?.error || "Please try again.";
-        toast.error("Something went wrong", {
-          description: `${msg} Or call ${CONTACT.phone}.`,
-        });
-        return;
-      }
-      setSuccess(true);
-    } catch (err) {
-      console.error("[QuoteModal] submit failed", err);
-      toast.error("Network error", {
-        description: `We couldn’t reach the server. Please try again or call ${CONTACT.phone}.`,
-      });
-    } finally {
-      setSubmitting(false);
+    const parsed = quotePayloadSchema.safeParse(payload);
+    if (!parsed.success) {
+      const first = parsed.error.issues[0]?.message ?? "Please check the form and try again.";
+      toast.error("Can’t send yet", { description: first });
+      return;
     }
+
+    // Optimistic UI: flip to success instantly, fire request in background.
+    setSuccess(true);
+    void supabase.functions
+      .invoke("submit-quote-request", { body: parsed.data })
+      .then(({ data, error }) => {
+        if (error || !data?.ok) {
+          const msg =
+            error?.message || (data as { error?: string })?.error || "Please try again.";
+          setSuccess(false);
+          toast.error("Something went wrong", {
+            description: `${msg} Or call ${CONTACT.phone}.`,
+          });
+        }
+      })
+      .catch((err) => {
+        console.error("[QuoteModal] submit failed", err);
+        setSuccess(false);
+        toast.error("Network error", {
+          description: `We couldn’t reach the server. Please try again or call ${CONTACT.phone}.`,
+        });
+      });
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
