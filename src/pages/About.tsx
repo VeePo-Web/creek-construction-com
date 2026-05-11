@@ -7,7 +7,7 @@ import SectionHeader from "@/components/SectionHeader";
 import PageHero from "@/components/ui/page-hero";
 import EditorialImageBreak from "@/components/media/EditorialImageBreak";
 import { useDocumentTitle } from "@/hooks/useDocumentTitle";
-import { CONTACT } from "@/config/contact";
+
 import { SECTION_PADDING, MAX_WIDTH } from "@/lib/spacing";
 import { BODY } from "@/lib/typography";
 import { CREEK_PROCESS as STEPS } from "@/config/process";
