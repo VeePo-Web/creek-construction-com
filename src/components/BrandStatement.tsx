@@ -23,8 +23,7 @@ const BrandStatement = () => {
           className={`max-w-3xl mx-auto text-center ${cls}`}
           style={style}
         >
-          <hr className="hairline border-0 mt-10 md:mt-14" aria-hidden />
-          <p className="eyebrow mt-10 md:mt-14 mb-8 md:mb-10">Est. 2019 · Alberta</p>
+          <hr className="hairline border-0 mt-10 md:mt-14 mb-10 md:mb-14" aria-hidden />
           <p className={`${HEADLINE.section} leading-[1.1] mx-auto max-w-[46ch]`}>
             How we work shows up in the work itself
             <span className="text-cedar/40"> · </span>

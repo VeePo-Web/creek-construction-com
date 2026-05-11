@@ -63,10 +63,8 @@ const TestimonialStrip = ({
             <p className={`${HEADLINE.card} text-foreground/90 leading-snug flex-1`}>
               &ldquo;{t.quote}&rdquo;
             </p>
-            <div className="mt-6 hairline pt-4 flex flex-wrap items-baseline gap-x-2 gap-y-1">
+            <div className="mt-6 hairline pt-4">
               <p className="text-sm text-foreground">{t.firstName}</p>
-              <span className="eyebrow opacity-50">·</span>
-              <p className="eyebrow">{t.city} · {t.service}</p>
             </div>
           </li>
         ))}

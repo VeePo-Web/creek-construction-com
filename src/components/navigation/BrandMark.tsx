@@ -54,16 +54,6 @@ const BrandMark = ({ onDark = false, className }: BrandMarkProps) => {
         >
           Creek Construction
         </p>
-        <p
-          className={cn(
-            "font-serif italic mt-1 leading-none whitespace-nowrap",
-            "text-[10px] sm:text-[11px] lg:text-xs",
-            "hidden sm:block",
-            eyebrowClass,
-          )}
-        >
-          Exterior Construction · est. 2019
-        </p>
       </div>
     </Link>
   );

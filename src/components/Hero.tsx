@@ -16,7 +16,6 @@ const Hero = () => {
     <PageHero
       variant="architect-bleed"
       breadcrumb={[]}
-      sectionLabel=""
       title={["Excellence in", "the Work."]}
       subtitle="Outdoor work for Alberta homes — done by the same crew you meet."
       query={{

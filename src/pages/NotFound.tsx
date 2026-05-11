@@ -32,7 +32,6 @@ const NotFound = () => {
           variant="evergreen-typographic"
           breadcrumb={[]}
           numeral="404"
-          sectionLabel="OFF THE MAP"
           title={["Nothing here.", "But the work does."]}
           subtitle="That page doesn’t exist — but the projects, the crew, and the calendar all do."
           skipToId="not-found-heading"
