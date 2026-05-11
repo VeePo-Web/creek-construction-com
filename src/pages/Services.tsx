@@ -46,7 +46,6 @@ const Services = () => {
 
       <PageHero
         variant="service-portrait"
-        breadcrumb={[{ label: "Home", to: "/" }, { label: "Services" }]}
         title={["Built outside.", "Built to last."]}
         skipToId="all-services-heading"
         queries={[
