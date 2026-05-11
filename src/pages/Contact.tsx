@@ -53,7 +53,7 @@ const Contact = () => {
 
       <section
         id="section-contact"
-        className="pt-10 sm:pt-14 md:pt-20 pb-16 sm:pb-20 md:pb-24 lg:pb-28 xl:pb-32"
+        className="pt-10 sm:pt-14 md:pt-20 pb-16 sm:pb-20 md:pb-24 lg:pb-28 xl:pb-32 min-h-[100svh] flex flex-col justify-center"
         aria-labelledby="contact-heading"
       >
         <div className="container mx-auto px-5 sm:px-6">

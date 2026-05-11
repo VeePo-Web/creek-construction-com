@@ -38,7 +38,7 @@ const Work = () => {
 
       <section
         id="section-gallery"
-        className={`${SECTION_PADDING.default}`}
+        className={`${SECTION_PADDING.default} min-h-[100svh] flex flex-col justify-center`}
         aria-label="Photography wall"
       >
         <div className="container-page">
