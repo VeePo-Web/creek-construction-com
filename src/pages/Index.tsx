@@ -10,14 +10,10 @@ import { LocalBusinessJsonLd } from "@/components/JsonLd";
 import CrewMoment from "@/components/CrewMoment";
 import TestimonialStrip from "@/components/TestimonialStrip";
 import BrandStatement from "@/components/BrandStatement";
-import EditorialImageBreak from "@/components/media/EditorialImageBreak";
-import saunaBackyardPremium from "@/assets/sauna-backyard-premium.jpg";
-import saunaMountainPremium from "@/assets/sauna-mountain-premium.jpg";
 
 /**
- * Homepage rhythm (Pass 31 — Apple-grade calm):
- *   Hero → BrandStatement → Services → Featured → Crew → Testimonials → Closer
- * MiniFaq lives on /services to keep the homepage scan uncluttered.
+ * Homepage rhythm:
+ *   Hero → BrandStatement → Services → Gallery → Crew → Testimonials → Closer
  */
 const Index = () => {
   useDocumentTitle(
@@ -37,20 +33,10 @@ const Index = () => {
 
       <Hero />
       <BrandStatement />
-      <EditorialImageBreak
-        src={saunaBackyardPremium}
-        alt="Cedar exterior at golden hour with warm interior light spilling onto the deck."
-        intensity="cinematic"
-      />
       <Services />
       <HomeGalleryStrip background="secondary" />
       <CrewMoment background="background" topRule />
       <TestimonialStrip background="secondary" />
-      <EditorialImageBreak
-        src={saunaMountainPremium}
-        alt="Cedar building set against an Alberta mountain horizon at dusk."
-        intensity="calm"
-      />
       <QuoteCloserCard id="section-contact" background="background" />
       <Footer />
     </main>

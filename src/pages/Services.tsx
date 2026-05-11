@@ -6,7 +6,7 @@ import QuoteCloserCard from "@/components/QuoteCloserCard";
 import SectionHeader from "@/components/SectionHeader";
 import PageHero from "@/components/ui/page-hero";
 import MiniFaq from "@/components/MiniFaq";
-import EditorialImageBreak from "@/components/media/EditorialImageBreak";
+import MediaSlot from "@/components/media/MediaSlot";
 import { Check, Minus, ArrowUpRight } from "lucide-react";
 import { HEADLINE } from "@/lib/typography";
 import { useDocumentTitle } from "@/hooks/useDocumentTitle";
@@ -15,9 +15,6 @@ import { useQuoteModal } from "@/components/quote/QuoteModalProvider";
 
 import { SECTION_PADDING, MAX_WIDTH } from "@/lib/spacing";
 import { FAQS_SERVICES } from "@/config/faqs";
-import saunaStonesPremium from "@/assets/sauna-stones-premium.jpg";
-import heroArchitecture from "@/assets/hero-architecture.jpg";
-import cedarTexturePremium from "@/assets/cedar-texture-premium.jpg";
 
 const WE_HANDLE = [
   "Site assessment and accurate quote",
@@ -112,12 +109,6 @@ const Services = () => {
           </div>
         </div>
       </section>
-
-      <EditorialImageBreak
-        src={saunaStonesPremium}
-        alt="Stone surface detail with steam and warm light — material craft."
-        intensity="calm"
-      />
 
       {/* Responsibility matrix */}
       <section
