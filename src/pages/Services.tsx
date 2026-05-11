@@ -6,7 +6,7 @@ import QuoteCloserCard from "@/components/QuoteCloserCard";
 import SectionHeader from "@/components/SectionHeader";
 import PageHero from "@/components/ui/page-hero";
 import MiniFaq from "@/components/MiniFaq";
-import EditorialImageBreak from "@/components/media/EditorialImageBreak";
+import MediaSlot from "@/components/media/MediaSlot";
 import { Check, Minus, ArrowUpRight } from "lucide-react";
 import { HEADLINE } from "@/lib/typography";
 import { useDocumentTitle } from "@/hooks/useDocumentTitle";
@@ -15,9 +15,6 @@ import { useQuoteModal } from "@/components/quote/QuoteModalProvider";
 
 import { SECTION_PADDING, MAX_WIDTH } from "@/lib/spacing";
 import { FAQS_SERVICES } from "@/config/faqs";
-import saunaStonesPremium from "@/assets/sauna-stones-premium.jpg";
-import heroArchitecture from "@/assets/hero-architecture.jpg";
-import cedarTexturePremium from "@/assets/cedar-texture-premium.jpg";
 
 const WE_HANDLE = [
   "Site assessment and accurate quote",
@@ -113,12 +110,6 @@ const Services = () => {
         </div>
       </section>
 
-      <EditorialImageBreak
-        src={saunaStonesPremium}
-        alt="Stone surface detail with steam and warm light — material craft."
-        intensity="calm"
-      />
-
       {/* Responsibility matrix */}
       <section
         id="section-contract"
@@ -134,15 +125,12 @@ const Services = () => {
             />
 
             <div className="mt-12 grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10">
-              <figure className="lg:col-span-4 aspect-[16/9] lg:aspect-[4/5] w-full overflow-hidden">
-                <img
-                  src={cedarTexturePremium}
-                  alt="Macro of cedar grain — the material we work in every day."
-                  loading="lazy"
-                  decoding="async"
-                  className="block w-full h-full object-cover"
-                  width={1200}
-                  height={1500}
+              <figure className="relative lg:col-span-4 aspect-[16/9] lg:aspect-[4/5] w-full overflow-hidden">
+                <MediaSlot
+                  query={{ shot_type: ["detail", "process"], min_quality: "reference", kind: "image" }}
+                  sizes="(min-width: 1024px) 33vw, 100vw"
+                  wrapperClassName="absolute inset-0"
+                  className="w-full h-full object-cover"
                 />
               </figure>
 
@@ -199,13 +187,6 @@ const Services = () => {
 
       {/* FAQ — shared module, single source of truth */}
       <MiniFaq items={FAQS_SERVICES} background="background" />
-
-      <EditorialImageBreak
-        src={heroArchitecture}
-        alt="Architectural exterior elevation with horizontal cedar cladding."
-        aspect="16/9"
-        intensity="calm"
-      />
 
       <QuoteCloserCard background="secondary" />
 

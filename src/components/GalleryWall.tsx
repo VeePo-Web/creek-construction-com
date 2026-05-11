@@ -1,4 +1,6 @@
+import { useMemo } from "react";
 import { GALLERY, type GalleryImage } from "@/config/gallery";
+import { useApprovedMedia } from "@/hooks/useApprovedMedia";
 
 interface GalleryWallProps {
   /** Override the default image set. */
@@ -10,18 +12,30 @@ interface GalleryWallProps {
 /**
  * GalleryWall — captionless editorial masonry of images.
  *
- * No titles, no descriptions, no overlays, no click handlers —
- * the photographs carry the entire message. Uses CSS columns for a
- * true masonry layout that reflows naturally across breakpoints.
+ * Renders the curated GALLERY plus every approved real photograph in
+ * the cloud media library. Real photos only — no AI imagery.
  */
 const GalleryWall = ({ images = GALLERY, priorityCount = 4 }: GalleryWallProps) => {
+  const { items } = useApprovedMedia({
+    kind: "image",
+    min_quality: "reference",
+    limit: 60,
+  });
+
+  const merged = useMemo<GalleryImage[]>(() => {
+    const fromCloud: GalleryImage[] = items
+      .filter((m) => !m.is_video)
+      .map((m) => ({ src: m.url, alt: m.alt }));
+    return [...images, ...fromCloud];
+  }, [images, items]);
+
   return (
     <div
       className="columns-1 sm:columns-2 lg:columns-3 gap-4 md:gap-6"
       role="list"
       aria-label="Project photography"
     >
-      {images.map((img, i) => (
+      {merged.map((img, i) => (
         <figure
           key={`${img.src}-${i}`}
           role="listitem"

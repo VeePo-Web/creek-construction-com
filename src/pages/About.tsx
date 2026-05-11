@@ -5,15 +5,12 @@ import CedarCTA from "@/components/CedarCTA";
 import QuoteCloserCard from "@/components/QuoteCloserCard";
 import SectionHeader from "@/components/SectionHeader";
 import PageHero from "@/components/ui/page-hero";
-import EditorialImageBreak from "@/components/media/EditorialImageBreak";
+import MediaSlot from "@/components/media/MediaSlot";
 import { useDocumentTitle } from "@/hooks/useDocumentTitle";
 
 import { SECTION_PADDING, MAX_WIDTH } from "@/lib/spacing";
 import { BODY } from "@/lib/typography";
 import { CREEK_PROCESS as STEPS } from "@/config/process";
-import saunaBackyardPremium from "@/assets/sauna-backyard-premium.jpg";
-import saunaInteriorEditorial from "@/assets/sauna-interior-editorial.jpg";
-import saunaAcreagePremium from "@/assets/sauna-acreage-premium.jpg";
 
 const About = () => {
   useDocumentTitle(
@@ -59,27 +56,18 @@ const About = () => {
                   and we paint, side, and repair the parts of your home that face the weather.
                 </p>
               </div>
-              <figure className="aspect-[3/4] w-full overflow-hidden">
-                <img
-                  src={saunaBackyardPremium}
-                  alt="Cedar exterior detail with warm light and clean joinery."
-                  loading="lazy"
-                  decoding="async"
-                  className="block w-full h-full object-cover"
-                  width={1200}
-                  height={1600}
+              <figure className="relative aspect-[3/4] w-full overflow-hidden">
+                <MediaSlot
+                  query={{ shot_type: ["detail", "elevation"], min_quality: "reference", kind: "image" }}
+                  sizes="(min-width: 1024px) 40vw, 100vw"
+                  wrapperClassName="absolute inset-0"
+                  className="w-full h-full object-cover"
                 />
               </figure>
             </div>
           </div>
         </div>
       </section>
-
-      <EditorialImageBreak
-        src={saunaInteriorEditorial}
-        alt="Interior cedar detail under soft directional light — process and craft."
-        intensity="calm"
-      />
 
       <section id="section-process" className={`${SECTION_PADDING.default} bg-secondary min-h-[100svh] flex flex-col justify-center`} aria-labelledby="process-heading">
         <div className="container-page">
@@ -110,11 +98,6 @@ const About = () => {
         </div>
       </section>
 
-      <EditorialImageBreak
-        src={saunaAcreagePremium}
-        alt="Cedar building set on prairie acreage at dusk — Alberta horizon."
-        intensity="cinematic"
-      />
       <QuoteCloserCard background="secondary" />
 
       <Footer />
