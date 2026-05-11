@@ -1,87 +1,76 @@
-# Fantasy.co Simplification — Phase 2 (Continuation)
+# Purge AI Imagery — Saunas + Unrealistic Renders
 
-Phase 1 already removed: hero `service · location` caption rail, triptych column captions, all `sectionLabel` eyebrows, per-page section rails, dead anchors, FloatingQuoteCTA, About italic helper, Services item counters, FieldClipsStrip badge, CrewMoment caption, HomeGallery footer link.
+ **THE ONLY AI IMAGE YOU WILL KEEP IS ON THE HERO PAGE**** NONE ELSE. Forensic audit identified **27 AI-generated assets** in `src/assets/`:
 
-This plan finishes the job in two passes.
+**AI saunas** (all to delete):
+`hero-sauna.jpg`, `hero-sauna-cinematic.jpg`, `hero-sauna-premium.jpg`, `hero-sauna-twilight.jpg`, `sauna-acreage.jpg`, `sauna-acreage-premium.jpg`, `sauna-backyard.jpg`, `sauna-backyard-hero.jpg`, `sauna-backyard-premium.jpg`, `sauna-interior.jpg`, `sauna-interior-detail.jpg`, `sauna-interior-editorial.jpg`, `sauna-interior-hero.jpg`, `sauna-interior-premium.jpg`, `sauna-mountain.jpg`, `sauna-mountain-hero.jpg`, `sauna-mountain-premium.jpg`, `sauna-stones-macro.jpg`, `sauna-stones-premium.jpg`, `sauna-stones-steam.jpg`, `sauna-winter-steam.jpg`
 
----
+**Other unreal AI renders** (delete):
+`hero-architect-color.jpg`, `hero-architecture.jpg`, `cedar-texture-premium.jpg`, `cedar-texture.jpg`, `404-steam-fog.jpg`, `blog-hero-loyly.jpg`, `blog-minimalist-living.jpg`, `blog-sauna-ritual.jpg`, `blog-sustainable-architecture.jpg`, `blog-urban-planning.jpg`
 
-## Pass A — Remaining clutter sweep
-
-Forensic search targets (rg patterns) and removals:
-
-1. **TestimonialStrip** (`src/components/TestimonialStrip.tsx`)
-   - Collapse from multi-quote grid to a single rotating quote (one `<blockquote>` + name/role line). Drop counter dots, source chips, "Read more" links, and any "Verified · Google" badge.
-
-2. **EditorialImageBreak** (`src/components/media/EditorialImageBreak.tsx`)
-   - Remove any caption/credit overlay props and JSX. Image-only, no text.
-
-3. **Services catalogue** (`src/pages/Services.tsx`)
-   - Drop "Don't see what you need?" footer (already), plus any remaining "starting at", "from $X", or duration chips on cards.
-   - Mobile: truncate to top 6 items behind a single "View all" hairline link to `/work`.
-
-4. **About** (`src/pages/About.tsx`)
-   - Trim story to 2 paragraphs max. Process list `line-clamp-2` per item. Remove any stat chips ("12 yrs · 40 builds") if still present.
-
-5. **Contact** (`src/pages/Contact.tsx`)
-   - Remove the photo band's caption if any. Strip "Response within 24h" / "Based in Calgary" pill chips above form. Form labels only — no helper microcopy beneath inputs unless validation.
-
-6. **Global sweep** — rg for and remove stragglers:
-   - `·\s+[A-Z][a-z]+` in JSX (caption-style middots)
-   - `aria-label=".*caption"`, `<figcaption`, `provenance=`, `caption=`, `eyebrow=`, `kicker=`
-   - Decorative `BronzeRule` instances inside hero/section headers (keep only between major sections, not inside them)
-   - Any remaining `<Badge>` / chip components in hero, brand-statement, testimonial, contact, about — delete.
-   - Footer: remove tagline line, social row labels ("Follow"), keep logo + nav + copyright only.
-
-7. **Header** (`src/components/SiteHeader.tsx`)
-   - Confirm only: logo · nav · phone · Quote · MENU. Remove any "Open today" / hours pill, location pill, or breadcrumb on root pages.
+**Real photos kept**: `gallery/gallery-shed-01..03.jpg` + 104 approved photos in the media library (`media_metadata.ai_review_status = 'approved'`) reachable via `useApprovedMedia` / `MediaSlot`.
 
 ---
 
-## Pass B — One section, one viewport
+## Replacement strategy
 
-Use the spacing tokens already added in Phase 1 (`SECTION_HEIGHT.fullScreen`, `SECTION_LAYOUT.centered`).
+Every visible reference must either pull from the **media library** (preferred — already wired through `useApprovedMedia`) or use one of the 3 real shed photos. No new AI assets, no placeholders.
 
-**Apply `min-h-[100svh] flex flex-col justify-center` to every top-level `<section>` on:**
+### `src/components/Hero.tsx`
 
-- `/` Index — Hero, BrandStatement, EditorialImageBreak (×2), TestimonialStrip, HomeGalleryStrip, CrewMoment, QuoteCloserCard
-- `/about` — Hero, Story, Process, Crew, Closer
-- `/services` — Hero, Matrix, Catalogue, Contract, FAQ, Closer
-- `/work` — keep GalleryWall scrolling exempt; hero + closer get full-svh
-- `/contact` — Photo band (40svh), Form section (60svh) → together = 100svh on desktop; mobile stacks to 100svh each
+- Remove hardcoded `imageSrc={heroArchitectColor}` + `imageAlt`.
+- PageHero `architect-bleed` already accepts a `query` prop and falls back to the media library — pass `query={{ shot_type: ["hero","elevation","wide"], min_quality: "reference", kind: "image" }}`.
+- Drop the `inColor` flag if its only purpose was the AI render.
 
-**Per-viewport rules**
+### `src/pages/Index.tsx`
 
-| Viewport | Rule |
-|---|---|
-| ≥1280 (desktop) | every section exactly `100svh`, content vertically centered, no internal scroll |
-| 768–1279 (tablet) | `100svh`, allow up to 110svh only if H1 + sub + CTA + 1 supporting element |
-| <768 (mobile) | `100svh`, hard-truncate lists to fit; long lists become "View all →" |
+- Delete both `<EditorialImageBreak>` (saunaBackyardPremium, saunaMountainPremium) and their imports.
+- Homepage rhythm becomes: Hero → BrandStatement → Services → HomeGalleryStrip → CrewMoment → TestimonialStrip → Closer.
+- HomeGalleryStrip already pulls real photos.
 
-**Overflow strategy** for content-heavy sections (Services Matrix, FAQ, Process):
-- Desktop: 2-col grid to fit in viewport.
-- Tablet: 2-col, condensed.
-- Mobile: show first N items + hairline "View all" link to dedicated route. No internal scroll containers (they create the clutter we're killing).
+### `src/pages/About.tsx`
 
-**Exemptions** (documented in code comments):
-- `/work` GalleryWall (intentional scroll)
-- Auth/legal pages (rare, low-traffic)
+- Delete both `<EditorialImageBreak>` (saunaInteriorEditorial, saunaAcreagePremium) and their imports.
+- Replace the story-section `<figure>` (currently `saunaBackyardPremium`) with a `<MediaSlot>` query for `{ shot_type: ["detail","elevation"], min_quality: "reference", kind: "image" }`. If no match, MediaSlot's stone fallback renders — no AI.
+
+### `src/pages/Services.tsx`
+
+- Delete both `<EditorialImageBreak>` (saunaStonesPremium, heroArchitecture) and their imports.
+- Replace the responsibility-matrix `cedarTexturePremium` `<figure>` with a `<MediaSlot>` query for `{ shot_type: ["detail","process"], min_quality: "reference", kind: "image" }`.
+
+### `src/pages/Contact.tsx`
+
+- Delete the top photo band (saunaInteriorDetail) entirely. Contact stays form-first per Pass-52 conversion discipline.
+- Drop the import.
+
+### `src/config/gallery.ts`
+
+- Drop every sauna/hero-architect/hero-architecture import + GALLERY entry.
+- GALLERY becomes the 3 real shed photos + an injection from `useApprovedMedia` (kind:image, min_quality:reference) inside `GalleryWall`. Keep `HOMEPAGE_GALLERY` referencing only the 3 real shed indices.
+- Audit `GalleryWall.tsx` to make sure it merges real shed assets + media-library query (already does for /work via PageHero, but the wall itself currently iterates GALLERY only — confirm and adapt).
+
+### Asset files
+
+- `rm` all 31 AI files listed above from `src/assets/` and `src/assets/blog/` if present.
+- Vite build will fail loudly if any straggler import survives — that's the safety net.
+
+### `src/index.css`
+
+- The line `* It does NOT own dark mode, sauna-brand effects…` is a code comment — leave or rephrase to `legacy brand effects`. Cosmetic only.
 
 ---
 
 ## Verification
 
-After edits, screenshot every page at **375×812, 768×1024, 1280×800, 1920×1080** and confirm:
-1. No section exceeds 105svh.
-2. No middot-caption strings, no chip/badge components in hero/section headers.
-3. CLS ≤ 0.05, LCP element is hero image.
-4. rg sweep returns zero hits for: `caption=`, `eyebrow=`, `kicker=`, `provenance=`, `fallbackCaptions`, `sectionLabel`, `<Badge`, `· [A-Z][a-z]+ ·` in JSX.
+1. `rg -n "sauna|hero-architect|hero-architecture|cedar-texture-premium|blog-hero|blog-sauna|blog-minimal|blog-sustain|blog-urban|404-steam" src` returns **zero hits** in `src/pages`, `src/components`, `src/config`.
+2. `ls src/assets` shows no `sauna-*`, no `hero-sauna-*`, no `hero-architect*`, no `hero-architecture*`, no `cedar-texture*`, no `blog-*`, no `404-steam*`.
+3. Build passes (auto-run by harness).
+4. Visual sweep at 1280×800 + 390×844 of `/`, `/about`, `/services`, `/contact`, `/work`, `/404` confirms every previously-AI slot now shows either a real shed photo, a media-library photo, or is removed.
 
 ---
 
 ## Technical notes
 
-- Use `100svh` (small viewport height) everywhere — excludes mobile browser chrome so sections don't get clipped behind URL bar.
-- Keep all `aria-labelledby` / `aria-label` intact for a11y.
-- No new components. Pure deletion + token application.
-- No design-token changes; this is purely composition cleanup.
+- `useApprovedMedia` is the canonical hook for real photography pulled from `media_metadata` where `ai_review_status='approved'`.
+- `MediaSlot` is the drop-in primitive for a single approved photo with a stone fallback — exactly what AI `<img src=...>` calls should become.
+- No design tokens change. No section heights change. Pure asset purge + slot rewiring.
