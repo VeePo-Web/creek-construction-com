@@ -39,10 +39,6 @@ const QuoteCloserCard = ({
         </p>
 
         <CedarCTA preselectServices={preselectServices}>Get my free quote</CedarCTA>
-
-        <p className="mt-6 eyebrow opacity-55">
-          Free · No obligation · 24-hour reply
-        </p>
       </div>
     </div>
   );

@@ -50,7 +50,6 @@ const Services = () => {
       <PageHero
         variant="service-portrait"
         breadcrumb={[{ label: "Home", to: "/" }, { label: "Services" }]}
-        sectionLabel="Exterior Construction"
         title={["Built outside.", "Built to last."]}
         skipToId="all-services-heading"
         queries={[
@@ -65,22 +64,20 @@ const Services = () => {
       {/* Catalogue — single flat list of every service we offer */}
       <section
         id="section-catalogue"
-        className={`${SECTION_PADDING.default}`}
+        className={`${SECTION_PADDING.default} min-h-[100svh] flex flex-col justify-center`}
         aria-labelledby="all-services-heading"
       >
         <div className="container-page">
           <div className={`${MAX_WIDTH.content} mx-auto`}>
             <div className="max-w-3xl">
               <SectionHeader
-                label="THE FULL MENU"
                 headingId="all-services-heading"
                 heading="Everything we build."
               />
             </div>
 
             <ul role="list" className="mt-14 md:mt-16">
-              {SERVICES.map((service, i) => {
-                const n = String(i + 1).padStart(2, "0");
+              {SERVICES.map((service) => {
                 return (
                   <li key={service.id} role="listitem" className="hairline">
                     <button
@@ -93,10 +90,7 @@ const Services = () => {
                         aria-hidden
                         className="absolute left-0 top-3 bottom-3 w-0 bg-cedar transition-all duration-300 group-hover:w-[2px]"
                       />
-                      <span className="col-span-2 md:col-span-1 eyebrow-base text-cedar/55 tabular-nums text-right md:text-left">
-                        {n}
-                      </span>
-                      <h3 className="col-span-10 md:col-span-5 font-serif text-xl md:text-2xl text-foreground tracking-[-0.02em] leading-[1.2]">
+                      <h3 className="col-span-12 md:col-span-6 font-serif text-xl md:text-2xl text-foreground tracking-[-0.02em] leading-[1.2]">
                         <span className="link-underline group-hover:[background-size:100%_1px]">
                           {service.title}
                         </span>
@@ -128,13 +122,12 @@ const Services = () => {
       {/* Responsibility matrix */}
       <section
         id="section-contract"
-        className={`${SECTION_PADDING.default} bg-secondary`}
+        className={`${SECTION_PADDING.default} bg-secondary min-h-[100svh] flex flex-col justify-center`}
         aria-labelledby="contract-heading"
       >
         <div className="container-page">
           <div className={`${MAX_WIDTH.content} mx-auto`}>
             <SectionHeader
-              label="HOW WE SPLIT THE WORK"
               headingId="contract-heading"
               heading="What we handle. What you handle."
               align="center"

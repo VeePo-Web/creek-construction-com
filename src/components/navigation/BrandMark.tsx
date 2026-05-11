@@ -21,9 +21,6 @@ const BrandMark = ({ onDark = false, className }: BrandMarkProps) => {
   const titleClass = onDark
     ? "text-evergreen-foreground"
     : "text-evergreen";
-  const eyebrowClass = onDark
-    ? "text-evergreen-foreground/55"
-    : "text-cedar/70";
 
   return (
     <Link
@@ -53,16 +50,6 @@ const BrandMark = ({ onDark = false, className }: BrandMarkProps) => {
           )}
         >
           Creek Construction
-        </p>
-        <p
-          className={cn(
-            "font-serif italic mt-1 leading-none whitespace-nowrap",
-            "text-[10px] sm:text-[11px] lg:text-xs",
-            "hidden sm:block",
-            eyebrowClass,
-          )}
-        >
-          Exterior Construction · est. 2019
         </p>
       </div>
     </Link>

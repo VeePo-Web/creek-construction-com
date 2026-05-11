@@ -37,9 +37,6 @@ const Footer = () => {
                 Creek Construction
               </span>
             </Link>
-            <p className="mt-5 font-serif italic text-sm text-evergreen-foreground/70 max-w-[28ch]">
-              Built well, on time, on time again.
-            </p>
           </div>
 
           {/* mobile divider */}
@@ -89,9 +86,6 @@ const Footer = () => {
               >
                 {CONTACT.email}
               </a>
-              <p className="pt-2 text-xs text-evergreen-foreground/55">
-                Calgary &nbsp;·&nbsp; Edmonton &nbsp;·&nbsp; Alberta
-              </p>
             </div>
           </div>
         </div>

@@ -31,7 +31,8 @@ export type PageHeroVariant =
 interface BaseProps {
   breadcrumb: BreadcrumbItem[];
   numeral?: string;
-  sectionLabel: string;
+  /** @deprecated removed in clutter sweep — kept optional for back-compat. */
+  sectionLabel?: string;
   /** Title — string (one line) OR an array of lines for KineticHeadline. */
   title: string | string[];
   /** Italic punctuation tail rendered in cedar with hairline underline draw. */
@@ -450,9 +451,6 @@ const CinematicBleed = (props: CinematicBleedProps) => {
               background: "linear-gradient(90deg, hsl(var(--cedar) / 0.6), transparent)",
             }}
           />
-          <p className="absolute bottom-8 left-8 right-8 text-[10px] tracking-[0.28em] uppercase text-cedar/70 font-medium">
-            Photographing this season · Alberta
-          </p>
         </div>
       )}
 
