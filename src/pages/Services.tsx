@@ -125,15 +125,12 @@ const Services = () => {
             />
 
             <div className="mt-12 grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10">
-              <figure className="lg:col-span-4 aspect-[16/9] lg:aspect-[4/5] w-full overflow-hidden">
-                <img
-                  src={cedarTexturePremium}
-                  alt="Macro of cedar grain — the material we work in every day."
-                  loading="lazy"
-                  decoding="async"
-                  className="block w-full h-full object-cover"
-                  width={1200}
-                  height={1500}
+              <figure className="relative lg:col-span-4 aspect-[16/9] lg:aspect-[4/5] w-full overflow-hidden">
+                <MediaSlot
+                  query={{ shot_type: ["detail", "process"], min_quality: "reference", kind: "image" }}
+                  sizes="(min-width: 1024px) 33vw, 100vw"
+                  wrapperClassName="absolute inset-0"
+                  className="w-full h-full object-cover"
                 />
               </figure>
 
@@ -191,11 +188,6 @@ const Services = () => {
       {/* FAQ — shared module, single source of truth */}
       <MiniFaq items={FAQS_SERVICES} background="background" />
 
-      <EditorialImageBreak
-        src={heroArchitecture}
-        alt="Architectural exterior elevation with horizontal cedar cladding."
-        aspect="16/9"
-        intensity="calm"
       />
 
       <QuoteCloserCard background="secondary" />
