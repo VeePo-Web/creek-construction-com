@@ -21,9 +21,6 @@ const BrandMark = ({ onDark = false, className }: BrandMarkProps) => {
   const titleClass = onDark
     ? "text-evergreen-foreground"
     : "text-evergreen";
-  const eyebrowClass = onDark
-    ? "text-evergreen-foreground/55"
-    : "text-cedar/70";
 
   return (
     <Link
