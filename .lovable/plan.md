@@ -1,76 +1,46 @@
-## Goal
+# Contact form: Resend routing, voucher polish, perf hardening
 
-Push the site one notch closer to fantasy.co minimalism: strip every caption chip, breadcrumb, and decorative rail; saturate galleries with real cloud photography (Hero is the only AI image allowed); and make the contact form feel instant with a pre-filled, optional voucher code "pg2026".
+## 1. Email routing via Resend → Creekproconstruction@gmail.com
 
----
+- Connect the Resend connector (built-in connection picker) so `LOVABLE_API_KEY` + `RESEND_API_KEY` are injected as env vars into edge functions.
+- Update `supabase/functions/submit-quote-request/index.ts`:
+  - After the row is inserted into `quote_requests`, POST to the Resend gateway (`https://connector-gateway.lovable.dev/resend/emails`) with both auth headers.
+  - From: `Creek Construction <onboarding@resend.dev>` (works immediately without verifying a domain — note: Resend's free sandbox only delivers to verified addresses; we'll use the Creek Gmail as both `to` and verified sender once user verifies, but `onboarding@resend.dev` → Gmail works out of the box).
+  - To: `Creekproconstruction@gmail.com`. Reply-To: the lead's email if provided.
+  - Subject: `New quote request — {name} ({services or "general"})`.
+  - HTML + text body with name, phone (clickable `tel:`), email, city, services, timeline, project details, voucher.
+  - Email send is fire-and-forget inside the function (already returns 200 fast); failures are logged but do NOT fail the insert.
+- Re-deploy `submit-quote-request`.
 
-## 1. Eliminate clutter elements (sitewide)
+## 2. Voucher field polish (`src/components/quote/QuoteFormInline.tsx`)
 
-**Breadcrumbs — remove entirely**
-- Delete the breadcrumb chip in the sticky header: `src/components/Navigation.tsx` (drop the `<HeaderBreadcrumb />` slot) and delete `src/components/navigation/HeaderBreadcrumb.tsx` + `src/lib/route-meta.ts`.
-- Delete the in-hero breadcrumb trail. Remove the `BreadcrumbTrail` render in `src/components/ui/page-hero.tsx`, drop `src/components/ui/breadcrumb-trail.tsx`, and remove the `breadcrumb` prop from PageHero's type.
-- Strip `breadcrumb={...}` props from `Hero.tsx`, `Work.tsx`, `Services.tsx`, `About.tsx`, `NotFound.tsx`.
+- Field label: change "Voucher or referral code" → **"Voucher or referral code (5% off)"**.
+- Input value stays auto-filled to `pg2026` (already initialized) and remains fully editable + optional.
+- Lighter, helper-text appearance: add `text-muted-foreground/60` + `italic` classes so `pg2026` reads like a placeholder hint rather than user input. On focus, color returns to `text-foreground` so edits are clearly visible.
+- Remove the `placeholder="Optional"` (redundant with the new label).
+- Apply identical change in `QuoteModal.tsx` if it has its own voucher input (verify; otherwise Modal already uses QuoteFormInline).
 
-**Caption / provenance chips on imagery**
-- Delete `src/components/media/ProvenanceCaption.tsx` and any consumers (audit `EditorialBleedSection`, `MediaSlot`, `HeroTriptych`, `GalleryWall`, `HomeGalleryStrip`) — strip their caption/credit overlays. Galleries become pure image walls.
+## 3. Submit-action performance + no-reflow / no-hydration
 
-**Decorative rails / eyebrows that read as filler**
-- Remove the "Recent work" eyebrow column on `HomeGalleryStrip.tsx` (keep the H2 only).
-- Remove the "— pick any" italic micro-line and the `BronzeRule` eyebrow inside `QuoteFormInline.tsx` (services section title only).
-- Audit `Services.tsx`, `About.tsx`, `Contact.tsx`, `MiniFaq.tsx`, `CrewMoment.tsx`, `BrandStatement.tsx`, `QuoteCloserCard.tsx`, `TestimonialStrip.tsx`, `NotFound.tsx`: drop any `eyebrow` label that sits alone above a heading purely as decoration. Keep only eyebrows that carry real wayfinding meaning (e.g. "FREE QUOTE" on /contact stays — it's the page H1 partner).
-- Remove the `<HeroTriptych>` numeric "01/02/03" frame chrome if present, and any "Photographing this season" residue (already gone but re-verify).
+Already optimistic. Tighten the remaining bottlenecks:
 
-**Acceptance:** ripgrep `breadcrumb|ProvenanceCaption|HeaderBreadcrumb` returns zero hits in `src/components` and `src/pages`. Visual sweep at desktop/tablet/mobile shows no floating labels over images and no breadcrumb chips anywhere.
-
----
-
-## 2. Galleries: real cloud photos only
-
-**Rules**
-- The single permitted AI image is the homepage hero (`hero-architect-color.jpg` in `Hero.tsx`). Everything else must come from the approved cloud media library (`media_metadata` where `ai_review_status='approved'`).
-
-**GalleryWall (`/work`)**
-- Bump `useApprovedMedia` `limit` from 60 → 200 so the wall is dense.
-- Drop the seeded `GALLERY` constant (3 shed photos) so the wall is 100% cloud-driven; if cloud returns zero, render nothing rather than a stub. (Keep `HOMEPAGE_GALLERY` export for the strip.)
-- Render order: deterministic — sort by `taken_at` desc with hero/elevation/wide first.
-
-**HomeGalleryStrip**
-- Replace the hardcoded 3 `HOMEPAGE_GALLERY` images with a live `useApprovedMedia({ shot_type: ["hero","elevation","wide"], min_quality: "reference", kind: "image", limit: 3 })`. Fallback: keep current 3 real shed photos only if cloud returns nothing.
-
-**MediaSlot consumers (About, Services)**
-- Audit each `MediaSlot` query — confirm filters resolve to real cloud photos and not the deleted AI assets. No code changes if already pulling from cloud; just verify.
-
-**Acceptance:** the only `import …jpg` referencing imagery is `hero-architect-color.jpg` in `Hero.tsx` plus the 3 shed gallery fallbacks. Every other `<img>` resolves through `useApprovedMedia` / `MediaSlot`.
-
----
-
-## 3. Contact form — instant submit + auto-filled voucher
-
-**Voucher behavior** (`QuoteFormInline.tsx` and `QuoteModal.tsx`)
-- Initial state: `voucher: "pg2026"` (was `""`).
-- Field label stays "Voucher or referral code" with the existing `optional` flag — user can clear or change it.
-- Style hint: keep the field but make it visually unobtrusive (single line, no helper text).
-
-**Instant submit (perceived latency = 0)**
-- Switch `handleSubmit` to optimistic UI: on click, immediately set `success = true` and render the thank-you state. Fire `supabase.functions.invoke("submit-quote-request", …)` in the background without `await`-blocking the UI.
-- On background failure, swap state back and `toast.error` with the phone fallback. On success, no extra UI noise.
-- Remove the `submitting` spinner path from the button — it's no longer reached. Keep it in code as a safety fallback for slow validation only.
-- Validation runs synchronously before optimistic flip; if invalid, behavior unchanged (focus first invalid field).
-- Add `<link rel="preconnect">` to the Supabase functions origin in `index.html` so the network handshake is warm before submit.
-- Same change applied to the modal variant (`QuoteModal.tsx`) for consistency.
-
-**Acceptance:** clicking "Get my free quote" with a valid name+phone flips to the success card in <50ms regardless of network. Voucher field shows "pg2026" by default and is submitted unless cleared.
-
----
+- **Bundle**: dynamic-import `zod` only inside `handleSubmit` (`const { z } = await import("zod")`) — saves ~12kb from the initial Contact route chunk and the homepage's inlined form. Schema is built once and cached on a module-level lazy ref.
+- **Avoid layout thrash on success**: the success state currently swaps the entire shell, causing a height jump. Reserve the form's measured min-height via a `ref` + inline `style={{ minHeight }}` so the success card occupies the same box → no scroll jump on desktop or mobile.
+- **No hydration/SSR concern** (Vite SPA, fully client-rendered) — but ensure the `voucher: "pg2026"` initial value is set during `useState` initializer (already is) so the very first paint matches. Confirm no `useEffect`-driven value writes that could cause a 2nd render.
+- **Input handlers**: wrap `update`, `toggleService`, `markTouched` in `useCallback` and memoize `SERVICE_GROUPS` mapping so chip rows don't re-render on every keystroke. Reduces input latency on mobile.
+- **CSS containment**: add `contain: layout paint` to the form shell so a chip toggle doesn't trigger sibling reflows (TrustStrip below the form).
+- **Preconnect** to `connector-gateway.lovable.dev` in `index.html` (we already preconnect to Supabase) — warms the TLS handshake before the background Resend POST.
+- **Button state**: remove the unused `Loader2`/`submitting` branch entirely from the JSX (it's dead code now that the UI is optimistic) — shrinks the component and removes a never-true conditional from the render path.
 
 ## Files touched
 
-Edits: `src/components/Navigation.tsx`, `src/components/ui/page-hero.tsx`, `src/components/Hero.tsx`, `src/components/HomeGalleryStrip.tsx`, `src/components/GalleryWall.tsx`, `src/components/quote/QuoteFormInline.tsx`, `src/components/quote/QuoteModal.tsx`, `src/pages/{Index,Work,Services,About,Contact,NotFound}.tsx`, `src/config/gallery.ts`, `index.html`, plus eyebrow/caption sweeps in `BrandStatement.tsx`, `CrewMoment.tsx`, `MiniFaq.tsx`, `QuoteCloserCard.tsx`, `TestimonialStrip.tsx`.
+- `supabase/functions/submit-quote-request/index.ts` — Resend email send
+- `src/components/quote/QuoteFormInline.tsx` — voucher styling + label, perf, lazy zod, dead-code removal, min-height reservation
+- `index.html` — preconnect to connector gateway
+- (verify) `src/components/quote/QuoteModal.tsx` — only if it duplicates the voucher input
 
-Deletions: `src/components/navigation/HeaderBreadcrumb.tsx`, `src/components/ui/breadcrumb-trail.tsx`, `src/components/media/ProvenanceCaption.tsx`, `src/lib/route-meta.ts`.
+## Notes
 
-## Out of scope
-
-- No design-token changes (colors, typography, spacing untouched).
-- No backend/edge function changes — only the client submit timing.
-- Hero image stays as-is (the one allowed AI asset).
+- No DB schema changes.
+- No design tokens added; uses existing `text-muted-foreground` + `italic`.
+- Resend free tier sends from `onboarding@resend.dev` immediately; deliverability to a Gmail inbox is reliable. If you later want emails to come from `@creekproconstruction.com`, you'd verify that domain in Resend — happy to wire that on request.
