@@ -123,6 +123,81 @@ Deno.serve(async (req) => {
       { id: data?.id, services, name },
     );
 
+    // Fire-and-forget: notify Creek via Resend. Failures are logged but
+    // never block the 200 response — the row is already saved.
+    void (async () => {
+      try {
+        const lovableKey = Deno.env.get("LOVABLE_API_KEY");
+        const resendKey = Deno.env.get("RESEND_API_KEY");
+        if (!lovableKey || !resendKey) {
+          console.warn("[submit-quote-request] email skipped — missing Resend keys");
+          return;
+        }
+
+        const esc = (s: string) =>
+          s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+        const row = (label: string, value?: string | null) =>
+          value
+            ? `<tr><td style="padding:6px 12px 6px 0;color:#6b6b6b;font-size:13px;vertical-align:top;">${esc(label)}</td><td style="padding:6px 0;color:#1a1a1a;font-size:14px;">${esc(value)}</td></tr>`
+            : "";
+
+        const subjectKind = isInquiry
+          ? "General inquiry"
+          : services.slice(0, 2).join(", ") || "Quote request";
+        const subject = `New ${isInquiry ? "inquiry" : "quote request"} — ${name} (${subjectKind})`;
+
+        const html = `<!doctype html><html><body style="margin:0;padding:24px;background:#f7f5f1;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;">
+<div style="max-width:600px;margin:0 auto;background:#ffffff;border:1px solid #e7e3dc;border-left:3px solid #9a6b3f;padding:28px 28px 24px;">
+<p style="margin:0 0 4px;font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:#9a6b3f;">Creek Construction · Lead</p>
+<h1 style="margin:0 0 18px;font-size:20px;color:#1a1a1a;font-weight:600;">${esc(name)}</h1>
+<table style="width:100%;border-collapse:collapse;">
+${row("Phone", phone)}
+${row("Email", email)}
+${row("City / area", addressOrArea)}
+${row("Services", services.join(", "))}
+${row("Timeline", timeline)}
+${row("Property", propertyType)}
+${row("Contact pref.", contactPreference)}
+${projectDetails ? `<tr><td colspan="2" style="padding:14px 0 0;"><div style="font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:#6b6b6b;margin-bottom:6px;">Project details</div><div style="font-size:14px;color:#1a1a1a;white-space:pre-wrap;line-height:1.55;">${esc(projectDetails)}</div></td></tr>` : ""}
+</table>
+<div style="margin-top:20px;padding-top:14px;border-top:1px solid #ece8e0;font-size:12px;color:#8a8a8a;">Reply directly to this email to reach the customer${email ? "" : " (no email provided — call them)"}.</div>
+</div></body></html>`;
+
+        const text = [
+          `New ${isInquiry ? "inquiry" : "quote request"} — ${name}`,
+          ``,
+          `Phone: ${phone}`,
+          email ? `Email: ${email}` : null,
+          addressOrArea ? `City: ${addressOrArea}` : null,
+          services.length ? `Services: ${services.join(", ")}` : null,
+          timeline ? `Timeline: ${timeline}` : null,
+          projectDetails ? `\nDetails:\n${projectDetails}` : null,
+        ].filter(Boolean).join("\n");
+
+        const res = await fetch("https://connector-gateway.lovable.dev/resend/emails", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${lovableKey}`,
+            "X-Connection-Api-Key": resendKey,
+          },
+          body: JSON.stringify({
+            from: "Creek Construction <onboarding@resend.dev>",
+            to: ["Creekproconstruction@gmail.com"],
+            reply_to: email || undefined,
+            subject,
+            html,
+            text,
+          }),
+        });
+        if (!res.ok) {
+          console.error("[submit-quote-request] resend failed", res.status, await res.text());
+        }
+      } catch (e) {
+        console.error("[submit-quote-request] resend error", e);
+      }
+    })();
+
     return new Response(JSON.stringify({ ok: true, id: data?.id }), {
       status: 200,
       headers: { ...corsHeaders, "Content-Type": "application/json" },

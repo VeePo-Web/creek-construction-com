@@ -559,7 +559,7 @@ const QuoteModal = () => {
                 </Field>
 
                 {/* Voucher / referral — optional, last field */}
-                <Field label="Voucher or referral code" htmlFor="qm-voucher" optional>
+                <Field label="Voucher or referral code (5% off)" htmlFor="qm-voucher" optional>
                   <input
                     id="qm-voucher"
                     type="text"
@@ -567,8 +567,7 @@ const QuoteModal = () => {
                     onChange={(e) => update("voucher", e.target.value)}
                     maxLength={80}
                     autoComplete="off"
-                    placeholder="Optional"
-                    className="w-full rounded-[2px] border border-border bg-background px-3 py-2.5 text-sm focus:outline-none focus:border-cedar focus:ring-1 focus:ring-cedar/30 transition-colors"
+                    className="w-full rounded-[2px] border border-border bg-background px-3 py-2.5 text-sm text-muted-foreground/60 italic focus:text-foreground focus:not-italic focus:outline-none focus:border-cedar focus:ring-1 focus:ring-cedar/30 transition-colors"
                   />
                 </Field>
 
