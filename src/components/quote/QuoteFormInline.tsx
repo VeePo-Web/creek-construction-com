@@ -401,7 +401,7 @@ const QuoteFormInline = ({
             />
           </Field>
 
-          <Field label="Voucher or referral code (5% off)" htmlFor="qfi-voucher" optional>
+          <Field label="Voucher or referral code (10% off :D)" htmlFor="qfi-voucher" optional>
             <input
               id="qfi-voucher"
               type="text"
