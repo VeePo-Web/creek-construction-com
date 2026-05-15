@@ -15,7 +15,7 @@ import { CREEK_PROCESS as STEPS } from "@/config/process";
 const About = () => {
   useDocumentTitle(
     "About",
-    "Creek Construction — locally owned residential exterior contractor serving Calgary, Edmonton, and surrounding Alberta.",
+    "Creek Construction — locally owned residential exterior contractor serving Edmonton, Calgary & the Okanagan, BC.",
   );
 
   return (
@@ -27,7 +27,7 @@ const About = () => {
       <PageHero
         variant="evergreen-typographic"
         title={["Built on the", "work itself."]}
-        subtitle="Calgary and Edmonton. The crew you meet is the crew on-site."
+        subtitle="Edmonton, Calgary & the Okanagan. The crew you meet is the crew on-site."
         ambientClipQuery={{ kind: "video", min_quality: "portfolio" }}
         triptychQueries={[
           { shot_type: ["process", "detail"], min_quality: "reference", kind: "image" },
@@ -51,7 +51,7 @@ const About = () => {
               <div className="space-y-6">
                 <p className={BODY.lead}>
                   Creek Construction is a locally owned, residential-exterior contractor working
-                  across the Calgary and Edmonton metros. We build decks, fences, sheds, pergolas —
+                  across the Edmonton & Calgary metros and the Okanagan, BC. We build decks, fences, sheds, pergolas —
                   and we paint, side, and repair the parts of your home that face the weather.
                 </p>
               </div>

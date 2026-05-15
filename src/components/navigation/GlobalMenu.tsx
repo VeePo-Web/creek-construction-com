@@ -34,14 +34,19 @@ const PRIMARY_ROUTES = [
 // Order inside each group reflects how a local would scan a map.
 const SERVICE_AREAS = [
   {
-    metro: "Calgary Metro",
-    homeBase: "Calgary",
-    cities: ["Calgary", "Airdrie", "Cochrane", "Okotoks", "Chestermere"],
-  },
-  {
     metro: "Edmonton Metro",
     homeBase: undefined as string | undefined,
-    cities: ["Edmonton", "Sherwood Park", "St. Albert", "Spruce Grove", "Leduc"],
+    cities: ["Edmonton", "St. Albert", "Sherwood Park", "Stony Plain", "Spruce Grove", "Leduc", "Nisku"],
+  },
+  {
+    metro: "Calgary Metro",
+    homeBase: "Calgary",
+    cities: ["Calgary", "Cochrane", "Airdrie"],
+  },
+  {
+    metro: "Okanagan, BC",
+    homeBase: undefined as string | undefined,
+    cities: ["Kelowna", "West Kelowna", "Peachland", "Summerland", "Penticton", "Vernon"],
   },
 ];
 

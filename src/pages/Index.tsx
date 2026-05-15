@@ -18,7 +18,7 @@ import BrandStatement from "@/components/BrandStatement";
 const Index = () => {
   useDocumentTitle(
     "Excellence in the Work",
-    "Creek Construction — WCB-covered, fully insured exterior contractor in Calgary, Edmonton & Alberta. Decks, fencing, sheds, painting & siding. Free written quotes.",
+    "Creek Construction — WCB-covered, fully insured exterior contractor serving Edmonton, Calgary & the Okanagan, BC. Decks, fencing, sheds, painting & siding. Free written quotes.",
   );
 
   return (

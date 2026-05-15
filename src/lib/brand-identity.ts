@@ -26,7 +26,7 @@ export const BRAND_SPINE = {
   name: "Creek Construction",
   tagline: "Excellence in the Work.",
   category: "Residential exterior construction",
-  region: "Calgary, Edmonton & surrounding Alberta",
+  region: "Alberta & Okanagan, BC",
 
   purpose:
     "Build the parts of people's homes you live with the longest \u2014 decks, fences, sheds, exteriors \u2014 with the kind of care that makes them last decades, not seasons.",
@@ -151,7 +151,7 @@ export const VERBAL_IDENTITY = {
   /** Phone & address format. */
   phone: "(780) 777-5178",
   email: "Creekproconstruction@gmail.com",
-  serviceArea: "Calgary, Edmonton & surrounding Alberta",
+  serviceArea: "Alberta & Okanagan, BC",
 } as const;
 
 // ─────────────────────────────────────────────────────────────────────
