@@ -15,19 +15,31 @@ export const CONTACT = {
 
   email: "Creekproconstruction@gmail.com",
 
-  serviceAreas: ["Calgary & area", "Edmonton & area"] as const,
+  instagram: "Creek_construction",
+  instagramUrl: "https://instagram.com/Creek_construction",
+
+  serviceAreas: ["Edmonton metro", "Calgary metro", "Okanagan, BC"] as const,
 
   cities: [
-    "Calgary",
-    "Airdrie",
-    "Cochrane",
-    "Okotoks",
-    "Chestermere",
+    // Edmonton metro
     "Edmonton",
-    "Sherwood Park",
     "St. Albert",
+    "Sherwood Park",
+    "Stony Plain",
     "Spruce Grove",
     "Leduc",
+    "Nisku",
+    // Calgary metro
+    "Calgary",
+    "Cochrane",
+    "Airdrie",
+    // Okanagan, BC
+    "Kelowna",
+    "West Kelowna",
+    "Peachland",
+    "Summerland",
+    "Penticton",
+    "Vernon",
   ] as const,
 
   // Used in JSON-LD and as the canonical site URL placeholder.

@@ -26,7 +26,7 @@ import { MAX_WIDTH } from "@/lib/spacing";
 const Contact = () => {
   useDocumentTitle(
     "Contact",
-    `Get in touch with Creek Construction — call ${CONTACT.phone} or email ${CONTACT.email}. Free quotes across Calgary, Edmonton, and surrounding Alberta.`,
+    `Get in touch with Creek Construction — call ${CONTACT.phone} or email ${CONTACT.email}. Free quotes across Edmonton, Calgary, and the Okanagan, BC.`,
   );
 
   return (
@@ -107,7 +107,7 @@ const Contact = () => {
                       <MapPin className="h-4 w-4 text-cedar" aria-hidden />
                     </div>
                     <div className="flex-1">
-                      <p className="text-base text-foreground">Calgary, Edmonton &amp; surrounding Alberta</p>
+                      <p className="text-base text-foreground">Edmonton &amp; Calgary metros · Okanagan, BC</p>
                     </div>
                   </div>
                 </aside>

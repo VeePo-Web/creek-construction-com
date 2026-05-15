@@ -24,6 +24,7 @@ export const LocalBusinessJsonLd = () => (
       telephone: `+1${CONTACT.phoneTel}`,
       email: CONTACT.email,
       areaServed: CONTACT.cities.map((name) => ({ "@type": "City", name })),
+      sameAs: [CONTACT.instagramUrl],
       address: {
         "@type": "PostalAddress",
         addressRegion: "AB",

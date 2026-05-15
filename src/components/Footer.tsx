@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { Instagram } from "lucide-react";
 import { CONTACT } from "@/config/contact";
 import { SECTION_PADDING } from "@/lib/spacing";
 import logo from "@/assets/creek-logo-nav-md.png";
@@ -85,6 +86,16 @@ const Footer = () => {
                 className="text-sm text-evergreen-foreground/80 hover:text-cedar transition-colors min-h-[44px] inline-flex items-center"
               >
                 {CONTACT.email}
+              </a>
+              <a
+                href={CONTACT.instagramUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label={`Creek Construction on Instagram — @${CONTACT.instagram}`}
+                className="text-sm text-evergreen-foreground/80 hover:text-cedar transition-colors min-h-[44px] inline-flex items-center gap-2"
+              >
+                <Instagram className="h-4 w-4" aria-hidden />
+                @{CONTACT.instagram}
               </a>
             </div>
           </div>
