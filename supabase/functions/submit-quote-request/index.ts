@@ -182,7 +182,7 @@ ${projectDetails ? `<tr><td colspan="2" style="padding:14px 0 0;"><div style="fo
             "X-Connection-Api-Key": resendKey,
           },
           body: JSON.stringify({
-            from: "Creek Construction <onboarding@resend.dev>",
+            from: "Creek Construction <quotes@creek-construction.com>",
             to: ["Creekproconstruction@gmail.com"],
             cc: ["parker@veepo.ca"],
             reply_to: email || undefined,
