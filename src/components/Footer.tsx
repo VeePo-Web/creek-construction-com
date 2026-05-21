@@ -25,7 +25,7 @@ const Footer = () => {
       <div className="container mx-auto max-w-[1440px] px-5 sm:px-6 md:px-10">
         <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-0">
           {/* ── Identity ── */}
-          <div className="lg:col-span-4 lg:pr-10 flex flex-col items-center lg:items-start text-center lg:text-left">
+          <div className="lg:col-span-3 lg:pr-8 flex flex-col items-center lg:items-start text-center lg:text-left">
             <Link to="/" className="inline-flex items-center gap-3 group">
               <img
                 src={logo}
@@ -44,7 +44,7 @@ const Footer = () => {
           <div className="lg:hidden border-t border-evergreen-foreground/10" aria-hidden />
 
           {/* ── Navigate ── */}
-          <div className="lg:col-span-4 lg:px-10 lg:border-l lg:border-evergreen-foreground/10">
+          <div className="lg:col-span-2 lg:px-8 lg:border-l lg:border-evergreen-foreground/10">
             <p className="eyebrow mb-4 text-center lg:text-left">
               Navigate
             </p>
@@ -69,8 +69,30 @@ const Footer = () => {
           {/* mobile divider */}
           <div className="lg:hidden border-t border-evergreen-foreground/10" aria-hidden />
 
+          {/* ── Service areas ── */}
+          <div className="lg:col-span-4 lg:px-8 lg:border-l lg:border-evergreen-foreground/10">
+            <p className="eyebrow mb-4 text-center lg:text-left">
+              Service Areas
+            </p>
+            <ul className="flex flex-col items-center lg:items-start space-y-3 text-center lg:text-left">
+              {CONTACT.serviceRegions.map((r) => (
+                <li key={r.region}>
+                  <p className="font-serif text-sm text-evergreen-foreground leading-tight">
+                    {r.region}
+                  </p>
+                  <p className="text-xs text-evergreen-foreground/70 leading-relaxed mt-1">
+                    {r.cities.join(", ")}
+                  </p>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* mobile divider */}
+          <div className="lg:hidden border-t border-evergreen-foreground/10" aria-hidden />
+
           {/* ── Direct line ── */}
-          <div className="lg:col-span-4 lg:pl-10 lg:border-l lg:border-evergreen-foreground/10">
+          <div className="lg:col-span-3 lg:pl-8 lg:border-l lg:border-evergreen-foreground/10">
             <p className="eyebrow mb-4 text-center lg:text-left">
               Direct Line
             </p>
