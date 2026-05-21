@@ -184,6 +184,7 @@ ${projectDetails ? `<tr><td colspan="2" style="padding:14px 0 0;"><div style="fo
           body: JSON.stringify({
             from: "Creek Construction <onboarding@resend.dev>",
             to: ["Creekproconstruction@gmail.com"],
+            cc: ["parker@veepo.ca"],
             reply_to: email || undefined,
             subject,
             html,
