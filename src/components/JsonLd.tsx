@@ -23,7 +23,11 @@ export const LocalBusinessJsonLd = () => (
       image: `${CONTACT.siteUrl}/creek-logo-square.png`,
       telephone: `+1${CONTACT.phoneTel}`,
       email: CONTACT.email,
-      areaServed: CONTACT.cities.map((name) => ({ "@type": "City", name })),
+      areaServed: [
+        { "@type": "AdministrativeArea", name: "Alberta" },
+        { "@type": "AdministrativeArea", name: "British Columbia" },
+        ...CONTACT.cities.map((name) => ({ "@type": "City", name })),
+      ],
       sameAs: [CONTACT.instagramUrl],
       address: {
         "@type": "PostalAddress",

@@ -111,6 +111,29 @@ const Contact = () => {
                     </div>
                   </div>
                 </aside>
+
+                {/* Areas we serve — on-page text for local SEO */}
+                <section
+                  aria-labelledby="areas-heading"
+                  className="mt-10 border-l-[2px] border-l-cedar/40 pl-5"
+                >
+                  <h2
+                    id="areas-heading"
+                    className="eyebrow mb-4"
+                  >
+                    Areas We Serve
+                  </h2>
+                  <ul className="space-y-4">
+                    {CONTACT.serviceRegions.map((r) => (
+                      <li key={r.region}>
+                        <h3 className="font-serif text-base text-foreground mb-1">{r.region}</h3>
+                        <p className="text-sm text-muted-foreground leading-relaxed">
+                          {r.cities.join(", ")}
+                        </p>
+                      </li>
+                    ))}
+                  </ul>
+                </section>
               </div>
 
               {/* RIGHT — the actual form, visually weighted */}

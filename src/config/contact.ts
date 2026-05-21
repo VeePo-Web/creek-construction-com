@@ -20,6 +20,21 @@ export const CONTACT = {
 
   serviceAreas: ["Edmonton metro", "Calgary metro", "Okanagan, BC"] as const,
 
+  serviceRegions: [
+    {
+      region: "Edmonton metro, AB",
+      cities: ["Edmonton", "St. Albert", "Sherwood Park", "Stony Plain", "Spruce Grove", "Leduc", "Nisku"],
+    },
+    {
+      region: "Calgary metro, AB",
+      cities: ["Calgary", "Cochrane", "Airdrie"],
+    },
+    {
+      region: "Okanagan, BC",
+      cities: ["Kelowna", "West Kelowna", "Peachland", "Summerland", "Penticton", "Vernon"],
+    },
+  ] as const,
+
   cities: [
     // Edmonton metro
     "Edmonton",
