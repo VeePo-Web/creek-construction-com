@@ -104,6 +104,13 @@ interface ArchitectBleedProps extends BaseProps {
   imageAlt?: string;
   /** When true (default), renders the image in full color. Set false to keep the legacy B&W treatment. */
   inColor?: boolean;
+  /**
+   * Optional ambient video loop. The photo still loads first as the LCP;
+   * once the video can play it fades in silently over it.
+   * Drop your file into /public/videos/ then pass e.g. "/videos/hero-ambient.mp4"
+   * Respects prefers-reduced-motion — video stays paused when reduced motion is on.
+   */
+  videoSrc?: string;
   /** Bottom-right caption rail. Falls back to derived values from media. */
   caption?: { service?: string; location?: string; year?: number };
   /** Primary CTA label (renders a white-outline button that opens QuoteModal via children-replacement when omitted). */
@@ -660,7 +667,18 @@ const ArchitectBleed = (props: ArchitectBleedProps) => {
   const heroImgRef = useHeroParallax();
   const { item } = useFirstApprovedMedia(props.query);
   const [photoLoaded, setPhotoLoaded] = useState(false);
+  const [videoReady, setVideoReady] = useState(false);
   const localImgRef = useRef<HTMLImageElement | null>(null);
+  const videoRef = useRef<HTMLVideoElement | null>(null);
+
+  // Pause ambient video when reduced-motion preference is active.
+  useEffect(() => {
+    const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const pause = () => { videoRef.current?.pause(); };
+    if (mq.matches) pause();
+    mq.addEventListener("change", pause);
+    return () => mq.removeEventListener("change", pause);
+  }, []);
 
   // Static override wins over the media-library query when supplied.
   const hasStatic = Boolean(props.imageSrc);
@@ -698,7 +716,7 @@ const ArchitectBleed = (props: ArchitectBleedProps) => {
         props.className,
       )}
       style={{ backgroundColor: inColor ? "hsl(28 16% 10%)" : "hsl(0 0% 4%)", contain: "layout style paint" }}
-      aria-label={lines.join(" ")}
+      aria-label="Homepage hero"
     >
       {/* Background photograph — LQIP-backed progressive layer. */}
       {imgSrc ? (
@@ -749,6 +767,25 @@ const ArchitectBleed = (props: ArchitectBleedProps) => {
               opacity: photoLoaded ? 1 : 0,
             }}
           />
+
+          {/* Ambient video loop — fades in over the photo once it can play.
+              Photo remains the LCP; video is a visual enhancement only. */}
+          {props.videoSrc && (
+            <video
+              ref={videoRef}
+              src={props.videoSrc}
+              poster={imgSrc}
+              muted
+              autoPlay
+              loop
+              playsInline
+              preload="none"
+              aria-hidden
+              className="absolute inset-0 w-full h-full object-cover transition-opacity duration-[1500ms]"
+              style={{ filter: photoFilter, opacity: videoReady ? 1 : 0 }}
+              onCanPlay={() => setVideoReady(true)}
+            />
+          )}
         </>
       ) : (
         <div className="absolute inset-0" style={{ backgroundColor: inColor ? "hsl(28 16% 14%)" : "hsl(0 0% 8%)" }} aria-hidden />
@@ -785,7 +822,7 @@ const ArchitectBleed = (props: ArchitectBleedProps) => {
           the heading is ~34px and ch≈body), and use viewport-relative caps
           everywhere else as a safety net.
         */}
-        <div className="max-w-[14ch] sm:max-w-none sm:w-auto md:max-w-[80vw] lg:max-w-[68vw] xl:max-w-[60vw]">
+        <div className="max-w-[90vw] sm:max-w-none sm:w-auto md:max-w-[80vw] lg:max-w-[68vw] xl:max-w-[60vw]">
           <h1
             aria-label={[...lines, props.italic].filter(Boolean).join(" ")}
             className="font-serif"
@@ -845,17 +882,16 @@ const ArchitectBleed = (props: ArchitectBleedProps) => {
               className="block h-px w-12 mb-6 hero-provenance-enter"
               style={{
                 backgroundColor: "hsl(0 0% 100% / 0.45)",
-                ["--kinetic-delay" as never]: "1100ms",
+                ["--kinetic-delay" as never]: "700ms",
               }}
             />
             {props.subtitle && (
               <p
-                className="hero-provenance-enter max-w-[28ch] sm:max-w-[42ch] md:max-w-[46ch]"
+                className="hero-provenance-enter max-w-[28ch] sm:max-w-[42ch] md:max-w-[46ch] text-white/80"
                 style={{
-                  color: "hsl(0 0% 100% / 0.82)",
                   fontSize: "clamp(0.95rem, 1.05vw, 1.125rem)",
                   lineHeight: 1.55,
-                  ["--kinetic-delay" as never]: "1200ms",
+                  ["--kinetic-delay" as never]: "800ms",
                   fontFamily: "var(--font-sans, 'DM Sans', system-ui, sans-serif)",
                 }}
               >
@@ -865,8 +901,8 @@ const ArchitectBleed = (props: ArchitectBleedProps) => {
 
             {props.children && (
               <div
-                className="mt-9 hero-provenance-enter"
-                style={{ ["--kinetic-delay" as never]: "1400ms" }}
+                className="mt-8 hero-provenance-enter"
+                style={{ ["--kinetic-delay" as never]: "900ms" }}
               >
                 {props.children}
               </div>
@@ -875,6 +911,36 @@ const ArchitectBleed = (props: ArchitectBleedProps) => {
 
           {/* Bottom-right captionLine rail removed (Pass 52). */}
         </div>
+      </div>
+
+      {/* Scroll indicator — subtle animated chevron, bottom-center */}
+      <div
+        aria-hidden
+        className="hidden sm:flex absolute bottom-5 left-1/2 -translate-x-1/2 z-10 flex-col items-center gap-1 pointer-events-none"
+        style={{ opacity: 0.4 }}
+      >
+        <span
+          className="block text-[9px] tracking-[0.22em] uppercase text-white"
+          style={{ fontFamily: "var(--font-sans, 'DM Sans', system-ui, sans-serif)" }}
+        >
+          Scroll
+        </span>
+        <svg
+          width="14"
+          height="9"
+          viewBox="0 0 14 9"
+          fill="none"
+          className="animate-bounce"
+          style={{ animationDuration: "1.8s" }}
+        >
+          <path
+            d="M1 1L7 7L13 1"
+            stroke="white"
+            strokeWidth="1.2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </svg>
       </div>
     </section>
   );

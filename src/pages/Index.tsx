@@ -10,6 +10,7 @@ import { LocalBusinessJsonLd } from "@/components/JsonLd";
 import CrewMoment from "@/components/CrewMoment";
 import TestimonialStrip from "@/components/TestimonialStrip";
 import BrandStatement from "@/components/BrandStatement";
+import VideoShowcase from "@/components/VideoShowcase";
 
 /**
  * Homepage rhythm:
@@ -35,6 +36,16 @@ const Index = () => {
       <BrandStatement />
       <Services />
       <HomeGalleryStrip background="secondary" />
+      {/*
+        VideoShowcase — drop your video into /public/videos/ then add:
+          videoSrc="/videos/creek-build.mp4"
+          videoSrcWebm="/videos/creek-build.webm"   (optional, better compression)
+        Until a file is provided the section shows the poster + "coming soon" badge.
+      */}
+      <VideoShowcase
+        heading="See how we build."
+        caption="Cedar deck build · Edmonton, AB"
+      />
       <CrewMoment background="background" topRule />
       <TestimonialStrip background="secondary" />
       <QuoteCloserCard id="section-contact" background="background" />
