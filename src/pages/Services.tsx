@@ -7,6 +7,7 @@ import SectionHeader from "@/components/SectionHeader";
 import PageHero from "@/components/ui/page-hero";
 import MiniFaq from "@/components/MiniFaq";
 import MediaSlot from "@/components/media/MediaSlot";
+import { BreadcrumbJsonLd, FaqJsonLd, ServiceCatalogJsonLd } from "@/components/JsonLd";
 import { Check, Minus, ArrowUpRight } from "lucide-react";
 import { HEADLINE } from "@/lib/typography";
 import { useDocumentTitle } from "@/hooks/useDocumentTitle";
@@ -15,6 +16,7 @@ import { useQuoteModal } from "@/components/quote/QuoteModalProvider";
 
 import { SECTION_PADDING, MAX_WIDTH } from "@/lib/spacing";
 import { FAQS_SERVICES } from "@/config/faqs";
+import { SEO_ROUTES } from "@/config/seo";
 
 const WE_HANDLE = [
   "Site assessment and accurate quote",
@@ -34,14 +36,23 @@ const YOU_HANDLE = [
 
 const Services = () => {
   useDocumentTitle(
-    "Services",
-    "Decks, roofing, siding, painting, fences, landscaping and more — full residential exterior construction across Alberta.",
+    SEO_ROUTES.services.title,
+    SEO_ROUTES.services.description,
+    { path: SEO_ROUTES.services.path },
   );
   const { openModal } = useQuoteModal();
 
   return (
     <main id="main-content" className="min-h-screen overflow-x-clip bg-background" aria-label="Services — Creek Construction">
       <SkipToContent target="section-catalogue" />
+      <BreadcrumbJsonLd
+        items={[
+          { name: "Home", url: "https://creekconstruction.ca/" },
+          { name: "Services", url: "https://creekconstruction.ca/services" },
+        ]}
+      />
+      <ServiceCatalogJsonLd />
+      <FaqJsonLd items={FAQS_SERVICES} />
       <Navigation />
 
       <PageHero

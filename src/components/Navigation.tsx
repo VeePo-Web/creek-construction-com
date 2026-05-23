@@ -1,5 +1,5 @@
 import { useState } from "react";
-
+import { Phone } from "lucide-react";
 
 import { useQuoteModal } from "@/components/quote/QuoteModalProvider";
 import { CONTACT } from "@/config/contact";
@@ -10,12 +10,6 @@ import BrandMark from "@/components/navigation/BrandMark";
 import MenuTrigger from "@/components/navigation/MenuTrigger";
 import GlobalMenu from "@/components/navigation/GlobalMenu";
 import { useScrollChrome } from "@/hooks/useScrollChrome";
-
-interface NavigationProps {
-  /** Currently unused — kept for API compatibility with legacy pages. */
-  transparent?: boolean;
-  is404?: boolean;
-}
 
 const MENU_ID = "global-menu";
 
@@ -37,25 +31,25 @@ const MENU_ID = "global-menu";
  * GlobalMenu (Tier 2). On md+ it carries a "MENU" label so its role
  * is unmistakable.
  */
-const Navigation = ({ transparent: _transparent }: NavigationProps) => {
+const Navigation = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const { openModal } = useQuoteModal();
 
   const { isScrolled } = useScrollChrome();
 
-  // Compact mobile Quote pill — distinct from the full desktop CTA.
+  // Compact mobile Quote pill — min-h-[44px] enforces Apple HIG touch target.
   const mobileCta = cn(
     BUTTON.primary.base,
-    "px-3 py-2 text-[10px] gap-1.5 leading-none",
+    "px-3 py-2 text-[11px] min-h-[44px] gap-1.5 leading-none active:scale-[0.98]",
     BUTTON.primary.hover,
     BUTTON.primary.focus,
     BUTTON.primary.transition,
   );
 
-  // Full desktop Quote CTA.
+  // Full desktop Quote CTA — min-h-[44px] enforces Apple HIG touch target.
   const desktopCta = cn(
     BUTTON.primary.base,
-    "px-4 py-2.5 text-[11px] gap-2",
+    "px-4 py-2.5 text-[11px] min-h-[44px] gap-2 active:scale-[0.98]",
     BUTTON.primary.hover,
     BUTTON.primary.focus,
     BUTTON.primary.transition,
@@ -73,7 +67,7 @@ const Navigation = ({ transparent: _transparent }: NavigationProps) => {
       <header
         className={cn(
           "fixed top-0 inset-x-0 z-50",
-          "transition-[background-color,backdrop-filter,border-color,box-shadow] duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]",
+          "transition-[background-color,backdrop-filter,border-color] duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]",
           headerSurface,
         )}
         role="banner"
@@ -96,10 +90,8 @@ const Navigation = ({ transparent: _transparent }: NavigationProps) => {
           {/* Right cluster — never fades, never hides on mobile.
               Mobile: [📞] [Quote-pill] [☰]
               Tablet/Desktop: [phone link] [Quote CTA] [☰ MENU] */}
-          <div className="flex items-center gap-1.5 md:gap-2.5 shrink-0">
-            {/* Tablet phone icon removed — phone lives in GlobalMenu, footer, and closer */}
-
-            {/* Desktop-only (lg+) phone link with the number spelled out */}
+          <div className="flex items-center gap-1.5 sm:gap-2 md:gap-2.5 shrink-0">
+            {/* Desktop (lg+) phone link — number spelled out */}
             <a
               href={`tel:${CONTACT.phoneTel}`}
               className="hidden lg:inline-flex items-center gap-2 cta-label text-foreground/75 hover:text-cedar transition-colors min-h-[44px] px-2 tabular-nums"
@@ -109,8 +101,17 @@ const Navigation = ({ transparent: _transparent }: NavigationProps) => {
               {CONTACT.phone}
             </a>
 
-            {/* Mobile compact Quote pill — restores the in-chrome conversion
-                CTA that v2 hid below the sm: breakpoint. */}
+            {/* sm–lg phone icon — icon-only tap target for tablet/mid sizes */}
+            <a
+              href={`tel:${CONTACT.phoneTel}`}
+              aria-label={`Call ${CONTACT.phone}`}
+              className="hidden sm:inline-flex lg:hidden items-center justify-center min-w-[44px] min-h-[44px] rounded-[2px] text-foreground/70 hover:text-cedar transition-colors duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cedar focus-visible:ring-offset-2"
+            >
+              <Phone className="h-4 w-4" aria-hidden />
+            </a>
+
+            {/* Mobile compact Quote pill — "Quote" kept short to prevent
+                overflow at 320px alongside the wordmark + hamburger. */}
             <button
               type="button"
               onClick={() => openModal()}
@@ -148,8 +149,6 @@ const Navigation = ({ transparent: _transparent }: NavigationProps) => {
           </div>
         </div>
       </header>
-
-
 
       {/* Spacer — header is fixed, so reserve the same height in the document flow. */}
       <div

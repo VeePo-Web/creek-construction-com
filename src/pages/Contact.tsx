@@ -2,12 +2,14 @@ import NavigationMinimal from "@/components/navigation/NavigationMinimal";
 import SkipToContent from "@/components/ui/skip-to-content";
 import Footer from "@/components/Footer";
 import SectionHeader from "@/components/SectionHeader";
+import { BreadcrumbJsonLd, ContactPageJsonLd } from "@/components/JsonLd";
 
 import QuoteFormInline from "@/components/quote/QuoteFormInline";
 import { useDocumentTitle } from "@/hooks/useDocumentTitle";
 import { Phone, Mail, MapPin } from "lucide-react";
 import { CONTACT } from "@/config/contact";
 import { MAX_WIDTH } from "@/lib/spacing";
+import { SEO_ROUTES } from "@/config/seo";
 
 
 /**
@@ -25,12 +27,20 @@ import { MAX_WIDTH } from "@/lib/spacing";
  */
 const Contact = () => {
   useDocumentTitle(
-    "Contact",
-    `Get in touch with Creek Construction — call ${CONTACT.phone} or email ${CONTACT.email}. Free quotes across Edmonton, Calgary, and the Okanagan, BC.`,
+    SEO_ROUTES.contact.title,
+    SEO_ROUTES.contact.description,
+    { path: SEO_ROUTES.contact.path },
   );
 
   return (
     <main id="main-content" className="min-h-screen overflow-x-clip bg-background" aria-label="Contact — Creek Construction">
+      <BreadcrumbJsonLd
+        items={[
+          { name: "Home", url: "https://creekconstruction.ca/" },
+          { name: "Contact", url: "https://creekconstruction.ca/contact" },
+        ]}
+      />
+      <ContactPageJsonLd />
       <NavigationMinimal />
       <SkipToContent target="section-contact" />
 

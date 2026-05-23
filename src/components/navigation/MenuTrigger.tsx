@@ -56,7 +56,7 @@ const MenuTrigger = ({
       <span aria-hidden className="relative w-5 h-4 block shrink-0">
         <span
           className={cn(
-            "absolute left-0 right-0 h-px transition-transform duration-350 ease-[cubic-bezier(0.16,1,0.3,1)]",
+            "absolute left-0 right-0 h-px transition-transform duration-[350ms] ease-[cubic-bezier(0.16,1,0.3,1)]",
             lineColor,
             isOpen ? "top-1/2 -translate-y-1/2 rotate-45" : "top-0",
           )}
@@ -70,7 +70,7 @@ const MenuTrigger = ({
         />
         <span
           className={cn(
-            "absolute left-0 right-0 h-px transition-transform duration-350 ease-[cubic-bezier(0.16,1,0.3,1)]",
+            "absolute left-0 right-0 h-px transition-transform duration-[350ms] ease-[cubic-bezier(0.16,1,0.3,1)]",
             lineColor,
             isOpen ? "top-1/2 -translate-y-1/2 -rotate-45" : "bottom-0",
           )}

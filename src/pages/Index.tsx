@@ -6,11 +6,12 @@ import Services from "@/components/Services";
 import HomeGalleryStrip from "@/components/HomeGalleryStrip";
 import QuoteCloserCard from "@/components/QuoteCloserCard";
 import Footer from "@/components/Footer";
-import { LocalBusinessJsonLd } from "@/components/JsonLd";
+import { LocalBusinessJsonLd, OrganizationJsonLd, ServiceCatalogJsonLd, WebSiteJsonLd } from "@/components/JsonLd";
 import CrewMoment from "@/components/CrewMoment";
 import TestimonialStrip from "@/components/TestimonialStrip";
 import BrandStatement from "@/components/BrandStatement";
 import VideoShowcase from "@/components/VideoShowcase";
+import { SEO_ROUTES } from "@/config/seo";
 
 /**
  * Homepage rhythm:
@@ -18,8 +19,9 @@ import VideoShowcase from "@/components/VideoShowcase";
  */
 const Index = () => {
   useDocumentTitle(
-    "Excellence in the Work",
-    "Creek Construction — WCB-covered, fully insured exterior contractor serving Edmonton, Calgary & the Okanagan, BC. Decks, fencing, sheds, painting & siding. Free written quotes.",
+    SEO_ROUTES.home.title,
+    SEO_ROUTES.home.description,
+    { path: SEO_ROUTES.home.path },
   );
 
   return (
@@ -30,6 +32,9 @@ const Index = () => {
     >
       <SkipToContent target="section-services" />
       <LocalBusinessJsonLd />
+      <OrganizationJsonLd />
+      <WebSiteJsonLd />
+      <ServiceCatalogJsonLd />
       <Navigation />
 
       <Hero />

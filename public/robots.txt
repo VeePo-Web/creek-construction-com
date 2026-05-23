@@ -18,3 +18,5 @@ User-agent: *
 Allow: /
 Disallow: /style-guide
 Disallow: /admin/
+
+Sitemap: https://creekconstruction.ca/sitemap.xml

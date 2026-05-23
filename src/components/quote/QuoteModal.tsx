@@ -559,7 +559,7 @@ const QuoteModal = () => {
                 </Field>
 
                 {/* Voucher / referral — optional, last field */}
-                <Field label="Voucher or referral code (10% off :D)" htmlFor="qm-voucher" optional>
+                <Field label="Voucher or referral code (10% off)" htmlFor="qm-voucher" optional>
                   <input
                     id="qm-voucher"
                     type="text"

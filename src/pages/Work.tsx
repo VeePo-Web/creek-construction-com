@@ -6,13 +6,16 @@ import QuoteCloserCard from "@/components/QuoteCloserCard";
 import PageHero from "@/components/ui/page-hero";
 import GalleryWall from "@/components/GalleryWall";
 import TestimonialStrip from "@/components/TestimonialStrip";
+import { BreadcrumbJsonLd } from "@/components/JsonLd";
 import { useDocumentTitle } from "@/hooks/useDocumentTitle";
 import { SECTION_PADDING, MAX_WIDTH } from "@/lib/spacing";
+import { SEO_ROUTES } from "@/config/seo";
 
 const Work = () => {
   useDocumentTitle(
-    "Gallery",
-    "A look at recent residential exterior work across Calgary, Edmonton, and surrounding Alberta.",
+    SEO_ROUTES.work.title,
+    SEO_ROUTES.work.description,
+    { path: SEO_ROUTES.work.path },
   );
 
   return (
@@ -22,6 +25,12 @@ const Work = () => {
       aria-label="Gallery — Creek Construction"
     >
       <SkipToContent target="section-gallery" />
+      <BreadcrumbJsonLd
+        items={[
+          { name: "Home", url: "https://creekconstruction.ca/" },
+          { name: "Work", url: "https://creekconstruction.ca/work" },
+        ]}
+      />
       <Navigation />
 
       <PageHero

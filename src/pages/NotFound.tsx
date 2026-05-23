@@ -6,12 +6,14 @@ import Footer from "@/components/Footer";
 import PageHero from "@/components/ui/page-hero";
 import SkipToContent from "@/components/ui/skip-to-content";
 import { useDocumentTitle } from "@/hooks/useDocumentTitle";
+import { SEO_ROUTES } from "@/config/seo";
 
 const NotFound = () => {
   const location = useLocation();
   useDocumentTitle(
-    "Page Not Found",
-    "The page you’re looking for doesn’t exist. Find your way back to Creek Construction.",
+    SEO_ROUTES.notFound.title,
+    SEO_ROUTES.notFound.description,
+    { path: location.pathname, noindex: SEO_ROUTES.notFound.noindex },
   );
 
   useEffect(() => {

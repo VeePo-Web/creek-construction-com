@@ -50,8 +50,8 @@ export const SECTION_PADDING = {
   strip: "py-12 md:py-16",
   /** Hero — extra top breathing because of the nav. */
   hero: "pt-20 pb-24 md:pt-28 md:pb-32",
-  /** Footer — generous top, restrained bottom. */
-  footer: "pt-20 pb-12 md:pt-24",
+  /** Footer — generous top, responsive bottom. */
+  footer: "pt-20 pb-16 md:pt-24 md:pb-20",
 } as const;
 
 // ─────────────────────────────────────────────────────────────────────

@@ -16,6 +16,7 @@ const Services = lazy(() => import("./pages/Services"));
 const Work = lazy(() => import("./pages/Work"));
 const About = lazy(() => import("./pages/About"));
 const Contact = lazy(() => import("./pages/Contact"));
+const AreasWeServe = lazy(() => import("./pages/AreasWeServe"));
 
 const AdminLogin = lazy(() => import("./pages/admin/Login"));
 const AdminMediaLibrary = lazy(() => import("./pages/admin/MediaLibrary"));
@@ -58,6 +59,8 @@ const App = () => (
               <Route path="/work" element={<Work />} />
               <Route path="/about" element={<About />} />
               <Route path="/contact" element={<Contact />} />
+              <Route path="/areas-we-serve" element={<AreasWeServe />} />
+              <Route path="/areas-we-serve/:slug" element={<AreasWeServe />} />
               <Route path="/admin/login" element={<AdminLogin />} />
               <Route
                 path="/admin/media"

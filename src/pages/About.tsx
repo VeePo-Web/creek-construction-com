@@ -6,21 +6,30 @@ import QuoteCloserCard from "@/components/QuoteCloserCard";
 import SectionHeader from "@/components/SectionHeader";
 import PageHero from "@/components/ui/page-hero";
 import MediaSlot from "@/components/media/MediaSlot";
+import { BreadcrumbJsonLd } from "@/components/JsonLd";
 import { useDocumentTitle } from "@/hooks/useDocumentTitle";
 
 import { SECTION_PADDING, MAX_WIDTH } from "@/lib/spacing";
 import { BODY } from "@/lib/typography";
 import { CREEK_PROCESS as STEPS } from "@/config/process";
+import { SEO_ROUTES } from "@/config/seo";
 
 const About = () => {
   useDocumentTitle(
-    "About",
-    "Creek Construction — locally owned residential exterior contractor serving Edmonton, Calgary & the Okanagan, BC.",
+    SEO_ROUTES.about.title,
+    SEO_ROUTES.about.description,
+    { path: SEO_ROUTES.about.path },
   );
 
   return (
     <main id="main-content" className="min-h-screen overflow-x-clip bg-background" aria-label="About — Creek Construction">
       <SkipToContent target="section-story" />
+      <BreadcrumbJsonLd
+        items={[
+          { name: "Home", url: "https://creekconstruction.ca/" },
+          { name: "About", url: "https://creekconstruction.ca/about" },
+        ]}
+      />
       <Navigation />
 
 

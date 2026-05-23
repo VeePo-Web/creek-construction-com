@@ -36,17 +36,17 @@ const BrandMark = ({ onDark = false, className }: BrandMarkProps) => {
         alt=""
         width={44}
         height={44}
-        className="h-9 w-9 md:h-11 md:w-11 object-contain transition-transform duration-500 group-hover/brand:scale-[1.03]"
+        className="h-9 w-9 md:h-11 md:w-11 object-contain transition-transform duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover/brand:scale-[1.03]"
       />
-      {/* Wordmark stack — hidden in the cramped md→lg band so the section
-          rail and right cluster have room to breathe. The logo medallion
-          alone carries the brand at tablet sizes. Wordmark returns at lg. */}
-      <div className="block md:hidden lg:block">
+      {/* Wordmark — always visible. Section rail removed so there is no
+          competing center element at any breakpoint. */}
+      <div className="block">
         <p
           className={cn(
-            "font-serif leading-none whitespace-nowrap",
-            "text-[15px] sm:text-base lg:text-lg",
+            "font-serif leading-none whitespace-nowrap transition-colors duration-300",
+            "text-[15px] sm:text-base md:text-[15px] lg:text-lg",
             titleClass,
+            "group-hover/brand:text-cedar",
           )}
         >
           Creek Construction

@@ -27,6 +27,7 @@ const PRIMARY_ROUTES = [
   { name: "Services", path: "/services" },
   { name: "Our Work", path: "/work" },
   { name: "About", path: "/about" },
+  { name: "Areas", path: "/areas-we-serve" },
   { name: "Contact", path: "/contact" },
 ];
 
