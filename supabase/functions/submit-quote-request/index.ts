@@ -21,6 +21,7 @@ interface Payload {
   propertyType?: string;
   timeline?: string;
   contactPreference?: string;
+  voucher?: string;
 }
 
 function sanitize(value: unknown, max: number): string {
@@ -51,6 +52,7 @@ Deno.serve(async (req) => {
     const propertyType = sanitize(body.propertyType, 60);
     const timeline = sanitize(body.timeline, 60);
     const contactPreference = sanitize(body.contactPreference, 20);
+    const voucher = sanitize(body.voucher, 80);
 
     const services = Array.isArray(body.services)
       ? body.services
@@ -102,6 +104,7 @@ Deno.serve(async (req) => {
         property_type: propertyType || null,
         timeline: timeline || null,
         contact_preference: contactPreference || null,
+        voucher: voucher || null,
       })
       .select("id")
       .single();
