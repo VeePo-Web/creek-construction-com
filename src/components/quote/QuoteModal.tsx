@@ -61,6 +61,7 @@ const quotePayloadSchema = z.object({
   propertyType: z.string().max(60).optional(),
   timeline: z.string().max(60).optional(),
   contactPreference: z.enum(["call", "text", "email"]),
+  voucher: z.string().max(80).optional(),
 });
 
 type Mode = "quote" | "inquiry";
@@ -206,16 +207,12 @@ const QuoteModal = () => {
       : selectedItems.map((s) => s.title);
 
     const detailsBody = form.projectDetails.trim();
-    const baseDetails = isInquiry
+    const projectDetails = isInquiry
       ? detailsBody
         ? `[General Inquiry] ${detailsBody}`
         : "[General Inquiry]"
       : detailsBody || undefined;
     const voucherValue = form.voucher.trim();
-    const projectDetails =
-      [baseDetails, voucherValue ? `Voucher / referral: ${voucherValue}` : undefined]
-        .filter(Boolean)
-        .join("\n\n") || undefined;
 
     const payload = {
       name: form.name.trim(),
@@ -227,6 +224,7 @@ const QuoteModal = () => {
       propertyType: isInquiry ? undefined : "Residential",
       timeline: form.timeline,
       contactPreference: "call" as const,
+      voucher: voucherValue || undefined,
     };
 
     const parsed = quotePayloadSchema.safeParse(payload);
