@@ -161,6 +161,7 @@ ${row("Services", services.join(", "))}
 ${row("Timeline", timeline)}
 ${row("Property", propertyType)}
 ${row("Contact pref.", contactPreference)}
+${row("Voucher", voucher || "No voucher")}
 ${projectDetails ? `<tr><td colspan="2" style="padding:14px 0 0;"><div style="font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:#6b6b6b;margin-bottom:6px;">Project details</div><div style="font-size:14px;color:#1a1a1a;white-space:pre-wrap;line-height:1.55;">${esc(projectDetails)}</div></td></tr>` : ""}
 </table>
 <div style="margin-top:20px;padding-top:14px;border-top:1px solid #ece8e0;font-size:12px;color:#8a8a8a;">Reply directly to this email to reach the customer${email ? "" : " (no email provided — call them)"}.</div>
@@ -174,6 +175,7 @@ ${projectDetails ? `<tr><td colspan="2" style="padding:14px 0 0;"><div style="fo
           addressOrArea ? `City: ${addressOrArea}` : null,
           services.length ? `Services: ${services.join(", ")}` : null,
           timeline ? `Timeline: ${timeline}` : null,
+          `Voucher: ${voucher || "No voucher"}`,
           projectDetails ? `\nDetails:\n${projectDetails}` : null,
         ].filter(Boolean).join("\n");
 
