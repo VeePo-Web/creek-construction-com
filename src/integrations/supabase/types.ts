@@ -178,6 +178,7 @@ export type Database = {
           services: string[]
           status: string
           timeline: string | null
+          voucher: string | null
         }
         Insert: {
           address_or_area: string
@@ -192,6 +193,7 @@ export type Database = {
           services?: string[]
           status?: string
           timeline?: string | null
+          voucher?: string | null
         }
         Update: {
           address_or_area?: string
@@ -206,6 +208,7 @@ export type Database = {
           services?: string[]
           status?: string
           timeline?: string | null
+          voucher?: string | null
         }
         Relationships: []
       }

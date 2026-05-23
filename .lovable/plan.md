@@ -1,18 +1,34 @@
 ## Goal
-Verify the live `submit-quote-request` edge function sends a real email via Resend with the correct envelope:
-- **From:** `Creek Construction <quotes@creek-construction.com>`
-- **To:** `Creekproconstruction@gmail.com`
-- **CC:** `parker@veepo.ca`
-- **Reply-To:** the submitter's email
+Make the voucher/referral code field explicitly visible in the contact-form email notification, with a fallback to "No voucher" when none is provided.
 
-## Steps
-1. POST a realistic test payload to the deployed `submit-quote-request` function via `supabase--curl_edge_functions` (name "E2E Test", phone, reply-to email like `e2e-test@creek-construction.com`, a service + project details).
-2. Confirm HTTP 200 + row inserted (`id` returned).
-3. Pull `supabase--edge_function_logs` for `submit-quote-request` and verify:
-   - No `resend failed` / `resend error` lines
-   - INQUIRY/QUOTE log line present
-4. Report the message envelope back and ask the user to confirm receipt in both `Creekproconstruction@gmail.com` and `parker@veepo.ca` (including spam), and that **Reply** goes to the submitter's address.
+## Current State
+- Both `QuoteFormInline` and `QuoteModal` collect a `voucher` field (default "pg2026").
+- The voucher is currently concatenated into `projectDetails` as plain text before sending to the edge function.
+- The `quote_requests` table has no dedicated `voucher` column.
+- The email template renders `projectDetails` as a single block, so the voucher is buried inside the body text.
 
-## Notes
-- No code changes. Read-only verification.
-- If logs show a Resend failure, I'll surface the exact error and propose a fix in a follow-up plan.
+## Changes
+
+### 1. Database — add `voucher` column to `quote_requests`
+```sql
+ALTER TABLE public.quote_requests ADD COLUMN voucher text;
+```
+
+### 2. Edge function — `supabase/functions/submit-quote-request/index.ts`
+- Add `voucher?: string` to the `Payload` interface.
+- Sanitize and insert the new field when saving the row.
+- In the HTML email template, add a dedicated table row:
+  - Label: **Voucher**
+  - Value: the submitted voucher, or the literal text `"No voucher"` if blank.
+- In the plain-text body, add a corresponding line.
+
+### 3. Frontend — `QuoteFormInline.tsx` & `QuoteModal.tsx`
+- Add `voucher` as an optional field in the Zod `quotePayloadSchema`.
+- Send `voucher` as a top-level property in the POST payload.
+- Stop appending the voucher string to `projectDetails`.
+
+### 4. Verification
+- Deploy the updated edge function.
+- Run a test submission with a voucher and confirm the email shows the code.
+- Run a test submission without a voucher and confirm the email shows "No voucher".
+- Verify the `voucher` value is persisted in the database row.

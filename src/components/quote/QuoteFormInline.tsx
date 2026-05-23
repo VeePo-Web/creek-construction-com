@@ -40,6 +40,7 @@ const quotePayloadSchema = z.object({
   propertyType: z.string().max(60).optional(),
   timeline: z.string().max(60).optional(),
   contactPreference: z.enum(["call", "text", "email"]),
+  voucher: z.string().max(80).optional(),
 });
 
 interface FormState {
@@ -145,20 +146,17 @@ const QuoteFormInline = ({
     const serviceTitles = selectedItems.map((s) => s.title);
     const baseDetails = form.projectDetails.trim();
     const voucher = form.voucher.trim();
-    const combinedDetails =
-      [baseDetails || undefined, voucher ? `Voucher / referral: ${voucher}` : undefined]
-        .filter(Boolean)
-        .join("\n\n") || undefined;
     const payload = {
       name: form.name.trim(),
       phone: form.phone.trim(),
       email: form.email.trim() || undefined,
       addressOrArea: form.addressOrArea.trim() || undefined,
       services: serviceTitles,
-      projectDetails: combinedDetails,
+      projectDetails: baseDetails || undefined,
       propertyType: "Residential",
       timeline: form.timeline,
       contactPreference: "call" as const,
+      voucher: voucher || undefined,
     };
 
     const parsed = quotePayloadSchema.safeParse(payload);
